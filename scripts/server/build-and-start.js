@@ -1,0 +1,2 @@
+require("./build");
+require("./start");

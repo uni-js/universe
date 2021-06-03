@@ -1,0 +1,5 @@
+web-dist/
+node_modules/
+lib/
+data/
+.env
