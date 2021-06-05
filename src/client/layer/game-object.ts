@@ -1,13 +1,21 @@
 import * as PIXI from "pixi.js";
+import { ActorType } from "../../server/layer/entity";
 import { Vector2 } from "../../server/shared/math";
 
 import { doTickable } from "../../shared/update";
-import { TextureManager } from "../texture";
+import { TextureManager,GetEmptyTexture } from "../texture";
+
 
 export interface IGameObject extends doTickable,PIXI.DisplayObject{ 
     getObjectId(): string;
-    setMoveTarget(target: Vector2):void;
     doTick(tick:number):Promise<void>;
+}
+
+export enum Direction {
+    LEFT = "left",
+    RIGHT = "right",
+    FORWARD = "forward",
+    BACK = "back",
 }
 
 export enum GameObjectEvent{
@@ -20,7 +28,33 @@ export function BuildGameObjectHash(item:string | IGameObject) : string{
     
     return BuildGameObjectHash(item.getObjectId());
 }
-export class SpriteGameObject extends PIXI.Sprite implements IGameObject{
+
+export class StaticObject extends PIXI.Sprite implements IGameObject{
+    constructor(
+        protected textureManager : TextureManager,
+        protected objectId:string,
+        size:Vector2,
+        loc:Vector2
+    ){
+        super();
+        this.position.set(loc.x,loc.y);
+        this.width = size.x;
+        this.height = size.y;
+    }
+    async doTick(tick: number){
+        
+    }
+    getLocation(){
+        return new Vector2(this.position.x,this.position.y);
+    }
+    getObjectId(){
+        return this.objectId;
+    }
+
+}
+
+
+export class ActorObject extends PIXI.Container implements IGameObject{
 
     /**
      * 一旦该状态被设置,
@@ -35,17 +69,126 @@ export class SpriteGameObject extends PIXI.Sprite implements IGameObject{
      */
     protected smoothMove = true;
 
+    protected shadow;
+    protected sprite;
+    protected nametag : PIXI.Text;
+
+    private lastLoc : Vector2;
+
+    protected direction : Direction = Direction.BACK;
+
+    private usedTextures : PIXI.Texture[] = [];
+    private playing = false;
+
     constructor(
+        protected actorType : ActorType,
         protected textureManager : TextureManager,
         protected objectId:string,
-        size:Vector2,
-        loc:Vector2,
+        protected size:Vector2,
+        private loc:Vector2,
+        private tagname:string,
     ){
-        super();
-        this.position.set(loc.x,loc.y);
-        this.width = size.x;
-        this.height = size.y;
+        super()
         
+
+        this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);
+
+        this.usedTextures = this.textureManager.get(`actor.${this.actorType}`)!;
+        this.shadow = new PIXI.Sprite(this.textureManager.getOne("system.shadow")!);
+
+        this.nametag = new PIXI.Text("");
+        this.nametag.style = new PIXI.TextStyle({
+            fill:"white"
+        })
+
+
+        this.setTagName(this.tagname);
+
+        this.addChildAt(this.nametag,0);
+        this.addChildAt(this.sprite,1);
+        this.addChildAt(this.shadow,2);
+        
+        this.setDirection(Direction.FORWARD);
+
+        this.setLocation(loc);
+        this.resize();
+
+
+        this.lastLoc = this.loc.clone();
+    }
+    setAnimateSpeed(speed : number){
+        this.sprite.animationSpeed = speed;
+    }
+    stopAnim(){
+        if(!this.playing)return;
+
+        this.sprite.stop();
+        console.log("stop",this.sprite.textures);
+
+        this.playing = false;
+    }
+    playAnim(){
+        if(this.playing)return;
+
+        this.sprite.play();
+        console.log("play",this.sprite.textures);
+        this.playing = true;
+    }
+
+    setLocation(location : Vector2){
+        this.loc = location.clone();
+        this.position.set(this.loc.x,this.loc.y);
+    }
+    setDirection(direction : Direction){
+        this.direction = direction;
+    }
+    protected getDirectionTextures(dir : Direction){
+        if(dir == Direction.FORWARD){
+            return this.usedTextures.slice(0,3);
+        }else if(dir == Direction.LEFT){
+            return this.usedTextures.slice(3,6);
+        }else if(dir == Direction.RIGHT){
+            return this.usedTextures.slice(6,9);
+        }else if(dir == Direction.BACK){
+            return this.usedTextures.slice(9,12);            
+        }else return [];
+    }
+
+    setTagName(tagname:string){
+        this.tagname = tagname;
+        this.nametag.text = this.tagname;
+    }
+    private resize(){
+
+        this.sprite.width=this.size.x;
+        this.sprite.height=this.size.y;
+        
+        const shadowBounds = this.shadow.getLocalBounds();
+        const shadowRatio = shadowBounds.height / shadowBounds.width;
+
+        this.shadow.width= this.size.x;
+        this.shadow.height= this.size.x * shadowRatio;
+        this.shadow.position.set(0,-0.15);
+
+        const nametagBounds = this.nametag.getBounds();
+        const nametagRatio = nametagBounds.height / nametagBounds.width;
+
+        this.nametag.width = 0.5 / nametagRatio;
+        this.nametag.height = 0.5;
+
+        this.nametag.position.set(0,-this.size.y-0.3);
+
+    }
+    setAnchor(x:number,y:number){
+        this.sprite.anchor.set(x,y);
+        this.shadow.anchor.set(0.5,0.5);        
+        this.nametag.anchor.set(0.5,0.5);
+    }
+    setTextures(textures : PIXI.Texture[]){
+        this.sprite.textures = textures;
+
+        this.resize();
+
     }
     setSmoothMove(smooth : boolean){
         this.smoothMove = smooth;
@@ -63,7 +206,7 @@ export class SpriteGameObject extends PIXI.Sprite implements IGameObject{
 
         if(this.moveTarget && this.smoothMove == false){
             if(this.moveTarget.distanceTo(this.getLocation()) > 0.5)
-                this.position.set(this.moveTarget.x,this.moveTarget.y);
+                this.setLocation(this.moveTarget);
 
             this.moveTarget = undefined;
             
@@ -78,7 +221,7 @@ export class SpriteGameObject extends PIXI.Sprite implements IGameObject{
             const dis = Math.sqrt(Math.pow(dx,2)+Math.pow(dy,2))
             
             if(dis <=  0.001){
-                this.position.set(this.moveTarget.x,this.moveTarget.y);
+                this.setLocation(this.moveTarget);
                 this.moveTarget = undefined;
                 return;
             }
@@ -87,14 +230,35 @@ export class SpriteGameObject extends PIXI.Sprite implements IGameObject{
             const deltaX = dx * 0.1;
             const deltaY = dy * 0.1;
 
-            this.position.set(this.x + deltaX ,this.y + deltaY);    
-
+            this.setLocation(new Vector2(this.x + deltaX ,this.y + deltaY));    
 
         
+        }
+
+    }
+    private doUpdateDirectionTick(){
+        const delta = this.loc.sub(this.lastLoc);
+        const abs = Math.abs(delta.x) - Math.abs(delta.y);
+
+        if(delta.y > 0 && abs < 0){
+            this.setDirection(Direction.FORWARD);
+        }
+        if(delta.y < 0  && abs < 0){
+            this.setDirection(Direction.BACK);
+        }
+
+        if(delta.x > 0 && abs > 0){
+            this.setDirection(Direction.RIGHT);
+        }
+        if(delta.x < 0 && abs > 0){
+            this.setDirection(Direction.LEFT);
         }
     }
     async doTick(tick:number){
         this.doMoveTargetTick();
+        this.doUpdateDirectionTick();
+
+        this.lastLoc = this.loc.clone();
     }
     
 }

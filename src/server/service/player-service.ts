@@ -21,7 +21,7 @@ export class PlayerService implements Service{
     }
     private onActorSpawned(actor:Actor,player:Player){
         const loc = actor.getLocation();
-        const event = new AddActorEvent(actor.getActorId(),actor.getType(),loc.x,loc.y);
+        const event = new AddActorEvent(actor.getActorId(),player.getName(),actor.getType(),loc.x,loc.y);
 
         this.eventBus.emitTo([player.getConnId()],event);
 

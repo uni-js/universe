@@ -24,7 +24,7 @@ export class PlayerManager extends Manager{
         this.emit(PlayerEvent.LandUsedEvent,land,player);
     }
     private onLandNeverUsed = (land : Land,player : Player)=>{
-        this.emit(PlayerEvent.LandUsedEvent,land,player);
+        this.emit(PlayerEvent.LandNeverUsedEvent,land,player);
     }
 
     getAllPlayers(){

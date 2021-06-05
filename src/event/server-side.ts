@@ -19,6 +19,7 @@ export class LoginedEvent extends RemoteEvent{
 export class AddActorEvent extends RemoteEvent{
     constructor(
         public actorId:string,
+        public playerName:string,
         public type:ActorType,
         public x:number,
         public y:number

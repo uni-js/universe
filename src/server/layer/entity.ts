@@ -46,9 +46,9 @@ export abstract class Entity extends EventEmitter implements IEntity{
 }
 
 export enum ActorType{
-    NONE,
-    HUMAN,
-    PLAYER
+    NONE = "none",
+    HUMAN = "human",
+    PLAYER = "player"
 }
 export class Actor extends Entity{
 

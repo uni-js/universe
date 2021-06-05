@@ -22,14 +22,13 @@ export function GetRadiusLands(loc:Vector2,radius:number):Vector2[]{
     const landLoc = LocToLandLoc(loc);
     const landLocs : Vector2[] = [];
     
-    for(let dx=0;dx<radius;dx++)
-        for(let dy=0;dy<radius;dy++)
+    for(let dx=-radius;dx<=radius;dx++)
+        for(let dy=-radius;dy<=radius;dy++)
         {
             if(dx == 0 && dy == 0)
                 continue;
 
             landLocs.push(landLoc.add(new Vector2(dx,dy)));
-            landLocs.push(landLoc.add(new Vector2(-dx,-dy)));
         }
 
     landLocs.push(landLoc);

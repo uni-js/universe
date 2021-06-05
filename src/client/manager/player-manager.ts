@@ -4,12 +4,14 @@ import { InputKey, InputProvider } from "../input";
 import { BuildGameObjectHash, IGameObject } from "../layer/game-object";
 import { Player, PlayerObjectEvent } from "../object/player";
 import { StoreManager } from "../layer/manager"
+import { Viewport } from "../viewport";
 
 export class PlayerManager extends StoreManager{
     constructor(
             private dataStore : MapStore<any>,
             private objectManager : IndexedStore<IGameObject,typeof BuildGameObjectHash>,
-            private inputProvider : InputProvider
+            private inputProvider : InputProvider,
+            private stage : Viewport
         ){
             super();
             
@@ -28,7 +30,7 @@ export class PlayerManager extends StoreManager{
         this.emit(PlayerObjectEvent.ControlMovedEvent,location);
     }
     getCurrentPlayer(){
-        const player = this.dataStore.get("data.player.current");
+        const player = this.dataStore.get("data.player.current") as Player;
         return player;
     }
     private doObjectsTick(tick:number){
@@ -36,8 +38,7 @@ export class PlayerManager extends StoreManager{
             object.doTick(tick);
         }
     }
-    async doTick(tick : number){
-        this.doObjectsTick(tick);
+    private doControlMoveTick(){
 
         const player = this.getCurrentPlayer();
         if(!player) return;
@@ -55,6 +56,12 @@ export class PlayerManager extends StoreManager{
         if(this.inputProvider.keyPress(InputKey.RIGHT)){
             player.controlMove(new Vector2(0.1,0));
         }
+
+        this.stage.moveCenter(player.position.x,player.position.y);
+    }
+    async doTick(tick : number){
+        this.doObjectsTick(tick);
+        this.doControlMoveTick();
     }
 
 

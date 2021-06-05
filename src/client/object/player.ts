@@ -1,8 +1,9 @@
-import * as THREE from "three";
-import { SpriteMaterial } from "three";
+import * as PIXI from "pixi.js";
 import { Vector2 } from "../../server/shared/math";
 import { TextureManager } from "../texture";
-import { BuildGameObjectHash, SpriteGameObject } from "../layer/game-object";
+import { ActorObject, Direction } from "../layer/game-object";
+import { AnimatedSprite, DisplayObject } from "pixi.js";
+import { ActorType } from "../../server/layer/entity";
 
 export enum WalkingState{
     SILENT = "silent",
@@ -17,19 +18,22 @@ export interface ControlMoved{
 export enum PlayerObjectEvent{
     ControlMovedEvent = "ControlMovedEvent"
 }
-export class Player extends SpriteGameObject{
+export class Player extends ActorObject{
     private controlMoved : ControlMoved | undefined;
     private takeControl : boolean = false;
-
     private walking = WalkingState.SILENT;
+
     constructor(
         textureManager : TextureManager,
         objectId:string,
         loc: Vector2,
-        ){
-        super(textureManager,objectId,new Vector2(1,2),loc);
-        this.zIndex = 2;      
-        
+        playerName:string
+    ){
+        super(ActorType.PLAYER,textureManager,objectId,new Vector2(1,1.5),loc,playerName);
+
+        this.zIndex = 2;
+        this.setAnchor(0.5,1);
+        this.setAnimateSpeed(0.1);
         this.setWalking(WalkingState.SILENT);
         
     }
@@ -38,10 +42,24 @@ export class Player extends SpriteGameObject{
         this.smoothMove = false;
         this.zIndex = 3;
     }
+    setDirection(direction : Direction){
+        if(this.direction == direction)return;
+
+        this.setTextures(this.getDirectionTextures(direction));
+        this.direction = direction;
+        this.setWalking(WalkingState.SILENT);
+        
+    }
 
     setWalking(walking : WalkingState){
         this.walking = walking;
-        this.texture = this.textureManager.get(`player.walking.${walking}`)!;
+        if(walking == WalkingState.SILENT){
+            this.stopAnim();
+        }else if(walking == WalkingState.RUNNING){
+            this.playAnim();
+        }else if(walking == WalkingState.WALKING){
+            this.playAnim();
+        }
     }
     controlMove(delta:Vector2){
         if(!this.controlMoved){
@@ -55,8 +73,10 @@ export class Player extends SpriteGameObject{
 
         if(this.controlMoved){
             const target = this.controlMoved.startAt.add(this.controlMoved.moved);
-            this.position.set(target.x,target.y);
-            
+            this.setLocation(target);
+            this.setWalking(WalkingState.WALKING);
+        }else{
+            this.setWalking(WalkingState.SILENT);
         }
 
         if(this.controlMoved && tick % 2 == 0){

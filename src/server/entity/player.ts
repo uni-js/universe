@@ -1,7 +1,6 @@
 import { Actor, ActorType } from "../layer/entity";
 import { Vector2 } from "../shared/math";
-import { Human } from "./human";
-import { GetRadiusLands, Land } from "./land";
+import { BuildLandHash, GetRadiusLands, Land } from "./land";
 
 export function BuildPlayerHash(item : string | Player) : string{
     if(item instanceof Player)
@@ -26,10 +25,17 @@ export class Player extends Actor{
     private connId:string;
     private usedLands = new Map<string,Land>();
     private spawnedActors = new Set<Actor>();
+    private playerName:string = "Player";
 
     constructor(connId:string,loc:Vector2){
         super(loc,ActorType.PLAYER);
         this.connId = connId;
+    }
+    setName(name:string){
+        this.playerName = name;
+    }
+    getName(){
+        return this.playerName;
     }
     hasSpawned(actor : Actor){
         return this.spawnedActors.has(actor);
@@ -53,15 +59,15 @@ export class Player extends Actor{
         this.emit(PlayerEvent.DespawnActorEvent,actor,this);
     }
     hasLand(land:Land){
-        return this.usedLands.has(BuildPlayerHash(this));
+        return this.usedLands.has(BuildLandHash(land));
     }
     addLand(land:Land){
-        this.usedLands.set(BuildPlayerHash(this),land);
+        this.usedLands.set(BuildLandHash(land),land);
         this.emit(PlayerEvent.LandUsedEvent,land,this);
 
     }
     removeLand(land:Land){
-        this.usedLands.delete(BuildPlayerHash(this));
+        this.usedLands.delete(BuildLandHash(land));
         this.emit(PlayerEvent.LandNeverUsedEvent,land,this);
     }
     setLands(lands:Land[]){
@@ -78,11 +84,13 @@ export class Player extends Actor{
             if(!nowLands.find((la)=>(la == land)))
                 newLands.push(land);
         }
-
-        for(const land of newLands)
+        
+        for(const land of newLands){
             this.addLand(land);
-        for(const land of delLands)
+        }
+        for(const land of delLands){
             this.removeLand(land);
+        }
 
     }
     getCanseeLands(){

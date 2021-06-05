@@ -35,12 +35,8 @@ export class LandMoveManager extends Manager{
         this.landManager.removeActor(actor.getLandAt(),actor);
     }
     private onLandMoveEvent = (actor : Actor,landAt:Vector2,lastLandAt:Vector2)=>{
-        try{
-            this.landManager.removeActor(lastLandAt,actor);
-            this.landManager.addActor(landAt,actor);    
-        }catch(err){
-
-        }
+        try{ this.landManager.removeActor(lastLandAt,actor); }catch(err){ }
+        try{ this.landManager.addActor(landAt,actor); }catch(err){ }
 
         for(const player of this.playerManager.getAllPlayers()){
             const hasSpawned = player.hasSpawned(actor);

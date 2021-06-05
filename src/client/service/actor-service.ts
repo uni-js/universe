@@ -2,7 +2,7 @@ import { EventBusClient } from "../../event/bus-client";
 import { ActorNewPosEvent, AddActorEvent, RemoveActorEvent } from "../../event/server-side";
 import { ActorType } from "../../server/layer/entity";
 import { Vector2 } from "../../server/shared/math";
-import { SpriteGameObject } from "../layer/game-object";
+import { ActorObject } from "../layer/game-object";
 import { ObjectManager } from "../manager/object-manager";
 import { PlayerManager } from "../manager/player-manager";
 import { Player } from "../object/player";
@@ -24,10 +24,10 @@ export class ActorService{
         if(event.type == ActorType.PLAYER){
             
 
-            const player = new Player(this.textureManager,event.actorId,loc);
+            const player = new Player(this.textureManager,event.actorId,loc,event.playerName);
             this.objectManager.addObject(player);
         }else{
-            const actor = new SpriteGameObject(this.textureManager,event.actorId,new Vector2(1,1),loc);
+            const actor = new ActorObject(event.type,this.textureManager,event.actorId,new Vector2(1,1),loc,"");
             this.objectManager.addObject(actor);
 
         }
@@ -42,7 +42,7 @@ export class ActorService{
     }
     private handleActorNewPos(event : ActorNewPosEvent){
 
-        const object = this.objectManager.getObjectById(event.actorId)!;
+        const object = this.objectManager.getObjectById(event.actorId) as ActorObject;
         object.setMoveTarget(new Vector2(event.x,event.y));
     }
 

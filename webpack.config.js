@@ -40,6 +40,7 @@ const config = {
 };
 
 module.exports = () => {
+  config.devtool = false;
   if (isProduction) {
     config.mode = "production";
   } else {

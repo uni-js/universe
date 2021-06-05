@@ -15,7 +15,7 @@ export class LandManager extends Manager{
 
     async generateLand(landLoc : Vector2){
         const hash = BuildLandHash(landLoc);
-        const landData = GenerateLandData();
+        const landData = GenerateLandData(landLoc);
 
         await this.db.set(hash,landData);
     }
