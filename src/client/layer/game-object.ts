@@ -1,6 +1,8 @@
 import * as PIXI from "pixi.js";
+
 import { ActorType } from "../../server/layer/entity";
 import { Vector2 } from "../../server/shared/math";
+import { Direction, WalkingState } from "../../shared/actor";
 
 import { doTickable } from "../../shared/update";
 import { TextureManager,GetEmptyTexture } from "../texture";
@@ -9,13 +11,6 @@ import { TextureManager,GetEmptyTexture } from "../texture";
 export interface IGameObject extends doTickable,PIXI.DisplayObject{ 
     getObjectId(): string;
     doTick(tick:number):Promise<void>;
-}
-
-export enum Direction {
-    LEFT = "left",
-    RIGHT = "right",
-    FORWARD = "forward",
-    BACK = "back",
 }
 
 export enum GameObjectEvent{
@@ -76,6 +71,7 @@ export class ActorObject extends PIXI.Container implements IGameObject{
     private lastLoc : Vector2;
 
     protected direction : Direction = Direction.BACK;
+    protected walking : WalkingState = WalkingState.SILENT;
 
     private usedTextures : PIXI.Texture[] = [];
     private playing = false;
@@ -116,6 +112,18 @@ export class ActorObject extends PIXI.Container implements IGameObject{
 
         this.lastLoc = this.loc.clone();
     }
+    setWalking(walking : WalkingState,emit = true){
+        if(this.walking == walking)return;
+
+        this.walking = walking;
+        if(walking == WalkingState.SILENT){
+            this.stopAnim();
+        }else if(walking == WalkingState.RUNNING){
+            this.playAnim();
+        }else if(walking == WalkingState.WALKING){
+            this.playAnim();
+        }
+    }
     setAnimateSpeed(speed : number){
         this.sprite.animationSpeed = speed;
     }
@@ -123,9 +131,9 @@ export class ActorObject extends PIXI.Container implements IGameObject{
         if(!this.playing)return;
 
         this.sprite.stop();
-        console.log("stop",this.sprite.textures);
-
+        this.resetAnim();
         this.playing = false;
+        console.log("stop");
     }
     playAnim(){
         if(this.playing)return;
@@ -134,12 +142,15 @@ export class ActorObject extends PIXI.Container implements IGameObject{
         console.log("play",this.sprite.textures);
         this.playing = true;
     }
+    resetAnim(){
+        this.sprite.gotoAndStop(0);
+    }
 
     setLocation(location : Vector2){
         this.loc = location.clone();
         this.position.set(this.loc.x,this.loc.y);
     }
-    setDirection(direction : Direction){
+    setDirection(direction : Direction,emit = true){
         this.direction = direction;
     }
     protected getDirectionTextures(dir : Direction){
@@ -236,27 +247,9 @@ export class ActorObject extends PIXI.Container implements IGameObject{
         }
 
     }
-    private doUpdateDirectionTick(){
-        const delta = this.loc.sub(this.lastLoc);
-        const abs = Math.abs(delta.x) - Math.abs(delta.y);
 
-        if(delta.y > 0 && abs < 0){
-            this.setDirection(Direction.FORWARD);
-        }
-        if(delta.y < 0  && abs < 0){
-            this.setDirection(Direction.BACK);
-        }
-
-        if(delta.x > 0 && abs > 0){
-            this.setDirection(Direction.RIGHT);
-        }
-        if(delta.x < 0 && abs > 0){
-            this.setDirection(Direction.LEFT);
-        }
-    }
     async doTick(tick:number){
         this.doMoveTargetTick();
-        this.doUpdateDirectionTick();
 
         this.lastLoc = this.loc.clone();
     }

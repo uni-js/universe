@@ -15,12 +15,18 @@ import { ConnectionService } from "../server/service/connection-service";
 import { createDatabase, IDatabase } from "../server/database"
 import { LandService } from "../server/service/land-service";
 
+import { BrickFactory } from "../server/entity/brick/brick";
+import { BrickType } from "../server/entity/brick/types";
+import { Dirt, DryDirt, Grass, Ice, Rock, Sand, Water, WetDirt } from "../server/entity/brick/group";
+
 export interface AppConfig{
     port:number
 }
 
 export class ServerApp{
     private db : IDatabase | undefined;
+
+    private brickFactory? : BrickFactory;
 
     private stores = new Map<string,any>();
     private managers = new Map<string,any>();
@@ -35,12 +41,25 @@ export class ServerApp{
     constructor(config : AppConfig){
         this.config = config;
 
+        this.initBrickFactory();
         this.initDatabase();
         this.initEventBus();
         this.initStores();
         this.initManagers();
         this.initServices();
         this.startLoop();
+    }
+    private initBrickFactory(){
+        this.brickFactory = new BrickFactory();
+        this.brickFactory.setImpl(BrickType.DIRT,Dirt);
+        this.brickFactory.setImpl(BrickType.DRY_DIRT,DryDirt);
+        this.brickFactory.setImpl(BrickType.GRASS,Grass);
+        this.brickFactory.setImpl(BrickType.ICE,Ice);
+        this.brickFactory.setImpl(BrickType.ROCK,Rock);
+        this.brickFactory.setImpl(BrickType.SAND,Sand);
+        this.brickFactory.setImpl(BrickType.WATER,Water);
+        this.brickFactory.setImpl(BrickType.WET_DIRT,WetDirt);
+        
     }
     private initDatabase(){
         this.db = createDatabase(process.env.DB_LOCATION!);
@@ -54,7 +73,8 @@ export class ServerApp{
         this.stores.set(Player.name,new IndexedStore<Player,any>(BuildPlayerHash));
     }
     private initManagers(){
-        const landManager = new LandManager(this.db!,this.stores.get(Land.name)!)
+
+        const landManager = new LandManager(this.db!,this.stores.get(Land.name)!,this.brickFactory!)
         const actorManager = new ActorManager(this.stores.get(Actor.name)!);
         const playerManager = new PlayerManager(
             this.stores.get(Player.name)!,

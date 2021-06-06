@@ -1,4 +1,4 @@
-import { BrickType } from "../../server/land/types";
+import { BrickType } from "../../server/entity/brick/types";
 import { Vector2 } from "../../server/shared/math";
 import { StaticObject } from "../layer/game-object";
 import { TextureManager } from "../texture";

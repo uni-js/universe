@@ -2,8 +2,7 @@ import { IndexedStore } from "../../shared/store";
 import { BrickData, LandData } from "../land/types";
 import { Actor, Entity, LocToLandLoc } from "../layer/entity";
 import { Vector2 } from "../shared/math";
-import { Brick, BuildBrickOffsetHash } from "./brick";
-
+import { Brick, BrickFactory , BuildBrickOffsetHash } from "./brick/brick";
 
 export function BuildLandHash(item:Vector2 | Land) : string{
     if(item instanceof Vector2)
@@ -42,7 +41,7 @@ export class Land extends Entity{
     private actors = new Set<Actor>();
     private bricks = new IndexedStore<Brick,typeof BuildBrickOffsetHash>(BuildBrickOffsetHash);
 
-    constructor(private landLoc:Vector2,private initLandData:LandData){
+    constructor(private landLoc:Vector2,private initLandData:LandData,private brickFactory : BrickFactory){
         super();
 
         this.setLandData(initLandData);
@@ -55,7 +54,7 @@ export class Land extends Entity{
             if(this.bricks.has(hash)){
                 this.bricks.remove(this.bricks.get(hash)!)
             }else{
-                this.bricks.add(new Brick(brickLoc,brick.type));
+                this.bricks.add(this.brickFactory.getObject(brick.type,brickLoc));
             }
         }
     }

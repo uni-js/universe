@@ -1,15 +1,5 @@
-export enum BrickType{
-    /**
-     * 岩石
-     */
-    ROCK = "rock",
+import { BrickType } from "../entity/brick/types";
 
-    /**
-     * 草地
-     */
-    GRASS = "grass",
-
-}
 export interface BrickData{
     offX : number;
     offY : number;

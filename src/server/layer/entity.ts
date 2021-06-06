@@ -2,7 +2,7 @@ import { doTickable } from "../../shared/update";
 import { GetUniqueId, Vector2 } from "../shared/math";
 import { EventEmitter } from "../shared/event";
 import { LAND_WIDTH } from "../land/const";
-
+import { Direction, WalkingState } from "../../shared/actor";
 
 export const MOVEMENT_TICK_MIN_DISTANCE = 0.01;
 
@@ -64,6 +64,9 @@ export class Actor extends Entity{
     private lastLoc : Vector2;
     private lastEmitLoc : Vector2;
 
+    private direction : Direction = Direction.FORWARD;
+    private walking : WalkingState = WalkingState.SILENT;
+
     constructor(loc : Vector2,type : ActorType){
         super();
         this.loc = loc;
@@ -75,6 +78,26 @@ export class Actor extends Entity{
     }
     private getLastLandAt(){
         return LocToLandLoc(this.lastLoc);
+    }
+    getWalking(){
+        return this.walking;
+    }
+    setWalking(walking:WalkingState){
+        if(this.walking === walking)
+            return;
+        
+        this.walking = walking;
+        this.emit(ActorEvent.NewPosEvent,this);
+    }
+    setDirection(dir : Direction){
+        if(this.direction === dir)
+            return;
+
+        this.direction = dir;
+        this.emit(ActorEvent.NewPosEvent,this);
+    }
+    getDirection(){
+        return this.direction;
     }
     getType(){
         return this.type;

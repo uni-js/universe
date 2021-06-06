@@ -42,9 +42,11 @@ export class PlayerService implements Service{
     }
     private handleMovePlayer(connId:string,event:MovePlayerEvent){
 
-        const player = this.playerManager.getPlayerByConnId(connId);
-        player!.moveDelta(new Vector2(event.x,event.y));
-
+        const player = this.playerManager.getPlayerByConnId(connId)!;
+        player.moveDelta(new Vector2(event.x,event.y));
+        player.setDirection(event.dir);
+        player.setWalking(event.walking);
+        
     }
     
     async doTick(tick: number): Promise<void> {

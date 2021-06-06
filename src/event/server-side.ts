@@ -1,12 +1,15 @@
 import { LandData } from "../server/land/types";
 import { ActorType } from "../server/layer/entity";
+import { Direction, WalkingState } from "../shared/actor";
 import { RemoteEvent } from "./event";
 
 export class ActorNewPosEvent extends RemoteEvent{
     constructor(
         public actorId:string,
         public x:number,
-        public y:number
+        public y:number,
+        public direction:Direction,
+        public walking:WalkingState
     ){ super(); }
 }
 

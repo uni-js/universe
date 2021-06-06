@@ -1,4 +1,4 @@
-import { ActorNewPosEvent,AddActorEvent } from "../../event/server-side";
+import { ActorNewPosEvent } from "../../event/server-side";
 import { EventBus } from "../../event/bus-server";
 import { Actor, ActorEvent } from "../layer/entity";
 import { ActorManager } from "../manager/actor-manager";
@@ -48,7 +48,9 @@ export class ActorService implements Service{
         const event = new ActorNewPosEvent(
             actor.getActorId(),
             actor.getLocation().x,
-            actor.getLocation().y
+            actor.getLocation().y,
+            actor.getDirection(),
+            actor.getWalking()
         );
 
         this.eventBus.emitTo(sids,event);

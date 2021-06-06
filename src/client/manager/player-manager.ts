@@ -5,6 +5,7 @@ import { BuildGameObjectHash, IGameObject } from "../layer/game-object";
 import { Player, PlayerObjectEvent } from "../object/player";
 import { StoreManager } from "../layer/manager"
 import { Viewport } from "../viewport";
+import { Direction, WalkingState } from "../../shared/actor";
 
 export class PlayerManager extends StoreManager{
     constructor(
@@ -26,8 +27,8 @@ export class PlayerManager extends StoreManager{
         player.setTakeControl();
 
     }
-    private onPlayerControlMoved = (location : Vector2)=>{
-        this.emit(PlayerObjectEvent.ControlMovedEvent,location);
+    private onPlayerControlMoved = (location : Vector2,direction : Direction,walking:WalkingState)=>{
+        this.emit(PlayerObjectEvent.ControlMovedEvent,location,direction,walking);
     }
     getCurrentPlayer(){
         const player = this.dataStore.get("data.player.current") as Player;
@@ -44,17 +45,30 @@ export class PlayerManager extends StoreManager{
         if(!player) return;
 
         //console.log(this.inputProvider.keyPress(InputKey.UP));
-        if(this.inputProvider.keyPress(InputKey.UP)){
-            player.controlMove(new Vector2(0,-0.1));
-        }
-        if(this.inputProvider.keyPress(InputKey.DOWN)){
-            player.controlMove(new Vector2(0,0.1));
-        }
-        if(this.inputProvider.keyPress(InputKey.LEFT)){
-            player.controlMove(new Vector2(-0.1,0));
-        }
-        if(this.inputProvider.keyPress(InputKey.RIGHT)){
-            player.controlMove(new Vector2(0.1,0));
+        const moveSpeed = 0.06;
+
+        const upPress = this.inputProvider.keyPress(InputKey.UP);
+        const downPress = this.inputProvider.keyPress(InputKey.DOWN);
+        const leftPress = this.inputProvider.keyPress(InputKey.LEFT);
+        const rightPress = this.inputProvider.keyPress(InputKey.RIGHT);
+        
+        if(upPress && leftPress){
+
+            player.controlMove(new Vector2(-0.707*moveSpeed,-0.707*moveSpeed));
+        }else if(upPress && rightPress){
+            player.controlMove(new Vector2(0.707*moveSpeed,-0.707*moveSpeed));
+        }else if(downPress && leftPress){
+            player.controlMove(new Vector2(-0.707*moveSpeed,0.707*moveSpeed));
+        }else if(downPress && rightPress){
+            player.controlMove(new Vector2(0.707*moveSpeed,0.707*moveSpeed));
+        }else if(downPress){
+            player.controlMove(new Vector2(0,moveSpeed));
+        }else if(leftPress){
+            player.controlMove(new Vector2(-moveSpeed,0));
+        }else if(rightPress){
+            player.controlMove(new Vector2(moveSpeed,0));
+        }else if(upPress){
+            player.controlMove(new Vector2(0,-moveSpeed));
         }
 
         this.stage.moveCenter(player.position.x,player.position.y);

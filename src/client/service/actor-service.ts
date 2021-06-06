@@ -42,8 +42,12 @@ export class ActorService{
     }
     private handleActorNewPos(event : ActorNewPosEvent){
 
+        
         const object = this.objectManager.getObjectById(event.actorId) as ActorObject;
         object.setMoveTarget(new Vector2(event.x,event.y));
+        object.setDirection(event.direction,false);
+        object.setWalking(event.walking,false);
+
     }
 
 }

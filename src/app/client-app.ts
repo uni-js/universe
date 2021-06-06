@@ -15,7 +15,6 @@ import { LandService } from "../client/service/land-service";
 import { Viewport } from "../client/viewport";
 
 
-
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
 
@@ -92,11 +91,18 @@ export class ClientApp{
         this.app.ticker.add(this.doTick.bind(this));
     }
     private async initTextures(){
-        await this.textureManager.add("brick.rock.normal","./texture/brick/rock/normal.png");
-        await this.textureManager.add("brick.grass.normal","./texture/brick/grass/normal.png");
         await this.textureManager.add("system.shadow","./texture/system/shadow.png");
         await this.textureManager.addJSON("actor.player","./texture/actor/player/player.json");
-        
+
+        await this.textureManager.add("brick.rock.normal","./texture/brick/rock/normal.png");
+        await this.textureManager.add("brick.grass.normal","./texture/brick/grass/normal.png");
+        await this.textureManager.add("brick.ice.normal","./texture/brick/ice/normal.png");
+        await this.textureManager.add("brick.dirt.normal","./texture/brick/dirt/normal.png");
+        await this.textureManager.add("brick.drydr.normal","./texture/brick/drydr/normal.png");
+        await this.textureManager.add("brick.sand.normal","./texture/brick/sand/normal.png");
+        await this.textureManager.add("brick.water.normal","./texture/brick/water/normal.png");
+        await this.textureManager.add("brick.wetdr.normal","./texture/brick/wetdr/normal.png");
+
     }
     private initStores(){
         this.stores.set("GameObject",new IndexedStore<any,any>(BuildGameObjectHash))

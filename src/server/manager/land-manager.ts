@@ -4,12 +4,13 @@ import { Actor } from "../layer/entity";
 import { Manager } from "../layer/manager";
 import { Vector2 } from "../shared/math";
 import { IDatabase } from "../database";
-import { GenerateLandData } from "../land";
+import { GenerateLandData } from "../land/generator";
 import { LandEvent } from "../land/types";
+import { BrickFactory } from "../entity/brick/brick";
 
 
 export class LandManager extends Manager{
-    constructor(private db : IDatabase,private lands : IndexedStore<Land,typeof BuildLandHash>){
+    constructor(private db : IDatabase,private lands : IndexedStore<Land,typeof BuildLandHash>,private brickFactory : BrickFactory){
         super();
     }
 
@@ -28,7 +29,7 @@ export class LandManager extends Manager{
             landData = await this.db.get(hash);
         }
 
-        const newLand = new Land(landLoc,landData);
+        const newLand = new Land(landLoc,landData,this.brickFactory);
         this.lands.add(newLand);
  
         this.emit(LandEvent.LandLoaded,newLand);

@@ -1,3 +1,4 @@
+import { Direction } from "../../shared/actor";
 import { Actor, ActorType } from "../layer/entity";
 import { Vector2 } from "../shared/math";
 import { BuildLandHash, GetRadiusLands, Land } from "./land";
@@ -26,11 +27,12 @@ export class Player extends Actor{
     private usedLands = new Map<string,Land>();
     private spawnedActors = new Set<Actor>();
     private playerName:string = "Player";
-
+   
     constructor(connId:string,loc:Vector2){
         super(loc,ActorType.PLAYER);
         this.connId = connId;
     }
+ 
     setName(name:string){
         this.playerName = name;
     }
