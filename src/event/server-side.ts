@@ -7,7 +7,13 @@ export class ActorNewPosEvent extends RemoteEvent{
     constructor(
         public actorId:string,
         public x:number,
-        public y:number,
+        public y:number
+    ){ super(); }
+}
+
+export class ActorSetStateEvent extends RemoteEvent{
+    constructor(
+        public actorId:string,
         public direction:Direction,
         public walking:WalkingState
     ){ super(); }

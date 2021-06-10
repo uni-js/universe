@@ -1,20 +1,22 @@
 import { EventEmitter } from "../server/shared/event";
-
+import * as PIXI from "pixi.js";
 
 export class SetStore extends Set{ };
 export class MapStore<V> extends Map<string,V>{ };
 
-export type Hasher<T> = (item : T)=>string[] | string;
+export type Hasher<T> = (item : T)=>string;
 
-export class IndexedStore<T,Hs extends Hasher<T>> extends EventEmitter{
+export class IndexedStore<T> extends EventEmitter{
     private map = new Map<string,T>();
     private set = new Set<T>();
     private length = 0;
-    constructor(private hasher:Hs){
+    private hashers : Hasher<T>[];
+    constructor(...hashers:Hasher<T>[]){
         super();
+        this.hashers = hashers;
     }
     private getHashesOrFail(item : T,shouldExists = false) {
-        const hashes = [this.hasher(item)].flat();
+        const hashes = this.hashers.map((hasher)=>hasher(item));
         
         const exists = hashes
             .map((hash) => this.map.has(hash))
@@ -59,4 +61,23 @@ export class IndexedStore<T,Hs extends Hasher<T>> extends EventEmitter{
         return Array.from(this.set.values());
     }
     
+}
+
+export class ObjectStore<T extends PIXI.DisplayObject> extends IndexedStore<T>{
+    constructor(private container : PIXI.Container,...hashers:Hasher<T>[]){
+        super(...hashers);
+        
+    }
+    add(item:T){
+        super.add(item);
+        this.container.addChild(item);
+    }
+    remove(item:T){
+        super.remove(item);
+        this.container.removeChild(item);
+    }
+
+    getContainer(){
+        return this.container;
+    }
 }

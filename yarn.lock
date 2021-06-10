@@ -1527,6 +1527,11 @@ css-what@^3.2.1:
   resolved "https://registry.yarnpkg.com/css-what/-/css-what-3.4.2.tgz#ea7026fcb01777edbde52124e21f327e7ae950e4"
   integrity sha512-ACUm3L0/jiZTqfzRM3Hi9Q8eZqd6IK37mMWPLz9PJxkLWllYeRf+EHUSHYEtFop2Eqytaq1FizFVh7XfBnXCDQ==
 
+curve-interpolator@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/curve-interpolator/-/curve-interpolator-2.0.8.tgz#700106e9e9c2331349011178c6814148307491b1"
+  integrity sha512-2yzZLrzyysQe7BheosIOZqIsGGeQNYuZg9EBjem9V8VmKgEsiFrS7bN2+xd7CAeRLF8z+NlV5mq+Lo3bO2+tqA==
+
 dargs@^6.1.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/dargs/-/dargs-6.1.0.tgz#1f3b9b56393ecf8caa7cbfd6c31496ffcfb9b272"

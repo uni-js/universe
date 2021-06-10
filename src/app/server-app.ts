@@ -68,9 +68,9 @@ export class ServerApp{
         this.eventBus.listen(this.config.port);
     }
     private initStores(){
-        this.stores.set(Land.name,new IndexedStore<Land,any>(BuildLandHash));
-        this.stores.set(Actor.name,new IndexedStore<Actor,any>(BuildActorHash));
-        this.stores.set(Player.name,new IndexedStore<Player,any>(BuildPlayerHash));
+        this.stores.set(Land.name,new IndexedStore<Land>(BuildLandHash));
+        this.stores.set(Actor.name,new IndexedStore<Actor>(BuildActorHash));
+        this.stores.set(Player.name,new IndexedStore<Player>(BuildPlayerHash));
     }
     private initManagers(){
 

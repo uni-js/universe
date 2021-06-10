@@ -1,4 +1,7 @@
 import RandomBytes from "randombytes";
+import { CurveInterpolator2D } from "curve-interpolator";
+
+export const BILLION_VALUE = Math.pow(10,9);
 
 export class Vector2{
     constructor(
@@ -26,6 +29,10 @@ export class Vector2{
     sub(delta:Vector2){
         return new Vector2(this.x - delta.x,this.y-delta.y);
     }
+    subAbs(vec:Vector2){
+        const delta = this.sub(vec);
+        return new Vector2(Math.abs(delta.x),Math.abs(delta.y));
+    }
     distanceTo(vec:Vector2){
         return vec.sub(this).getSqrt();
     }
@@ -36,6 +43,16 @@ export class Vector2{
         return new Vector2(v2.x-v1.x,v2.y-v1.y);
     }
 
+}
+
+/**
+ * 简单插值
+ */
+export function Interpolate2d(points:Vector2[],x:number){
+    const interpolator = new CurveInterpolator2D(points.map(point=>[point.x,point.y]));
+    const point = interpolator.getPointAt(x);
+
+    return new Vector2(point[0],point[1]);
 }
 
 export function GetUniqueId(){

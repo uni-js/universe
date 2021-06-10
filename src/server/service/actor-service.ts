@@ -1,4 +1,4 @@
-import { ActorNewPosEvent } from "../../event/server-side";
+import { ActorNewPosEvent, ActorSetStateEvent } from "../../event/server-side";
 import { EventBus } from "../../event/bus-server";
 import { Actor, ActorEvent } from "../layer/entity";
 import { ActorManager } from "../manager/actor-manager";
@@ -17,12 +17,13 @@ export class ActorService implements Service{
             
         ){
 
-
         this.actorManager.on(ActorEvent.NewPosEvent,this.onNewPosEvent.bind(this));
         this.actorManager.on(ActorEvent.AddActorEvent,this.onActorAdded.bind(this))
         this.actorManager.on(ActorEvent.RemoveActorEvent,this.onActorRemoved.bind(this))
+        this.actorManager.on(ActorEvent.NewBaseStateEvent,this.onBaseStateSet.bind(this));
         
     }
+
     private onActorAdded(actor : Actor){
         
         for(const player of this.playerManager.getAllPlayers()){
@@ -39,19 +40,25 @@ export class ActorService implements Service{
 
         }
     }
+    private onBaseStateSet(actor : Actor){
+        const event = new ActorSetStateEvent(actor.getActorId(),actor.getDirection(),actor.getWalking());
+        this.emitToActorSpawned(actor,event);
+    }
     private onNewPosEvent(actor : Actor){
         
-        const sids = this.playerManager.getAllPlayers()
-            .filter((player)=>player.hasSpawned(actor))
-            .map(((player)=>player.getConnId()));
 
         const event = new ActorNewPosEvent(
             actor.getActorId(),
             actor.getLocation().x,
-            actor.getLocation().y,
-            actor.getDirection(),
-            actor.getWalking()
+            actor.getLocation().y
         );
+
+        this.emitToActorSpawned(actor,event);
+    }
+    private emitToActorSpawned(actor : Actor,event : any){
+        const sids = this.playerManager.getAllPlayers()
+            .filter((player)=>player.hasSpawned(actor) && player.getActorId() != actor.getActorId())
+            .map(((player)=>player.getConnId()));
 
         this.eventBus.emitTo(sids,event);
     }

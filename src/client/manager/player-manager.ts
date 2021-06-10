@@ -1,7 +1,7 @@
 import { Vector2 } from "../../server/shared/math";
 import { IndexedStore, MapStore } from "../../shared/store";
 import { InputKey, InputProvider } from "../input";
-import { BuildGameObjectHash, IGameObject } from "../layer/game-object";
+import { BuildGameObjectHash, GameObjectEvent, IGameObject } from "../layer/game-object";
 import { Player, PlayerObjectEvent } from "../object/player";
 import { StoreManager } from "../layer/manager"
 import { Viewport } from "../viewport";
@@ -10,7 +10,7 @@ import { Direction, WalkingState } from "../../shared/actor";
 export class PlayerManager extends StoreManager{
     constructor(
             private dataStore : MapStore<any>,
-            private objectManager : IndexedStore<IGameObject,typeof BuildGameObjectHash>,
+            private objectManager : IndexedStore<IGameObject>,
             private inputProvider : InputProvider,
             private stage : Viewport
         ){
@@ -23,12 +23,16 @@ export class PlayerManager extends StoreManager{
 
         this.dataStore.set(key,player);
         player.on(PlayerObjectEvent.ControlMovedEvent,this.onPlayerControlMoved)
+        player.on(GameObjectEvent.SetActorStateEvent,this.onSetActorState)
 
         player.setTakeControl();
 
     }
     private onPlayerControlMoved = (location : Vector2,direction : Direction,walking:WalkingState)=>{
         this.emit(PlayerObjectEvent.ControlMovedEvent,location,direction,walking);
+    }
+    private onSetActorState = (player : Player)=>{
+        this.emit(GameObjectEvent.SetActorStateEvent,player);
     }
     getCurrentPlayer(){
         const player = this.dataStore.get("data.player.current") as Player;
@@ -44,7 +48,6 @@ export class PlayerManager extends StoreManager{
         const player = this.getCurrentPlayer();
         if(!player) return;
 
-        //console.log(this.inputProvider.keyPress(InputKey.UP));
         const moveSpeed = 0.06;
 
         const upPress = this.inputProvider.keyPress(InputKey.UP);

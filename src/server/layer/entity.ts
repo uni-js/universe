@@ -1,20 +1,10 @@
 import { doTickable } from "../../shared/update";
 import { GetUniqueId, Vector2 } from "../shared/math";
 import { EventEmitter } from "../shared/event";
-import { LAND_WIDTH } from "../land/const";
 import { Direction, WalkingState } from "../../shared/actor";
+import { LocToLandLoc } from "../land/helper";
 
-export const MOVEMENT_TICK_MIN_DISTANCE = 0.01;
-
-export function LocToLandLoc(loc:Vector2){
-    const landLoc = loc.divFloor(LAND_WIDTH);
-    return landLoc;
-}
-export function LandLocToLoc(landLoc:Vector2){
-    const loc = landLoc.mul(LAND_WIDTH);
-    return loc;
-}
-
+export const MOVEMENT_TICK_MIN_DISTANCE = 0.0001;
 
 export function BuildActorHash(item:string | Actor) : string{
     if(typeof item == "string")
@@ -26,6 +16,7 @@ export function BuildActorHash(item:string | Actor) : string{
 
 export enum ActorEvent{
     NewPosEvent = "NewPosEvent",
+    NewBaseStateEvent = "NewBaseStateEvent",
     AddActorEvent = "AddActorEvent",
     RemoveActorEvent = "RemoveActorEvent",
     LandMoveEvent = "LandMoveEvent"
@@ -61,11 +52,15 @@ export class Actor extends Entity{
     protected motion : Vector2 = new Vector2(0, 0);
     protected type : ActorType;
 
+
     private lastLoc : Vector2;
     private lastEmitLoc : Vector2;
 
     private direction : Direction = Direction.FORWARD;
     private walking : WalkingState = WalkingState.SILENT;
+
+    private hasBaseStateChanged = false;
+    private hasLocChanged = false;
 
     constructor(loc : Vector2,type : ActorType){
         super();
@@ -87,14 +82,14 @@ export class Actor extends Entity{
             return;
         
         this.walking = walking;
-        this.emit(ActorEvent.NewPosEvent,this);
+        this.hasBaseStateChanged = true;
     }
     setDirection(dir : Direction){
         if(this.direction === dir)
             return;
 
         this.direction = dir;
-        this.emit(ActorEvent.NewPosEvent,this);
+        this.hasBaseStateChanged = true;
     }
     getDirection(){
         return this.direction;
@@ -126,7 +121,7 @@ export class Actor extends Entity{
      */
     setLocation(target_loc:Vector2){
         this.loc = target_loc;
-
+        this.hasLocChanged = true;
     }
 
     teleport(target_loc:Vector2){
@@ -135,6 +130,7 @@ export class Actor extends Entity{
     moveDelta(delta:Vector2){
         this.loc.x += delta.x;
         this.loc.y += delta.y;
+        this.hasLocChanged = true;
     }
 
     async doTick(tick : number){
@@ -142,11 +138,9 @@ export class Actor extends Entity{
 
     }
     private doEmitMoveTick(){
-        const delta = Vector2.getVectorDelta(this.loc,this.lastEmitLoc);
-        if(delta.getSqrt() >= MOVEMENT_TICK_MIN_DISTANCE){
+        if(this.hasLocChanged){
             this.emit(ActorEvent.NewPosEvent,this);
-            this.lastEmitLoc = this.loc.clone();
-            return;
+            this.hasLocChanged = false;
         }
     }
     private doLandMoveTick(){
@@ -160,6 +154,11 @@ export class Actor extends Entity{
 
         this.doEmitMoveTick();
         this.doLandMoveTick();
+        
+        if(this.hasBaseStateChanged){
+            this.emit(ActorEvent.NewBaseStateEvent,this);
+            this.hasBaseStateChanged = false;
+        }
 
         this.lastLoc = this.loc.clone();
 

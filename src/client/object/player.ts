@@ -1,6 +1,6 @@
-import { Vector2 } from "../../server/shared/math";
+import { BILLION_VALUE, Vector2 } from "../../server/shared/math";
 import { TextureManager } from "../texture";
-import { ActorObject } from "../layer/game-object";
+import { ActorObject, GameObjectEvent } from "../layer/game-object";
 import { ActorType } from "../../server/layer/entity";
 import { ParticleObject } from "../particle";
 import { Direction, WalkingState } from "../../shared/actor";
@@ -15,7 +15,6 @@ export enum PlayerObjectEvent{
 export class Player extends ActorObject{
     private controlMoved : ControlMoved | undefined;
     private takeControl : boolean = false;
-    private footArticle;
 
     constructor(
         textureManager : TextureManager,
@@ -25,27 +24,15 @@ export class Player extends ActorObject{
     ){
         super(ActorType.PLAYER,textureManager,objectId,new Vector2(1,1.5),loc,playerName);
 
-        this.footArticle = new ParticleObject("black",1,10,0.2,0.2);
-        this.addChild(this.footArticle);
 
-        this.zIndex = 2;
         this.setAnchor(0.5,1);
         this.setAnimateSpeed(0.12);
         this.setWalking(WalkingState.SILENT);
         
     }
-    setWalking(walking : WalkingState,emit = true){
-        if(this.walking == walking) return;
-        super.setWalking(walking);
-
-        if(emit)
-           this.emit(PlayerObjectEvent.ControlMovedEvent,new Vector2(0,0),this.direction,this.walking);
-
-    }
     setTakeControl(){
         this.takeControl = true;
         this.smoothMove = false;
-        this.zIndex = 3;
     }
     setDirection(direction : Direction,emit = true){
         if(this.direction == direction)return;
@@ -56,11 +43,13 @@ export class Player extends ActorObject{
         this.setTextures(textures);
         this.direction = direction;
         this.setWalking(WalkingState.SILENT,emit);
+
+        this.emit(GameObjectEvent.SetActorStateEvent,this);
     }
 
     controlMove(delta:Vector2){
         if(!this.controlMoved){
-            this.controlMoved = { moved: delta, startAt:this.getLocation() };
+            this.controlMoved = { moved: delta, startAt:this.getWorldLoc() };
         }
         else{
             this.controlMoved.moved = this.controlMoved.moved.add(delta);
@@ -101,10 +90,14 @@ export class Player extends ActorObject{
         }
 
     }
+    private doOrderTick(){
+        this.zIndex = 2 + (this.y / BILLION_VALUE + 1) / 2;
+    }
     async doTick(tick:number) {
         super.doTick.call(this,tick);
 
         this.doControlMoveTick(tick);
+        this.doOrderTick();
     }
 
 }

@@ -1,5 +1,5 @@
 import { EventBus } from "../../event/bus-server";
-import { LoginEvent, MovePlayerEvent } from "../../event/client-side";
+import { LoginEvent, MovePlayerEvent, SetPlayerStateEvent } from "../../event/client-side";
 import { AddActorEvent, LoginedEvent,RemoveActorEvent } from "../../event/server-side";
 import { Player, PlayerEvent } from "../entity/player";
 import { PlayerManager } from "../manager/player-manager";
@@ -14,10 +14,20 @@ export class PlayerService implements Service{
     ){
         this.eventBus.on(LoginEvent.name,this.handleLogin.bind(this));
         this.eventBus.on(MovePlayerEvent.name,this.handleMovePlayer.bind(this))
-
+        this.eventBus.on(SetPlayerStateEvent.name,this.handleSetActorState.bind(this))
+        
         this.playerManager.on(PlayerEvent.SpawnActorEvent,this.onActorSpawned.bind(this));
         this.playerManager.on(PlayerEvent.DespawnActorEvent,this.onActorDespawned.bind(this));
   
+        
+        
+    }
+    private handleSetActorState(connId:string,event : SetPlayerStateEvent){
+        
+        const player = this.playerManager.getPlayerByConnId(connId)!;
+        player.setWalking(event.walking);
+        player.setDirection(event.dir);
+
     }
     private onActorSpawned(actor:Actor,player:Player){
         const loc = actor.getLocation();
@@ -44,9 +54,7 @@ export class PlayerService implements Service{
 
         const player = this.playerManager.getPlayerByConnId(connId)!;
         player.moveDelta(new Vector2(event.x,event.y));
-        player.setDirection(event.dir);
-        player.setWalking(event.walking);
-        
+
     }
     
     async doTick(tick: number): Promise<void> {

@@ -4,14 +4,17 @@ import { Manager } from "../layer/manager";
 
 export class ActorManager extends Manager{
     constructor(
-            private actors : IndexedStore<Actor,typeof BuildActorHash>
+            private actors : IndexedStore<Actor>
         ){
         super();
         
 
     }
     private onNewPosEvent = (actor : Actor)=>{
-        this.emit(ActorEvent.NewPosEvent,actor);
+        this.emit(ActorEvent.NewPosEvent,actor);        
+    }
+    private onBaseStateSetEvent = (actor : Actor)=>{
+        this.emit(ActorEvent.NewBaseStateEvent,actor);
     }
 
     getAll(){
@@ -23,12 +26,14 @@ export class ActorManager extends Manager{
     addActor(actor:Actor){
         this.actors.add(actor);
         actor.on(ActorEvent.NewPosEvent,this.onNewPosEvent);
+        actor.on(ActorEvent.NewBaseStateEvent,this.onBaseStateSetEvent);
 
         this.emit(ActorEvent.AddActorEvent,actor);
     }
     removeActor(actor:Actor){
         this.actors.remove(actor);
         actor.off(ActorEvent.NewPosEvent,this.onNewPosEvent);
+        actor.off(ActorEvent.NewBaseStateEvent,this.onBaseStateSetEvent);
 
         this.emit(ActorEvent.RemoveActorEvent,actor);
     }

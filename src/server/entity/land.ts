@@ -1,6 +1,7 @@
 import { IndexedStore } from "../../shared/store";
+import { LocToLandLoc } from "../land/helper";
 import { BrickData, LandData } from "../land/types";
-import { Actor, Entity, LocToLandLoc } from "../layer/entity";
+import { Actor, Entity } from "../layer/entity";
 import { Vector2 } from "../shared/math";
 import { Brick, BrickFactory , BuildBrickOffsetHash } from "./brick/brick";
 
@@ -8,6 +9,13 @@ export function BuildLandHash(item:Vector2 | Land) : string{
     if(item instanceof Vector2)
         return `land.loc.${item.x}#${item.y}`;
     return BuildLandHash(item.getLandLoc());
+}
+
+export function BuildLandIdHash(item:string | Land) : string{
+    if(typeof(item) == "string")
+        return `land.id.${item}`;
+    return BuildLandHash(item);
+
 }
 
 /**
@@ -39,7 +47,7 @@ export function GetRadiusLands(loc:Vector2,radius:number):Vector2[]{
 export class Land extends Entity{
 
     private actors = new Set<Actor>();
-    private bricks = new IndexedStore<Brick,typeof BuildBrickOffsetHash>(BuildBrickOffsetHash);
+    private bricks = new IndexedStore<Brick>(BuildBrickOffsetHash);
 
     constructor(private landLoc:Vector2,private initLandData:LandData,private brickFactory : BrickFactory){
         super();

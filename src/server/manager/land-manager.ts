@@ -10,7 +10,7 @@ import { BrickFactory } from "../entity/brick/brick";
 
 
 export class LandManager extends Manager{
-    constructor(private db : IDatabase,private lands : IndexedStore<Land,typeof BuildLandHash>,private brickFactory : BrickFactory){
+    constructor(private db : IDatabase,private lands : IndexedStore<Land>,private brickFactory : BrickFactory){
         super();
     }
 

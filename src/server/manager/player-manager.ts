@@ -7,7 +7,7 @@ import { Land } from "../entity/land";
 
 export class PlayerManager extends Manager{
     constructor(
-            private players : IndexedStore<Player,typeof BuildPlayerHash>,
+            private players : IndexedStore<Player>,
             private actorManager : ActorManager,
         ){
         super();

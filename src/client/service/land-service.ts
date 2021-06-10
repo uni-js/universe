@@ -1,14 +1,15 @@
 import { EventBusClient } from "../../event/bus-client";
 import { AddLandEvent, RemoveLandEvent } from "../../event/server-side";
 import { Vector2 } from "../../server/shared/math";
-import { ObjectManager } from "../manager/object-manager";
-import { Land } from "../object/land";
+import { ActorManager } from "../manager/actor-manager";
+import { LandManager } from "../manager/land-manager";
+import { LandObject } from "../object/land";
 import { TextureManager } from "../texture";
 
 export class LandService{
     constructor(
             private eventBus : EventBusClient,
-            private objectManager : ObjectManager,
+            private landManager : LandManager,
             private textureManager : TextureManager,
             
         ){
@@ -19,14 +20,14 @@ export class LandService{
     private handleLandAdded = (event : AddLandEvent)=>{
        
         const loc = new Vector2(event.landX,event.landY);
-        const land = new Land(event.landData,this.textureManager,event.entityId,loc);
-        this.objectManager.addObject(land);
+        const land = new LandObject(event.landData,this.textureManager,event.entityId,loc);
+        this.landManager.addLand(land);
 
     }
     private handleLandRemoved = (event : RemoveLandEvent)=>{
         
-        const object = this.objectManager.getObjectById(event.entityId)!;
-        this.objectManager.removeObject(object);
+        const land = this.landManager.getLandById(event.entityId)!;
+        this.landManager.removeLand(land);
 
     }
     
