@@ -57,7 +57,7 @@ export class ActorService implements Service{
     }
     private emitToActorSpawned(actor : Actor,event : any){
         const sids = this.playerManager.getAllPlayers()
-            .filter((player)=>player.hasSpawned(actor) && player.getActorId() != actor.getActorId())
+            .filter((player)=>player.hasSpawned(actor))
             .map(((player)=>player.getConnId()));
 
         this.eventBus.emitTo(sids,event);

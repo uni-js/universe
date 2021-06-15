@@ -15,9 +15,16 @@ export class Brick extends Entity{
     static brickType : BrickType;
 
     private offLoc : Vector2;
+    private broken : boolean = false;
     constructor(offLoc : Vector2){
         super();
         this.offLoc = offLoc;
+    }
+    setBroken(broken : boolean){
+        this.broken = broken;
+    }
+    isBroken(){
+        return this.broken;
     }
     getType() : BrickType{
         return (this.constructor as any).brickType;

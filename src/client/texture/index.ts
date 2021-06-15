@@ -66,11 +66,15 @@ export class TextureManager{
         return group;
     }
     get(name : string){
-        return this.textures.get(name);
+        if(!this.textures.has(name))
+            throw new Error(`该材质不存在 ${name}`);
+
+        return this.textures.get(name)!;
     }
     getOne(name:string){
         const textures = this.get(name);
-        if(!textures)return;
+        if(!textures[0])
+            throw new Error(`该材质不存在 ${name} at index [0]`);
 
         return textures[0];
     }

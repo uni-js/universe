@@ -7,12 +7,32 @@ export enum InputKey{
     UP = "UP",
     DOWN = "DOWN",
     LEFT = "LEFT",
-    RIGHT = "RIGHT"
+    RIGHT = "RIGHT",
+
+    W = "W",
+    A = "A",
+    D = "D",
+    S = "S",
+
+    E = "E",
+
+    NUM_1 = "NUM_1",
+    NUM_2 = "NUM_2",
+    NUM_3 = "NUM_3",
+    NUM_4 = "NUM_4",
+    NUM_5 = "NUM_5",
+    NUM_6 = "NUM_6",
+    NUM_7 = "NUM_7",
+    NUM_8 = "NUM_8",
+    NUM_9 = "NUM_9",
+    NUM_0 = "NUM_0"
+
 }
 
 
 export interface InputProvider extends doTickable{
     keyPress(key:InputKey) : boolean;
+    keyDown(key:InputKey) : boolean;
     cursorPress() : boolean;
     getCursorAt() : Vector2;
 }
@@ -20,6 +40,8 @@ export interface InputProvider extends doTickable{
 
 export class HTMLInputProvider implements InputProvider{
     private keysPressed = new Map<InputKey,boolean>();
+    private keysDown = new Map<InputKey,boolean>();
+
     private cursorPressed = false;
 
     private actions :any = [];
@@ -31,6 +53,24 @@ export class HTMLInputProvider implements InputProvider{
         this.bindKey("down",InputKey.DOWN);
         this.bindKey("left",InputKey.LEFT);
         this.bindKey("right",InputKey.RIGHT);
+
+        this.bindKey("w",InputKey.W);
+        this.bindKey("s",InputKey.S);
+        this.bindKey("a",InputKey.A);
+        this.bindKey("d",InputKey.D);
+
+        this.bindKey("e",InputKey.E);
+
+        this.bindKey("1",InputKey.NUM_1);
+        this.bindKey("2",InputKey.NUM_2);
+        this.bindKey("3",InputKey.NUM_3);
+        this.bindKey("4",InputKey.NUM_4);
+        this.bindKey("5",InputKey.NUM_5);
+        this.bindKey("6",InputKey.NUM_6);
+        this.bindKey("7",InputKey.NUM_7);
+        this.bindKey("8",InputKey.NUM_8);
+        this.bindKey("9",InputKey.NUM_9);
+        this.bindKey("0",InputKey.NUM_0);
 
         this.elem.addEventListener("mousemove",this.onCursorMove.bind(this));
         this.elem.addEventListener("mousedown",this.onCursorDown.bind(this));
@@ -51,14 +91,21 @@ export class HTMLInputProvider implements InputProvider{
         Keyboard.on(keyName,()=>{
             this.keysPressed.set(inputKey,true);
         },()=>{
-            this.actions.push([this.tick + 1,inputKey,false]);
+            this.actions.push([this.tick + 1,()=>this.keysPressed.set(inputKey,false)]);
             //下一个tick再设置该按键的状态为false
             //保证按键时长至少有一个tick
         });
         
+        Keyboard.on(keyName,()=>{
+            this.keysDown.set(inputKey,true);
+            this.actions.push([this.tick + 1,()=>this.keysDown.set(inputKey,false)]);
+        },()=>{})
     }
     keyPress(key: InputKey): boolean {
-        return this.keysPressed.get(key)!;
+        return Boolean(this.keysPressed.get(key));
+    }
+    keyDown(key : InputKey): boolean{
+        return Boolean(this.keysDown.get(key));
     }
     cursorPress() : boolean{
         return this.cursorPressed;
@@ -69,11 +116,11 @@ export class HTMLInputProvider implements InputProvider{
     private consumeActions(){
         const newActions = [];
         for(const action of this.actions){
-            const [tickAt,inputKey,value] = action;
+            const [tickAt,func] = action;
             if(tickAt != this.tick)
                 newActions.push(action);
             else{
-                this.keysPressed.set(inputKey,value);
+                func();
             }
         }
         this.actions = newActions;

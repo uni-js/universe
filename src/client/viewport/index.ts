@@ -8,6 +8,8 @@ interface Point{
 export interface IViewport{
     moveCenter(x:number,y:number) : void;
     getWorldPointAt(screenPoint : Point):Point;
+    getWorldWidth():number;
+    getWorldHeight():number;
 }
 
 export class Viewport extends PIXI.Container implements IViewport{
@@ -30,5 +32,11 @@ export class Viewport extends PIXI.Container implements IViewport{
         const screenY = screenPoint.y;
 
         return {x:screenX * ratioW - this.position.x, y:screenY * ratioH - this.position.y};
+    }
+    getWorldWidth(){
+        return this.worldWidth;
+    }
+    getWorldHeight(){
+        return this.worldHeight;
     }
 }

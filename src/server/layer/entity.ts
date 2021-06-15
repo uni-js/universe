@@ -52,10 +52,6 @@ export class Actor extends Entity{
     protected motion : Vector2 = new Vector2(0, 0);
     protected type : ActorType;
 
-
-    private lastLoc : Vector2;
-    private lastEmitLoc : Vector2;
-
     private direction : Direction = Direction.FORWARD;
     private walking : WalkingState = WalkingState.SILENT;
 
@@ -65,14 +61,9 @@ export class Actor extends Entity{
     constructor(loc : Vector2,type : ActorType){
         super();
         this.loc = loc;
-        this.lastLoc = loc;
-        this.lastEmitLoc = loc;
 
         this.type = type;
         
-    }
-    private getLastLandAt(){
-        return LocToLandLoc(this.lastLoc);
     }
     getWalking(){
         return this.walking;
@@ -120,47 +111,53 @@ export class Actor extends Entity{
      * 强制设置位置坐标
      */
     setLocation(target_loc:Vector2){
+        this.checkLandMove(this.loc,target_loc);
+
         this.loc = target_loc;
         this.hasLocChanged = true;
-    }
 
-    teleport(target_loc:Vector2){
-        this.setLocation(target_loc);
     }
     moveDelta(delta:Vector2){
-        this.loc.x += delta.x;
-        this.loc.y += delta.y;
-        this.hasLocChanged = true;
+        if(delta.getSqrt() <= 0) return;
+
+        this.setLocation(this.loc.add(delta));
     }
+
+    private checkLandMove(last_loc:Vector2,curr_loc : Vector2){
+        const lastLand = LocToLandLoc(last_loc);
+        const currLand = LocToLandLoc(curr_loc);
+        if(currLand.equals(lastLand)) return;
+
+        this.emit(ActorEvent.LandMoveEvent,this,currLand,lastLand);
+
+    }
+
 
     async doTick(tick : number){
         this.doMovementTick();
 
     }
+
     private doEmitMoveTick(){
         if(this.hasLocChanged){
             this.emit(ActorEvent.NewPosEvent,this);
             this.hasLocChanged = false;
+
         }
     }
-    private doLandMoveTick(){
-        if(this.getLandAt().equals(this.getLastLandAt()))
-            return;
-    
-        this.emit(ActorEvent.LandMoveEvent,this,this.getLandAt(),this.getLastLandAt());
+    private doMotionTick(){ 
+        this.moveDelta(this.motion);
     }
-    private doMovementTick(){
-        this.loc = this.loc.add(this.motion);
-
-        this.doEmitMoveTick();
-        this.doLandMoveTick();
-        
+    private doBaseStateTick(){
         if(this.hasBaseStateChanged){
             this.emit(ActorEvent.NewBaseStateEvent,this);
             this.hasBaseStateChanged = false;
         }
-
-        this.lastLoc = this.loc.clone();
+    }
+    private doMovementTick(){
+        this.doMotionTick();
+        this.doEmitMoveTick();
+        this.doBaseStateTick();
 
     }
 

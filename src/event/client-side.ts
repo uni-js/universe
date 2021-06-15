@@ -21,3 +21,17 @@ export class LoginEvent extends RemoteEvent{
     ){ super(); }
 
 }
+
+export class UseItemEvent extends RemoteEvent{
+    constructor(){
+        super();
+    }
+}
+
+export class ShortcutSelectEvent extends RemoteEvent{
+    constructor(
+        index:number
+    ){
+        super();
+    }
+}

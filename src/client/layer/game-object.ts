@@ -185,14 +185,14 @@ export class ActorObject extends PIXI.Container implements IGameObject{
         
         this.setDirection(Direction.FORWARD);
 
-        this.setLocation(loc);
+        this.setWorldLoc(loc);
         this.resize();
 
 
         this.lastLoc = this.loc.clone();
     }
     private handleInterpolatedLocation(loc : Vector2){
-        this.setLocation(loc);
+        this.setWorldLoc(loc);
     }
     getWalking(){
         return this.walking;
@@ -236,7 +236,7 @@ export class ActorObject extends PIXI.Container implements IGameObject{
         this.sprite.gotoAndStop(0);
     }
 
-    setLocation(location : Vector2){
+    setWorldLoc(location : Vector2){
         this.loc = location.clone();
         this.position.set(this.loc.x,this.loc.y);
     }

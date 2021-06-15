@@ -30,6 +30,12 @@ export class Player extends ActorObject{
         this.setWalking(WalkingState.SILENT);
         
     }
+    addMovePoint(point:Vector2){
+        if(this.takeControl)
+            this.setWorldLoc(point);    
+        else
+            super.addMovePoint(point);
+    }
     setTakeControl(){
         this.takeControl = true;
         this.smoothMove = false;
@@ -74,7 +80,7 @@ export class Player extends ActorObject{
 
         if(this.controlMoved){
             const target = this.controlMoved.startAt.add(this.controlMoved.moved);
-            this.setLocation(target);
+            this.setWorldLoc(target);
             this.setWalking(WalkingState.WALKING);
         }
         if(!this.controlMoved){

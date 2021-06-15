@@ -13,15 +13,25 @@ export class ActorManager extends StoreManager{
 
     }
     addActor(item : ActorObject){
+        console.log("add actor",item);
         this.actorStore.add(item);
     }
     getActorById(objectId:string){
         return this.actorStore.get(BuildActorObjectHash(objectId));
     }
     removeActor(item : ActorObject){
+        console.log("remove actor",item);
         this.actorStore.remove(item);
     }
+    private async doActorsTick(tick:number){
+        const actors = this.actorStore.getAll();
+        for(const actor of actors){
+            await actor.doTick(tick);
+        }
+    }
     async doTick(tick: number) {
+        await this.doActorsTick(tick);
+
         this.objectContainer.sortChildren();
     }
 }

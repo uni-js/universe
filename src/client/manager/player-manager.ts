@@ -1,7 +1,7 @@
 import { Vector2 } from "../../server/shared/math";
-import { IndexedStore, MapStore } from "../../shared/store";
+import { MapStore } from "../../shared/store";
 import { InputKey, InputProvider } from "../input";
-import { BuildGameObjectHash, GameObjectEvent, IGameObject } from "../layer/game-object";
+import { GameObjectEvent } from "../layer/game-object";
 import { Player, PlayerObjectEvent } from "../object/player";
 import { StoreManager } from "../layer/manager"
 import { Viewport } from "../viewport";
@@ -10,7 +10,6 @@ import { Direction, WalkingState } from "../../shared/actor";
 export class PlayerManager extends StoreManager{
     constructor(
             private dataStore : MapStore<any>,
-            private objectManager : IndexedStore<IGameObject>,
             private inputProvider : InputProvider,
             private stage : Viewport
         ){
@@ -38,11 +37,6 @@ export class PlayerManager extends StoreManager{
         const player = this.dataStore.get("data.player.current") as Player;
         return player;
     }
-    private doObjectsTick(tick:number){
-        for(const object of this.objectManager.getAll()){
-            object.doTick(tick);
-        }
-    }
     private doControlMoveTick(){
 
         const player = this.getCurrentPlayer();
@@ -50,10 +44,10 @@ export class PlayerManager extends StoreManager{
 
         const moveSpeed = 0.06;
 
-        const upPress = this.inputProvider.keyPress(InputKey.UP);
-        const downPress = this.inputProvider.keyPress(InputKey.DOWN);
-        const leftPress = this.inputProvider.keyPress(InputKey.LEFT);
-        const rightPress = this.inputProvider.keyPress(InputKey.RIGHT);
+        const upPress = this.inputProvider.keyPress(InputKey.W);
+        const downPress = this.inputProvider.keyPress(InputKey.S);
+        const leftPress = this.inputProvider.keyPress(InputKey.A);
+        const rightPress = this.inputProvider.keyPress(InputKey.D);
         
         if(upPress && leftPress){
 
@@ -77,7 +71,6 @@ export class PlayerManager extends StoreManager{
         this.stage.moveCenter(player.position.x,player.position.y);
     }
     async doTick(tick : number){
-        this.doObjectsTick(tick);
         this.doControlMoveTick();
     }
 

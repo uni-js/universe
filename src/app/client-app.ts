@@ -4,7 +4,7 @@ import { HTMLInputProvider, InputProvider } from "../client/input";
 import { DefaultSceneManager } from "../client/manager/default-scene-manager";
 import { ActorManager } from "../client/manager/actor-manager";
 import { PlayerManager } from "../client/manager/player-manager";
-import { ActorObject, BuildActorObjectHash, BuildGameObjectHash } from "../client/layer/game-object";
+import { ActorObject, BuildActorObjectHash, BuildGameObjectHash, IGameObject } from "../client/layer/game-object";
 import { ActorService } from "../client/service/actor-service";
 import { BootService } from "../client/service/boot-service";
 import { PlayerService } from "../client/service/player-service";
@@ -16,6 +16,8 @@ import { Viewport } from "../client/viewport";
 import { BuildLandObjectIdHash, BuildLandObjectLocHash, LandObject } from "../client/object/land";
 import { LandManager } from "../client/manager/land-manager";
 import { CursorManager } from "../client/manager/cursor-manager";
+import { ShortcutManager } from "../client/manager/shortcut-manager";
+import { InventoryManager } from "../client/manager/inventory-manager";
 
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
@@ -41,6 +43,7 @@ export class ClientApp{
     private textureManager = new TextureManager();
     private textures:TextureDef[] = [];
 
+    private uiContainer : PIXI.Container;
     private actorContainer : PIXI.Container;
     private brickContainer : PIXI.Container;
 
@@ -66,13 +69,17 @@ export class ClientApp{
 
         this.viewport.moveCenter(0,0);
 
+        this.uiContainer = new PIXI.Container();
         this.actorContainer = new PIXI.Container();
         this.brickContainer = new PIXI.Container();
+
 
         this.viewport.addChild(this.actorContainer);
         this.viewport.addChild(this.brickContainer);
 
+        
         this.app.stage.addChild(this.viewport);
+        this.app.stage.addChild(this.uiContainer);
 
         this.eventBusClient = new EventBusClient(serverUrl);
         
@@ -106,8 +113,17 @@ export class ClientApp{
     private async initTextures(){
         await this.textureManager.add("system.shadow","./texture/system/shadow.png");
         await this.textureManager.add("system.brick_highlight","./texture/system/brick_highlight.png");
-        await this.textureManager.addJSON("actor.player","./texture/actor/player/player.json");
 
+        await this.textureManager.add("inventory.block_background","./texture/inventory/block_background.png");
+        await this.textureManager.add("inventory.background","./texture/inventory/background.png");
+
+        await this.textureManager.add("shortcut.shortcut_background","./texture/shortcut/shortcut_background.png");
+        await this.textureManager.add("shortcut.block_background.normal","./texture/shortcut/block_background_normal.png");
+        await this.textureManager.add("shortcut.block_background.highlight","./texture/shortcut/block_background_highlight.png");
+
+        await this.textureManager.add("shortcut.block_embed_empty","./texture/shortcut/block_embed_empty.png");
+
+        await this.textureManager.addJSON("actor.player","./texture/actor/player/player.json");
         await this.textureManager.add("brick.rock.normal","./texture/brick/rock/normal.png");
         await this.textureManager.add("brick.grass.normal","./texture/brick/grass/normal.png");
         await this.textureManager.add("brick.ice.normal","./texture/brick/ice/normal.png");
@@ -121,6 +137,7 @@ export class ClientApp{
     private initStores(){
         this.stores.set("Actor",new ObjectStore<ActorObject>(this.actorContainer,BuildActorObjectHash));
         this.stores.set("Land",new ObjectStore<LandObject>(this.actorContainer,BuildLandObjectIdHash,BuildLandObjectLocHash));
+        this.stores.set("Ui",new ObjectStore<IGameObject>(this.uiContainer));
 
         this.stores.set("Data",new MapStore());
 
@@ -130,18 +147,20 @@ export class ClientApp{
         const actorStore = this.stores.get("Actor")!;
         const landStore = this.stores.get("Land")!;
         const dataStore = this.stores.get("Data")!;
+        const uiStore = this.stores.get("Ui")!;
+        
 
         const landManager = new LandManager(landStore);
-        const playerManager = new PlayerManager(dataStore,actorStore,this.inputProvider,this.viewport)
+        const playerManager = new PlayerManager(dataStore,this.inputProvider,this.viewport)
+
+        this.managers.set(ShortcutManager.name,new ShortcutManager(this.inputProvider,uiStore,this.viewport,this.textureManager));
+        this.managers.set(InventoryManager.name,new InventoryManager(this.inputProvider,uiStore,this.viewport,this.textureManager));
 
         this.managers.set(ActorManager.name,new ActorManager(actorStore,this.actorContainer));
         this.managers.set(PlayerManager.name,playerManager);
         this.managers.set(LandManager.name,landManager);
-
         this.managers.set(CursorManager.name,new CursorManager(this.inputProvider,this.viewport,landManager,playerManager));
-
         this.managers.set(DefaultSceneManager.name,new DefaultSceneManager());
- 
     }
     private initServices(){
         const actorManager : ActorManager = this.managers.get(ActorManager.name);
