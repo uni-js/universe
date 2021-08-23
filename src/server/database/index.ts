@@ -1,6 +1,8 @@
 import LevelUp,{ LevelUp as LevelDB } from "levelup";
 import LevelDown from "leveldown";
 
+export const DatabaseSymbol = Symbol();
+
 export interface IDatabase{
     set(key:string,value:any):Promise<void>;
     get(key:string):Promise<any>;

@@ -5,9 +5,14 @@ import { Land } from "../entity/land";
 import { Player, PlayerEvent } from "../entity/player";
 import { Service } from "../shared/service";
 import { PlayerManager } from "../manager/player-manager";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class LandService implements Service{
-    constructor(private eventBus:EventBus,private playerManager : PlayerManager){
+    constructor(
+        @inject(EventBus) private eventBus:EventBus,
+        @inject(PlayerManager) private playerManager : PlayerManager
+    ){
         this.playerManager.on(PlayerEvent.LandUsedEvent,this.onLandUsedEvent);
         this.playerManager.on(PlayerEvent.LandNeverUsedEvent,this.onLandNeverUsedEvent);
         

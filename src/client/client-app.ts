@@ -113,14 +113,6 @@ export class ClientApp{
         this.app.stage.addChild(viewport);
         this.app.stage.addChild(uiContainer);
 
-        for(const manager of this.managers){
-            ioc.get(manager);
-        }
-
-        for(const service of this.services){
-            ioc.get(service);
-        }
-
         this.iocContainer = ioc;
     }
     getCanvas(){

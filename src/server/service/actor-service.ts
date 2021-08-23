@@ -5,16 +5,16 @@ import { ActorManager } from "../manager/actor-manager";
 import { PlayerManager } from "../manager/player-manager";
 import { Service } from "../shared/service";
 import { LandManager } from "../manager/land-manager";
-import { Player } from "../entity/player";
+import { inject, injectable } from "inversify";
 
-
+@injectable()
 export class ActorService implements Service{
     constructor(
-            private eventBus : EventBus,
+            @inject(EventBus) private eventBus : EventBus,
             
-            private actorManager : ActorManager,
-            private playerManager : PlayerManager,
-            private landManager : LandManager,
+            @inject(ActorManager) private actorManager : ActorManager,
+            @inject(PlayerManager) private playerManager : PlayerManager,
+            @inject(LandManager) private landManager : LandManager,
             
         ){
 

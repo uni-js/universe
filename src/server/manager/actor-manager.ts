@@ -1,10 +1,12 @@
 import { Actor, ActorEvent, BuildActorHash } from "../shared/entity";
-import { IndexedStore } from "../../shared/store";
 import { Manager } from "../shared/manager";
+import { inject, injectable } from "inversify";
+import { ActorStore } from "../shared/store";
 
+@injectable()
 export class ActorManager extends Manager{
     constructor(
-            private actors : IndexedStore<Actor>
+            @inject(ActorStore) private actors : ActorStore
         ){
         super();
         

@@ -6,11 +6,13 @@ import { PlayerManager } from "../manager/player-manager";
 import { Vector2 } from "../shared/math";
 import { Service } from "../shared/service";
 import { Actor } from "../shared/entity";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class PlayerService implements Service{
     constructor(
-        private eventBus : EventBus,
-        private playerManager : PlayerManager
+        @inject(EventBus) private eventBus : EventBus,
+        @inject(PlayerManager) private playerManager : PlayerManager
     ){
         this.eventBus.on(LoginEvent.name,this.handleLogin.bind(this));
         this.eventBus.on(MovePlayerEvent.name,this.handleMovePlayer.bind(this))

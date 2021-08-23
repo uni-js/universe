@@ -3,14 +3,20 @@ import { BuildLandHash, Land } from "../entity/land";
 import { Actor } from "../shared/entity";
 import { Manager } from "../shared/manager";
 import { Vector2 } from "../shared/math";
-import { IDatabase } from "../database";
+import { DatabaseSymbol, IDatabase } from "../database";
 import { GenerateLandData } from "../land/generator";
 import { LandEvent } from "../land/types";
 import { BrickFactory } from "../entity/brick/brick";
+import { inject, injectable } from "inversify";
+import { LandStore } from "../shared/store";
 
-
+@injectable()
 export class LandManager extends Manager{
-    constructor(private db : IDatabase,private lands : IndexedStore<Land>,private brickFactory : BrickFactory){
+    constructor(
+        @inject(DatabaseSymbol) private db : IDatabase,
+        @inject(LandStore) private lands : LandStore,
+        @inject(BrickFactory) private brickFactory : BrickFactory
+    ){
         super();
     }
 

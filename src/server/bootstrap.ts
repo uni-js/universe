@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import { ServerApp } from "./server-app";
 import DotEnv from "dotenv";
 

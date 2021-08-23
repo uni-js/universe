@@ -4,11 +4,14 @@ import { Manager } from "../shared/manager";
 import { ActorManager } from "./actor-manager";
 import { Actor } from "../shared/entity";
 import { Land } from "../entity/land";
+import { inject, injectable } from "inversify";
+import { PlayerStore } from "../shared/store";
 
+@injectable()
 export class PlayerManager extends Manager{
     constructor(
-            private players : IndexedStore<Player>,
-            private actorManager : ActorManager,
+            @inject(PlayerStore) private players : PlayerStore,
+            @inject(ActorManager) private actorManager : ActorManager,
         ){
         super();
 

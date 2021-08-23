@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import { Land } from "../entity/land";
 import { Player, PlayerEvent } from "../entity/player";
 import { Actor, ActorEvent } from "../shared/entity";
@@ -13,12 +14,14 @@ import { PlayerManager } from "./player-manager";
  * player的usedLands、spawnedActors状态
  * 
  */
+@injectable()
 export class LandMoveManager extends Manager{
 
     constructor(
-        private playerManager : PlayerManager,
-        private actorManager : ActorManager,
-        private landManager : LandManager){
+        @inject(PlayerManager) private playerManager : PlayerManager,
+        @inject(ActorManager) private actorManager : ActorManager,
+        @inject(LandManager) private landManager : LandManager
+    ){
             super();
 
         this.playerManager.on(PlayerEvent.LandUsedEvent,this.onLandUsed);

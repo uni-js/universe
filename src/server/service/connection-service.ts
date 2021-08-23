@@ -1,11 +1,13 @@
 import { BusEvent, EventBus } from "../../event/bus-server";
 import { Service } from "../shared/service";
 import { PlayerManager } from "../manager/player-manager";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class ConnectionService implements Service{
     constructor(
-        private eventBus : EventBus,
-        private playerManager : PlayerManager
+        @inject(EventBus) private eventBus : EventBus,
+        @inject(PlayerManager) private playerManager : PlayerManager
     ){
         this.eventBus.on(BusEvent.ClientDisconnectEvent,this.onDisconnected.bind(this));
     }

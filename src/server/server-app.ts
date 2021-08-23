@@ -12,12 +12,16 @@ import { IndexedStore, MapStore, SetStore } from "../shared/store";
 import { LandManager } from "./manager/land-manager";
 import { BuildLandHash, Land } from "./entity/land";
 import { ConnectionService } from "./service/connection-service";
-import { createDatabase, IDatabase } from "./database"
+import { createDatabase, DatabaseSymbol, IDatabase } from "./database"
 import { LandService } from "./service/land-service";
 
 import { BrickFactory } from "./entity/brick/brick";
 import { BrickType } from "./entity/brick/types";
 import { Dirt, DryDirt, Grass, Ice, Rock, Sand, Water, WetDirt } from "./entity/brick/group";
+import { Container } from "inversify";
+import { bindToContainer } from "../client/shared/ioc";
+import { ActorStore, LandStore, PlayerStore } from "./shared/store";
+import { Manager } from "./shared/manager";
 
 export interface AppConfig{
     port:number
@@ -26,13 +30,14 @@ export interface AppConfig{
 export class ServerApp{
     private db : IDatabase | undefined;
 
-    private brickFactory? : BrickFactory;
+    private brickFactory! : BrickFactory;
 
-    private stores = new Map<string,any>();
-    private managers = new Map<string,any>();
-    private services = new Map<string,any>();
+    private stores  :any[] = [];
+    private managers :any[] = [];
+    private services :any[] = [];
 
     private eventBus = new EventBus();
+    private iocContainer! : Container;
     
     private config : AppConfig;
 
@@ -41,12 +46,29 @@ export class ServerApp{
     constructor(config : AppConfig){
         this.config = config;
 
+        this.stores = [
+            ActorStore,
+            LandStore,
+            PlayerStore
+        ];
+
+        this.managers = [
+            LandManager,
+            ActorManager,
+            PlayerManager,
+            LandMoveManager,
+        ];
+
+        this.services = [
+            ActorService,
+            PlayerService,
+            ConnectionService,
+            LandService
+        ]
         this.initBrickFactory();
         this.initDatabase();
         this.initEventBus();
-        this.initStores();
-        this.initManagers();
-        this.initServices();
+        this.initIocContainer();
         this.startLoop();
     }
     private initBrickFactory(){
@@ -67,57 +89,33 @@ export class ServerApp{
     private initEventBus(){
         this.eventBus.listen(this.config.port);
     }
-    private initStores(){
-        this.stores.set(Land.name,new IndexedStore<Land>(BuildLandHash));
-        this.stores.set(Actor.name,new IndexedStore<Actor>(BuildActorHash));
-        this.stores.set(Player.name,new IndexedStore<Player>(BuildPlayerHash));
-    }
-    private initManagers(){
-
-        const landManager = new LandManager(this.db!,this.stores.get(Land.name)!,this.brickFactory!)
-        const actorManager = new ActorManager(this.stores.get(Actor.name)!);
-        const playerManager = new PlayerManager(
-            this.stores.get(Player.name)!,
-            actorManager
-        );
-        const landMoveManager = new LandMoveManager(playerManager,actorManager,landManager);
-
-        this.managers.set(ActorManager.name,actorManager);
-        this.managers.set(PlayerManager.name,playerManager);
-        this.managers.set(LandManager.name,landManager);
-        this.managers.set(LandMoveManager.name,landMoveManager);
-        
-    }
-    private initServices(){
-        this.services.set(ActorService.name,new ActorService(
-            this.eventBus,
-            this.managers.get(ActorManager.name),
-            this.managers.get(PlayerManager.name),
-            this.managers.get(LandManager.name)
-        ));
-
-        this.services.set(PlayerService.name,new PlayerService(
-            this.eventBus,
-            this.managers.get(PlayerManager.name)
-        ));
-
-        this.services.set(ConnectionService.name,new ConnectionService(
-            this.eventBus,
-            this.managers.get(PlayerManager.name)
-        ))
-        this.services.set(LandService.name,new LandService(
-            this.eventBus,
-            this.managers.get(PlayerManager.name)
-        ))
     
+    private initIocContainer(){
+        const ioc = new Container({ skipBaseClassChecks: true });
+
+        ioc.bind(DatabaseSymbol).toConstantValue(this.db);
+        ioc.bind(BrickFactory).toConstantValue(this.brickFactory);
+        ioc.bind(EventBus).toConstantValue(this.eventBus);
+
+        bindToContainer(ioc,[
+            ...this.stores,
+            ...this.managers,
+            ...this.services
+        ]);
+                
+        this.iocContainer = ioc;
     }
+
     private async startLoop(){
         while(true){
-            for(const manager of this.managers.values())
-                await manager.doTick(this.tick);
-
-            for(const service of this.services.values())
-                await service.doTick(this.tick);
+            for(const manager of this.managers){
+                const singleton : Manager = this.iocContainer.get(manager);
+                await singleton.doTick(this.tick);
+            }
+            for(const service of this.services){
+                const singleton : Manager = this.iocContainer.get(service);
+                await singleton.doTick(this.tick);
+            }
       
             await wait(50);
 
