@@ -1,5 +1,3 @@
-export class ItemManager{
-    constructor(){
-        
-    }
+export class ItemManager {
+	constructor() {}
 }

@@ -1,6 +1,5 @@
-import { Actor } from "../shared/entity";
+import { Actor } from '../shared/entity';
 
-export class Box extends Actor{
-    static ENTITY_TYPE = "Box";
-    
+export class Box extends Actor {
+	static ENTITY_TYPE = 'Box';
 }

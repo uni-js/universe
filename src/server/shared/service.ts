@@ -1,3 +1,3 @@
-import { doTickable } from "../../shared/update";
+import { doTickable } from '../../shared/update';
 
-export interface Service extends doTickable{ };
+export interface Service extends doTickable {}

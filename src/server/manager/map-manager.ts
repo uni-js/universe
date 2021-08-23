@@ -1,11 +1,7 @@
-import { Manager } from "../shared/manager";
+import { Manager } from '../shared/manager';
 
-export interface IMapManager{
-    
-}
+export interface IMapManager {}
 
-export class MapManager extends Manager{
-    async doTick(tick: number) {
-
-    }
+export class MapManager extends Manager {
+	async doTick(tick: number) {}
 }

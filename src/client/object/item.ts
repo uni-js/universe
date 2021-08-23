@@ -1,5 +1,3 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from 'pixi.js';
 
-export class FloatingItemObject extends PIXI.Container{
-
-}
+export class FloatingItemObject extends PIXI.Container {}
