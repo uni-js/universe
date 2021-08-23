@@ -1,19 +1,21 @@
+import { inject, injectable } from "inversify";
 import { Vector2 } from "../../server/shared/math";
-import { InputProvider } from "../input";
-import { StoreManager } from "../layer/manager";
+import { HTMLInputProvider } from "../input";
+import { StoreManager } from "../shared/manager";
 import { BrickObject } from "../object/brick";
-import { IViewport } from "../viewport";
+import { Viewport } from "../viewport";
 import { LandManager } from "./land-manager";
 import { PlayerManager } from "./player-manager";
 
+@injectable()
 export class CursorManager extends StoreManager{
     private current_highlight? : BrickObject;
 
     constructor(
-        private input : InputProvider,
-        private viewport : IViewport,
-        private landManager : LandManager,
-        private playerManager : PlayerManager
+        @inject(HTMLInputProvider) private input : HTMLInputProvider,
+        @inject(Viewport) private viewport : Viewport,
+        @inject(LandManager) private landManager : LandManager,
+        @inject(PlayerManager) private playerManager : PlayerManager
     ){
         super();
     }
@@ -23,8 +25,8 @@ export class CursorManager extends StoreManager{
         const player = this.playerManager.getCurrentPlayer()
         
         if(player && brick){
-            const playerAt = player.getWorldLoc().divFloor(1);
-            const brickAt = brick.getWorldLoc();
+            const playerAt = player.getPosition().divFloor(1);
+            const brickAt = brick.getPosition();
             
             const abs = playerAt.subAbs(brickAt)
             if(abs.x <= 2 && abs.y <= 2)

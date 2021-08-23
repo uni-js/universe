@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import * as PIXI from "pixi.js"
 import Pupa from "pupa";
 
@@ -18,6 +19,8 @@ export async function LoadResource(url:string){
 
     return resource;
 }
+
+@injectable()
 export class TextureManager{
     private textures = new Map<string,PIXI.Texture[]>();
     constructor(){ }

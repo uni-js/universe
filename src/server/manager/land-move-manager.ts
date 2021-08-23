@@ -1,7 +1,7 @@
 import { Land } from "../entity/land";
 import { Player, PlayerEvent } from "../entity/player";
-import { Actor, ActorEvent } from "../layer/entity";
-import { Manager } from "../layer/manager";
+import { Actor, ActorEvent } from "../shared/entity";
+import { Manager } from "../shared/manager";
 import { Vector2 } from "../shared/math";
 import { ActorManager } from "./actor-manager";
 import { LandManager } from "./land-manager";

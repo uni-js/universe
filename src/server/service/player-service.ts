@@ -4,8 +4,8 @@ import { AddActorEvent, LoginedEvent,RemoveActorEvent } from "../../event/server
 import { Player, PlayerEvent } from "../entity/player";
 import { PlayerManager } from "../manager/player-manager";
 import { Vector2 } from "../shared/math";
-import { Service } from "../layer/service";
-import { Actor } from "../layer/entity";
+import { Service } from "../shared/service";
+import { Actor } from "../shared/entity";
 
 export class PlayerService implements Service{
     constructor(
@@ -30,8 +30,8 @@ export class PlayerService implements Service{
 
     }
     private onActorSpawned(actor:Actor,player:Player){
-        const loc = actor.getLocation();
-        const event = new AddActorEvent(actor.getActorId(),player.getName(),actor.getType(),loc.x,loc.y);
+        const pos = actor.getPosition();
+        const event = new AddActorEvent(actor.getActorId(),player.getName(),actor.getType(),pos.x,pos.y);
 
         this.eventBus.emitTo([player.getConnId()],event);
 

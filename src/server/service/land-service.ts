@@ -3,7 +3,7 @@ import { EventBus } from "../../event/bus-server";
 import { AddLandEvent, RemoveLandEvent } from "../../event/server-side";
 import { Land } from "../entity/land";
 import { Player, PlayerEvent } from "../entity/player";
-import { Service } from "../layer/service";
+import { Service } from "../shared/service";
 import { PlayerManager } from "../manager/player-manager";
 
 export class LandService implements Service{

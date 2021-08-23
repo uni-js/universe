@@ -3,7 +3,7 @@ import { LAND_WIDTH } from "../../server/land/const";
 import { LandData } from "../../server/land/types";
 import { Vector2 } from "../../server/shared/math";
 import { IndexedStore, ObjectStore } from "../../shared/store";
-import { StaticObject } from "../layer/game-object";
+import { StaticObject } from "../shared/game-object";
 import { TextureManager } from "../texture";
 import { BrickObject } from "./brick";
 import * as PIXI from "pixi.js";
@@ -17,7 +17,7 @@ export function BuildLandObjectIdHash(item : LandObject | string) : string{
 
 export function BuildLandObjectLocHash(item : LandObject | Vector2) : string{
     if(item instanceof Vector2)
-        return `land.loc.${item.x}#${item.y}`;
+        return `land.pos.${item.x}#${item.y}`;
 
     return BuildLandObjectLocHash(item.getLandLoc());
 }

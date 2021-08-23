@@ -1,13 +1,13 @@
 import { IndexedStore } from "../../shared/store";
-import { LocToLandLoc } from "../land/helper";
+import { PosToLandPos } from "../land/helper";
 import { BrickData, LandData } from "../land/types";
-import { Actor, Entity } from "../layer/entity";
+import { Actor, Entity } from "../shared/entity";
 import { Vector2 } from "../shared/math";
 import { Brick, BrickFactory , BuildBrickOffsetHash } from "./brick/brick";
 
 export function BuildLandHash(item:Vector2 | Land) : string{
     if(item instanceof Vector2)
-        return `land.loc.${item.x}#${item.y}`;
+        return `land.pos.${item.x}#${item.y}`;
     return BuildLandHash(item.getLandLoc());
 }
 
@@ -24,9 +24,9 @@ export function BuildLandIdHash(item:string | Land) : string{
  * 
  * @returns 区块坐标数组
  */
-export function GetRadiusLands(loc:Vector2,radius:number):Vector2[]{
+export function GetRadiusLands(pos:Vector2,radius:number):Vector2[]{
 
-    const landLoc = LocToLandLoc(loc);
+    const landLoc = PosToLandPos(pos);
     const landLocs : Vector2[] = [];
     
     for(let dx=-radius;dx<=radius;dx++)

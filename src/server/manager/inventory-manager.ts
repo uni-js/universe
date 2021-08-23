@@ -1,7 +1,7 @@
 import { IndexedStore } from "../../shared/store";
 import { Player, PlayerEvent } from "../entity/player";
 import { BuildInventoryHash, Inventory, PlayerInventory } from "../entity/inventory";
-import { BuildActorHash } from "../layer/entity";
+import { BuildActorHash } from "../shared/entity";
 import { PlayerManager } from "./player-manager";
 
 export class InventoryManager{

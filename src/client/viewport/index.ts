@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import * as PIXI from "pixi.js";
 
 interface Point{
@@ -12,6 +13,7 @@ export interface IViewport{
     getWorldHeight():number;
 }
 
+@injectable()
 export class Viewport extends PIXI.Container implements IViewport{
     constructor(
         private screenWidth: number,
@@ -20,6 +22,8 @@ export class Viewport extends PIXI.Container implements IViewport{
         private worldHeight:number
     ){
         super();
+
+        this.moveCenter(0,0);
     }
     moveCenter(x:number,y:number){
         this.position.set((this.worldWidth/2) - x,(this.worldHeight/2) - y);

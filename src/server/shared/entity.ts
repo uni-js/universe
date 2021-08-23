@@ -1,8 +1,8 @@
 import { doTickable } from "../../shared/update";
-import { GetUniqueId, Vector2 } from "../shared/math";
-import { EventEmitter } from "../shared/event";
+import { GetUniqueId, Vector2 } from "./math";
+import { EventEmitter } from "./event";
 import { Direction, WalkingState } from "../../shared/actor";
-import { LocToLandLoc } from "../land/helper";
+import { PosToLandPos } from "../land/helper";
 
 export const MOVEMENT_TICK_MIN_DISTANCE = 0.0001;
 
@@ -48,7 +48,7 @@ export class Actor extends Entity{
      */
     static ENTITY_TYPE = "Actor";
 
-    protected loc : Vector2;
+    protected pos: Vector2;
     protected motion : Vector2 = new Vector2(0, 0);
     protected type : ActorType;
 
@@ -58,9 +58,9 @@ export class Actor extends Entity{
     private hasBaseStateChanged = false;
     private hasLocChanged = false;
 
-    constructor(loc : Vector2,type : ActorType){
+    constructor(pos: Vector2,type : ActorType){
         super();
-        this.loc = loc;
+        this.pos=pos;
 
         this.type = type;
         
@@ -89,7 +89,7 @@ export class Actor extends Entity{
         return this.type;
     }
     getLandAt(){
-        return LocToLandLoc(this.loc);
+        return PosToLandPos(this.pos);
     }
     getActorId(){
         return this.entityId;
@@ -98,8 +98,8 @@ export class Actor extends Entity{
     /**
      * 获取Actor在3D世界的位置
      */
-    getLocation(){
-        return this.loc;
+    getPosition(){
+        return this.pos;
     }
     getMotion(){
         return this.motion;
@@ -110,22 +110,22 @@ export class Actor extends Entity{
     /**
      * 强制设置位置坐标
      */
-    setLocation(target_loc:Vector2){
-        this.checkLandMove(this.loc,target_loc);
+    setPosition(target_loc:Vector2){
+        this.checkLandMove(this.pos,target_loc);
 
-        this.loc = target_loc;
+        this.pos= target_loc;
         this.hasLocChanged = true;
 
     }
     moveDelta(delta:Vector2){
         if(delta.getSqrt() <= 0) return;
 
-        this.setLocation(this.loc.add(delta));
+        this.setPosition(this.pos.add(delta));
     }
 
-    private checkLandMove(last_loc:Vector2,curr_loc : Vector2){
-        const lastLand = LocToLandLoc(last_loc);
-        const currLand = LocToLandLoc(curr_loc);
+    private checkLandMove(last_pos:Vector2,curr_pos: Vector2){
+        const lastLand = PosToLandPos(last_pos);
+        const currLand = PosToLandPos(curr_pos);
         if(currLand.equals(lastLand)) return;
 
         this.emit(ActorEvent.LandMoveEvent,this,currLand,lastLand);
@@ -159,6 +159,9 @@ export class Actor extends Entity{
         this.doEmitMoveTick();
         this.doBaseStateTick();
 
+    }
+    isPlayer(){
+        return false;
     }
 
 }

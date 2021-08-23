@@ -1,28 +1,27 @@
 import { BILLION_VALUE, Vector2 } from "../../server/shared/math";
 import { TextureManager } from "../texture";
-import { ActorObject, GameObjectEvent } from "../layer/game-object";
-import { ActorType } from "../../server/layer/entity";
+import { ActorObject, GameObjectEvent } from "../shared/game-object";
+import { ActorType } from "../../server/shared/entity";
 import { ParticleObject } from "../particle";
 import { Direction, WalkingState } from "../../shared/actor";
+import { GameEvent } from "../event";
 
 export interface ControlMoved{
     moved : Vector2;
     startAt : Vector2;
 }
-export enum PlayerObjectEvent{
-    ControlMovedEvent = "ControlMovedEvent"
-}
+
 export class Player extends ActorObject{
-    private controlMoved : ControlMoved | undefined;
+    private controlMoved : Vector2 | undefined;
     private takeControl : boolean = false;
 
     constructor(
         textureManager : TextureManager,
         objectId:string,
-        loc: Vector2,
+        pos: Vector2,
         playerName:string
     ){
-        super(ActorType.PLAYER,textureManager,objectId,new Vector2(1,1.5),loc,playerName);
+        super(ActorType.PLAYER,textureManager,objectId,new Vector2(1,1.5),pos,playerName);
 
 
         this.setAnchor(0.5,1);
@@ -32,7 +31,7 @@ export class Player extends ActorObject{
     }
     addMovePoint(point:Vector2){
         if(this.takeControl)
-            this.setWorldLoc(point);    
+            this.setPosition(point);    
         else
             super.addMovePoint(point);
     }
@@ -40,7 +39,7 @@ export class Player extends ActorObject{
         this.takeControl = true;
         this.smoothMove = false;
     }
-    setDirection(direction : Direction,emit = true){
+    setDirection(direction : Direction,dirty : boolean = true){
         if(this.direction == direction)return;
 
         const textures = this.getDirectionTextures(direction);
@@ -48,21 +47,18 @@ export class Player extends ActorObject{
 
         this.setTextures(textures);
         this.direction = direction;
-        this.setWalking(WalkingState.SILENT,emit);
+        this.setWalking(WalkingState.SILENT);
 
-        this.emit(GameObjectEvent.SetActorStateEvent,this);
+        if(dirty) this.isStatesDirty = true;
+
     }
-
     controlMove(delta:Vector2){
         if(!this.controlMoved){
-            this.controlMoved = { moved: delta, startAt:this.getWorldLoc() };
-        }
-        else{
-            this.controlMoved.moved = this.controlMoved.moved.add(delta);
+            this.controlMoved = delta;
         }
 
         if(this.controlMoved){
-            const delta = this.controlMoved.moved;
+            const delta = this.controlMoved;
     
             if(delta.y > 0){
                 this.setDirection(Direction.FORWARD);
@@ -79,8 +75,8 @@ export class Player extends ActorObject{
     private doControlMoveTick(tick:number){
 
         if(this.controlMoved){
-            const target = this.controlMoved.startAt.add(this.controlMoved.moved);
-            this.setWorldLoc(target);
+            const target = this.getPosition().add(this.controlMoved);
+            this.setPosition(target);
             this.setWalking(WalkingState.WALKING);
         }
         if(!this.controlMoved){
@@ -89,9 +85,9 @@ export class Player extends ActorObject{
             }
         }
 
-        if(this.controlMoved && tick % 2 == 0){
+        if(this.controlMoved){
 
-            this.emit(PlayerObjectEvent.ControlMovedEvent,this.controlMoved.moved,this.direction,this.walking);
+            this.emit(GameEvent.ControlMovedEvent,this.controlMoved,this.direction,this.walking);
             this.controlMoved = undefined;
         }
 

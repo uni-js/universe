@@ -1,8 +1,10 @@
+import { inject, injectable } from "inversify";
 import { EventBusClient } from "../../event/bus-client";
 import { LoginEvent } from "../../event/client-side";
 
+@injectable()
 export class BootService{
-    constructor(private eventBus : EventBusClient){
+    constructor(@inject(EventBusClient) private eventBus : EventBusClient){
 
         this.startGame();
     }

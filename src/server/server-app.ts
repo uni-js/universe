@@ -1,23 +1,23 @@
 import { EventBus } from "../event/bus-server";
-import { Actor, BuildActorHash } from "../server/layer/entity";
-import { BuildPlayerHash, Player } from "../server/entity/player";
-import { ActorManager } from "../server/manager/actor-manager";
-import { PlayerManager } from "../server/manager/player-manager";
-import { LandMoveManager } from "../server/manager/land-move-manager";
-import { ActorService } from "../server/service/actor-service";
-import { PlayerService } from "../server/service/player-service";
+import { Actor, BuildActorHash } from "./shared/entity";
+import { BuildPlayerHash, Player } from "./entity/player";
+import { ActorManager } from "./manager/actor-manager";
+import { PlayerManager } from "./manager/player-manager";
+import { LandMoveManager } from "./manager/land-move-manager";
+import { ActorService } from "./service/actor-service";
+import { PlayerService } from "./service/player-service";
 
-import { wait } from "../server/shared/utils";
+import { wait } from "./shared/utils";
 import { IndexedStore, MapStore, SetStore } from "../shared/store";
-import { LandManager } from "../server/manager/land-manager";
-import { BuildLandHash, Land } from "../server/entity/land";
-import { ConnectionService } from "../server/service/connection-service";
-import { createDatabase, IDatabase } from "../server/database"
-import { LandService } from "../server/service/land-service";
+import { LandManager } from "./manager/land-manager";
+import { BuildLandHash, Land } from "./entity/land";
+import { ConnectionService } from "./service/connection-service";
+import { createDatabase, IDatabase } from "./database"
+import { LandService } from "./service/land-service";
 
-import { BrickFactory } from "../server/entity/brick/brick";
-import { BrickType } from "../server/entity/brick/types";
-import { Dirt, DryDirt, Grass, Ice, Rock, Sand, Water, WetDirt } from "../server/entity/brick/group";
+import { BrickFactory } from "./entity/brick/brick";
+import { BrickType } from "./entity/brick/types";
+import { Dirt, DryDirt, Grass, Ice, Rock, Sand, Water, WetDirt } from "./entity/brick/group";
 
 export interface AppConfig{
     port:number

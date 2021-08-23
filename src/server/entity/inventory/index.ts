@@ -1,4 +1,4 @@
-import { Entity } from "../../layer/entity";
+import { Entity } from "../../shared/entity";
 import { GetUniqueId } from "../../shared/math";
 import { Item } from "../item/item";
 

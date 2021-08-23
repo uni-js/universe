@@ -1,6 +1,6 @@
 import { BrickType } from "../../server/entity/brick/types";
 import { Vector2 } from "../../server/shared/math";
-import { StaticObject } from "../layer/game-object";
+import { StaticObject } from "../shared/game-object";
 import { TextureManager } from "../texture";
 import * as PIXI from "pixi.js";
 import { LAND_WIDTH } from "../../server/land/const";
@@ -13,11 +13,11 @@ export class BrickObject extends StaticObject{
         private brickType : BrickType,
         objectId : string,
         textureManager : TextureManager,
-        loc:Vector2,
+       pos:Vector2,
         private landLoc:Vector2,
         private offLoc:Vector2
     ){
-        super(textureManager,objectId,new Vector2(1,1),loc,landLoc.mul(LAND_WIDTH).add(offLoc));
+        super(textureManager,objectId,new Vector2(1,1),pos,landLoc.mul(LAND_WIDTH).add(offLoc));
         
         this.highlightObject = PIXI.Sprite.from(this.textureManager.getOne(`system.brick_highlight`)!);
         this.highlightObject.width = 1;

@@ -1,19 +1,20 @@
-import * as PIXI from "pixi.js";
-import { ObjectStore } from "../../shared/store";
-import { ActorObject, BuildActorObjectHash } from "../layer/game-object";
-import { StoreManager } from "../layer/manager";
+import { inject, injectable } from "inversify";
+import { ActorObject, BuildActorObjectHash } from "../shared/game-object";
+import { StoreManager } from "../shared/manager";
+import { ActorStore, ObjectContainer } from "../shared/store";
 
 
+@injectable()
 export class ActorManager extends StoreManager{
     constructor(
-            private actorStore : ObjectStore<ActorObject>,
-            private objectContainer : PIXI.Container
+            @inject(ActorStore) private actorStore : ActorStore,
+            @inject(ObjectContainer) private objectContainer : ObjectContainer
         ){
         super();
 
     }
     addActor(item : ActorObject){
-        console.log("add actor",item);
+        console.log("add actor",item,this);
         this.actorStore.add(item);
     }
     getActorById(objectId:string){

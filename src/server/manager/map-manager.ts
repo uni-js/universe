@@ -1,4 +1,4 @@
-import { Manager } from "../layer/manager";
+import { Manager } from "../shared/manager";
 
 export interface IMapManager{
     

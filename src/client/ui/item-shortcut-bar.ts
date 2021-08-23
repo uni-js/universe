@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 import { Item } from "../../server/entity/item/item";
 import { Vector2 } from "../../server/shared/math";
-import { IGameObject } from "../layer/game-object";
+import { IGameObject } from "../shared/game-object";
 import { TextureManager } from "../texture";
 
 

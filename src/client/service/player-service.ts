@@ -1,22 +1,24 @@
+import { inject, injectable } from "inversify";
 import { EventBusClient } from "../../event/bus-client";
 import { MovePlayerEvent, SetPlayerStateEvent } from "../../event/client-side";
 import { LoginedEvent } from "../../event/server-side";
 import { Vector2 } from "../../server/shared/math";
-import { GameObjectEvent } from "../layer/game-object";
 import { ActorManager } from "../manager/actor-manager";
 import { PlayerManager } from "../manager/player-manager";
-import { Player, PlayerObjectEvent } from "../object/player";
+import { Player } from "../object/player";
+import { GameEvent } from "../event";
 
+@injectable()
 export class PlayerService{
     constructor(
-        private eventBus : EventBusClient,
-        private playerManager : PlayerManager,
-        private actorManager : ActorManager
+        @inject(EventBusClient) private eventBus : EventBusClient,
+        @inject(PlayerManager) private playerManager : PlayerManager,
+        @inject(ActorManager) private actorManager : ActorManager
     ){
         this.eventBus.on(LoginedEvent.name,this.handleLogined.bind(this));
 
-        this.playerManager.on(PlayerObjectEvent.ControlMovedEvent,this.onControlMove.bind(this));
-        this.playerManager.on(GameObjectEvent.SetActorStateEvent,this.onSetActorState.bind(this));
+        this.playerManager.on(GameEvent.ControlMovedEvent,this.onControlMove.bind(this));
+        this.playerManager.on(GameEvent.SetActorStateEvent,this.onSetActorState.bind(this));
         
     }
     private onControlMove(delta : Vector2){

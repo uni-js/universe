@@ -1,10 +1,11 @@
 import { ActorNewPosEvent, ActorSetStateEvent } from "../../event/server-side";
 import { EventBus } from "../../event/bus-server";
-import { Actor, ActorEvent } from "../layer/entity";
+import { Actor, ActorEvent } from "../shared/entity";
 import { ActorManager } from "../manager/actor-manager";
 import { PlayerManager } from "../manager/player-manager";
-import { Service } from "../layer/service";
+import { Service } from "../shared/service";
 import { LandManager } from "../manager/land-manager";
+import { Player } from "../entity/player";
 
 
 export class ActorService implements Service{
@@ -49,8 +50,8 @@ export class ActorService implements Service{
 
         const event = new ActorNewPosEvent(
             actor.getActorId(),
-            actor.getLocation().x,
-            actor.getLocation().y
+            actor.getPosition().x,
+            actor.getPosition().y
         );
 
         this.emitToActorSpawned(actor,event);

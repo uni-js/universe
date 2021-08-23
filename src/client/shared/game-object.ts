@@ -1,11 +1,12 @@
 import { EventEmitter2 } from "eventemitter2";
 import * as PIXI from "pixi.js";
 
-import { ActorType } from "../../server/layer/entity";
+import { ActorType } from "../../server/shared/entity";
 import { Interpolate2d, Vector2 } from "../../server/shared/math";
 import { Direction, WalkingState } from "../../shared/actor";
 
 import { doTickable } from "../../shared/update";
+import { GameEvent } from "../event";
 import { TextureManager,GetEmptyTexture } from "../texture";
 
 
@@ -15,8 +16,6 @@ export interface IGameObject extends doTickable,PIXI.DisplayObject{
 }
 
 export enum GameObjectEvent{
-    MoveActorEvent = "MoveActorEvent",
-    SetActorStateEvent = "SetActorStateEvent"
 }
 
 export function BuildGameObjectHash(item:string | IGameObject) : string{
@@ -50,7 +49,7 @@ export class StaticObject extends PIXI.Container implements IGameObject{
     async doTick(tick: number){
         
     }
-    getWorldLoc(){
+    getPosition(){
         return this.worldLoc;
     }
     getRelativeLoc(){
@@ -76,13 +75,9 @@ export class MoveInterpolator extends EventEmitter2{
      * 缓存的目标点
      * 
      */
-     private movePoints : Vector2[] = [];
-
-     private moveTargetTask : MoveTargetTask = {
-         enable : false,
-         tick : 0,
-         points: []
-     };
+    private movePoints : Vector2[] = [];
+    private locatedAt = 0;
+    private perTicks = 3;
 
     constructor(private maxTick : number){
         super();
@@ -90,36 +85,26 @@ export class MoveInterpolator extends EventEmitter2{
 
     addMovePoint(target : Vector2){
         this.movePoints.push(target);
-        if(this.movePoints.length > 20){
+        if(this.movePoints.length > 10){
             this.movePoints.shift();
         }
-    }
-    setMoveTarget(count : number,bufCount : number){
-        this.moveTargetTask = {
-            enable:true,
-            points:this.movePoints.slice(0,count),
-            tick:Math.round(bufCount * this.maxTick / count)
-        }
-        this.movePoints.splice(0,count - bufCount);
+        
     }
     doTick(){        
-        if(!this.moveTargetTask.enable){
-            if(this.movePoints.length>=3)
-                this.setMoveTarget(3,2);
-                
-        }
-        if(this.moveTargetTask.enable){
-            const point = Interpolate2d(this.moveTargetTask.points,this.moveTargetTask.tick/this.maxTick);
-            this.emit("location",point);
+        if(this.movePoints.length>=2){
+            const curr = this.movePoints[0]
+            const target = this.movePoints[1];
 
-            if(this.moveTargetTask.tick >= this.maxTick){
-                this.moveTargetTask.enable = false;
+            const point = Interpolate2d([curr,target],this.locatedAt / this.perTicks);
+            this.emit("position",point);    
 
+            this.locatedAt ++;
+            if(this.locatedAt === this.perTicks){
+                this.locatedAt = 0;
+                this.movePoints.shift();
             }
-
-            this.moveTargetTask.tick ++;
         }
-       
+
     }
     
 }
@@ -139,13 +124,11 @@ export class ActorObject extends PIXI.Container implements IGameObject{
      * 设置该状态后,实体会自动过渡到目标位置
      */
     protected smoothMove = true;
-    private hasBaseStateChanged = true;
+    protected isStatesDirty = true;
 
     protected shadow;
     protected sprite;
     protected nametag : PIXI.Text;
-
-    private lastLoc : Vector2;
 
     protected direction : Direction = Direction.BACK;
     protected walking : WalkingState = WalkingState.SILENT;
@@ -158,7 +141,7 @@ export class ActorObject extends PIXI.Container implements IGameObject{
         protected textureManager : TextureManager,
         protected objectId:string,
         protected size:Vector2,
-        private loc:Vector2,
+        private pos:Vector2,
         private tagname:string,
     ){
         super()
@@ -175,7 +158,7 @@ export class ActorObject extends PIXI.Container implements IGameObject{
         })
 
         this.moveInterpolator = new MoveInterpolator(6);
-        this.moveInterpolator.on("location",this.handleInterpolatedLocation.bind(this))
+        this.moveInterpolator.on("position",this.handleInterpolatedPosition.bind(this))
 
         this.setTagName(this.tagname);
 
@@ -185,14 +168,13 @@ export class ActorObject extends PIXI.Container implements IGameObject{
         
         this.setDirection(Direction.FORWARD);
 
-        this.setWorldLoc(loc);
+        this.setPosition(pos);
         this.resize();
 
 
-        this.lastLoc = this.loc.clone();
     }
-    private handleInterpolatedLocation(loc : Vector2){
-        this.setWorldLoc(loc);
+    private handleInterpolatedPosition(pos: Vector2){
+        this.setPosition(pos);
     }
     getWalking(){
         return this.walking;
@@ -200,7 +182,7 @@ export class ActorObject extends PIXI.Container implements IGameObject{
     getDirection(){
         return this.direction;
     }
-    setWalking(walking : WalkingState,emit = true){
+    setWalking(walking : WalkingState,dirty = true){
         if(this.walking == walking)return;
 
         this.walking = walking;
@@ -212,10 +194,10 @@ export class ActorObject extends PIXI.Container implements IGameObject{
             this.playAnim();
         }
 
-        if(emit)
-            this.hasBaseStateChanged = true;
+        if(dirty) this.isStatesDirty = true;
 
     }
+    
     setAnimateSpeed(speed : number){
         this.sprite.animationSpeed = speed;
     }
@@ -236,15 +218,14 @@ export class ActorObject extends PIXI.Container implements IGameObject{
         this.sprite.gotoAndStop(0);
     }
 
-    setWorldLoc(location : Vector2){
-        this.loc = location.clone();
-        this.position.set(this.loc.x,this.loc.y);
+    setPosition(position : Vector2){
+        this.pos= position.clone();
+        this.position.set(this.pos.x,this.pos.y);
     }
-    setDirection(direction : Direction,emit = true){
+    setDirection(direction : Direction,dirty = true){
         this.direction = direction;
 
-        if(emit)
-            this.hasBaseStateChanged = true;
+        if(dirty) this.isStatesDirty = true;
     }
     protected getDirectionTextures(dir : Direction){
         if(dir == Direction.FORWARD){
@@ -297,8 +278,8 @@ export class ActorObject extends PIXI.Container implements IGameObject{
     setSmoothMove(smooth : boolean){
         this.smoothMove = smooth;
     }
-    getWorldLoc(){
-        return this.loc;
+    getPosition(){
+        return this.pos;
     }
     getRelativeLoc(){
         return new Vector2(this.position.x,this.position.y);
@@ -311,12 +292,11 @@ export class ActorObject extends PIXI.Container implements IGameObject{
     }
     async doTick(tick:number){
         this.moveInterpolator.doTick();
-        if(this.hasBaseStateChanged){
-            this.emit(GameObjectEvent.SetActorStateEvent,this);
-            this.hasBaseStateChanged = false;
+        if(this.isStatesDirty){
+            this.emit(GameEvent.SetActorStateEvent,this);
+            this.isStatesDirty = false;
         }
 
-        this.lastLoc = this.loc.clone();
     }
     
 }

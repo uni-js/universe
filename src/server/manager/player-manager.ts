@@ -1,8 +1,8 @@
 import { BuildPlayerHash, Player, PlayerEvent } from "../entity/player";
 import { IndexedStore } from "../../shared/store";
-import { Manager } from "../layer/manager";
+import { Manager } from "../shared/manager";
 import { ActorManager } from "./actor-manager";
-import { Actor } from "../layer/entity";
+import { Actor } from "../shared/entity";
 import { Land } from "../entity/land";
 
 export class PlayerManager extends Manager{

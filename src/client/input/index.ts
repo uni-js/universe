@@ -1,6 +1,7 @@
 import { doTickable } from "../../shared/update";
 import Keyboard from "keyboardjs";
 import { Vector2 } from "../../server/shared/math";
+import { inject, injectable } from "inversify";
 
 
 export enum InputKey{
@@ -36,7 +37,6 @@ export interface InputProvider extends doTickable{
     cursorPress() : boolean;
     getCursorAt() : Vector2;
 }
-
 
 export class HTMLInputProvider implements InputProvider{
     private keysPressed = new Map<InputKey,boolean>();

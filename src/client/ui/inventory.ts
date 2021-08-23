@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import { ItemType } from "../../server/entity/item/item";
-import { IGameObject } from "../layer/game-object";
+import { IGameObject } from "../shared/game-object";
 import { TextureManager } from "../texture";
 
 export class ItemBlock extends PIXI.Container{
@@ -11,14 +11,14 @@ export class ItemBlock extends PIXI.Container{
     private background;
 
     constructor(
-            private locX : number,
-            private locY : number,
+            private posX : number,
+            private posY : number,
             private blockWidth : number,
             private textureManager : TextureManager,
         ){
         super();
 
-        this.position.set(this.locX,this.locY);
+        this.position.set(this.posX,this.posY);
 
         this.background = PIXI.Sprite.from(this.textureManager.getOne(`inventory.block_background`));
         this.background.width = this.blockWidth;

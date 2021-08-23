@@ -1,5 +1,5 @@
 import { BrickType } from "./types";
-import { Entity } from "../../layer/entity";
+import { Entity } from "../../shared/entity";
 import { Vector2 } from "../../shared/math";
 import { Factory } from "../../shared/factory";
 

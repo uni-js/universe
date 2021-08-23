@@ -1,4 +1,5 @@
-import { ClientApp } from "../app/client-app";
+import "reflect-metadata";
+import { ClientApp } from "./client-app";
 
 export function bootstrap(){
     const playground = document.getElementById("playground") as HTMLCanvasElement;

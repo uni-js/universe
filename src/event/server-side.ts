@@ -1,5 +1,5 @@
 import { LandData } from "../server/land/types";
-import { ActorType } from "../server/layer/entity";
+import { ActorType } from "../server/shared/entity";
 import { Direction, WalkingState } from "../shared/actor";
 import { RemoteEvent } from "./event";
 

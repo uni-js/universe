@@ -1,6 +1,6 @@
-import { Actor, ActorEvent, BuildActorHash } from "../layer/entity";
+import { Actor, ActorEvent, BuildActorHash } from "../shared/entity";
 import { IndexedStore } from "../../shared/store";
-import { Manager } from "../layer/manager";
+import { Manager } from "../shared/manager";
 
 export class ActorManager extends Manager{
     constructor(

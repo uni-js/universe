@@ -1,19 +1,20 @@
-import { ObjectStore } from "../../shared/store";
-import { InputKey, InputProvider } from "../input";
-import { IGameObject } from "../layer/game-object";
-import { StoreManager } from "../layer/manager";
+import { inject, injectable } from "inversify";
+import { HTMLInputProvider, InputKey } from "../input";
+import { StoreManager } from "../shared/manager";
+import { UiStore } from "../shared/store";
 import { TextureManager } from "../texture";
 import { PlayerInventory } from "../ui/inventory";
-import { IViewport } from "../viewport";
+import { Viewport } from "../viewport";
 
+@injectable()
 export class InventoryManager extends StoreManager{
     private playerInventory;
 
     constructor(
-        private input : InputProvider,
-        private uiStore : ObjectStore<IGameObject>,
-        private viewport : IViewport,
-        private textureManager : TextureManager
+        @inject(HTMLInputProvider) private input : HTMLInputProvider,
+        @inject(UiStore) private uiStore : UiStore,
+        @inject(Viewport) private viewport : Viewport,
+        @inject(TextureManager) private textureManager : TextureManager
     ){
         super();
 

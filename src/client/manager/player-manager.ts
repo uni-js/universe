@@ -1,17 +1,21 @@
 import { Vector2 } from "../../server/shared/math";
 import { MapStore } from "../../shared/store";
-import { InputKey, InputProvider } from "../input";
-import { GameObjectEvent } from "../layer/game-object";
-import { Player, PlayerObjectEvent } from "../object/player";
-import { StoreManager } from "../layer/manager"
+import { HTMLInputProvider, InputKey, InputProvider } from "../input";
+import { GameObjectEvent } from "../shared/game-object";
+import { Player } from "../object/player";
+import { StoreManager } from "../shared/manager"
 import { Viewport } from "../viewport";
 import { Direction, WalkingState } from "../../shared/actor";
+import { DataStore } from "../shared/store";
+import { inject, injectable } from "inversify";
+import { GameEvent } from "../event";
 
+@injectable()
 export class PlayerManager extends StoreManager{
     constructor(
-            private dataStore : MapStore<any>,
-            private inputProvider : InputProvider,
-            private stage : Viewport
+            @inject(DataStore) private dataStore : DataStore,
+            @inject(HTMLInputProvider) private inputProvider : HTMLInputProvider,
+            @inject(Viewport) private stage : Viewport
         ){
             super();
             
@@ -21,21 +25,24 @@ export class PlayerManager extends StoreManager{
         if(this.dataStore.has(key))return;
 
         this.dataStore.set(key,player);
-        player.on(PlayerObjectEvent.ControlMovedEvent,this.onPlayerControlMoved)
-        player.on(GameObjectEvent.SetActorStateEvent,this.onSetActorState)
+        player.on(GameEvent.ControlMovedEvent,this.onPlayerControlMoved)
+        player.on(GameEvent.SetActorStateEvent,this.onSetActorState)
 
         player.setTakeControl();
 
     }
-    private onPlayerControlMoved = (location : Vector2,direction : Direction,walking:WalkingState)=>{
-        this.emit(PlayerObjectEvent.ControlMovedEvent,location,direction,walking);
+    private onPlayerControlMoved = (position : Vector2,direction : Direction,walking:WalkingState)=>{
+        this.emit(GameEvent.ControlMovedEvent,position,direction,walking);
     }
     private onSetActorState = (player : Player)=>{
-        this.emit(GameObjectEvent.SetActorStateEvent,player);
+        this.emit(GameEvent.SetActorStateEvent,player);
     }
     getCurrentPlayer(){
         const player = this.dataStore.get("data.player.current") as Player;
         return player;
+    }
+    isCurrentPlayer(player: Player){
+        return this.getCurrentPlayer() === player;
     }
     private doControlMoveTick(){
 

@@ -1,4 +1,5 @@
 import { EventEmitter2 } from "eventemitter2";
+import { inject, injectable } from "inversify";
 import { io } from "socket.io-client";
 import { IRemoteEvent } from "./event";
 
@@ -7,6 +8,7 @@ import { IRemoteEvent } from "./event";
  */
 const MsgPackParser = require("socket.io-msgpack-parser");
 
+@injectable()
 export class EventBusClient extends EventEmitter2{
     private client;
     constructor(url:string){

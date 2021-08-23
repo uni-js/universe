@@ -1,17 +1,21 @@
 import { EventBusClient } from "../../event/bus-client";
 import { ActorNewPosEvent, ActorSetStateEvent, AddActorEvent, RemoveActorEvent } from "../../event/server-side";
-import { ActorType } from "../../server/layer/entity";
+import { ActorType } from "../../server/shared/entity";
 import { Vector2 } from "../../server/shared/math";
-import { ActorObject, GameObjectEvent, IGameObject } from "../layer/game-object";
+import { ActorObject, GameObjectEvent, IGameObject } from "../shared/game-object";
 import { ActorManager } from "../manager/actor-manager";
 import { Player } from "../object/player";
 import { TextureManager } from "../texture";
+import { inject, injectable } from "inversify";
+import { PlayerManager } from "../manager/player-manager";
 
+@injectable()
 export class ActorService{
     constructor(
-        private eventBus : EventBusClient,
-        private actorManager : ActorManager,
-        private textureManager : TextureManager
+        @inject(EventBusClient) private eventBus : EventBusClient,
+        @inject(ActorManager) private actorManager : ActorManager,
+        @inject(TextureManager) private textureManager : TextureManager,
+        @inject(PlayerManager) private playerManager : PlayerManager
     ){
         this.eventBus.on(AddActorEvent.name,this.handleActorAdded.bind(this));
         this.eventBus.on(RemoveActorEvent.name,this.handleActorRemoved.bind(this));
@@ -21,14 +25,14 @@ export class ActorService{
     }
     private handleActorAdded(event : AddActorEvent){
         console.debug("Spawned",event.actorId,event);
-        const loc = new Vector2(event.x,event.y);
+        const pos= new Vector2(event.x,event.y);
         if(event.type == ActorType.PLAYER){
             
 
-            const player = new Player(this.textureManager,event.actorId,loc,event.playerName);
+            const player = new Player(this.textureManager,event.actorId,pos,event.playerName);
             this.actorManager.addActor(player);
         }else{
-            const actor = new ActorObject(event.type,this.textureManager,event.actorId,new Vector2(1,1),loc,"");
+            const actor = new ActorObject(event.type,this.textureManager,event.actorId,new Vector2(1,1),pos,"");
             this.actorManager.addActor(actor);
 
         }
@@ -44,13 +48,16 @@ export class ActorService{
     private handleActorNewBaseState(event : ActorSetStateEvent){
         const object = this.actorManager.getActorById(event.actorId) as ActorObject;
 
-        object.setDirection(event.direction,false);
-        object.setWalking(event.walking,false);
+        object.setDirection(event.direction);
+        object.setWalking(event.walking);
     }
     private handleActorNewPos(event : ActorNewPosEvent){
         
         const object = this.actorManager.getActorById(event.actorId) as ActorObject;
-        object.addMovePoint(new Vector2(event.x,event.y));
+        const isCurrentPlayer = this.playerManager.isCurrentPlayer(object as Player);
+        const pos = new Vector2(event.x,event.y);
+
+        object.addMovePoint(pos);
 
     }
 

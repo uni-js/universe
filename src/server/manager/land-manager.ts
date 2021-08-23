@@ -1,7 +1,7 @@
 import { IndexedStore } from "../../shared/store";
 import { BuildLandHash, Land } from "../entity/land";
-import { Actor } from "../layer/entity";
-import { Manager } from "../layer/manager";
+import { Actor } from "../shared/entity";
+import { Manager } from "../shared/manager";
 import { Vector2 } from "../shared/math";
 import { IDatabase } from "../database";
 import { GenerateLandData } from "../land/generator";

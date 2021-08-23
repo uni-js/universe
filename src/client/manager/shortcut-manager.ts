@@ -1,19 +1,22 @@
+import { inject, injectable } from "inversify";
 import { ObjectStore } from "../../shared/store";
-import { InputKey, InputProvider } from "../input";
-import { IGameObject } from "../layer/game-object";
-import { StoreManager } from "../layer/manager";
+import { HTMLInputProvider, InputKey } from "../input";
+import { IGameObject } from "../shared/game-object";
+import { StoreManager } from "../shared/manager";
+import { UiStore } from "../shared/store";
 import { TextureManager } from "../texture";
 import { ItemShortcutBar } from "../ui/item-shortcut-bar";
-import { IViewport } from "../viewport";
+import { IViewport, Viewport } from "../viewport";
 
+@injectable()
 export class ShortcutManager extends StoreManager{
     private shortcutBar : ItemShortcutBar;
 
     constructor(
-        private input : InputProvider,
-        private uiStore : ObjectStore<IGameObject>,
-        private viewport : IViewport,
-        textureManager : TextureManager
+        @inject(HTMLInputProvider) private input : HTMLInputProvider,
+        @inject(UiStore) private uiStore : ObjectStore<IGameObject>,
+        @inject(Viewport) private viewport : IViewport,
+        @inject(TextureManager) textureManager : TextureManager
         
     ){
         super();

@@ -1,5 +1,5 @@
 import { BusEvent, EventBus } from "../../event/bus-server";
-import { Service } from "../layer/service";
+import { Service } from "../shared/service";
 import { PlayerManager } from "../manager/player-manager";
 
 export class ConnectionService implements Service{

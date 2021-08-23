@@ -1,4 +1,4 @@
-import { ServerApp } from "../app/server-app";
+import { ServerApp } from "./server-app";
 import DotEnv from "dotenv";
 
 DotEnv.config();

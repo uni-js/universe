@@ -1,5 +1,4 @@
-import { Direction } from "../../shared/actor";
-import { Actor, ActorType } from "../layer/entity";
+import { Actor, ActorType } from "../shared/entity";
 import { Vector2 } from "../shared/math";
 import { BuildLandHash, GetRadiusLands, Land } from "./land";
 
@@ -28,8 +27,8 @@ export class Player extends Actor{
     private spawnedActors = new Set<Actor>();
     private playerName:string = "Player";
    
-    constructor(connId:string,loc:Vector2){
-        super(loc,ActorType.PLAYER);
+    constructor(connId:string,pos:Vector2){
+        super(pos,ActorType.PLAYER);
         this.connId = connId;
     }
  
@@ -96,11 +95,11 @@ export class Player extends Actor{
 
     }
     getCanseeLands(){
-        return GetRadiusLands(this.loc,this.viewLandRadius);
+        return GetRadiusLands(this.pos,this.viewLandRadius);
     }
     canSeeLand(landLoc:Vector2){
-        return Boolean(this.getCanseeLands().find((loc)=>{
-            return loc.equals(landLoc);
+        return Boolean(this.getCanseeLands().find((pos)=>{
+            return pos.equals(landLoc);
         }));
     }
 
@@ -108,4 +107,7 @@ export class Player extends Actor{
         return this.connId;
     }
 
+    isPlayer(){
+        return true;
+    }
 }
