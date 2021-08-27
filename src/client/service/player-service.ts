@@ -17,11 +17,11 @@ export class PlayerService {
 	) {
 		this.eventBus.on(LoginedEvent.name, this.handleLogined.bind(this));
 
-		this.playerManager.on(GameEvent.ControlMovedEvent, this.onControlMove.bind(this));
+		this.playerManager.on(GameEvent.ControlMovedEvent, this.onControlMoved.bind(this));
 		this.playerManager.on(GameEvent.SetActorStateEvent, this.onSetActorState.bind(this));
 	}
-	private onControlMove(delta: Vector2) {
-		this.eventBus.emitEvent(new MovePlayerEvent(delta.x, delta.y));
+	private onControlMoved(pos: Vector2) {
+		this.eventBus.emitEvent(new MovePlayerEvent(pos.x, pos.y));
 	}
 	private onSetActorState(player: Player) {
 		this.eventBus.emitEvent(new SetPlayerStateEvent(player.getWalking(), player.getDirection()));

@@ -91,8 +91,8 @@ export class PlayerInventory extends PIXI.Container implements IGameObject {
 	setItemBlock(index: number, block: ItemBlock) {
 		this.blocks[index] = block;
 	}
-	getObjectId(): string {
-		return '';
+	getObjectId(): number {
+		return -1;
 	}
 	async doTick(tick: number) {}
 }

@@ -16,7 +16,7 @@ export class LandManager extends StoreManager {
 	removeLand(item: LandObject) {
 		this.landStore.remove(item);
 	}
-	getLandById(id: string) {
+	getLandById(id: number) {
 		return this.landStore.get(BuildLandObjectIdHash(id));
 	}
 	getLandByLoc(landLoc: Vector2) {

@@ -15,7 +15,7 @@ export class Player extends ActorObject {
 	private controlMoved: Vector2 | undefined;
 	private takeControl: boolean = false;
 
-	constructor(textureManager: TextureManager, objectId: string, pos: Vector2, playerName: string) {
+	constructor(textureManager: TextureManager, objectId: number, pos: Vector2, playerName: string) {
 		super(ActorType.PLAYER, textureManager, objectId, new Vector2(1, 1.5), pos, playerName);
 
 		this.setAnchor(0.5, 1);
@@ -66,6 +66,8 @@ export class Player extends ActorObject {
 			const target = this.getPosition().add(this.controlMoved);
 			this.setPosition(target);
 			this.setWalking(WalkingState.WALKING);
+
+			this.emit(GameEvent.ControlMovedEvent, target, this.direction, this.walking);
 		}
 		if (!this.controlMoved) {
 			if (this.takeControl) {
@@ -74,7 +76,6 @@ export class Player extends ActorObject {
 		}
 
 		if (this.controlMoved) {
-			this.emit(GameEvent.ControlMovedEvent, this.controlMoved, this.direction, this.walking);
 			this.controlMoved = undefined;
 		}
 	}

@@ -10,14 +10,14 @@ import { GameEvent } from '../event';
 import { TextureManager, GetEmptyTexture } from '../texture';
 
 export interface IGameObject extends doTickable, PIXI.DisplayObject {
-	getObjectId(): string;
+	getObjectId(): number;
 	doTick(tick: number): Promise<void>;
 }
 
 export enum GameObjectEvent {}
 
-export function BuildGameObjectHash(item: string | IGameObject): string {
-	if (typeof item == 'string') return `gameobject.id.${item}`;
+export function BuildGameObjectHash(item: number | IGameObject): string {
+	if (typeof item == 'number') return `gameobject.id.${item}`;
 
 	return BuildGameObjectHash(item.getObjectId());
 }
@@ -27,7 +27,7 @@ export class StaticObject extends PIXI.Container implements IGameObject {
 
 	constructor(
 		protected textureManager: TextureManager,
-		protected objectId: string,
+		protected objectId: number,
 		size: Vector2,
 		relativeLoc: Vector2,
 		protected worldLoc: Vector2,
@@ -98,8 +98,8 @@ export class MoveInterpolator extends EventEmitter2 {
 	}
 }
 
-export function BuildActorObjectHash(item: ActorObject | string) {
-	if (typeof item == 'string') return `actorobject.id.${item}`;
+export function BuildActorObjectHash(item: ActorObject | number) {
+	if (typeof item == 'number') return `actorobject.id.${item}`;
 
 	return `actorobject.id.${item.getObjectId()}`;
 }
@@ -125,7 +125,7 @@ export class ActorObject extends PIXI.Container implements IGameObject {
 	constructor(
 		protected actorType: ActorType,
 		protected textureManager: TextureManager,
-		protected objectId: string,
+		protected objectId: number,
 		protected size: Vector2,
 		private pos: Vector2,
 		private tagname: string,

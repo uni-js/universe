@@ -14,5 +14,5 @@ export class ConnectionService implements Service {
 
 		this.playerManager.removePlayer(player);
 	}
-	async doTick(tick: number) {}
+	doTick(tick: number) {}
 }

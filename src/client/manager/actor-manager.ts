@@ -9,14 +9,12 @@ export class ActorManager extends StoreManager {
 		super();
 	}
 	addActor(item: ActorObject) {
-		console.log('add actor', item, this);
 		this.actorStore.add(item);
 	}
-	getActorById(objectId: string) {
+	getActorById(objectId: number) {
 		return this.actorStore.get(BuildActorObjectHash(objectId));
 	}
 	removeActor(item: ActorObject) {
-		console.log('remove actor', item);
 		this.actorStore.remove(item);
 	}
 	private async doActorsTick(tick: number) {

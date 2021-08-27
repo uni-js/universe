@@ -1,3 +1,5 @@
+import { Entity } from '../../database/memory';
+
 export enum BrickType {
 	/**
 	 * 岩石
@@ -48,4 +50,13 @@ export enum BrickType {
 	 * 沙地
 	 */
 	SAND = 'sand',
+}
+
+export class Brick extends Entity {
+	brickType?: BrickType;
+	landLocX?: number;
+	landLocY?: number;
+	offLocX?: number;
+	offLocY?: number;
+	broken?: boolean;
 }

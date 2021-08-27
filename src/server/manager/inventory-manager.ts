@@ -1,26 +1,32 @@
-import { IndexedStore } from '../../shared/store';
-import { Player, PlayerEvent } from '../entity/player';
-import { BuildInventoryHash, Inventory, PlayerInventory } from '../entity/inventory';
-import { BuildActorHash } from '../shared/entity';
+import { Player } from '../entity/player';
+import { Inventory, PlayerInventory } from '../entity/inventory';
 import { PlayerManager } from './player-manager';
+import { ICollection, injectCollection } from '../database/memory';
+import { inject } from 'inversify';
+import { GameEvent } from '../event';
 
 export class InventoryManager {
-	constructor(private inventoryStore: IndexedStore<Inventory>, private playerManager: PlayerManager) {
-		this.playerManager.on(PlayerEvent.PlayerAddedEvent, this.onPlayerAdded);
-		this.playerManager.on(PlayerEvent.PlayerRemovedEvent, this.onPlayerRemoved);
+	constructor(
+		@injectCollection(Inventory) private inventoryList: ICollection<Inventory>,
+		@injectCollection(Inventory) private playerInventoryList: ICollection<PlayerInventory>,
+
+		@inject(PlayerManager) private playerManager: PlayerManager,
+	) {
+		this.playerManager.on(GameEvent.PlayerAddedEvent, this.onPlayerAdded);
+		this.playerManager.on(GameEvent.PlayerRemovedEvent, this.onPlayerRemoved);
 	}
 	private onPlayerAdded = (player: Player) => {
-		const shortcut = new PlayerInventory(player.getActorId());
-		this.inventoryStore.add(shortcut);
+		const shortcut = new PlayerInventory();
+		shortcut.playerId = player.$loki;
+		this.playerInventoryList.insertOne(shortcut);
 	};
 	private onPlayerRemoved = (player: Player) => {
-		const shortcut = this.inventoryStore.get(BuildActorHash(player))!;
-		this.inventoryStore.remove(shortcut);
+		this.playerInventoryList.findAndRemove({ playerId: player.$loki });
 	};
 	getPlayerInventory(player: Player) {
-		return this.inventoryStore.get(BuildActorHash(player));
+		return this.playerInventoryList.findOne({ playerId: player.$loki });
 	}
-	getInventory(inventoryId: string) {
-		return this.inventoryStore.get(BuildInventoryHash(inventoryId));
+	getInventory(inventoryId: number) {
+		return this.inventoryList.findOne({ $loki: inventoryId });
 	}
 }

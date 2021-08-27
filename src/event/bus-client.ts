@@ -13,9 +13,11 @@ export class EventBusClient extends EventEmitter2 {
 	private client;
 	constructor(url: string) {
 		super();
-		this.client = io(url, {
-			parser: MsgPackParser,
-		});
+
+		const isDebug = Boolean(process.env['DEBUG']);
+		const option = isDebug ? {} : { parser: MsgPackParser };
+
+		this.client = io(url, option);
 		this.client.onAny((event, ...args) => {
 			this.emit(event, ...args);
 		});

@@ -1,4 +1,4 @@
-import { BrickType } from '../brick/types';
+import { BrickType } from '../brick';
 
 /**
  * 使用物品的指令

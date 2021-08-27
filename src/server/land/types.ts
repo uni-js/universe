@@ -1,4 +1,4 @@
-import { BrickType } from '../entity/brick/types';
+import { BrickType } from '../entity/brick';
 
 export interface BrickData {
 	offX: number;

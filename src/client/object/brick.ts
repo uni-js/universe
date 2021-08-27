@@ -1,16 +1,16 @@
-import { BrickType } from '../../server/entity/brick/types';
 import { Vector2 } from '../../server/shared/math';
 import { StaticObject } from '../shared/game-object';
 import { TextureManager } from '../texture';
 import * as PIXI from 'pixi.js';
 import { LAND_WIDTH } from '../../server/land/const';
+import { BrickType } from '../../server/entity/brick';
 
 export class BrickObject extends StaticObject {
 	private highlightObject: PIXI.Sprite;
 
 	constructor(
 		private brickType: BrickType,
-		objectId: string,
+		objectId: number,
 		textureManager: TextureManager,
 		pos: Vector2,
 		private landLoc: Vector2,

@@ -9,6 +9,7 @@
     "start:client": "node ./scripts/client/start",
     "build:server": "node ./scripts/server/build",
     "build:client": "node ./scripts/client/build",
+    "inspect": "node --inspect ./lib/server/bootstrap",
     "start:server:dev": "nodemon --signal SIGKILL -e ts --watch ./src --exec \"node ./scripts/server/build-and-start.js\"",
     "start:client:dev": "nodemon --signal SIGKILL -e ts --watch ./src --exec \"node ./scripts/client/build-and-start.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -22,11 +23,13 @@
     "crypto-js": "^4.0.0",
     "curve-interpolator": "^2.0.8",
     "dotenv": "^10.0.0",
+    "dotenv-webpack": "^7.0.3",
     "eventemitter2": "^6.4.4",
     "inversify": "^5.1.1",
     "keyboardjs": "^2.6.4",
     "leveldown": "^6.0.0",
     "levelup": "^5.0.0",
+    "lokijs": "^1.5.12",
     "pixi.js": "^6.0.4",
     "pupa": "^2.1.1",
     "randombytes": "^2.1.0",
@@ -34,7 +37,9 @@
     "simplex-noise": "^2.4.0",
     "socket.io": "^4.1.2",
     "socket.io-client": "^4.1.2",
-    "socket.io-msgpack-parser": "^3.0.1"
+    "socket.io-msgpack-parser": "^3.0.1",
+    "threads": "^1.6.5",
+    "tiny-worker": "^2.3.0"
   },
   "devDependencies": {
     "@types/color": "^3.0.1",
@@ -43,6 +48,7 @@
     "@types/keyboardjs": "^2.5.0",
     "@types/leveldown": "^4.0.2",
     "@types/levelup": "^4.3.1",
+    "@types/lokijs": "^1.5.6",
     "@types/pixi.js": "^5.0.0",
     "@types/randombytes": "^2.0.0",
     "@types/reflect-metadata": "^0.1.0",
@@ -53,6 +59,7 @@
     "nodemon": "^2.0.7",
     "prettier": "^2.3.2",
     "serve": "^11.3.2",
+    "threads-plugin": "^1.4.0",
     "ts-loader": "^9.2.2",
     "typescript": "^4.3.2",
     "webpack": "^5.38.1",

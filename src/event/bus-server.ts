@@ -16,10 +16,10 @@ export class EventBus extends EventEmitter {
 	constructor() {
 		super();
 
-		this.server = new Server({
-			parser: MsgPackParser,
-			cors: {},
-		});
+		const isDebug = Boolean(process.env['DEBUG']);
+		const option = isDebug ? { cors: {} } : { cors: {}, parser: MsgPackParser };
+
+		this.server = new Server(option);
 		this.server.on('connect', this.handleConnection.bind(this));
 	}
 	private handleConnection(conn: Socket) {

@@ -84,8 +84,8 @@ export class ItemShortcutBar extends PIXI.Container implements IGameObject {
 		this.initBlocks();
 		this.setFocusIndex(0);
 	}
-	getObjectId(): string {
-		return '';
+	getObjectId(): number {
+		return -1;
 	}
 	async doTick(tick: number) {}
 	private initBlocks() {

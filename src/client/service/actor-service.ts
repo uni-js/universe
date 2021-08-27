@@ -43,6 +43,7 @@ export class ActorService {
 	}
 	private handleActorNewBaseState(event: ActorSetStateEvent) {
 		const object = this.actorManager.getActorById(event.actorId) as ActorObject;
+		const isCurrentPlayer = this.playerManager.isCurrentPlayer(object as Player);
 
 		object.setDirection(event.direction);
 		object.setWalking(event.walking);
@@ -52,6 +53,12 @@ export class ActorService {
 		const isCurrentPlayer = this.playerManager.isCurrentPlayer(object as Player);
 		const pos = new Vector2(event.x, event.y);
 
-		object.addMovePoint(pos);
+		if (isCurrentPlayer) {
+			if (pos.distanceTo(object.getPosition()) >= 0.2) {
+				object.addMovePoint(pos);
+			}
+		} else {
+			object.addMovePoint(pos);
+		}
 	}
 }
