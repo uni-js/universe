@@ -32,8 +32,8 @@ export class UiStore extends HashedStore<IGameObject> {
 	constructor(@inject(UiContainer) uiContainer: UiContainer) {
 		super(uiContainer);
 	}
-	hash(item: IGameObject): string[] {
-		return [];
+	hash(item: IGameObject) {
+		return [item.constructor.name];
 	}
 }
 
