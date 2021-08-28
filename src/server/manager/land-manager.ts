@@ -2,12 +2,12 @@ import { Land } from '../entity/land';
 import { Actor } from '../shared/entity';
 import { Manager } from '../shared/manager';
 import { Vector2 } from '../shared/math';
-import { PersistDatabaseSymbol, IPersistDatabase } from '../database/persist';
+import { PersistDatabaseSymbol, IPersistDatabase } from '../../shared/database/persist';
 import { spawn } from 'threads';
 
 import { BrickData, LandData } from '../land/types';
 import { inject, injectable } from 'inversify';
-import { ICollection, injectCollection } from '../database/memory';
+import { ICollection, injectCollection } from '../../shared/database/memory';
 import { Brick } from '../entity/brick';
 import { GameEvent } from '../event';
 

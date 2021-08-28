@@ -1,7 +1,7 @@
 import { Actor } from '../shared/entity';
 import { Manager } from '../shared/manager';
 import { inject, injectable } from 'inversify';
-import { ICollection, injectCollection } from '../database/memory';
+import { ICollection, injectCollection } from '../../shared/database/memory';
 import { GameEvent } from '../event';
 import { Vector2 } from '../shared/math';
 import { PosToLandPos } from '../land/helper';

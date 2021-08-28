@@ -7,6 +7,8 @@ export interface ICollection<T extends object> extends LokiJS.Collection<T> {}
 
 export interface IMemoryDatabase extends LokiJS {}
 
+export class MemoryDatabase extends LokiJS {}
+
 export class Entity {
 	$loki: number;
 	meta: object = {};

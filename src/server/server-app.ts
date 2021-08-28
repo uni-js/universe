@@ -8,13 +8,13 @@ import { PlayerService } from './service/player-service';
 import { wait } from './utils';
 import { LandManager } from './manager/land-manager';
 import { ConnectionService } from './service/connection-service';
-import { createPersistDatabase, PersistDatabaseSymbol, IPersistDatabase } from './database/persist';
+import { createPersistDatabase, PersistDatabaseSymbol, IPersistDatabase } from '../shared/database/persist';
 import { LandService } from './service/land-service';
 
 import { Container } from 'inversify';
 import { bindToContainer } from '../client/shared/ioc';
 import { Manager } from './shared/manager';
-import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from './database/memory';
+import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../shared/database/memory';
 import { Land } from './entity/land';
 import { Actor } from './shared/entity';
 import { Inventory } from './entity/inventory';

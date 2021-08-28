@@ -3,7 +3,7 @@ import { Manager } from '../shared/manager';
 import { Actor, ActorType } from '../shared/entity';
 import { GetRadiusLands, Land } from '../entity/land';
 import { inject, injectable } from 'inversify';
-import { ICollection, injectCollection } from '../database/memory';
+import { ICollection, injectCollection } from '../../shared/database/memory';
 import { ActorManager } from './actor-manager';
 import { Vector2 } from '../shared/math';
 import { GameEvent } from '../event';

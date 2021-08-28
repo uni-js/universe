@@ -1,5 +1,8 @@
 import * as PIXI from 'pixi.js';
 
+import React from 'react';
+import ReactDOM from 'react-dom';
+
 import { HTMLInputProvider } from './input';
 import { ActorManager } from './manager/actor-manager';
 import { TextureManager } from './texture';
@@ -7,7 +10,18 @@ import { EventBusClient } from '../event/bus-client';
 import { Viewport } from './viewport';
 import { LandManager } from './manager/land-manager';
 import { Container } from 'inversify';
-import { ActorContainer, ActorStore, BrickContainer, DataStore, LandStore, ObjectContainer, UiContainer, UiStore } from './shared/store';
+import {
+	ActorContainer,
+	ActorStore,
+	BrickContainer,
+	DataStore,
+	DataStoreEntities,
+	LandStore,
+	ObjectContainer,
+	UiContainer,
+	UIEventBus,
+	UiStore,
+} from './shared/store';
 import { bindToContainer } from './shared/ioc';
 import { CursorManager } from './manager/cursor-manager';
 import { DefaultSceneManager } from './manager/default-scene-manager';
@@ -18,6 +32,10 @@ import { ActorService } from './service/actor-service';
 import { BootService } from './service/boot-service';
 import { LandService } from './service/land-service';
 import { PlayerService } from './service/player-service';
+import { UIEntry } from './ui/entry';
+import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../shared/database/memory';
+import { GameUI } from './ui/game-ui';
+import { EventEmitter } from '../server/shared/event';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -40,6 +58,8 @@ export class ClientApp {
 	private viewport: Viewport;
 	private busClient: EventBusClient;
 	private inputProvider: HTMLInputProvider;
+	private dataStore: IMemoryDatabase;
+	private uiEventBus: UIEventBus;
 
 	private iocContainer!: Container;
 	private resolution = 32;
@@ -48,7 +68,10 @@ export class ClientApp {
 	private worldWidth = 4 * 7;
 	private worldHeight = 3 * 7;
 
-	constructor(private serverUrl: string, private canvas: HTMLCanvasElement) {
+	private wrapper: HTMLDivElement;
+	private uiContainer: HTMLDivElement;
+
+	constructor(private serverUrl: string, private playGround: HTMLDivElement) {
 		this.app = new PIXI.Application({
 			resolution: this.resolution,
 			width: this.worldWidth,
@@ -65,6 +88,36 @@ export class ClientApp {
 		);
 		this.busClient = new EventBusClient(this.serverUrl);
 		this.inputProvider = new HTMLInputProvider(this.app.view);
+		this.dataStore = createMemoryDatabase(DataStoreEntities);
+		this.uiEventBus = new UIEventBus();
+
+		this.initWrapper();
+		this.initUiContainer();
+	}
+	private initWrapper() {
+		const wrapper = document.createElement('div');
+		wrapper.classList.add('uni-wrapper');
+		wrapper.style.width = `${this.app.view.width}px`;
+		wrapper.style.height = `${this.app.view.height}px`;
+		wrapper.style.position = 'relative';
+
+		this.playGround.appendChild(wrapper);
+		this.wrapper = wrapper;
+	}
+	private initUiContainer() {
+		const container = document.createElement('div');
+		container.classList.add('uni-ui-container');
+		container.style.position = 'absolute';
+		container.style.left = '0px';
+		container.style.top = '0px';
+		container.style.width = '100%';
+		container.style.height = '100%';
+		container.style.userSelect = 'none';
+		container.style.pointerEvents = 'none';
+
+		this.wrapper.appendChild(container);
+		this.wrapper.appendChild(this.app.view);
+		this.uiContainer = container;
 	}
 	initIocContainer() {
 		const ioc = new Container({ skipBaseClassChecks: true });
@@ -73,16 +126,19 @@ export class ClientApp {
 		ioc.bind(EventBusClient).toConstantValue(this.busClient);
 		ioc.bind(Viewport).toConstantValue(this.viewport);
 		ioc.bind(TextureManager).toConstantValue(this.textureManager);
+		ioc.bind(DataStore).toConstantValue(this.dataStore);
+		ioc.bind(UIEventBus).toConstantValue(this.uiEventBus);
+
+		bindCollectionsTo(ioc, DataStoreEntities, this.dataStore);
 
 		bindToContainer(ioc, [
-			ActorStore,
 			ObjectContainer,
-			UiStore,
-			LandStore,
-			DataStore,
-			UiContainer,
 			ActorContainer,
 			BrickContainer,
+			UiContainer,
+			ActorStore,
+			LandStore,
+			UiStore,
 			...this.managers,
 			...this.services,
 		]);
@@ -107,10 +163,18 @@ export class ClientApp {
 	async start() {
 		await this.initTextures();
 		this.initIocContainer();
-		this.app.start();
 
+		this.app.start();
+		this.renderUI();
 		this.startLoop();
 		console.log('start');
+	}
+	private renderUI() {
+		const dataSource = this.iocContainer.get(DataStore);
+		const ticker = this.app.ticker;
+		const eventBus = this.uiEventBus;
+
+		ReactDOM.render(React.createElement(UIEntry, { dataSource, ticker, eventBus }, React.createElement(GameUI)), this.uiContainer);
 	}
 	private doTick() {
 		this.iocContainer.get<HTMLInputProvider>(HTMLInputProvider).doTick();

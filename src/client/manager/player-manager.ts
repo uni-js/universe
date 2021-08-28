@@ -1,33 +1,47 @@
 import { Vector2 } from '../../server/shared/math';
-import { MapStore } from '../../shared/store';
-import { HTMLInputProvider, InputKey, InputProvider } from '../input';
-import { GameObjectEvent } from '../shared/game-object';
-import { Player } from '../object/player';
+import { HTMLInputProvider, InputKey } from '../input';
 import { StoreManager } from '../shared/manager';
 import { Viewport } from '../viewport';
 import { Direction, WalkingState } from '../../shared/actor';
-import { DataStore } from '../shared/store';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
+import { ICollection, injectCollection } from '../../shared/database/memory';
+import { GameInfo, GameInfoType, UIEventBus } from '../shared/store';
+import { Player } from '../object/player';
 
 @injectable()
 export class PlayerManager extends StoreManager {
+	private currentPlayer: Player;
+	private playerInfo: GameInfo;
+
 	constructor(
-		@inject(DataStore) private dataStore: DataStore,
+		@injectCollection(GameInfo) private gameInfoList: ICollection<GameInfo>,
 		@inject(HTMLInputProvider) private inputProvider: HTMLInputProvider,
 		@inject(Viewport) private stage: Viewport,
+		@inject(UIEventBus) private uiEvent: UIEventBus,
 	) {
 		super();
+
+		this.uiEvent.on('PlayerNameClicked', () => console.log('yes!'));
+
+		const playerInfo = new GameInfo();
+		playerInfo.type = GameInfoType.PLAYER_INFO;
+
+		this.playerInfo = playerInfo;
+		this.gameInfoList.insertOne(playerInfo);
 	}
 	setCurrentPlayer(player: Player) {
-		const key = 'data.player.current';
-		if (this.dataStore.has(key)) return;
+		this.playerInfo.playerActorId = player.getObjectId();
+		this.playerInfo.playerName = 'Player';
 
-		this.dataStore.set(key, player);
+		this.gameInfoList.update(this.playerInfo);
+
 		player.on(GameEvent.ControlMovedEvent, this.onPlayerControlMoved);
 		player.on(GameEvent.SetActorStateEvent, this.onSetActorState);
 
 		player.setTakeControl();
+
+		this.currentPlayer = player;
 	}
 	private onPlayerControlMoved = (position: Vector2, direction: Direction, walking: WalkingState) => {
 		this.emit(GameEvent.ControlMovedEvent, position, direction, walking);
@@ -36,14 +50,13 @@ export class PlayerManager extends StoreManager {
 		this.emit(GameEvent.SetActorStateEvent, player);
 	};
 	getCurrentPlayer() {
-		const player = this.dataStore.get('data.player.current') as Player;
-		return player;
+		return this.currentPlayer;
 	}
 	isCurrentPlayer(player: Player) {
-		return this.getCurrentPlayer() === player;
+		return this.currentPlayer === player;
 	}
 	private doControlMoveTick() {
-		const player = this.getCurrentPlayer();
+		const player = this.currentPlayer;
 		if (!player) return;
 
 		const moveSpeed = 0.06;

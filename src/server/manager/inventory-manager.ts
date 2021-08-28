@@ -1,7 +1,7 @@
 import { Player } from '../entity/player';
 import { Inventory, PlayerInventory } from '../entity/inventory';
 import { PlayerManager } from './player-manager';
-import { ICollection, injectCollection } from '../database/memory';
+import { ICollection, injectCollection } from '../../shared/database/memory';
 import { inject } from 'inversify';
 import { GameEvent } from '../event';
 

@@ -2,7 +2,7 @@ import { doTickable } from '../../shared/update';
 import { GetUniqueId, Vector2 } from './math';
 import { EventEmitter } from './event';
 import { Direction, WalkingState } from '../../shared/actor';
-import { Entity } from '../database/memory';
+import { Entity } from '../../shared/database/memory';
 
 export const MOVEMENT_TICK_MIN_DISTANCE = 0.0001;
 

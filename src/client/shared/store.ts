@@ -4,6 +4,8 @@ import { LandObject } from '../object/land';
 import { inject, injectable } from 'inversify';
 
 import * as PIXI from 'pixi.js';
+import { Entity, MemoryDatabase } from '../../shared/database/memory';
+import { EventEmitter } from '../../server/shared/event';
 
 @injectable()
 export class ObjectContainer extends PIXI.Container {}
@@ -48,4 +50,25 @@ export class LandStore extends HashedStore<LandObject> {
 }
 
 @injectable()
-export class DataStore extends MapStore<any> {}
+export class DataStore extends MemoryDatabase {}
+
+@injectable()
+export class UIEventBus extends EventEmitter {}
+
+export enum GameInfoType {
+	PLAYER_INFO,
+}
+export class GameInfo extends Entity {
+	type: GameInfoType;
+	/**
+	 * 玩家名
+	 */
+	playerName: string;
+
+	/**
+	 * 玩家角色id
+	 */
+	playerActorId: number;
+}
+
+export const DataStoreEntities = [GameInfo];

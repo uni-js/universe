@@ -1,4 +1,4 @@
-import { Entity } from '../../database/memory';
+import { Entity } from '../../../shared/database/memory';
 import { Item } from '../item/item';
 
 export type Block = Item | undefined;
