@@ -5,7 +5,7 @@ import { Vector2 } from '../shared/math';
 import { PersistDatabaseSymbol, IPersistDatabase } from '../database/persist';
 import { spawn } from 'threads';
 
-import { BrickData, LandData, LandEvent } from '../land/types';
+import { BrickData, LandData } from '../land/types';
 import { inject, injectable } from 'inversify';
 import { ICollection, injectCollection } from '../database/memory';
 import { Brick } from '../entity/brick';
@@ -17,7 +17,6 @@ export function BuildLandHash(pos: Vector2) {
 
 @injectable()
 export class LandManager extends Manager {
-	private landDatasToSend: LandData[] = [];
 	private generatorWorker = spawn(new Worker('../land/generator.worker'));
 
 	constructor(

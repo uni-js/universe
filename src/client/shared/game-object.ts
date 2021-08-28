@@ -16,12 +16,6 @@ export interface IGameObject extends doTickable, PIXI.DisplayObject {
 
 export enum GameObjectEvent {}
 
-export function BuildGameObjectHash(item: number | IGameObject): string {
-	if (typeof item == 'number') return `gameobject.id.${item}`;
-
-	return BuildGameObjectHash(item.getObjectId());
-}
-
 export class StaticObject extends PIXI.Container implements IGameObject {
 	protected sprite: PIXI.Sprite;
 
@@ -96,12 +90,6 @@ export class MoveInterpolator extends EventEmitter2 {
 			}
 		}
 	}
-}
-
-export function BuildActorObjectHash(item: ActorObject | number) {
-	if (typeof item == 'number') return `actorobject.id.${item}`;
-
-	return `actorobject.id.${item.getObjectId()}`;
 }
 
 export class ActorObject extends PIXI.Container implements IGameObject {

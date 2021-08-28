@@ -1,29 +1,11 @@
 import { LAND_WIDTH } from '../../server/land/const';
 import { LandData } from '../../server/land/types';
 import { Vector2 } from '../../server/shared/math';
-import { ObjectStore } from '../../shared/store';
+import { HashedStore } from '../../shared/store';
 import { StaticObject } from '../shared/game-object';
 import { TextureManager } from '../texture';
 import { BrickObject } from './brick';
 import * as PIXI from 'pixi.js';
-
-export function BuildLandObjectIdHash(item: LandObject | number): string {
-	if (typeof item == 'number') return `land.id.${item}`;
-	else return BuildLandObjectIdHash(item.getObjectId());
-}
-
-export function BuildLandObjectLocHash(item: LandObject | Vector2): string {
-	if (item instanceof Vector2) return `land.pos.${item.x}#${item.y}`;
-
-	return BuildLandObjectLocHash(item.getLandLoc());
-}
-export function BuildBrickObjectOffsetHash(item: BrickObject | Vector2): string {
-	if (item instanceof BrickObject) {
-		const offLoc = item.getOffsetLoc();
-		return BuildBrickObjectOffsetHash(offLoc);
-	}
-	return `brick.offset.${item.x}#${item.y}`;
-}
 
 export class LandObject extends StaticObject {
 	private brickContainer = new PIXI.Container();
@@ -32,7 +14,7 @@ export class LandObject extends StaticObject {
 	constructor(initLandData: LandData, textureManager: TextureManager, objectId: number, private landLoc: Vector2) {
 		super(textureManager, objectId, new Vector2(1, 1), landLoc.mul(LAND_WIDTH), landLoc.mul(LAND_WIDTH));
 		this.zIndex = 0;
-		this.bricks = new ObjectStore<BrickObject>(this.brickContainer, BuildBrickObjectOffsetHash);
+		this.bricks = new HashedStore<BrickObject>(this.brickContainer, (item) => [item.x, item.y]);
 
 		this.addChild(this.brickContainer);
 
@@ -59,6 +41,6 @@ export class LandObject extends StaticObject {
 	}
 
 	getBrickByOffset(offLoc: Vector2) {
-		return this.bricks.get(BuildBrickObjectOffsetHash(offLoc));
+		return this.bricks.get(offLoc.x, offLoc.y);
 	}
 }

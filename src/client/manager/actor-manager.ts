@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { ActorObject, BuildActorObjectHash } from '../shared/game-object';
+import { ActorObject } from '../shared/game-object';
 import { StoreManager } from '../shared/manager';
 import { ActorStore, ObjectContainer } from '../shared/store';
 
@@ -12,7 +12,7 @@ export class ActorManager extends StoreManager {
 		this.actorStore.add(item);
 	}
 	getActorById(objectId: number) {
-		return this.actorStore.get(BuildActorObjectHash(objectId));
+		return this.actorStore.get(objectId);
 	}
 	removeActor(item: ActorObject) {
 		this.actorStore.remove(item);

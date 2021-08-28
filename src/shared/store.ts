@@ -4,69 +4,68 @@ import * as PIXI from 'pixi.js';
 export class SetStore extends Set {}
 export class MapStore<V> extends Map<string, V> {}
 
-export type Hasher<T> = (item: T) => string;
+export const HASH_SPLIT_CHAR = '#';
+export type HashItem = string | number;
+export type Hasher<T> = (item: T) => HashItem[] | HashItem[][];
 
-export class IndexedStore<T> extends EventEmitter {
-	private map = new Map<string, T>();
-	private set = new Set<T>();
-	private length = 0;
-	private hashers: Hasher<T>[];
-	constructor(...hashers: Hasher<T>[]) {
-		super();
-		this.hashers = hashers;
-	}
-	private getHashesOrFail(item: T, shouldExists = false) {
-		const hashes = this.hashers.map((hasher) => hasher(item));
-
-		const exists = hashes.map((hash) => this.map.has(hash)).find((has) => has);
-		if (exists && shouldExists == false) throw new Error(`该项已存在`);
-
-		if (!exists && shouldExists == true) throw new Error(`该项不存在`);
-
-		return hashes;
-	}
-	size() {
-		return this.length;
-	}
-	add(item: T) {
-		const hashes = this.getHashesOrFail(item, false);
-		for (const hash of hashes) this.map.set(hash, item);
-		this.set.add(item);
-		this.length += 1;
-		this.emit('add', item);
-	}
-	remove(item: T) {
-		const hashes = this.getHashesOrFail(item, true);
-
-		for (const hash of hashes) this.map.delete(hash);
-
-		this.set.delete(item);
-		this.length -= 1;
-
-		this.emit('remove', item);
-	}
-	has(hash: string) {
-		return this.map.has(hash);
-	}
-	get(hash: string) {
-		return this.map.get(hash);
-	}
-	getAll() {
-		return Array.from(this.set.values());
-	}
+export interface ObjectContainer<T> {
+	addChild(item: T): void;
+	removeChild(item: T): void;
 }
 
-export class ObjectStore<T extends PIXI.DisplayObject> extends IndexedStore<T> {
-	constructor(private container: PIXI.Container, ...hashers: Hasher<T>[]) {
-		super(...hashers);
-	}
+export class HashedStore<T extends PIXI.DisplayObject> {
+	private store = new Map<string, T>();
+	constructor(private container: ObjectContainer<T>, private initHasher?: Hasher<T>) {}
 	add(item: T) {
-		super.add(item);
+		const hashes = this.getHashStrings(item);
+		if (this.hasHashes(hashes)) return;
+
+		for (const hash of hashes) {
+			this.store.set(hash, item);
+		}
 		this.container.addChild(item);
 	}
 	remove(item: T) {
-		super.remove(item);
+		const hashes = this.getHashStrings(item);
+		if (this.hasHashes(hashes) === false) return;
+
+		for (const hash of hashes) {
+			this.store.delete(hash);
+		}
 		this.container.removeChild(item);
+	}
+	get(...hashItems: HashItem[]) {
+		const hashStr = this.getSingleHashString(hashItems);
+		return this.store.get(hashStr);
+	}
+	getAll() {
+		return Array.from(this.store.values());
+	}
+	private hasHashes(hashes: string[]) {
+		for (const hash of hashes) {
+			if (this.store.has(hash)) return true;
+		}
+		return false;
+	}
+	private getHashStrings(item: T): string[] {
+		const hasher = this.initHasher || this.hash;
+		const hashed = hasher(item);
+		if (Array.isArray(hashed[0])) {
+			return (hashed as HashItem[][]).map((hash) => {
+				return this.getSingleHashString(hash);
+			});
+		} else {
+			return [this.getSingleHashString(hashed as HashItem[])];
+		}
+	}
+	private getSingleHashString(hash: HashItem[]) {
+		return `${this.getObjectTypeName()}${HASH_SPLIT_CHAR}${hash.join(HASH_SPLIT_CHAR)}`;
+	}
+	protected getObjectTypeName(): string {
+		return this.constructor.name;
+	}
+	protected hash(item: T): HashItem[] | HashItem[][] {
+		return [];
 	}
 
 	getContainer() {

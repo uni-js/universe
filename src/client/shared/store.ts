@@ -1,6 +1,6 @@
-import { MapStore, ObjectStore } from '../../shared/store';
-import { ActorObject, BuildActorObjectHash, IGameObject } from '../shared/game-object';
-import { BuildLandObjectIdHash, BuildLandObjectLocHash, LandObject } from '../object/land';
+import { MapStore, HashedStore } from '../../shared/store';
+import { ActorObject, IGameObject } from '../shared/game-object';
+import { LandObject } from '../object/land';
 import { inject, injectable } from 'inversify';
 
 import * as PIXI from 'pixi.js';
@@ -18,23 +18,32 @@ export class ActorContainer extends PIXI.Container {}
 export class UiContainer extends PIXI.Container {}
 
 @injectable()
-export class ActorStore extends ObjectStore<ActorObject> {
+export class ActorStore extends HashedStore<ActorObject> {
 	constructor(@inject(ActorContainer) actorContainer: ActorContainer) {
-		super(actorContainer, BuildActorObjectHash);
+		super(actorContainer);
+	}
+	hash(item: ActorObject) {
+		return [item.getObjectId()];
 	}
 }
 
 @injectable()
-export class UiStore extends ObjectStore<IGameObject> {
+export class UiStore extends HashedStore<IGameObject> {
 	constructor(@inject(UiContainer) uiContainer: UiContainer) {
 		super(uiContainer);
 	}
+	hash(item: IGameObject): string[] {
+		return [];
+	}
 }
 
 @injectable()
-export class LandStore extends ObjectStore<LandObject> {
+export class LandStore extends HashedStore<LandObject> {
 	constructor(@inject(ActorContainer) actorContainer: ActorContainer) {
-		super(actorContainer, BuildLandObjectIdHash, BuildLandObjectLocHash);
+		super(actorContainer);
+	}
+	hash(item: LandObject) {
+		return [[item.getObjectId()], [item.x, item.y]];
 	}
 }
 

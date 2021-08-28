@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { LandLocToLoc, PosToLandPos } from '../../server/land/helper';
 import { Vector2 } from '../../server/shared/math';
 import { StoreManager } from '../shared/manager';
-import { BuildLandObjectIdHash, BuildLandObjectLocHash, LandObject } from '../object/land';
+import { LandObject } from '../object/land';
 import { LandStore } from '../shared/store';
 
 @injectable()
@@ -17,10 +17,10 @@ export class LandManager extends StoreManager {
 		this.landStore.remove(item);
 	}
 	getLandById(id: number) {
-		return this.landStore.get(BuildLandObjectIdHash(id));
+		return this.landStore.get(id);
 	}
 	getLandByLoc(landLoc: Vector2) {
-		return this.landStore.get(BuildLandObjectLocHash(landLoc));
+		return this.landStore.get(landLoc.x, landLoc.y);
 	}
 	getBrickByLoc(pos: Vector2) {
 		const landLoc = PosToLandPos(pos);

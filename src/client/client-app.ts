@@ -4,7 +4,6 @@ import { HTMLInputProvider } from './input';
 import { ActorManager } from './manager/actor-manager';
 import { TextureManager } from './texture';
 import { EventBusClient } from '../event/bus-client';
-import { MapStore, ObjectStore } from '../shared/store';
 import { Viewport } from './viewport';
 import { LandManager } from './manager/land-manager';
 import { Container } from 'inversify';

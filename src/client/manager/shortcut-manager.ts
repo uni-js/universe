@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { ObjectStore } from '../../shared/store';
+import { HashedStore } from '../../shared/store';
 import { HTMLInputProvider, InputKey } from '../input';
 import { IGameObject } from '../shared/game-object';
 import { StoreManager } from '../shared/manager';
@@ -14,7 +14,7 @@ export class ShortcutManager extends StoreManager {
 
 	constructor(
 		@inject(HTMLInputProvider) private input: HTMLInputProvider,
-		@inject(UiStore) private uiStore: ObjectStore<IGameObject>,
+		@inject(UiStore) private uiStore: HashedStore<IGameObject>,
 		@inject(Viewport) private viewport: IViewport,
 		@inject(TextureManager) textureManager: TextureManager,
 	) {
