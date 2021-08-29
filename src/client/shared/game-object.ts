@@ -7,7 +7,7 @@ import { Direction, WalkingState } from '../../shared/actor';
 
 import { doTickable } from '../../shared/update';
 import { GameEvent } from '../event';
-import { TextureManager, GetEmptyTexture } from '../texture';
+import { TextureContainer, GetEmptyTexture } from '../texture';
 
 export interface IGameObject extends doTickable, PIXI.DisplayObject {
 	getObjectId(): number;
@@ -20,7 +20,7 @@ export class StaticObject extends PIXI.Container implements IGameObject {
 	protected sprite: PIXI.Sprite;
 
 	constructor(
-		protected textureManager: TextureManager,
+		protected texture: TextureContainer,
 		protected objectId: number,
 		size: Vector2,
 		relativeLoc: Vector2,
@@ -112,7 +112,7 @@ export class ActorObject extends PIXI.Container implements IGameObject {
 
 	constructor(
 		protected actorType: ActorType,
-		protected textureManager: TextureManager,
+		protected texture: TextureContainer,
 		protected objectId: number,
 		protected size: Vector2,
 		private pos: Vector2,
@@ -122,8 +122,8 @@ export class ActorObject extends PIXI.Container implements IGameObject {
 
 		this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);
 
-		this.usedTextures = this.textureManager.get(`actor.${this.actorType}`)!;
-		this.shadow = new PIXI.Sprite(this.textureManager.getOne('system.shadow')!);
+		this.usedTextures = this.texture.get(`actor.${this.actorType}`)!;
+		this.shadow = new PIXI.Sprite(this.texture.getOne('system.shadow')!);
 
 		this.nametag = new PIXI.Text('');
 		this.nametag.style = new PIXI.TextStyle({

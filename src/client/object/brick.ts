@@ -1,6 +1,6 @@
 import { Vector2 } from '../../server/shared/math';
 import { StaticObject } from '../shared/game-object';
-import { TextureManager } from '../texture';
+import { TextureContainer } from '../texture';
 import * as PIXI from 'pixi.js';
 import { LAND_WIDTH } from '../../server/land/const';
 import { BrickType } from '../../server/entity/brick';
@@ -11,14 +11,14 @@ export class BrickObject extends StaticObject {
 	constructor(
 		private brickType: BrickType,
 		objectId: number,
-		textureManager: TextureManager,
+		texture: TextureContainer,
 		pos: Vector2,
 		private landLoc: Vector2,
 		private offLoc: Vector2,
 	) {
-		super(textureManager, objectId, new Vector2(1, 1), pos, landLoc.mul(LAND_WIDTH).add(offLoc));
+		super(texture, objectId, new Vector2(1, 1), pos, landLoc.mul(LAND_WIDTH).add(offLoc));
 
-		this.highlightObject = PIXI.Sprite.from(this.textureManager.getOne(`system.brick_highlight`)!);
+		this.highlightObject = PIXI.Sprite.from(this.texture.getOne(`system.brick_highlight`)!);
 		this.highlightObject.width = 1;
 		this.highlightObject.height = 1;
 		this.highlightObject.visible = false;
@@ -43,7 +43,7 @@ export class BrickObject extends StaticObject {
 		return this.brickType;
 	}
 	private loadTexture() {
-		const texture = this.textureManager.getOne(`brick.${this.brickType}.normal`);
+		const texture = this.texture.getOne(`brick.${this.brickType}.normal`);
 		if (!texture) throw new Error(`${this.brickType} 的材质未找到`);
 
 		this.sprite.texture = texture;

@@ -1,5 +1,5 @@
 import { BILLION_VALUE, Vector2 } from '../../server/shared/math';
-import { TextureManager } from '../texture';
+import { TextureContainer } from '../texture';
 import { ActorObject, GameObjectEvent } from '../shared/game-object';
 import { ActorType } from '../../server/shared/entity';
 import { ParticleObject } from '../particle';
@@ -15,8 +15,8 @@ export class Player extends ActorObject {
 	private controlMoved: Vector2 | undefined;
 	private takeControl: boolean = false;
 
-	constructor(textureManager: TextureManager, objectId: number, pos: Vector2, playerName: string) {
-		super(ActorType.PLAYER, textureManager, objectId, new Vector2(1, 1.5), pos, playerName);
+	constructor(texture: TextureContainer, objectId: number, pos: Vector2, playerName: string) {
+		super(ActorType.PLAYER, texture, objectId, new Vector2(1, 1.5), pos, playerName);
 
 		this.setAnchor(0.5, 1);
 		this.setAnimateSpeed(0.12);

@@ -75,6 +75,8 @@ export class ServerApp {
 	}
 
 	private async startLoop() {
+		console.log('the universe game server is running');
+
 		while (true) {
 			const startTime = new Date().getTime();
 			for (const manager of this.managers) {

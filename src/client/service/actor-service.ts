@@ -5,7 +5,7 @@ import { Vector2 } from '../../server/shared/math';
 import { ActorObject, GameObjectEvent, IGameObject } from '../shared/game-object';
 import { ActorManager } from '../manager/actor-manager';
 import { Player } from '../object/player';
-import { TextureManager } from '../texture';
+import { TextureContainer } from '../texture';
 import { inject, injectable } from 'inversify';
 import { PlayerManager } from '../manager/player-manager';
 
@@ -14,7 +14,7 @@ export class ActorService {
 	constructor(
 		@inject(EventBusClient) private eventBus: EventBusClient,
 		@inject(ActorManager) private actorManager: ActorManager,
-		@inject(TextureManager) private textureManager: TextureManager,
+		@inject(TextureContainer) private texture: TextureContainer,
 		@inject(PlayerManager) private playerManager: PlayerManager,
 	) {
 		this.eventBus.on(AddActorEvent.name, this.handleActorAdded.bind(this));
@@ -26,10 +26,10 @@ export class ActorService {
 		console.debug('Spawned', event.actorId, event);
 		const pos = new Vector2(event.x, event.y);
 		if (event.type == ActorType.PLAYER) {
-			const player = new Player(this.textureManager, event.actorId, pos, event.playerName);
+			const player = new Player(this.texture, event.actorId, pos, event.playerName);
 			this.actorManager.addActor(player);
 		} else {
-			const actor = new ActorObject(event.type, this.textureManager, event.actorId, new Vector2(1, 1), pos, '');
+			const actor = new ActorObject(event.type, this.texture, event.actorId, new Vector2(1, 1), pos, '');
 			this.actorManager.addActor(actor);
 		}
 	}

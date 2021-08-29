@@ -1,6 +1,12 @@
 import { injectable } from 'inversify';
 import * as PIXI from 'pixi.js';
+import * as Path from 'path';
 import Pupa from 'pupa';
+
+export enum TextureType {
+	IMAGE,
+	IMAGESET,
+}
 
 export function GetEmptyTexture() {
 	return PIXI.Texture.fromBuffer(new Uint8Array(1), 1, 1);
@@ -20,7 +26,7 @@ export async function LoadResource(url: string) {
 }
 
 @injectable()
-export class TextureManager {
+export class TextureContainer {
 	private textures = new Map<string, PIXI.Texture[]>();
 	constructor() {}
 	async add(name: string, url: string) {
@@ -71,5 +77,32 @@ export class TextureManager {
 		if (!textures[0]) throw new Error(`该材质不存在 ${name} at index [0]`);
 
 		return textures[0];
+	}
+}
+
+/**
+ * 解析一个材质地址
+ *
+ * @returns [材质的key, 材质的类型]
+ */
+export function ParseTexturePath(texturePath: string): [string, TextureType] | undefined {
+	const parsed = Path.parse(texturePath);
+
+	const splited = parsed.name.split('.');
+
+	const isSet = splited[splited.length - 1] == 'set';
+	const isSetJson = parsed.ext === '.json';
+
+	if (isSet) {
+		const setName = splited.slice(0, splited.length - 1).join('.');
+		const joined = Path.join(Path.dirname(parsed.dir), setName);
+		const key = joined.replace(new RegExp('/', 'g'), '.');
+
+		if (isSetJson) return [key, TextureType.IMAGESET];
+	} else {
+		const joined = Path.join(parsed.dir, parsed.name);
+		const key = joined.replace(new RegExp('/', 'g'), '.');
+
+		return [key, TextureType.IMAGE];
 	}
 }

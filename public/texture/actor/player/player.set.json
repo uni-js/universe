@@ -114,7 +114,7 @@
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "player.png",
+	"image": "player.set.png",
 	"format": "RGBA8888",
 	"size": {"w":384,"h":32},
 	"scale": "1",

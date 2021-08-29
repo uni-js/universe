@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { ItemType } from '../../server/entity/item/item';
 import { IGameObject } from '../shared/game-object';
-import { TextureManager } from '../texture';
+import { TextureContainer } from '../texture';
 
 export class ItemBlock extends PIXI.Container {
 	private itemEmpty: boolean = true;
@@ -10,7 +10,7 @@ export class ItemBlock extends PIXI.Container {
 
 	private background;
 
-	constructor(private posX: number, private posY: number, private blockWidth: number, private textureManager: TextureManager) {
+	constructor(private posX: number, private posY: number, private blockWidth: number, private textureManager: TextureContainer) {
 		super();
 
 		this.position.set(this.posX, this.posY);
@@ -46,7 +46,7 @@ export class PlayerInventory extends PIXI.Container implements IGameObject {
 	private getUiHeight() {
 		return this.padding * 2 + this.blockWidth * this.getLineCount() + (this.getLineCount() - 1) * this.blockPadding;
 	}
-	constructor(private textureManager: TextureManager, private parentWidth: number, private parentHeight: number) {
+	constructor(private textureManager: TextureContainer, private parentWidth: number, private parentHeight: number) {
 		super();
 		this.visible = false;
 

@@ -5,11 +5,25 @@ import ReactDOM from 'react-dom';
 
 import { HTMLInputProvider } from './input';
 import { ActorManager } from './manager/actor-manager';
-import { TextureManager } from './texture';
+import { ParseTexturePath, TextureContainer, TextureType } from './texture';
 import { EventBusClient } from '../event/bus-client';
 import { Viewport } from './viewport';
 import { LandManager } from './manager/land-manager';
 import { Container } from 'inversify';
+import { bindToContainer } from './shared/ioc';
+import { CursorManager } from './manager/cursor-manager';
+import { DefaultSceneManager } from './manager/default-scene-manager';
+import { InventoryManager } from './manager/inventory-manager';
+import { PlayerManager } from './manager/player-manager';
+import { ShortcutManager } from './manager/shortcut-manager';
+import { ActorService } from './service/actor-service';
+import { BootService } from './service/boot-service';
+import { LandService } from './service/land-service';
+import { PlayerService } from './service/player-service';
+import { UIEntry } from './ui/entry';
+import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase } from '../shared/database/memory';
+import { GameUI } from './ui/game-ui';
+
 import {
 	ActorContainer,
 	ActorStore,
@@ -22,20 +36,6 @@ import {
 	UIEventBus,
 	UiStore,
 } from './shared/store';
-import { bindToContainer } from './shared/ioc';
-import { CursorManager } from './manager/cursor-manager';
-import { DefaultSceneManager } from './manager/default-scene-manager';
-import { InventoryManager } from './manager/inventory-manager';
-import { PlayerManager } from './manager/player-manager';
-import { ShortcutManager } from './manager/shortcut-manager';
-import { ActorService } from './service/actor-service';
-import { BootService } from './service/boot-service';
-import { LandService } from './service/land-service';
-import { PlayerService } from './service/player-service';
-import { UIEntry } from './ui/entry';
-import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../shared/database/memory';
-import { GameUI } from './ui/game-ui';
-import { EventEmitter } from '../server/shared/event';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -53,7 +53,7 @@ export class ClientApp {
 	private managers: any[] = [];
 	private services: any[] = [];
 
-	private textureManager = new TextureManager();
+	private textureContainer = new TextureContainer();
 
 	private viewport: Viewport;
 	private busClient: EventBusClient;
@@ -71,7 +71,7 @@ export class ClientApp {
 	private wrapper: HTMLDivElement;
 	private uiContainer: HTMLDivElement;
 
-	constructor(private serverUrl: string, private playGround: HTMLDivElement) {
+	constructor(private serverUrl: string, private playGround: HTMLDivElement, private texturePaths: string[]) {
 		this.app = new PIXI.Application({
 			resolution: this.resolution,
 			width: this.worldWidth,
@@ -125,7 +125,7 @@ export class ClientApp {
 		ioc.bind(HTMLInputProvider).toConstantValue(this.inputProvider);
 		ioc.bind(EventBusClient).toConstantValue(this.busClient);
 		ioc.bind(Viewport).toConstantValue(this.viewport);
-		ioc.bind(TextureManager).toConstantValue(this.textureManager);
+		ioc.bind(TextureContainer).toConstantValue(this.textureContainer);
 		ioc.bind(DataStore).toConstantValue(this.dataStore);
 		ioc.bind(UIEventBus).toConstantValue(this.uiEventBus);
 
@@ -188,26 +188,16 @@ export class ClientApp {
 		this.app.ticker.add(this.doTick.bind(this));
 	}
 	private async initTextures() {
-		await this.textureManager.add('system.shadow', './texture/system/shadow.png');
-		await this.textureManager.add('system.brick_highlight', './texture/system/brick_highlight.png');
+		for (const path of this.texturePaths) {
+			const parsed = ParseTexturePath(path);
+			if (Boolean(parsed) === false) continue;
 
-		await this.textureManager.add('inventory.block_background', './texture/inventory/block_background.png');
-		await this.textureManager.add('inventory.background', './texture/inventory/background.png');
-
-		await this.textureManager.add('shortcut.shortcut_background', './texture/shortcut/shortcut_background.png');
-		await this.textureManager.add('shortcut.block_background.normal', './texture/shortcut/block_background_normal.png');
-		await this.textureManager.add('shortcut.block_background.highlight', './texture/shortcut/block_background_highlight.png');
-
-		await this.textureManager.add('shortcut.block_embed_empty', './texture/shortcut/block_embed_empty.png');
-
-		await this.textureManager.addJSON('actor.player', './texture/actor/player/player.json');
-		await this.textureManager.add('brick.rock.normal', './texture/brick/rock/normal.png');
-		await this.textureManager.add('brick.grass.normal', './texture/brick/grass/normal.png');
-		await this.textureManager.add('brick.ice.normal', './texture/brick/ice/normal.png');
-		await this.textureManager.add('brick.dirt.normal', './texture/brick/dirt/normal.png');
-		await this.textureManager.add('brick.drydr.normal', './texture/brick/drydr/normal.png');
-		await this.textureManager.add('brick.sand.normal', './texture/brick/sand/normal.png');
-		await this.textureManager.add('brick.water.normal', './texture/brick/water/normal.png');
-		await this.textureManager.add('brick.wetdr.normal', './texture/brick/wetdr/normal.png');
+			const [key, type] = parsed;
+			if (type == TextureType.IMAGESET) {
+				await this.textureContainer.addJSON(key, path);
+			} else {
+				await this.textureContainer.add(key, path);
+			}
+		}
 	}
 }
