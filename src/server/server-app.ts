@@ -23,6 +23,7 @@ import { Service } from './shared/service';
 
 export interface AppConfig {
 	port: number;
+	dbLocation: string;
 }
 
 export class ServerApp {
@@ -53,7 +54,7 @@ export class ServerApp {
 		this.startLoop();
 	}
 	private initDatabase() {
-		this.pdb = createPersistDatabase(process.env.DB_LOCATION!);
+		this.pdb = createPersistDatabase(this.config.dbLocation);
 		this.mdb = createMemoryDatabase(this.entities);
 	}
 	private initEventBus() {

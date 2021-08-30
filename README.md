@@ -40,8 +40,8 @@ DB_LOCATION=./data/
 git clone <仓库地址>
 
 yarn # 安装项目依赖
-yarn start:server:dev # 启动服务端
-yarn start:client:dev # 启动客户端
+yarn start:server # 启动服务端
+yarn start:client # 启动客户端
 ```
 之后访问客户端对应的网页地址，即可进入游戏程序。
 
