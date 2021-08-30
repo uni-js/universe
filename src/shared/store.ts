@@ -63,7 +63,7 @@ export class HashedStore<T extends PIXI.DisplayObject> {
 	protected getObjectTypeName(): string {
 		return this.constructor.name;
 	}
-	protected hash(): HashItem[] | HashItem[][] {
+	protected hash(item: T): HashItem[] | HashItem[][] {
 		return [];
 	}
 

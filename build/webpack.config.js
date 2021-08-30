@@ -5,11 +5,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const DotEnv = require('dotenv-webpack');
 const { DefinePlugin } = require('webpack');
 const JsStringEscape = require('js-string-escape');
-const isProduction = process.env.NODE_ENV == 'production';
 
-module.exports = (textureLoaded) => {
-	return {
-		devtool: false,
+module.exports = (textureLoaded, isProduction) => {
+	const config = {
 		mode: isProduction ? 'production' : 'development',
 
 		plugins: [
@@ -46,4 +44,14 @@ module.exports = (textureLoaded) => {
 			fs: 'memfs',
 		},
 	};
+
+	if (!isProduction) {
+		config.devServer = {
+			host: '0.0.0.0',
+			port: 5000,
+			liveReload: true,
+		};
+		config.devtool = 'inline-source-map';
+	}
+	return config;
 };

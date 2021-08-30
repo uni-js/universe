@@ -83,9 +83,10 @@ export class TextureContainer {
 /**
  * 解析一个材质地址
  *
- * @returns [材质的key, 材质的类型]
+ * @returns [材质的key, 材质的路径, 材质的类型]
  */
-export function ParseTexturePath(texturePath: string): [string, TextureType] | undefined {
+export function ParseTexturePath(texturePath: string): [string, string, TextureType] | undefined {
+	const relPath = Path.join('texture', texturePath);
 	const parsed = Path.parse(texturePath);
 
 	const splited = parsed.name.split('.');
@@ -98,11 +99,11 @@ export function ParseTexturePath(texturePath: string): [string, TextureType] | u
 		const joined = Path.join(Path.dirname(parsed.dir), setName);
 		const key = joined.replace(new RegExp('/', 'g'), '.');
 
-		if (isSetJson) return [key, TextureType.IMAGESET];
+		if (isSetJson) return [key, relPath, TextureType.IMAGESET];
 	} else {
 		const joined = Path.join(parsed.dir, parsed.name);
 		const key = joined.replace(new RegExp('/', 'g'), '.');
 
-		return [key, TextureType.IMAGE];
+		return [key, relPath, TextureType.IMAGE];
 	}
 }

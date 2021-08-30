@@ -191,12 +191,11 @@ export class ClientApp {
 		for (const path of this.texturePaths) {
 			const parsed = ParseTexturePath(path);
 			if (Boolean(parsed) === false) continue;
-
-			const [key, type] = parsed;
+			const [key, relPath, type] = parsed;
 			if (type == TextureType.IMAGESET) {
-				await this.textureContainer.addJSON(key, path);
+				await this.textureContainer.addJSON(key, relPath);
 			} else {
-				await this.textureContainer.add(key, path);
+				await this.textureContainer.add(key, relPath);
 			}
 		}
 	}

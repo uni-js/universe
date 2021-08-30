@@ -5,13 +5,20 @@ export const MemoryDatabaseSymbol = Symbol();
 
 export type ICollection<T extends Record<string, any>> = LokiJS.Collection<T>;
 
+export type EntityQuery<T> = LokiQuery<T>;
+
 export type IMemoryDatabase = LokiJS;
 
 export class MemoryDatabase extends LokiJS {}
 
-export class Entity {
+export class Entity implements LokiObj {
 	$loki: number;
-	meta: Record<string, any> = {};
+	meta: {
+		created: number;
+		revision: number;
+		updated: number;
+		version: number;
+	};
 }
 export interface EntityImpl {
 	new (): Entity;

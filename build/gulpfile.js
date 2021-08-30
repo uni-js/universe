@@ -1,21 +1,26 @@
 const gulp = require('gulp');
 const textureToEnv = require('./texture-to-env');
 const webpack = require('webpack');
+const webpackDevServer = require('webpack-dev-server');
 const webpackStream = require('webpack-stream');
 const webpackConfig = require('./webpack.config');
-const liveServer = require('gulp-live-server');
 const tsconfig = require('../tsconfig.json');
 const cp = require('child_process');
 const ts = require('gulp-typescript');
+const debug = require('gulp-debug');
+const cached = require('gulp-cached');
+const remember = require('gulp-remember');
+const Path = require('path');
 
 const compileTypeScript = ts.createProject(tsconfig.compilerOptions);
 
 const path = {
 	webDest: 'web-dist',
 	serverDest: 'lib',
-	source: 'src/**/*',
-	sourceServer: 'src/**/*{ts,tsx}',
+	sourceClient: ['src/client/**/*{ts,tsx,css}', 'src/shared/**/*{ts,tsx,css}', 'src/event/**/*{ts,tsx,css}'],
+	sourceServer: ['src/server/**/*.ts', 'src/shared/**/*.ts', 'src/event/**/*.ts'],
 	entry: 'src/client/index.ts',
+	publicDir: 'public',
 	public: 'public/**/*',
 	texture: 'public/texture/**/*',
 };
@@ -34,8 +39,16 @@ gulp.task('inject-textures-to-env', () => {
 gulp.task('bundle-client-by-webpack', () => {
 	return gulp
 		.src(path.entry)
-		.pipe(webpackStream(webpackConfig(process.env.TEXTURE_LOADED), webpack))
+		.pipe(webpackStream(webpackConfig(process.env.TEXTURE_LOADED, true), webpack))
 		.pipe(gulp.dest(path.webDest));
+});
+
+gulp.task('watch-client-by-webpack', (cb) => {
+	const config = webpackConfig(process.env.TEXTURE_LOADED, false);
+	config.entry = Path.resolve(path.entry);
+	config.devServer.static = { directory: Path.resolve(path.publicDir) };
+	const webpackCompiler = webpack(config);
+	new webpackDevServer(config.devServer, webpackCompiler).startCallback(cb);
 });
 
 gulp.task('copy-public-to-dist', () => {
@@ -43,33 +56,17 @@ gulp.task('copy-public-to-dist', () => {
 });
 
 gulp.task('compile-as-typescript', () => {
-	return gulp.src(path.sourceServer).pipe(compileTypeScript()).pipe(gulp.dest(path.serverDest));
+	return gulp
+		.src(path.sourceServer)
+		.pipe(cached('ts-compile'))
+		.pipe(debug({ title: '编译: ' }))
+		.pipe(compileTypeScript())
+		.pipe(remember('ts-compile'))
+		.pipe(gulp.dest(path.serverDest));
 });
 
-gulp.task('client', gulp.series('inject-textures-to-env', 'bundle-client-by-webpack', 'copy-public-to-dist'));
-
-gulp.task(
-	'watch-client',
-	gulp.series('client', () => {
-		const server = liveServer.static(path.webDest, 5000);
-		server.start();
-
-		gulp.watch(
-			path.source,
-			gulp.series(
-				(cb) => {
-					server.stop();
-					cb();
-				},
-				'bundle-client-by-webpack',
-				(cb) => {
-					server.start();
-					cb();
-				},
-			),
-		);
-	}),
-);
+gulp.task('client', gulp.series('inject-textures-to-env', 'copy-public-to-dist', 'bundle-client-by-webpack'));
+gulp.task('watch-client', gulp.series('inject-textures-to-env', 'copy-public-to-dist', 'watch-client-by-webpack'));
 
 gulp.task('server', gulp.series('compile-as-typescript'));
 
@@ -89,8 +86,8 @@ gulp.task(
 		}
 		spawnServer();
 
-		gulp.watch(
-			path.source,
+		const watcher = gulp.watch(
+			path.sourceServer,
 			gulp.series(
 				(cb) => {
 					killServer();
@@ -103,6 +100,13 @@ gulp.task(
 				},
 			),
 		);
+
+		watcher.on('change', function (event) {
+			if (event.type === 'deleted') {
+				delete cached.caches.scripts[event.path];
+				remember.forget('ts-compile', event.path);
+			}
+		});
 	}),
 );
 

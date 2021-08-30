@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Entity, IMemoryDatabase } from '../../shared/database/memory';
+import { Entity, EntityQuery, IMemoryDatabase } from '../../shared/database/memory';
 import { UIEventBus } from '../shared/store';
 
 export type DataSource = IMemoryDatabase;
@@ -58,4 +58,16 @@ export function useTicker(fn: TickingFunction, deps: any[] = []) {
 			ticker.remove(fn);
 		};
 	}, deps);
+}
+
+export function useData<E extends Entity>(cls: new () => E, query: EntityQuery<E>) {
+	const [state, setState] = React.useState<E>();
+
+	const source = useCollection(cls);
+
+	useTicker(() => {
+		setState({ ...source.findOne(query) });
+	});
+
+	return state;
 }
