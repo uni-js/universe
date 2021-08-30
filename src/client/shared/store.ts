@@ -1,4 +1,4 @@
-import { MapStore, HashedStore } from '../../shared/store';
+import { HashedStore } from '../../shared/store';
 import { ActorObject, IGameObject } from '../shared/game-object';
 import { LandObject } from '../object/land';
 import { inject, injectable } from 'inversify';

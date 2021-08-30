@@ -17,14 +17,13 @@ process.on('unhandledRejection', (err) => {
 	console.error('unhandledRejection', err);
 });
 
-function start(){
+function start() {
 	const dbLocation = process.env.DB_LOCATION;
-	if(Boolean(dbLocation) === false)
-		throw new Error(`please provide env: DB_LOCATION`);
-		
+	if (Boolean(dbLocation) === false) throw new Error(`please provide env: DB_LOCATION`);
+
 	new ServerApp({
 		port: 7000,
-		dbLocation
+		dbLocation,
 	});
 }
 

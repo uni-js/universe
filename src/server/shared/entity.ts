@@ -1,6 +1,3 @@
-import { doTickable } from '../../shared/update';
-import { GetUniqueId, Vector2 } from './math';
-import { EventEmitter } from './event';
 import { Direction, WalkingState } from '../../shared/actor';
 import { Entity } from '../../shared/database/memory';
 
@@ -13,21 +10,21 @@ export enum ActorType {
 }
 
 export class Actor extends Entity {
-	posX: number = 0;
-	posY: number = 0;
+	posX = 0;
+	posY = 0;
 
-	atLandX: number = 0;
-	atLandY: number = 0;
+	atLandX = 0;
+	atLandY = 0;
 
-	motionX: number = 0;
-	motionY: number = 0;
+	motionX = 0;
+	motionY = 0;
 	type: ActorType;
 
 	isMoveDirty = false;
 	isBaseStateDirty = false;
 	isLandMoveDirty = false;
 
-	isActor: boolean = true;
+	isActor = true;
 
 	direction: Direction = Direction.FORWARD;
 	walking: WalkingState = WalkingState.SILENT;

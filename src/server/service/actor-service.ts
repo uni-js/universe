@@ -1,13 +1,11 @@
 import { ActorNewPosEvent, ActorSetStateEvent } from '../../event/server-side';
 import { EventBus } from '../../event/bus-server';
-import { Actor } from '../shared/entity';
 import { ActorManager } from '../manager/actor-manager';
 import { PlayerManager } from '../manager/player-manager';
 import { Service } from '../shared/service';
 import { LandManager } from '../manager/land-manager';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
-import { Vector2 } from '../shared/math';
 
 @injectable()
 export class ActorService implements Service {

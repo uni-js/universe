@@ -1,4 +1,3 @@
-import { EventEmitter } from '../server/shared/event';
 import * as PIXI from 'pixi.js';
 
 export class SetStore extends Set {}
@@ -64,7 +63,7 @@ export class HashedStore<T extends PIXI.DisplayObject> {
 	protected getObjectTypeName(): string {
 		return this.constructor.name;
 	}
-	protected hash(item: T): HashItem[] | HashItem[][] {
+	protected hash(): HashItem[] | HashItem[][] {
 		return [];
 	}
 

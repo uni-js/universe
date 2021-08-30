@@ -43,7 +43,7 @@ export enum BiomeType {
 }
 
 export class BiomePicker {
-	static SCALE_RATIO: number = 50;
+	static SCALE_RATIO = 50;
 
 	private temperNoise: SimplexNoise;
 	private wetNoise: SimplexNoise;

@@ -3,15 +3,15 @@ import LokiJS from 'lokijs';
 
 export const MemoryDatabaseSymbol = Symbol();
 
-export interface ICollection<T extends object> extends LokiJS.Collection<T> {}
+export type ICollection<T extends Record<string, any>> = LokiJS.Collection<T>;
 
-export interface IMemoryDatabase extends LokiJS {}
+export type IMemoryDatabase = LokiJS;
 
 export class MemoryDatabase extends LokiJS {}
 
 export class Entity {
 	$loki: number;
-	meta: object = {};
+	meta: Record<string, any> = {};
 }
 export interface EntityImpl {
 	new (): Entity;

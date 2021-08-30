@@ -27,7 +27,7 @@ export function GetRadiusLands(pos: Vector2, radius: number): Vector2[] {
 export class Land extends Entity {
 	landLocX: number;
 	landLocY: number;
-	isLoaded: boolean = false;
-	isLoading: boolean = false;
+	isLoaded = false;
+	isLoading = false;
 	actors: number[] = [];
 }

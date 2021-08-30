@@ -18,7 +18,7 @@ export class BrickObject extends StaticObject {
 	) {
 		super(texture, objectId, new Vector2(1, 1), pos, landLoc.mul(LAND_WIDTH).add(offLoc));
 
-		this.highlightObject = PIXI.Sprite.from(this.texture.getOne(`system.brick_highlight`)!);
+		this.highlightObject = PIXI.Sprite.from(this.texture.getOne(`system.brick_highlight`));
 		this.highlightObject.width = 1;
 		this.highlightObject.height = 1;
 		this.highlightObject.visible = false;

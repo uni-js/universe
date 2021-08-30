@@ -1,5 +1,5 @@
 import { EventEmitter2 } from 'eventemitter2';
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import { io } from 'socket.io-client';
 import { IRemoteEvent } from './event';
 

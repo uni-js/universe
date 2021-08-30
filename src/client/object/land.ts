@@ -25,7 +25,7 @@ export class LandObject extends StaticObject {
 	}
 
 	setLandData(landData: LandData) {
-		for (const [index, brick] of landData.bricks.entries()) {
+		for (const [, brick] of landData.bricks.entries()) {
 			const brickLoc = new Vector2(brick.offX, brick.offY);
 
 			const newBrick = new BrickObject(brick.type, -1, this.texture, brickLoc, this.landLoc, new Vector2(brick.offX, brick.offY));

@@ -1,6 +1,6 @@
 import { Actor } from '../shared/entity';
 import { Manager } from '../shared/manager';
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import { ICollection, injectCollection } from '../../shared/database/memory';
 import { GameEvent } from '../event';
 import { Vector2 } from '../shared/math';
@@ -23,7 +23,7 @@ export class ActorManager extends Manager {
 	getAllActors() {
 		return this.actorList.find();
 	}
-	getActorById(actorId: number) {
+	getActorById(actorId: number): Actor {
 		return this.actorList.findOne({
 			$loki: actorId,
 		});

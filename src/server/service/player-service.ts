@@ -24,7 +24,7 @@ export class PlayerService implements Service {
 		this.playerManager.on(GameEvent.DespawnActorEvent, this.onActorDespawned.bind(this));
 	}
 	private handleSetActorState(connId: string, event: SetPlayerStateEvent) {
-		const player = this.playerManager.getPlayerByConnId(connId)!;
+		const player = this.playerManager.getPlayerByConnId(connId);
 
 		this.actorManager.setBaseState(player.$loki, event.walking, event.dir);
 	}
@@ -49,9 +49,9 @@ export class PlayerService implements Service {
 		console.log(`user logined :`, player.connId);
 	}
 	private handleMovePlayer(connId: string, event: MovePlayerEvent) {
-		const player = this.playerManager.getPlayerByConnId(connId)!;
+		const player = this.playerManager.getPlayerByConnId(connId);
 		this.actorManager.moveToPosition(player, new Vector2(event.x, event.y));
 	}
 
-	doTick(tick: number): void {}
+	doTick(): void {}
 }

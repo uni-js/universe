@@ -22,7 +22,7 @@ export class LandService {
 		this.landManager.addLand(land);
 	};
 	private handleLandRemoved = (event: RemoveLandEvent) => {
-		const land = this.landManager.getLandById(event.entityId)!;
+		const land = this.landManager.getLandById(event.entityId);
 		this.landManager.removeLand(land);
 	};
 }

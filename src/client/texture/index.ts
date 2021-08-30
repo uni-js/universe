@@ -31,12 +31,12 @@ export class TextureContainer {
 	constructor() {}
 	async add(name: string, url: string) {
 		const resource = await LoadResource(url);
-		const texture = resource.texture!;
+		const texture = resource.texture;
 		this.textures.set(name, [texture]);
 	}
 	async addJSON(name: string, json_url: string) {
 		const resource = await LoadResource(json_url);
-		this.textures.set(name, Object.values(resource.textures!));
+		this.textures.set(name, Object.values(resource.textures));
 	}
 	/**
 	 * 增加一组被编号的材质
@@ -70,7 +70,7 @@ export class TextureContainer {
 	get(name: string) {
 		if (!this.textures.has(name)) throw new Error(`该材质不存在 ${name}`);
 
-		return this.textures.get(name)!;
+		return this.textures.get(name);
 	}
 	getOne(name: string) {
 		const textures = this.get(name);

@@ -1,6 +1,6 @@
 const through = require('through2');
 const path = require('path');
-const replaceAll = require("replace-string");
+const replaceAll = require('replace-string');
 
 function isTexture(pathname) {
 	const exts = ['.png', '.jpg', '.json'];
@@ -14,7 +14,7 @@ module.exports = function TextureToEnv(postHandler) {
 	const loaded = [];
 	const stream = through.obj(function (file, enc, cb) {
 		if (!file.isDirectory() && isTexture(file.relative)) {
-			const filePath = replaceAll(file.relative,path.sep, '/');
+			const filePath = replaceAll(file.relative, path.sep, '/');
 			loaded.push(filePath);
 
 			postHandler && postHandler(filePath);

@@ -1,6 +1,6 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Entity, IMemoryDatabase } from '../../shared/database/memory';
-import { GameInfo, GameInfoType, UIEventBus } from '../shared/store';
+import { UIEventBus } from '../shared/store';
 
 export type DataSource = IMemoryDatabase;
 

@@ -122,8 +122,8 @@ export class ActorObject extends PIXI.Container implements IGameObject {
 
 		this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);
 
-		this.usedTextures = this.texture.get(`actor.${this.actorType}`)!;
-		this.shadow = new PIXI.Sprite(this.texture.getOne('system.shadow')!);
+		this.usedTextures = this.texture.get(`actor.${this.actorType}`);
+		this.shadow = new PIXI.Sprite(this.texture.getOne('system.shadow'));
 
 		this.nametag = new PIXI.Text('');
 		this.nametag.style = new PIXI.TextStyle({

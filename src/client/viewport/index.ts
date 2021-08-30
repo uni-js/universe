@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import * as PIXI from 'pixi.js';
 
 interface Point {

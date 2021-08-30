@@ -2,8 +2,8 @@ import { Actor } from '../shared/entity';
 
 export class Player extends Actor {
 	connId: string;
-	playerName: string = 'Player';
-	isPlayer: boolean = true;
+	playerName = 'Player';
+	isPlayer = true;
 	usedLands: string[] = [];
 	spawnedActors: number[] = [];
 }

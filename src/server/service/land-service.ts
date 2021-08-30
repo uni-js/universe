@@ -1,6 +1,5 @@
 import { EventBus } from '../../event/bus-server';
 import { AddLandEvent, RemoveLandEvent } from '../../event/server-side';
-import { Land } from '../entity/land';
 import { Player } from '../entity/player';
 import { Service } from '../shared/service';
 import { PlayerManager } from '../manager/player-manager';
@@ -58,7 +57,7 @@ export class LandService implements Service {
 		const event = new RemoveLandEvent(land.$loki, land.landLocX, land.landLocY);
 		this.eventBus.emitTo([player.connId], event);
 	};
-	doTick(tick: number) {
+	doTick() {
 		this.loadWorker.doTick();
 	}
 }

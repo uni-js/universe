@@ -55,8 +55,8 @@ export class LandManager extends Manager {
 
 		for (const brick of bricks) {
 			const brickData: BrickData = {
-				offX: brick.offLocX!,
-				offY: brick.offLocY!,
+				offX: brick.offLocX,
+				offY: brick.offLocY,
 				type: brick.brickType,
 			};
 

@@ -1,6 +1,4 @@
 import { inject, injectable } from 'inversify';
-import { GetPosHash } from '../../shared/land';
-import { Land } from '../entity/land';
 import { Player } from '../entity/player';
 import { GameEvent } from '../event';
 import { PosToLandPos } from '../land/helper';

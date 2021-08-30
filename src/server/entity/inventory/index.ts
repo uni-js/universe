@@ -6,7 +6,7 @@ export type Block = Item | undefined;
 export class Inventory extends Entity {}
 
 export class PlayerInventory extends Inventory {
-	size: number = 5;
-	currentIndex: number = 0;
+	size = 5;
+	currentIndex = 0;
 	playerId: number;
 }

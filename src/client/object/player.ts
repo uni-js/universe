@@ -1,8 +1,7 @@
 import { BILLION_VALUE, Vector2 } from '../../server/shared/math';
 import { TextureContainer } from '../texture';
-import { ActorObject, GameObjectEvent } from '../shared/game-object';
+import { ActorObject } from '../shared/game-object';
 import { ActorType } from '../../server/shared/entity';
-import { ParticleObject } from '../particle';
 import { Direction, WalkingState } from '../../shared/actor';
 import { GameEvent } from '../event';
 
@@ -13,7 +12,7 @@ export interface ControlMoved {
 
 export class Player extends ActorObject {
 	private controlMoved: Vector2 | undefined;
-	private takeControl: boolean = false;
+	private takeControl = false;
 
 	constructor(texture: TextureContainer, objectId: number, pos: Vector2, playerName: string) {
 		super(ActorType.PLAYER, texture, objectId, new Vector2(1, 1.5), pos, playerName);
@@ -30,11 +29,11 @@ export class Player extends ActorObject {
 		this.takeControl = true;
 		this.smoothMove = false;
 	}
-	setDirection(direction: Direction, dirty: boolean = true) {
+	setDirection(direction: Direction, dirty = true) {
 		if (this.direction == direction) return;
 
 		const textures = this.getDirectionTextures(direction);
-		textures.push(textures.shift()!);
+		textures.push(textures.shift());
 
 		this.setTextures(textures);
 		this.direction = direction;

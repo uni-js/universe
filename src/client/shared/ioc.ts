@@ -1,4 +1,4 @@
-import { Container, injectable } from 'inversify';
+import { Container } from 'inversify';
 
 export function bindToContainer(container: Container, classes: any[]) {
 	for (const cls of classes) {

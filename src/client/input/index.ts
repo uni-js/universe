@@ -1,7 +1,6 @@
 import { doTickable } from '../../shared/update';
 import Keyboard from 'keyboardjs';
 import { Vector2 } from '../../server/shared/math';
-import { inject, injectable } from 'inversify';
 
 export enum InputKey {
 	UP = 'UP',

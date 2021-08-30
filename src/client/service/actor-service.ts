@@ -2,7 +2,7 @@ import { EventBusClient } from '../../event/bus-client';
 import { ActorNewPosEvent, ActorSetStateEvent, AddActorEvent, RemoveActorEvent } from '../../event/server-side';
 import { ActorType } from '../../server/shared/entity';
 import { Vector2 } from '../../server/shared/math';
-import { ActorObject, GameObjectEvent, IGameObject } from '../shared/game-object';
+import { ActorObject } from '../shared/game-object';
 import { ActorManager } from '../manager/actor-manager';
 import { Player } from '../object/player';
 import { TextureContainer } from '../texture';
@@ -43,7 +43,6 @@ export class ActorService {
 	}
 	private handleActorNewBaseState(event: ActorSetStateEvent) {
 		const object = this.actorManager.getActorById(event.actorId) as ActorObject;
-		const isCurrentPlayer = this.playerManager.isCurrentPlayer(object as Player);
 
 		object.setDirection(event.direction);
 		object.setWalking(event.walking);

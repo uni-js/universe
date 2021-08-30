@@ -4,9 +4,9 @@ import { IGameObject } from '../shared/game-object';
 import { TextureContainer } from '../texture';
 
 export class ItemBlock extends PIXI.Container {
-	private itemEmpty: boolean = true;
+	private itemEmpty = true;
 	private itemType?: ItemType;
-	private itemAmount: number = 0;
+	private itemAmount = 0;
 
 	private background;
 
@@ -25,8 +25,8 @@ export class ItemBlock extends PIXI.Container {
 
 export class PlayerInventory extends PIXI.Container implements IGameObject {
 	private blocks: ItemBlock[] = [];
-	private size: number = 15;
-	private sizePerLine: number = 5;
+	private size = 15;
+	private sizePerLine = 5;
 	private blockWidth = 1.5;
 	private blockPadding = 0.2;
 	private padding = 0.2;
