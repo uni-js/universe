@@ -11,6 +11,7 @@
     "start:client": "gulp watch-client",
     "build:server": "gulp server",
     "build:client": "gulp client",
+    "prepare": "husky install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
