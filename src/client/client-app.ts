@@ -10,7 +10,7 @@ import { EventBusClient } from '../event/bus-client';
 import { Viewport } from './viewport';
 import { LandManager } from './manager/land-manager';
 import { Container } from 'inversify';
-import { bindToContainer } from './shared/ioc';
+import { bindToContainer } from '../shared/ioc';
 import { CursorManager } from './manager/cursor-manager';
 import { DefaultSceneManager } from './manager/default-scene-manager';
 import { InventoryManager } from './manager/inventory-manager';

@@ -17,8 +17,8 @@ const compileTypeScript = ts.createProject(tsconfig.compilerOptions);
 const path = {
 	webDest: 'web-dist',
 	serverDest: 'lib',
-	sourceClient: ['src/client/**/*{ts,tsx,css}', 'src/shared/**/*{ts,tsx,css}', 'src/event/**/*{ts,tsx,css}'],
-	sourceServer: ['src/server/**/*.ts', 'src/shared/**/*.ts', 'src/event/**/*.ts'],
+	sourceClient: ['src/?(client|shared|event)/**/*{.ts,.tsx,.css}'],
+	sourceServer: ['src/?(server|shared|event)/**/*.ts'],
 	entry: 'src/client/index.ts',
 	publicDir: 'public',
 	public: 'public/**/*',
@@ -26,14 +26,11 @@ const path = {
 };
 
 gulp.task('inject-textures-to-env', () => {
-	return gulp
-		.src(path.texture)
-		.pipe(
-			textureToEnv((name) => {
-				console.log('加载材质', name);
-			}),
-		)
-		.pipe(gulp.dest(path.webDest));
+	return gulp.src(path.texture).pipe(
+		textureToEnv((name) => {
+			console.log('加载材质', name);
+		}),
+	);
 });
 
 gulp.task('bundle-client-by-webpack', () => {

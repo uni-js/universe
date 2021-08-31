@@ -12,7 +12,7 @@ import { createPersistDatabase, PersistDatabaseSymbol, IPersistDatabase } from '
 import { LandService } from './service/land-service';
 
 import { Container } from 'inversify';
-import { bindToContainer } from '../client/shared/ioc';
+import { bindToContainer } from '../shared/ioc';
 import { Manager } from './shared/manager';
 import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../shared/database/memory';
 import { Land } from './entity/land';

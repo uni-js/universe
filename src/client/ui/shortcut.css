@@ -1,0 +1,13 @@
+.shortcut-wrapper{
+    height: 50px;
+    position: absolute;
+    bottom: 0px;
+    text-align: center;
+    width: 100%;
+}
+.shortcut-blank{
+    background-color: #EEE;
+    display: inline-block;
+    width: 400px;
+    height: 100%;
+}
