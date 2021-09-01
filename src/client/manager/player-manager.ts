@@ -57,7 +57,7 @@ export class PlayerManager extends StoreManager {
 		const player = this.currentPlayer;
 		if (!player) return;
 
-		const moveSpeed = 0.03;
+		const moveSpeed = 0.06;
 
 		const upPress = this.inputProvider.keyPress(InputKey.W);
 		const downPress = this.inputProvider.keyPress(InputKey.S);

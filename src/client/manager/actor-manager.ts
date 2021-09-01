@@ -1,11 +1,11 @@
 import { inject, injectable } from 'inversify';
 import { ActorObject } from '../shared/game-object';
 import { StoreManager } from '../shared/manager';
-import { ActorStore, ObjectContainer } from '../shared/store';
+import { ActorStore, ActorContainer } from '../shared/store';
 
 @injectable()
 export class ActorManager extends StoreManager {
-	constructor(@inject(ActorStore) private actorStore: ActorStore, @inject(ObjectContainer) private objectContainer: ObjectContainer) {
+	constructor(@inject(ActorStore) private actorStore: ActorStore, @inject(ActorContainer) private actorContainer: ActorContainer) {
 		super();
 	}
 	addActor(item: ActorObject) {
@@ -26,6 +26,6 @@ export class ActorManager extends StoreManager {
 	async doTick(tick: number) {
 		await this.doActorsTick(tick);
 
-		this.objectContainer.sortChildren();
+		this.actorContainer.sortChildren();
 	}
 }

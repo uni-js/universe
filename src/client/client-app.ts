@@ -24,7 +24,7 @@ import { UIEntry } from './ui/entry';
 import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase } from '../shared/database/memory';
 import { GameUI } from './ui/game-ui';
 
-import { LandContainer, ActorStore, DataStore, DataStoreEntities, LandStore, ObjectContainer, UIEventBus } from './shared/store';
+import { LandContainer, ActorStore, DataStore, DataStoreEntities, LandStore, UIEventBus, ActorContainer } from './shared/store';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -120,13 +120,12 @@ export class ClientApp {
 
 		bindCollectionsTo(ioc, DataStoreEntities, this.dataStore);
 
-		bindToContainer(ioc, [ObjectContainer, LandContainer, ActorStore, LandStore, ...this.managers, ...this.services]);
+		bindToContainer(ioc, [ActorContainer, LandContainer, ActorStore, LandStore, ...this.managers, ...this.services]);
 
 		const viewport = ioc.get(Viewport);
 
-		const landContainer = ioc.get(LandContainer);
-
-		viewport.addChild(landContainer);
+		viewport.addChild(ioc.get(LandContainer));
+		viewport.addChild(ioc.get(ActorContainer));
 
 		this.app.stage.addChild(viewport);
 
