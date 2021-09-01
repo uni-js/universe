@@ -33,6 +33,7 @@ export class PlayerManager extends StoreManager {
 	setCurrentPlayer(player: Player) {
 		this.playerInfo.playerActorId = player.getObjectId();
 		this.playerInfo.playerName = 'Player';
+		this.gameInfoList.update(this.playerInfo);
 
 		player.on(GameEvent.ControlMovedEvent, this.onPlayerControlMoved);
 		player.on(GameEvent.SetActorStateEvent, this.onSetActorState);
@@ -90,7 +91,5 @@ export class PlayerManager extends StoreManager {
 	}
 	async doTick(tick: number) {
 		this.doControlMoveTick();
-
-		this.gameInfoList.update(this.playerInfo);
 	}
 }

@@ -62,11 +62,16 @@ export function useTicker(fn: TickingFunction, deps: any[] = []) {
 
 export function useData<E extends Entity>(cls: new () => E, query: EntityQuery<E>) {
 	const [state, setState] = React.useState<E>();
+	const versionRef = React.useRef(null);
 
 	const source = useCollection(cls);
 
 	useTicker(() => {
-		setState({ ...source.findOne(query) });
+		const found = source.findOne(query);
+		if (found && found.meta.revision !== versionRef.current) {
+			versionRef.current = found.meta.revision;
+			setState({ ...found });
+		}
 	});
 
 	return state;
