@@ -273,6 +273,11 @@
   resolved "https://registry.nlark.com/@pixi/ticker/download/@pixi/ticker-6.1.2.tgz"
   integrity sha1-x0siERGwkHAkTL6jUzCq8gj5P1I=
 
+"@pixi/tilemap@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@pixi/tilemap/-/tilemap-3.2.1.tgz#a70fe44f9210f26d75993bd53f1ee6f6607e91fb"
+  integrity sha512-uDYojurwMI0kEnyCKYprUnVi2bd5J2puI3pkH9WySlLzVlocgO/d9Ywtfm9RbtpbzGs/tnxq52TErVlDfQZDAg==
+
 "@pixi/utils@6.1.2":
   version "6.1.2"
   resolved "https://registry.nlark.com/@pixi/utils/download/@pixi/utils-6.1.2.tgz"

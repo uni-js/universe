@@ -1,22 +1,22 @@
 import { LAND_WIDTH } from '../../server/land/const';
 import { LandData } from '../../server/land/types';
 import { Vector2 } from '../../server/shared/math';
-import { HashedStore } from '../../shared/store';
 import { StaticObject } from '../shared/game-object';
 import { TextureContainer } from '../texture';
-import { BrickObject } from './brick';
-import * as PIXI from 'pixi.js';
+import { BRICK_WIDTH } from './brick';
+import { CompositeRectTileLayer } from '@pixi/tilemap';
 
 export class LandObject extends StaticObject {
-	private brickContainer = new PIXI.Container();
-	private bricks;
+	private tileLayer: CompositeRectTileLayer;
 
 	constructor(initLandData: LandData, texture: TextureContainer, objectId: number, private landLoc: Vector2) {
 		super(texture, objectId, new Vector2(1, 1), landLoc.mul(LAND_WIDTH), landLoc.mul(LAND_WIDTH));
 		this.zIndex = 0;
-		this.bricks = new HashedStore<BrickObject>(this.brickContainer, (item) => [item.x, item.y]);
 
-		this.addChild(this.brickContainer);
+		this.tileLayer = new CompositeRectTileLayer();
+		this.tileLayer.scale.set(1 / BRICK_WIDTH, 1 / BRICK_WIDTH);
+
+		this.addChild(this.tileLayer);
 
 		this.setLandData(initLandData);
 	}
@@ -26,14 +26,10 @@ export class LandObject extends StaticObject {
 
 	setLandData(landData: LandData) {
 		for (const [, brick] of landData.bricks.entries()) {
-			const brickLoc = new Vector2(brick.offX, brick.offY);
-
-			const newBrick = new BrickObject(brick.type, -1, this.texture, brickLoc, this.landLoc, new Vector2(brick.offX, brick.offY));
-			this.bricks.add(newBrick);
+			const texture = this.texture.getOne(`brick.${brick.type}.normal`);
+			this.tileLayer.addFrame(texture, brick.offX * BRICK_WIDTH, brick.offY * BRICK_WIDTH);
 		}
 	}
 
-	getBrickByOffset(offLoc: Vector2) {
-		return this.bricks.get(offLoc.x, offLoc.y);
-	}
+	getBrickByOffset(offLoc: Vector2) {}
 }

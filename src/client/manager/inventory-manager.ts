@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { HTMLInputProvider, InputKey } from '../input';
 import { StoreManager } from '../shared/manager';
-import { UiStore } from '../shared/store';
 import { TextureContainer } from '../texture';
 import { PlayerInventory } from '../ui/inventory';
 import { Viewport } from '../viewport';
@@ -12,14 +11,12 @@ export class InventoryManager extends StoreManager {
 
 	constructor(
 		@inject(HTMLInputProvider) private input: HTMLInputProvider,
-		@inject(UiStore) private uiStore: UiStore,
 		@inject(Viewport) private viewport: Viewport,
 		@inject(TextureContainer) private texture: TextureContainer,
 	) {
 		super();
 
 		this.playerInventory = new PlayerInventory(this.texture, this.viewport.getWorldWidth(), this.viewport.getWorldHeight());
-		this.uiStore.add(this.playerInventory);
 	}
 	async doTick(tick: number) {
 		if (this.input.keyDown(InputKey.E)) {

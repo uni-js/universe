@@ -24,18 +24,7 @@ import { UIEntry } from './ui/entry';
 import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase } from '../shared/database/memory';
 import { GameUI } from './ui/game-ui';
 
-import {
-	ActorContainer,
-	ActorStore,
-	BrickContainer,
-	DataStore,
-	DataStoreEntities,
-	LandStore,
-	ObjectContainer,
-	UiContainer,
-	UIEventBus,
-	UiStore,
-} from './shared/store';
+import { LandContainer, ActorStore, DataStore, DataStoreEntities, LandStore, ObjectContainer, UIEventBus } from './shared/store';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -131,29 +120,15 @@ export class ClientApp {
 
 		bindCollectionsTo(ioc, DataStoreEntities, this.dataStore);
 
-		bindToContainer(ioc, [
-			ObjectContainer,
-			ActorContainer,
-			BrickContainer,
-			UiContainer,
-			ActorStore,
-			LandStore,
-			UiStore,
-			...this.managers,
-			...this.services,
-		]);
+		bindToContainer(ioc, [ObjectContainer, LandContainer, ActorStore, LandStore, ...this.managers, ...this.services]);
 
 		const viewport = ioc.get(Viewport);
 
-		const actorContainer = ioc.get(ActorContainer);
-		const brickContainer = ioc.get(BrickContainer);
-		const uiContainer = ioc.get(UiContainer);
+		const landContainer = ioc.get(LandContainer);
 
-		viewport.addChild(actorContainer);
-		viewport.addChild(brickContainer);
+		viewport.addChild(landContainer);
 
 		this.app.stage.addChild(viewport);
-		this.app.stage.addChild(uiContainer);
 
 		this.iocContainer = ioc;
 	}

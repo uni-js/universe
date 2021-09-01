@@ -57,7 +57,7 @@ export class PlayerManager extends StoreManager {
 		const player = this.currentPlayer;
 		if (!player) return;
 
-		const moveSpeed = 0.06;
+		const moveSpeed = 0.03;
 
 		const upPress = this.inputProvider.keyPress(InputKey.W);
 		const downPress = this.inputProvider.keyPress(InputKey.S);
@@ -80,6 +80,10 @@ export class PlayerManager extends StoreManager {
 			player.controlMove(new Vector2(moveSpeed, 0));
 		} else if (upPress) {
 			player.controlMove(new Vector2(0, -moveSpeed));
+		}
+
+		if (!upPress && !leftPress && !rightPress && !downPress) {
+			player.controlMove(false);
 		}
 
 		this.stage.moveCenter(player.position.x, player.position.y);

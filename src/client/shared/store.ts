@@ -11,38 +11,22 @@ import { EventEmitter } from '../../server/shared/event';
 export class ObjectContainer extends PIXI.Container {}
 
 @injectable()
-export class BrickContainer extends PIXI.Container {}
-
-@injectable()
-export class ActorContainer extends PIXI.Container {}
-
-@injectable()
-export class UiContainer extends PIXI.Container {}
+export class LandContainer extends PIXI.Container {}
 
 @injectable()
 export class ActorStore extends HashedStore<ActorObject> {
-	constructor(@inject(ActorContainer) actorContainer: ActorContainer) {
-		super(actorContainer);
+	constructor(@inject(LandContainer) landContainer: LandContainer) {
+		super(landContainer);
 	}
 	hash(item: ActorObject) {
-		return [item.getObjectId()];
-	}
-}
-
-@injectable()
-export class UiStore extends HashedStore<IGameObject> {
-	constructor(@inject(UiContainer) uiContainer: UiContainer) {
-		super(uiContainer);
-	}
-	hash(item: IGameObject) {
-		return [item.constructor.name];
+		return [[item.getObjectId()], [item.getPosition().x, item.getPosition().y]];
 	}
 }
 
 @injectable()
 export class LandStore extends HashedStore<LandObject> {
-	constructor(@inject(ActorContainer) actorContainer: ActorContainer) {
-		super(actorContainer);
+	constructor(@inject(LandContainer) landContainer: LandContainer) {
+		super(landContainer);
 	}
 	hash(item: LandObject) {
 		return [[item.getObjectId()], [item.x, item.y]];

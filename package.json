@@ -18,6 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@pixi/tilemap": "^3.2.1",
     "@types/react": "^17.0.19",
     "@types/react-dom": "^17.0.9",
     "buffer": "^6.0.3",

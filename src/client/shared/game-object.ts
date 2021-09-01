@@ -239,6 +239,10 @@ export class ActorObject extends PIXI.Container implements IGameObject {
 	}
 	setTextures(textures: PIXI.Texture[]) {
 		this.sprite.textures = textures;
+		this.sprite.stop();
+		if (this.playing) {
+			this.sprite.play();
+		}
 
 		this.resize();
 	}

@@ -11,7 +11,7 @@ export interface ControlMoved {
 }
 
 export class Player extends ActorObject {
-	private controlMoved: Vector2 | undefined;
+	private controlMoved: Vector2 | false;
 	private takeControl = false;
 
 	constructor(texture: TextureContainer, objectId: number, pos: Vector2, playerName: string) {
@@ -37,18 +37,18 @@ export class Player extends ActorObject {
 
 		this.setTextures(textures);
 		this.direction = direction;
-		this.setWalking(WalkingState.SILENT);
 
 		if (dirty) this.isStatesDirty = true;
 	}
-	controlMove(delta: Vector2) {
-		if (!this.controlMoved) {
-			this.controlMoved = delta;
+	controlMove(delta: Vector2 | false) {
+		if (delta === false) {
+			this.controlMoved = false;
+			return;
 		}
 
-		if (this.controlMoved) {
-			const delta = this.controlMoved;
+		this.controlMoved = delta;
 
+		if (delta) {
 			if (delta.y > 0) {
 				this.setDirection(Direction.FORWARD);
 			} else if (delta.y < 0) {
@@ -72,10 +72,6 @@ export class Player extends ActorObject {
 			if (this.takeControl) {
 				this.setWalking(WalkingState.SILENT);
 			}
-		}
-
-		if (this.controlMoved) {
-			this.controlMoved = undefined;
 		}
 	}
 	private doOrderTick() {
