@@ -22,6 +22,7 @@
     "@types/react": "^17.0.19",
     "@types/react-dom": "^17.0.9",
     "buffer": "^6.0.3",
+    "classnames": "^2.3.1",
     "color": "^3.1.3",
     "crypto-js": "^4.0.0",
     "curve-interpolator": "^2.0.8",

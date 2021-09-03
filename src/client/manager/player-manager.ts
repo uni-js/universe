@@ -6,16 +6,16 @@ import { Direction, WalkingState } from '../../shared/actor';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
 import { ICollection, injectCollection } from '../../shared/database/memory';
-import { GameInfo, GameInfoType, UIEventBus } from '../shared/store';
+import { PlayerInfo, UIEventBus } from '../shared/store';
 import { Player } from '../object/player';
 
 @injectable()
 export class PlayerManager extends StoreManager {
 	private currentPlayer: Player;
-	private playerInfo: GameInfo;
+	private playerInfo: PlayerInfo;
 
 	constructor(
-		@injectCollection(GameInfo) private gameInfoList: ICollection<GameInfo>,
+		@injectCollection(PlayerInfo) private gameInfoList: ICollection<PlayerInfo>,
 		@inject(HTMLInputProvider) private inputProvider: HTMLInputProvider,
 		@inject(Viewport) private stage: Viewport,
 		@inject(UIEventBus) private uiEvent: UIEventBus,
@@ -24,8 +24,7 @@ export class PlayerManager extends StoreManager {
 
 		this.uiEvent.on('PlayerNameClicked', () => console.log('yes!'));
 
-		const playerInfo = new GameInfo();
-		playerInfo.type = GameInfoType.PLAYER_INFO;
+		const playerInfo = new PlayerInfo();
 
 		this.playerInfo = playerInfo;
 		this.gameInfoList.insertOne(playerInfo);

@@ -39,11 +39,7 @@ export class DataStore extends MemoryDatabase {}
 @injectable()
 export class UIEventBus extends EventEmitter {}
 
-export enum GameInfoType {
-	PLAYER_INFO,
-}
-export class GameInfo extends Entity {
-	type: GameInfoType;
+export class PlayerInfo extends Entity {
 	/**
 	 * 玩家名
 	 */
@@ -55,4 +51,11 @@ export class GameInfo extends Entity {
 	playerActorId: number;
 }
 
-export const DataStoreEntities = [GameInfo];
+export class PlayerInventoryInfo extends Entity {
+	/**
+	 * 当前背包指向的格子坐标
+	 */
+	currentIndexAt = 0;
+}
+
+export const DataStoreEntities = [PlayerInfo, PlayerInventoryInfo];

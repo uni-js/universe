@@ -60,7 +60,7 @@ export function useTicker(fn: TickingFunction, deps: any[] = []) {
 	}, deps);
 }
 
-export function useData<E extends Entity>(cls: new () => E, query: EntityQuery<E>) {
+export function useData<E extends Entity>(cls: new () => E, query: EntityQuery<E> = {}) {
 	const [state, setState] = React.useState<E>();
 	const versionRef = React.useRef(null);
 

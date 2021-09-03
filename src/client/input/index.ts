@@ -97,7 +97,8 @@ export class HTMLInputProvider implements InputProvider {
 
 		Keyboard.on(
 			keyName,
-			() => {
+			(event) => {
+				event.preventRepeat();
 				this.keysDown.set(inputKey, true);
 				this.actions.push([this.tick + 1, () => this.keysDown.set(inputKey, false)]);
 			},

@@ -1,4 +1,4 @@
-import { GameInfo, GameInfoType } from '../shared/store';
+import { PlayerInfo } from '../shared/store';
 import { useData, useEventBus } from './entry';
 import React from 'react';
 import { Shortcut } from './shortcut';
@@ -9,7 +9,7 @@ export function GameUI(props: any) {
 	}
 
 	const eventBus = useEventBus();
-	const playerInfo = useData(GameInfo, { type: GameInfoType.PLAYER_INFO });
+	const playerInfo = useData(PlayerInfo);
 	return (
 		<div onClick={onClicked}>
 			<div id="player-name" style={{ pointerEvents: 'auto', fontSize: '24px', color: 'white' }}>
