@@ -45,6 +45,7 @@ export class LandMoveManager extends Manager {
 		this.landManager.ensureLand(landPos);
 
 		//		const land = this.landManager.getLand(landPos);
+
 		for (const actorId of this.landManager.getLandActors(landPos)) {
 			this.playerManager.spawnActor(player, actorId);
 		}

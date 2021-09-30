@@ -1,9 +1,8 @@
 import { Player } from '../entity/player';
-import { EntityManager, ExtendedEntityManager } from '../shared/manager';
+import { ExtendedEntityManager } from '../shared/manager';
 import { Actor, ActorType } from '../shared/entity';
 import { GetRadiusLands } from '../entity/land';
 import { inject, injectable } from 'inversify';
-import { ICollection, injectCollection } from '../../shared/database/memory';
 import { ActorManager } from './actor-manager';
 import { Vector2 } from '../shared/math';
 import { GameEvent } from '../event';
@@ -18,8 +17,8 @@ export interface PlayerCreatingInfo {
 
 @injectable()
 export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
-	constructor(@injectCollection(Actor) private playerList: ICollection<Actor>, @inject(ActorManager) private actorManager: ActorManager) {
-		super(playerList);
+	constructor(@inject(ActorManager) private actorManager: ActorManager) {
+		super(actorManager);
 
 		this.actorManager.on(GameEvent.NewPosEvent, this.onActorNewPos);
 	}
@@ -34,7 +33,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		if (player.spawnedActors.includes(actorId)) return;
 
 		player.spawnedActors.push(actorId);
-		this.playerList.update(player);
+		this.actorManager.updateEntity(player);
 
 		this.emit(GameEvent.SpawnActorEvent, actorId, player);
 	}
@@ -48,7 +47,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 
 		const index = player.spawnedActors.indexOf(actorId);
 		player.spawnedActors.splice(index, 1);
-		this.playerList.update(player);
+		this.actorManager.updateEntity(player);
 
 		this.emit(GameEvent.DespawnActorEvent, actorId, player);
 	}

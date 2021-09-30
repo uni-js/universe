@@ -12,46 +12,97 @@ export class Manager extends EventEmitter implements IManager {
 	doTick(tick: number): void {}
 }
 
-export class ExtendedEntityManager<T extends Entity, K extends T> extends Manager {
+export interface IEntityManager<T, K> extends Manager {
+	getEntityById(entityId: number): K;
+	updateEntity(entity: K): K;
+	findEntity(query: ObjectQueryCondition<K>): K;
+	findEntities(query?: ObjectQueryCondition<K>): K[];
+	getAllEntities(): K[];
+	hasEntity(query?: ObjectQueryCondition<K>): boolean;
+	addNewEntity(newEntity: K): K;
+	removeEntity(entity: K): void;
+	getEntityList(): ICollection<T>;
+}
+
+export class EntityManager<T extends Entity> extends Manager implements IEntityManager<T, T> {
 	constructor(private entityList: ICollection<T>) {
 		super();
 	}
 
-	getEntityById(entityId: number): K {
+	getEntityList(): ICollection<T> {
+		return this.entityList;
+	}
+
+	getEntityById(entityId: number): T {
 		return this.entityList.findOne({
 			$loki: {
 				$eq: entityId,
 			},
-		}) as K;
+		});
 	}
 
-	findEntity(query: ObjectQueryCondition<K>) {
-		return this.entityList.findOne(query) as K;
+	updateEntity(entity: T): T {
+		return this.entityList.update(entity);
 	}
 
-	findEntities(query?: ObjectQueryCondition<K>): K[] {
-		return this.entityList.find(query) as K[];
+	findEntity(query: ObjectQueryCondition<T>) {
+		return this.entityList.findOne(query);
 	}
 
-	getAllEntities(): K[] {
-		return this.entityList.find() as K[];
+	findEntities(query?: ObjectQueryCondition<T>): T[] {
+		return this.entityList.find(query) as T[];
 	}
 
-	hasEntity(query?: ObjectQueryCondition<K>) {
+	getAllEntities(): T[] {
+		return this.entityList.find();
+	}
+
+	hasEntity(query?: ObjectQueryCondition<T>) {
 		return Boolean(this.findEntity(query));
 	}
 
-	addNewEntity(newEntity: K): K {
+	addNewEntity(newEntity: T): T {
 		const insertedEntity = this.entityList.insertOne(newEntity);
 		this.emit(GameEvent.AddEntityEvent, insertedEntity.$loki, insertedEntity);
-		return insertedEntity as K;
+		return insertedEntity;
 	}
 
-	removeEntity(entity: K) {
+	removeEntity(entity: T) {
 		const entityId = entity.$loki;
 		this.entityList.remove(entity);
 		this.emit(GameEvent.RemoveEntityEvent, entityId, entity);
 	}
 }
 
-export class EntityManager<T extends Entity> extends ExtendedEntityManager<T, T> {}
+export class ExtendedEntityManager<T extends Entity, K extends T> extends Manager implements IEntityManager<T, K> {
+	constructor(private manager: EntityManager<T>) {
+		super();
+	}
+	getEntityById(entityId: number): K {
+		return this.manager.getEntityById(entityId) as K;
+	}
+	updateEntity(entity: K): K {
+		return this.manager.updateEntity(entity) as K;
+	}
+	findEntity(query: ObjectQueryCondition<K>): K {
+		return this.manager.findEntity(query) as K;
+	}
+	findEntities(query?: ObjectQueryCondition<K>): K[] {
+		return this.manager.findEntities(query) as K[];
+	}
+	getAllEntities(): K[] {
+		return this.manager.getAllEntities() as K[];
+	}
+	hasEntity(query?: ObjectQueryCondition<K>): boolean {
+		return this.manager.hasEntity(query);
+	}
+	addNewEntity(newEntity: K): K {
+		return this.manager.addNewEntity(newEntity) as K;
+	}
+	removeEntity(entity: K): void {
+		return this.manager.removeEntity(entity);
+	}
+	getEntityList(): ICollection<T> {
+		return this.manager.getEntityList();
+	}
+}
