@@ -29,7 +29,7 @@ export class PlayerService {
 	private handleLogined(event: LoginedEvent) {
 		console.debug('logined_event', event);
 		const actorId = event.actorId;
-		const player = this.actorManager.getActorById(actorId) as Player;
+		const player = this.actorManager.getObjectById(actorId) as Player;
 		this.playerManager.setCurrentPlayer(player);
 	}
 }

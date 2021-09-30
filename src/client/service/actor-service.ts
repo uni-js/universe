@@ -27,28 +27,28 @@ export class ActorService {
 		const pos = new Vector2(event.x, event.y);
 		if (event.type == ActorType.PLAYER) {
 			const player = new Player(this.texture, event.actorId, pos, event.playerName);
-			this.actorManager.addActor(player);
+			this.actorManager.addGameObject(player);
 		} else {
 			const actor = new ActorObject(event.type, this.texture, event.actorId, new Vector2(1, 1), pos, '');
-			this.actorManager.addActor(actor);
+			this.actorManager.addGameObject(actor);
 		}
 	}
 	private handleActorRemoved(event: RemoveActorEvent) {
-		const object = this.actorManager.getActorById(event.actorId);
+		const object = this.actorManager.getObjectById(event.actorId);
 		console.debug('Despawned', event.actorId, event, object);
 
 		if (!object) return;
 
-		this.actorManager.removeActor(object);
+		this.actorManager.removeGameObject(object);
 	}
 	private handleActorNewBaseState(event: ActorSetStateEvent) {
-		const object = this.actorManager.getActorById(event.actorId) as ActorObject;
+		const object = this.actorManager.getObjectById(event.actorId) as ActorObject;
 
 		object.setDirection(event.direction);
 		object.setWalking(event.walking);
 	}
 	private handleActorNewPos(event: ActorNewPosEvent) {
-		const object = this.actorManager.getActorById(event.actorId) as ActorObject;
+		const object = this.actorManager.getObjectById(event.actorId) as ActorObject;
 		const isCurrentPlayer = this.playerManager.isCurrentPlayer(object as Player);
 		const pos = new Vector2(event.x, event.y);
 

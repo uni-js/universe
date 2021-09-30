@@ -4,16 +4,19 @@ import { PlayerManager } from './player-manager';
 import { ICollection, injectCollection } from '../../shared/database/memory';
 import { inject } from 'inversify';
 import { GameEvent } from '../event';
+import { EntityManager } from '../shared/manager';
 
-export class InventoryManager {
+export class InventoryManager extends EntityManager<Inventory> {
 	constructor(
 		@injectCollection(Inventory) private inventoryList: ICollection<Inventory>,
 		@injectCollection(Inventory) private playerInventoryList: ICollection<PlayerInventory>,
 
 		@inject(PlayerManager) private playerManager: PlayerManager,
 	) {
-		this.playerManager.on(GameEvent.PlayerAddedEvent, this.onPlayerAdded);
-		this.playerManager.on(GameEvent.PlayerRemovedEvent, this.onPlayerRemoved);
+		super(inventoryList);
+
+		this.playerManager.on(GameEvent.AddEntityEvent, this.onPlayerAdded);
+		this.playerManager.on(GameEvent.RemoveEntityEvent, this.onPlayerRemoved);
 	}
 	private onPlayerAdded = (player: Player) => {
 		const shortcut = new PlayerInventory();

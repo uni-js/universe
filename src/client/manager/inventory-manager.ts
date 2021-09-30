@@ -1,12 +1,12 @@
 import { inject, injectable } from 'inversify';
 import { HTMLInputProvider, InputKey } from '../input';
-import { StoreManager } from '../shared/manager';
+import { GameManager } from '../shared/manager';
 import { TextureContainer } from '../texture';
 import { PlayerInventory } from '../ui/inventory';
 import { Viewport } from '../viewport';
 
 @injectable()
-export class InventoryManager extends StoreManager {
+export class InventoryManager extends GameManager {
 	private playerInventory;
 
 	constructor(

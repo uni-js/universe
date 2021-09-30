@@ -31,12 +31,12 @@ export class LandService implements Service {
 	};
 	private onLandDataToPlayer = (playerId: number, landId: number, landLocX: number, landLocY: number, landData: LandData) => {
 		const event = new AddLandEvent(landId, landLocX, landLocY, landData);
-		const player = this.playerManager.getPlayerById(playerId);
+		const player = this.playerManager.getEntityById(playerId);
 
 		this.eventBus.emitTo([player.connId], event);
 	};
 	private onLandLoaded = (landPos: Vector2) => {
-		const players = this.playerManager.getAllPlayers();
+		const players = this.playerManager.getAllEntities();
 
 		for (const player of players) {
 			if (!this.playerManager.isUseLand(player, landPos)) continue;

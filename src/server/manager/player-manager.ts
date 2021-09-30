@@ -1,5 +1,5 @@
 import { Player } from '../entity/player';
-import { Manager } from '../shared/manager';
+import { EntityManager, ExtendedEntityManager } from '../shared/manager';
 import { Actor, ActorType } from '../shared/entity';
 import { GetRadiusLands } from '../entity/land';
 import { inject, injectable } from 'inversify';
@@ -17,17 +17,14 @@ export interface PlayerCreatingInfo {
 }
 
 @injectable()
-export class PlayerManager extends Manager {
-	constructor(
-		@injectCollection(Actor) private playerList: ICollection<Player>,
-		@inject(ActorManager) private actorManager: ActorManager,
-	) {
-		super();
+export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
+	constructor(@injectCollection(Actor) private playerList: ICollection<Actor>, @inject(ActorManager) private actorManager: ActorManager) {
+		super(playerList);
 
 		this.actorManager.on(GameEvent.NewPosEvent, this.onActorNewPos);
 	}
 	private onActorNewPos = (actorId: number) => {
-		const player = this.actorManager.getActorById(actorId) as Player;
+		const player = this.actorManager.getEntityById(actorId) as Player;
 		if (!player.isPlayer) return;
 
 		this.updateUsedLands(player);
@@ -41,9 +38,11 @@ export class PlayerManager extends Manager {
 
 		this.emit(GameEvent.SpawnActorEvent, actorId, player);
 	}
+
 	hasSpawnedActor(player: Player, actorId: number) {
 		return player.spawnedActors.includes(actorId);
 	}
+
 	despawnActor(player: Player, actorId: number) {
 		if (!player.spawnedActors.includes(actorId)) return;
 
@@ -54,18 +53,18 @@ export class PlayerManager extends Manager {
 		this.emit(GameEvent.DespawnActorEvent, actorId, player);
 	}
 
-	getAllPlayers() {
-		return this.playerList.find();
-	}
 	isUseLand(player: Player, landPos: Vector2) {
 		return player.usedLands.includes(GetPosHash(landPos));
 	}
+
 	getCanSeeLands(player: Player) {
 		return GetRadiusLands(new Vector2(player.posX, player.posY), 1);
 	}
-	hasPlayer(connId: string) {
-		return Boolean(this.playerList.findOne({ connId }));
+
+	addNewEntity(): Player {
+		throw new Error(`use addNewPlayer API instead.`);
 	}
+
 	addNewPlayer(info: PlayerCreatingInfo) {
 		const player = new Player();
 		player.connId = info.connId;
@@ -73,25 +72,12 @@ export class PlayerManager extends Manager {
 		player.posY = 0;
 		player.type = ActorType.PLAYER;
 
-		this.actorManager.addNewActor(player);
-
+		this.actorManager.addNewEntity(player);
 		this.updateUsedLands(player);
-		this.emit(GameEvent.PlayerAddedEvent, player);
 
 		return player;
 	}
-	removePlayer(player: Player) {
-		this.actorManager.removeActor(player);
 
-		this.emit(GameEvent.PlayerRemovedEvent, player);
-	}
-
-	getPlayerByConnId(connId: string) {
-		return this.playerList.findOne({ connId });
-	}
-	getPlayerById(id: number) {
-		return this.playerList.findOne({ $loki: id });
-	}
 	useLand(player: Player, landHash: string) {
 		const index = player.usedLands.indexOf(landHash);
 		if (index !== -1) return;
@@ -100,6 +86,7 @@ export class PlayerManager extends Manager {
 
 		this.emit(GameEvent.LandUsedEvent, player, GetPosByHash(landHash));
 	}
+
 	unuseLand(player: Player, landHash: string) {
 		const index = player.usedLands.indexOf(landHash);
 		if (index === -1) return;
@@ -108,6 +95,7 @@ export class PlayerManager extends Manager {
 
 		this.emit(GameEvent.LandNeverUsedEvent, player, GetPosByHash(landHash));
 	}
+
 	private updateUsedLands(player: Player) {
 		const landsPos = GetRadiusLands(new Vector2(player.posX, player.posY), 1);
 		const lands = [];
@@ -124,6 +112,4 @@ export class PlayerManager extends Manager {
 			this.unuseLand(player, item);
 		}
 	}
-
-	doTick(tick: number) {}
 }

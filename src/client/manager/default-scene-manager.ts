@@ -1,8 +1,8 @@
 import { injectable } from 'inversify';
-import { StoreManager } from '../shared/manager';
+import { GameManager } from '../shared/manager';
 
 @injectable()
-export class DefaultSceneManager extends StoreManager {
+export class DefaultSceneManager extends GameManager {
 	constructor() {
 		super();
 	}

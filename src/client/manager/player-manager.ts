@@ -1,6 +1,6 @@
 import { Vector2 } from '../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '../input';
-import { StoreManager } from '../shared/manager';
+import { GameManager } from '../shared/manager';
 import { Viewport } from '../viewport';
 import { Direction, WalkingState } from '../../shared/actor';
 import { inject, injectable } from 'inversify';
@@ -10,7 +10,7 @@ import { PlayerInfo, UIEventBus } from '../shared/store';
 import { Player } from '../object/player';
 
 @injectable()
-export class PlayerManager extends StoreManager {
+export class PlayerManager extends GameManager {
 	private currentPlayer: Player;
 	private playerInfo: PlayerInfo;
 

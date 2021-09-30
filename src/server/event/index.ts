@@ -12,11 +12,9 @@ export enum GameEvent {
 	LandMoveEvent = 'LandMoveEvent',
 	SpawnActorEvent = 'SpawnActorEvent',
 	DespawnActorEvent = 'DespawnActorEvent',
-	PlayerRemovedEvent = 'PlayerRemovedEvent',
-	PlayerAddedEvent = 'PlayerAddedEvent',
 
-	AddActorEvent = 'AddActorEvent',
-	RemoveActorEvent = 'RemoveActorEvent',
+	AddEntityEvent = 'AddEntityEvent',
+	RemoveEntityEvent = 'RemoveEntityEvent',
 
 	NewPosEvent = 'NewPosEvent',
 	NewBaseStateEvent = 'NewBaseStateEvent',

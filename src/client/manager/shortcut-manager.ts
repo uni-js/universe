@@ -1,11 +1,11 @@
 import { inject, injectable } from 'inversify';
 import { ICollection, injectCollection } from '../../shared/database/memory';
 import { HTMLInputProvider, InputKey } from '../input';
-import { StoreManager } from '../shared/manager';
+import { GameManager } from '../shared/manager';
 import { PlayerInventoryInfo } from '../shared/store';
 
 @injectable()
-export class ShortcutManager extends StoreManager {
+export class ShortcutManager extends GameManager {
 	private inventory: PlayerInventoryInfo;
 	constructor(
 		@inject(HTMLInputProvider) private input: HTMLInputProvider,

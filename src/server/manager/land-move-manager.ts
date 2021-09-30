@@ -28,7 +28,7 @@ export class LandMoveManager extends Manager {
 		this.playerManager.on(GameEvent.LandNeverUsedEvent, this.onLandNeverUsed);
 
 		this.actorManager.on(GameEvent.LandMoveEvent, this.onActorLandMoved);
-		this.actorManager.on(GameEvent.RemoveActorEvent, this.onActorRemoved);
+		this.actorManager.on(GameEvent.RemoveEntityEvent, this.onActorRemoved);
 	}
 	private onActorRemoved = (actorId: number, actor: Actor) => {
 		const pos = new Vector2(actor.posX, actor.posY);

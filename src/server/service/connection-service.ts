@@ -9,10 +9,10 @@ export class ConnectionService implements Service {
 		this.eventBus.on(BusEvent.ClientDisconnectEvent, this.onDisconnected.bind(this));
 	}
 	private onDisconnected(connId: string) {
-		const player = this.playerManager.getPlayerByConnId(connId);
+		const player = this.playerManager.findEntity({ connId });
 		if (!player) return;
 
-		this.playerManager.removePlayer(player);
+		this.playerManager.removeEntity(player);
 	}
 	doTick(tick: number) {}
 }

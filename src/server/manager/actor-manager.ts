@@ -1,5 +1,5 @@
 import { Actor } from '../shared/entity';
-import { Manager } from '../shared/manager';
+import { EntityManager } from '../shared/manager';
 import { injectable } from 'inversify';
 import { ICollection, injectCollection } from '../../shared/database/memory';
 import { GameEvent } from '../event';
@@ -8,10 +8,11 @@ import { PosToLandPos } from '../land/helper';
 import { Direction, WalkingState } from '../../shared/actor';
 
 @injectable()
-export class ActorManager extends Manager {
+export class ActorManager extends EntityManager<Actor> {
 	constructor(@injectCollection(Actor) private actorList: ICollection<Actor>) {
-		super();
+		super(actorList);
 	}
+
 	setBaseState(actorId: number, walking: WalkingState, direction: Direction) {
 		const actor = this.actorList.findOne({ $loki: actorId });
 		actor.walking = walking;
@@ -20,25 +21,13 @@ export class ActorManager extends Manager {
 
 		this.actorList.update(actor);
 	}
-	getAllActors() {
-		return this.actorList.find();
-	}
-	getActorById(actorId: number): Actor {
-		return this.actorList.findOne({
-			$loki: actorId,
-		});
-	}
-	addNewActor<T extends Actor>(actor: T) {
-		this.actorList.insertOne(actor);
 
-		this.emit(GameEvent.AddActorEvent, actor.$loki);
+	addNewEntity<T extends Actor>(actor: T): T {
+		const inserted = super.addNewEntity.call(this, actor);
 		this.emit(GameEvent.LandMoveEvent, actor.$loki, new Vector2(actor.posX, actor.posY));
+		return inserted as T;
 	}
-	removeActor<T extends Actor>(actor: T) {
-		const actorId = actor.$loki;
-		this.actorList.remove(actor);
-		this.emit(GameEvent.RemoveActorEvent, actorId, actor);
-	}
+
 	moveToPosition(actor: Actor, position: Vector2) {
 		const delta = position.sub(new Vector2(actor.posX, actor.posY));
 		if (delta.getSqrt() <= 0) return;
@@ -64,6 +53,7 @@ export class ActorManager extends Manager {
 			this.emit(GameEvent.NewPosEvent, actor.$loki);
 		}
 	}
+
 	private updateBaseStateDirty() {
 		const dirtyActors = this.actorList.find({ isBaseStateDirty: true });
 		for (const actor of dirtyActors) {
@@ -72,6 +62,7 @@ export class ActorManager extends Manager {
 			this.emit(GameEvent.NewBaseStateEvent, actor.$loki);
 		}
 	}
+
 	private updateLandMoveDirty() {
 		const dirtyActors = this.actorList.find({ isLandMoveDirty: true });
 		for (const actor of dirtyActors) {
@@ -85,6 +76,7 @@ export class ActorManager extends Manager {
 			this.emit(GameEvent.LandMoveEvent, actor.$loki, landPos, lastLandPos);
 		}
 	}
+
 	doTick(tick: number) {
 		this.updateMoveDirty();
 		this.updateBaseStateDirty();

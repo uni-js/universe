@@ -17,31 +17,29 @@ export class ActorService implements Service {
 		@inject(LandManager) private landManager: LandManager,
 	) {
 		this.actorManager.on(GameEvent.NewPosEvent, this.onNewPosEvent.bind(this));
-		this.actorManager.on(GameEvent.AddActorEvent, this.onActorAdded.bind(this));
-		this.actorManager.on(GameEvent.RemoveActorEvent, this.onActorRemoved.bind(this));
+		this.actorManager.on(GameEvent.AddEntityEvent, this.onActorAdded.bind(this));
+		this.actorManager.on(GameEvent.RemoveEntityEvent, this.onActorRemoved.bind(this));
 		this.actorManager.on(GameEvent.NewBaseStateEvent, this.onBaseStateSet.bind(this));
-
-		//		this.playerManager.on(GameEvent.PlayerAddedEvent,this.onPlayerAdded);
 	}
 
 	private onActorAdded(actorId: number) {
-		for (const player of this.playerManager.getAllPlayers()) {
+		for (const player of this.playerManager.getAllEntities()) {
 			if (!this.playerManager.hasSpawnedActor(player, actorId)) this.playerManager.spawnActor(player, actorId);
 		}
 	}
 	private onActorRemoved(actorId: number) {
-		for (const player of this.playerManager.getAllPlayers()) {
+		for (const player of this.playerManager.getAllEntities()) {
 			if (this.playerManager.hasSpawnedActor(player, actorId)) this.playerManager.despawnActor(player, actorId);
 		}
 	}
 	private onBaseStateSet(actorId: number) {
-		const actor = this.actorManager.getActorById(actorId);
+		const actor = this.actorManager.getEntityById(actorId);
 
 		const event = new ActorSetStateEvent(actorId, actor.direction, actor.walking);
 		this.emitToActorSpawned(actorId, event);
 	}
 	private onNewPosEvent(actorId: number) {
-		const actor = this.actorManager.getActorById(actorId);
+		const actor = this.actorManager.getEntityById(actorId);
 
 		const event = new ActorNewPosEvent(actorId, actor.posX, actor.posY);
 
@@ -49,7 +47,7 @@ export class ActorService implements Service {
 	}
 	private emitToActorSpawned(actorId: number, event: any) {
 		const sids = this.playerManager
-			.getAllPlayers()
+			.getAllEntities()
 			.filter((player) => this.playerManager.hasSpawnedActor(player, actorId))
 			.map((player) => player.connId);
 
