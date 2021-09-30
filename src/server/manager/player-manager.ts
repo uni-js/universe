@@ -22,6 +22,21 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 
 		this.actorManager.on(GameEvent.NewPosEvent, this.onActorNewPos);
 	}
+
+	protected handleRecordAdded(entity: Player, propertyName: string, record: any) {
+		if (propertyName === 'spawnedActors') this.emit(GameEvent.SpawnActorEvent, record, entity);
+		else if (propertyName === 'usedLands') {
+			this.emit(GameEvent.LandUsedEvent, entity, GetPosByHash(record));
+		}
+	}
+
+	protected handleRecordRemoved(entity: Player, propertyName: string, record: any) {
+		if (propertyName === 'spawnedActors') this.emit(GameEvent.DespawnActorEvent, record, entity);
+		else if (propertyName === 'usedLands') {
+			this.emit(GameEvent.LandNeverUsedEvent, entity, GetPosByHash(record));
+		}
+	}
+
 	private onActorNewPos = (actorId: number) => {
 		const player = this.actorManager.getEntityById(actorId) as Player;
 		if (!player.isPlayer) return;
@@ -29,31 +44,8 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		this.updateUsedLands(player);
 	};
 
-	spawnActor(player: Player, actorId: number) {
-		if (player.spawnedActors.includes(actorId)) return;
-
-		player.spawnedActors.push(actorId);
-		this.actorManager.updateEntity(player);
-
-		this.emit(GameEvent.SpawnActorEvent, actorId, player);
-	}
-
-	hasSpawnedActor(player: Player, actorId: number) {
-		return player.spawnedActors.includes(actorId);
-	}
-
-	despawnActor(player: Player, actorId: number) {
-		if (!player.spawnedActors.includes(actorId)) return;
-
-		const index = player.spawnedActors.indexOf(actorId);
-		player.spawnedActors.splice(index, 1);
-		this.actorManager.updateEntity(player);
-
-		this.emit(GameEvent.DespawnActorEvent, actorId, player);
-	}
-
 	isUseLand(player: Player, landPos: Vector2) {
-		return player.usedLands.includes(GetPosHash(landPos));
+		return this.hasAtRecord(player, 'usedLands', GetPosHash(landPos));
 	}
 
 	getCanSeeLands(player: Player) {
@@ -78,31 +70,17 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	}
 
 	useLand(player: Player, landHash: string) {
-		const index = player.usedLands.indexOf(landHash);
-		if (index !== -1) return;
-
-		player.usedLands.push(landHash);
-
-		this.emit(GameEvent.LandUsedEvent, player, GetPosByHash(landHash));
+		this.addAtRecord(player, 'usedLands', landHash);
 	}
 
 	unuseLand(player: Player, landHash: string) {
-		const index = player.usedLands.indexOf(landHash);
-		if (index === -1) return;
-
-		player.usedLands.splice(index, 1);
-
-		this.emit(GameEvent.LandNeverUsedEvent, player, GetPosByHash(landHash));
+		this.removeAtRecord(player, 'usedLands', landHash);
 	}
 
 	private updateUsedLands(player: Player) {
-		const landsPos = GetRadiusLands(new Vector2(player.posX, player.posY), 1);
-		const lands = [];
-		for (const pos of landsPos) {
-			lands.push(GetPosHash(pos));
-		}
+		const landsPos = GetRadiusLands(new Vector2(player.posX, player.posY), 1).map(GetPosHash);
 
-		const diff = GetArrayDiff(player.usedLands, lands);
+		const diff = GetArrayDiff(player.usedLands.getAll(), landsPos);
 
 		for (const item of diff.add) {
 			this.useLand(player, item);

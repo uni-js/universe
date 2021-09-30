@@ -13,6 +13,9 @@ export enum GameEvent {
 	SpawnActorEvent = 'SpawnActorEvent',
 	DespawnActorEvent = 'DespawnActorEvent',
 
+	AddRecordAtProperty = 'AddRecordAtProperty',
+	RemoveRecordAtProperty = 'RemoveRecordAtProperty',
+
 	AddEntityEvent = 'AddEntityEvent',
 	RemoveEntityEvent = 'RemoveEntityEvent',
 

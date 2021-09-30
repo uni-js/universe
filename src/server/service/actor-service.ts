@@ -24,12 +24,14 @@ export class ActorService implements Service {
 
 	private onActorAdded(actorId: number) {
 		for (const player of this.playerManager.getAllEntities()) {
-			if (!this.playerManager.hasSpawnedActor(player, actorId)) this.playerManager.spawnActor(player, actorId);
+			if (!this.playerManager.hasAtRecord(player, 'spawnedActors', actorId))
+				this.playerManager.addAtRecord(player, 'spawnedActors', actorId);
 		}
 	}
 	private onActorRemoved(actorId: number) {
 		for (const player of this.playerManager.getAllEntities()) {
-			if (this.playerManager.hasSpawnedActor(player, actorId)) this.playerManager.despawnActor(player, actorId);
+			if (this.playerManager.hasAtRecord(player, 'spawnedActors', actorId))
+				this.playerManager.removeAtRecord(player, 'spawnedActors', actorId);
 		}
 	}
 	private onBaseStateSet(actorId: number) {
@@ -48,7 +50,7 @@ export class ActorService implements Service {
 	private emitToActorSpawned(actorId: number, event: any) {
 		const sids = this.playerManager
 			.getAllEntities()
-			.filter((player) => this.playerManager.hasSpawnedActor(player, actorId))
+			.filter((player) => this.playerManager.hasAtRecord(player, 'spawnedActors', actorId))
 			.map((player) => player.connId);
 
 		this.eventBus.emitTo(sids, event);

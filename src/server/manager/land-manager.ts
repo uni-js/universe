@@ -1,6 +1,6 @@
 import { Land } from '../entity/land';
 import { Actor } from '../shared/entity';
-import { Manager } from '../shared/manager';
+import { EntityManager } from '../shared/manager';
 import { Vector2 } from '../shared/math';
 import { PersistDatabaseSymbol, IPersistDatabase } from '../../shared/database/persist';
 import { spawn } from 'threads';
@@ -16,7 +16,7 @@ export function BuildLandHash(pos: Vector2) {
 }
 
 @injectable()
-export class LandManager extends Manager {
+export class LandManager extends EntityManager<Land> {
 	private generatorWorker = spawn(new Worker('../land/generator.worker'));
 
 	constructor(
@@ -25,7 +25,7 @@ export class LandManager extends Manager {
 		@injectCollection(Actor) private actorList: ICollection<Actor>,
 		@inject(PersistDatabaseSymbol) private pdb: IPersistDatabase,
 	) {
-		super();
+		super(landList);
 	}
 
 	private removeLandBricks(x: number, y: number) {
@@ -65,11 +65,16 @@ export class LandManager extends Manager {
 
 		return landData;
 	}
+
 	sendLandDataToPlayer(playerId: number, landPos: Vector2) {
 		const land = this.getLand(landPos);
 		const landData = this.getLandData(landPos.x, landPos.y);
 
 		this.emit(GameEvent.LandDataToPlayer, playerId, land.$loki, land.landLocX, land.landLocY, landData);
+	}
+
+	getLand(landPos: Vector2) {
+		return this.findEntity({ landLocX: landPos.x, landLocY: landPos.y });
 	}
 
 	async generateLand(landLoc: Vector2) {
@@ -80,10 +85,12 @@ export class LandManager extends Manager {
 		await this.pdb.set(hash, landData);
 		return landData;
 	}
+
 	isLandLoaded(landPos: Vector2) {
 		const land = this.getLand(landPos);
 		return land.isLoaded;
 	}
+
 	async loadLand(landLoc: Vector2) {
 		const land = this.getLand(landLoc);
 		if (land.isLoaded || land.isLoading) return;
@@ -117,12 +124,14 @@ export class LandManager extends Manager {
 
 		this.emit(GameEvent.LandUnloaded, land.$loki);
 	}
-	getLand(landLoc: Vector2) {
-		return this.landList.findOne({ landLocX: landLoc.x, landLocY: landLoc.y });
+
+	getLandByLoc(landPos: Vector2) {
+		return this.landList.findOne({ landLocX: landPos.x, landLocY: landPos.y });
 	}
+
 	getLandActors(landPos: Vector2): number[] {
-		const land = this.landList.findOne({ landLocX: landPos.x, landLocY: landPos.y });
-		return land.actors;
+		const land = this.getLandByLoc(landPos);
+		return land.actors.getAll();
 	}
 
 	addNewLand(landPos: Vector2) {
@@ -133,29 +142,26 @@ export class LandManager extends Manager {
 		newLand.isLoaded = false;
 		newLand.isLoading = false;
 
-		this.landList.insertOne(newLand);
+		this.addNewEntity(newLand);
 	}
+
 	ensureLand(landPos: Vector2) {
 		if (this.hasLand(landPos)) return;
 
 		this.addNewLand(landPos);
 	}
+
 	addLandActor(landPos: Vector2, actorId: number) {
-		const land = this.landList.findOne({ landLocX: landPos.x, landLocY: landPos.y });
-		if (land.actors.indexOf(actorId) !== -1) return;
-		land.actors.push(actorId);
+		const land = this.getLand(landPos);
+		this.addAtRecord(land, 'actors', actorId);
 	}
+
 	removeLandActor(landPos: Vector2, actorId: number) {
-		const land = this.landList.findOne({ landLocX: landPos.x, landLocY: landPos.y });
-		const index = land.actors.indexOf(actorId);
-
-		if (index === -1) return;
-
-		land.actors.splice(index, 1);
+		const land = this.getLand(landPos);
+		this.removeAtRecord(land, 'actors', actorId);
 	}
 
 	hasLand(landLoc: Vector2) {
 		return Boolean(this.getLand(landLoc));
 	}
-	doTick() {}
 }

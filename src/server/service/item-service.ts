@@ -1,6 +1,6 @@
 import { EventBus } from '../../event/bus-server';
 import { ShortcutSelectEvent } from '../../event/client-side';
-import { ItemManager } from '../manager/item/item-manager';
+import { ItemManager } from '../manager/item-manager';
 import { PlayerManager } from '../manager/player-manager';
 
 export class ItemService {

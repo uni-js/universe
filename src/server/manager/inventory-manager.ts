@@ -26,10 +26,8 @@ export class InventoryManager extends EntityManager<Inventory> {
 	private onPlayerRemoved = (player: Player) => {
 		this.playerInventoryList.findAndRemove({ playerId: player.$loki });
 	};
+
 	getPlayerInventory(player: Player) {
 		return this.playerInventoryList.findOne({ playerId: player.$loki });
-	}
-	getInventory(inventoryId: number) {
-		return this.inventoryList.findOne({ $loki: inventoryId });
 	}
 }

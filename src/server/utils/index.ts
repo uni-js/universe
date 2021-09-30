@@ -36,3 +36,23 @@ export class TaskWorker<T> {
 		this.queue.push(data);
 	}
 }
+
+export class RecordSet<T> {
+	private set = new Set<T>();
+	constructor() {}
+	add(record: T) {
+		this.set.add(record);
+	}
+	has(record: T) {
+		return this.set.has(record);
+	}
+	remove(record: T) {
+		this.set.delete(record);
+	}
+	getSize() {
+		return this.set.size;
+	}
+	getAll() {
+		return Array.from(this.set.values());
+	}
+}

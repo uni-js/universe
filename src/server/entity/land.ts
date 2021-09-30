@@ -1,6 +1,7 @@
 import { PosToLandPos } from '../land/helper';
 import { Vector2 } from '../shared/math';
 import { Entity } from '../../shared/database/memory';
+import { RecordSet } from '../utils';
 
 /**
  * 计算并获取某个坐标点
@@ -29,5 +30,5 @@ export class Land extends Entity {
 	landLocY: number;
 	isLoaded = false;
 	isLoading = false;
-	actors: number[] = [];
+	actors: RecordSet<number> = new RecordSet();
 }
