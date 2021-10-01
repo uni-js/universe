@@ -45,14 +45,13 @@ export class LandMoveManager extends Manager {
 		this.landManager.ensureLand(landPos);
 
 		for (const actorId of this.landManager.getLandActors(landPos)) {
-			this.playerManager.addAtRecord(player, 'spawnedActors', actorId);
+			this.playerManager.spawnActor(player, actorId)
 		}
 	};
 	private onLandNeverUsed = (player: Player, landPos: Vector2) => {
 		for (const actorId of this.landManager.getLandActors(landPos)) {
-			this.playerManager.removeAtRecord(player, 'spawnedActors', actorId);
+			this.playerManager.despawnActor(player, actorId)
 		}
 	};
 
-	async doTick(tick: number) {}
 }

@@ -5,7 +5,7 @@ import { ICollection, injectCollection } from '../../shared/database/memory';
 import { GameEvent } from '../event';
 import { Vector2 } from '../shared/math';
 import { PosToLandPos } from '../land/helper';
-import { Direction, WalkingState } from '../../shared/actor';
+import { Direction, RunningState } from '../../shared/actor';
 
 @injectable()
 export class ActorManager extends EntityManager<Actor> {
@@ -13,11 +13,11 @@ export class ActorManager extends EntityManager<Actor> {
 		super(actorList);
 	}
 
-	setBaseState(actorId: number, walking: WalkingState, direction: Direction) {
+	setWalkState(actorId: number, running: RunningState, direction: Direction) {
 		const actor = this.actorList.findOne({ $loki: actorId });
-		actor.walking = walking;
+		actor.running = running;
 		actor.direction = direction;
-		actor.isBaseStateDirty = true;
+		actor.isWalkDirty = true;
 
 		this.actorList.update(actor);
 	}
@@ -55,11 +55,11 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	private updateBaseStateDirty() {
-		const dirtyActors = this.actorList.find({ isBaseStateDirty: true });
+		const dirtyActors = this.actorList.find({ isWalkDirty: true });
 		for (const actor of dirtyActors) {
-			actor.isBaseStateDirty = false;
+			actor.isWalkDirty = false;
 			this.actorList.update(actor);
-			this.emit(GameEvent.NewBaseStateEvent, actor.$loki);
+			this.emit(GameEvent.NewWalkStateEvent, actor.$loki);
 		}
 	}
 
@@ -67,8 +67,10 @@ export class ActorManager extends EntityManager<Actor> {
 		const dirtyActors = this.actorList.find({ isLandMoveDirty: true });
 		for (const actor of dirtyActors) {
 			actor.isLandMoveDirty = false;
+			
 			const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
 			const lastLandPos = new Vector2(actor.atLandX, actor.atLandY);
+			
 			actor.atLandX = landPos.x;
 			actor.atLandY = landPos.y;
 			this.actorList.update(actor);

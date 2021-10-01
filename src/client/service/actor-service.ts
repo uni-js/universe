@@ -1,5 +1,5 @@
 import { EventBusClient } from '../../event/bus-client';
-import { ActorNewPosEvent, ActorSetStateEvent, AddActorEvent, RemoveActorEvent } from '../../event/server-side';
+import { ActorNewPosEvent, ActorSetWalkEvent, AddActorEvent, RemoveActorEvent } from '../../event/server-side';
 import { ActorType } from '../../server/shared/entity';
 import { Vector2 } from '../../server/shared/math';
 import { ActorObject } from '../shared/game-object';
@@ -20,7 +20,7 @@ export class ActorService {
 		this.eventBus.on(AddActorEvent.name, this.handleActorAdded.bind(this));
 		this.eventBus.on(RemoveActorEvent.name, this.handleActorRemoved.bind(this));
 		this.eventBus.on(ActorNewPosEvent.name, this.handleActorNewPos.bind(this));
-		this.eventBus.on(ActorSetStateEvent.name, this.handleActorNewBaseState.bind(this));
+		this.eventBus.on(ActorSetWalkEvent.name, this.handleActorNewWalkState.bind(this));
 	}
 	private handleActorAdded(event: AddActorEvent) {
 		console.debug('Spawned', event.actorId, event);
@@ -41,11 +41,11 @@ export class ActorService {
 
 		this.actorManager.removeGameObject(object);
 	}
-	private handleActorNewBaseState(event: ActorSetStateEvent) {
+	private handleActorNewWalkState(event: ActorSetWalkEvent) {
 		const object = this.actorManager.getObjectById(event.actorId) as ActorObject;
 
 		object.setDirection(event.direction);
-		object.setWalking(event.walking);
+		object.setRunning(event.running);
 	}
 	private handleActorNewPos(event: ActorNewPosEvent) {
 		const object = this.actorManager.getObjectById(event.actorId) as ActorObject;

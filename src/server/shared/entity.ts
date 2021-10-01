@@ -1,4 +1,4 @@
-import { Direction, WalkingState } from '../../shared/actor';
+import { Direction, RunningState } from '../../shared/actor';
 import { Entity } from '../../shared/database/memory';
 
 export const MOVEMENT_TICK_MIN_DISTANCE = 0.0001;
@@ -21,11 +21,11 @@ export class Actor extends Entity {
 	type: ActorType;
 
 	isMoveDirty = false;
-	isBaseStateDirty = false;
+	isWalkDirty = false;
 	isLandMoveDirty = false;
 
 	isActor = true;
 
 	direction: Direction = Direction.FORWARD;
-	walking: WalkingState = WalkingState.SILENT;
+	running: RunningState = RunningState.SILENT;
 }

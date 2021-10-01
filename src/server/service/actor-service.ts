@@ -1,4 +1,4 @@
-import { ActorNewPosEvent, ActorSetStateEvent } from '../../event/server-side';
+import { ActorNewPosEvent, ActorSetWalkEvent } from '../../event/server-side';
 import { EventBus } from '../../event/bus-server';
 import { ActorManager } from '../manager/actor-manager';
 import { PlayerManager } from '../manager/player-manager';
@@ -19,7 +19,7 @@ export class ActorService implements Service {
 		this.actorManager.on(GameEvent.NewPosEvent, this.onNewPosEvent.bind(this));
 		this.actorManager.on(GameEvent.AddEntityEvent, this.onActorAdded.bind(this));
 		this.actorManager.on(GameEvent.RemoveEntityEvent, this.onActorRemoved.bind(this));
-		this.actorManager.on(GameEvent.NewBaseStateEvent, this.onBaseStateSet.bind(this));
+		this.actorManager.on(GameEvent.NewWalkStateEvent, this.onWalkStateSet.bind(this));
 	}
 
 	private onActorAdded(actorId: number) {
@@ -34,10 +34,10 @@ export class ActorService implements Service {
 				this.playerManager.removeAtRecord(player, 'spawnedActors', actorId);
 		}
 	}
-	private onBaseStateSet(actorId: number) {
+	private onWalkStateSet(actorId: number) {
 		const actor = this.actorManager.getEntityById(actorId);
 
-		const event = new ActorSetStateEvent(actorId, actor.direction, actor.walking);
+		const event = new ActorSetWalkEvent(actorId, actor.direction, actor.running);
 		this.emitToActorSpawned(actorId, event);
 	}
 	private onNewPosEvent(actorId: number) {

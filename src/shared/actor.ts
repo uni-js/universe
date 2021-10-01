@@ -5,7 +5,7 @@ export enum Direction {
 	BACK = 'back',
 }
 
-export enum WalkingState {
+export enum RunningState {
 	SILENT = 'silent',
 	WALKING = 'walking',
 	RUNNING = 'running',

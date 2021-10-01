@@ -20,5 +20,5 @@ export enum GameEvent {
 	RemoveEntityEvent = 'RemoveEntityEvent',
 
 	NewPosEvent = 'NewPosEvent',
-	NewBaseStateEvent = 'NewBaseStateEvent',
+	NewWalkStateEvent = 'NewWalkStateEvent',
 }

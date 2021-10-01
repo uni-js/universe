@@ -2,7 +2,7 @@ import { BILLION_VALUE, Vector2 } from '../../server/shared/math';
 import { TextureContainer } from '../texture';
 import { ActorObject } from '../shared/game-object';
 import { ActorType } from '../../server/shared/entity';
-import { Direction, WalkingState } from '../../shared/actor';
+import { Direction, RunningState } from '../../shared/actor';
 import { GameEvent } from '../event';
 
 export interface ControlMoved {
@@ -19,7 +19,7 @@ export class Player extends ActorObject {
 
 		this.setAnchor(0.5, 1);
 		this.setAnimateSpeed(0.12);
-		this.setWalking(WalkingState.SILENT);
+		this.setRunning(RunningState.SILENT);
 	}
 	addMovePoint(point: Vector2) {
 		if (this.takeControl) this.setPosition(point);
@@ -64,13 +64,13 @@ export class Player extends ActorObject {
 		if (this.controlMoved) {
 			const target = this.getPosition().add(this.controlMoved);
 			this.setPosition(target);
-			this.setWalking(WalkingState.WALKING);
+			this.setRunning(RunningState.WALKING);
 
-			this.emit(GameEvent.ControlMovedEvent, target, this.direction, this.walking);
+			this.emit(GameEvent.ControlMovedEvent, target, this.direction, this.running);
 		}
 		if (!this.controlMoved) {
 			if (this.takeControl) {
-				this.setWalking(WalkingState.SILENT);
+				this.setRunning(RunningState.SILENT);
 			}
 		}
 	}

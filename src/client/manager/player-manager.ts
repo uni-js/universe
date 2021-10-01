@@ -2,7 +2,7 @@ import { Vector2 } from '../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '../input';
 import { GameManager } from '../shared/manager';
 import { Viewport } from '../viewport';
-import { Direction, WalkingState } from '../../shared/actor';
+import { Direction, RunningState } from '../../shared/actor';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
 import { ICollection, injectCollection } from '../../shared/database/memory';
@@ -41,8 +41,8 @@ export class PlayerManager extends GameManager {
 
 		this.currentPlayer = player;
 	}
-	private onPlayerControlMoved = (position: Vector2, direction: Direction, walking: WalkingState) => {
-		this.emit(GameEvent.ControlMovedEvent, position, direction, walking);
+	private onPlayerControlMoved = (position: Vector2, direction: Direction, running: RunningState) => {
+		this.emit(GameEvent.ControlMovedEvent, position, direction, running);
 	};
 	private onSetActorState = (player: Player) => {
 		this.emit(GameEvent.SetActorStateEvent, player);

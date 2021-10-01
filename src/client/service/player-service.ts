@@ -24,7 +24,7 @@ export class PlayerService {
 		this.eventBus.emitEvent(new MovePlayerEvent(pos.x, pos.y));
 	}
 	private onSetActorState(player: Player) {
-		this.eventBus.emitEvent(new SetPlayerStateEvent(player.getWalking(), player.getDirection()));
+		this.eventBus.emitEvent(new SetPlayerStateEvent(player.getRunning(), player.getDirection()));
 	}
 	private handleLogined(event: LoginedEvent) {
 		console.debug('logined_event', event);

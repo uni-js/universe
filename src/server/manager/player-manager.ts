@@ -23,20 +23,6 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		this.actorManager.on(GameEvent.NewPosEvent, this.onActorNewPos);
 	}
 
-	protected handleRecordAdded(entity: Player, propertyName: string, record: any) {
-		if (propertyName === 'spawnedActors') this.emit(GameEvent.SpawnActorEvent, record, entity);
-		else if (propertyName === 'usedLands') {
-			this.emit(GameEvent.LandUsedEvent, entity, GetPosByHash(record));
-		}
-	}
-
-	protected handleRecordRemoved(entity: Player, propertyName: string, record: any) {
-		if (propertyName === 'spawnedActors') this.emit(GameEvent.DespawnActorEvent, record, entity);
-		else if (propertyName === 'usedLands') {
-			this.emit(GameEvent.LandNeverUsedEvent, entity, GetPosByHash(record));
-		}
-	}
-
 	private onActorNewPos = (actorId: number) => {
 		const player = this.actorManager.getEntityById(actorId) as Player;
 		if (!player.isPlayer) return;
@@ -69,12 +55,24 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		return player;
 	}
 
+	spawnActor(player: Player, actorId: number){
+		this.addAtRecord(player, 'spawnedActors', actorId);
+		this.emit(GameEvent.SpawnActorEvent, actorId, player);
+	}
+
+	despawnActor(player: Player, actorId: number){
+		this.removeAtRecord(player, 'spawnedActors', actorId);
+		this.emit(GameEvent.DespawnActorEvent, actorId, player);
+	}
+
 	useLand(player: Player, landHash: string) {
 		this.addAtRecord(player, 'usedLands', landHash);
+		this.emit(GameEvent.LandUsedEvent, player, GetPosByHash(landHash))
 	}
 
 	unuseLand(player: Player, landHash: string) {
 		this.removeAtRecord(player, 'usedLands', landHash);
+		this.emit(GameEvent.LandNeverUsedEvent, player, GetPosByHash(landHash))
 	}
 
 	private updateUsedLands(player: Player) {

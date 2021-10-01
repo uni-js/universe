@@ -1,4 +1,4 @@
-import { Direction, WalkingState } from '../shared/actor';
+import { Direction, RunningState } from '../shared/actor';
 import { RemoteEvent } from './event';
 
 export class MovePlayerEvent extends RemoteEvent {
@@ -8,7 +8,7 @@ export class MovePlayerEvent extends RemoteEvent {
 }
 
 export class SetPlayerStateEvent extends RemoteEvent {
-	constructor(public walking: WalkingState, public dir: Direction) {
+	constructor(public running: RunningState, public dir: Direction) {
 		super();
 	}
 }

@@ -26,7 +26,7 @@ export class PlayerService implements Service {
 	private handleSetActorState(connId: string, event: SetPlayerStateEvent) {
 		const player = this.playerManager.findEntity({ connId });
 
-		this.actorManager.setBaseState(player.$loki, event.walking, event.dir);
+		this.actorManager.setWalkState(player.$loki, event.running, event.dir);
 	}
 	private onActorSpawned(actorId: number, player: Player) {
 		const actor = this.actorManager.getEntityById(actorId);

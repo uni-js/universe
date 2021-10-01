@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 
 import { ActorType } from '../../server/shared/entity';
 import { Interpolate2d, Vector2 } from '../../server/shared/math';
-import { Direction, WalkingState } from '../../shared/actor';
+import { Direction, RunningState } from '../../shared/actor';
 
 import { doTickable } from '../../shared/update';
 import { GameEvent } from '../event';
@@ -105,7 +105,7 @@ export class ActorObject extends PIXI.Container implements IGameObject {
 	protected nametag: PIXI.Text;
 
 	protected direction: Direction = Direction.BACK;
-	protected walking: WalkingState = WalkingState.SILENT;
+	protected running: RunningState = RunningState.SILENT;
 
 	private usedTextures: PIXI.Texture[] = [];
 	private playing = false;
@@ -147,21 +147,21 @@ export class ActorObject extends PIXI.Container implements IGameObject {
 	private handleInterpolatedPosition(pos: Vector2) {
 		this.setPosition(pos);
 	}
-	getWalking() {
-		return this.walking;
+	getRunning() {
+		return this.running;
 	}
 	getDirection() {
 		return this.direction;
 	}
-	setWalking(walking: WalkingState, dirty = true) {
-		if (this.walking == walking) return;
+	setRunning(running: RunningState, dirty = true) {
+		if (this.running == running) return;
 
-		this.walking = walking;
-		if (walking == WalkingState.SILENT) {
+		this.running = running;
+		if (running == RunningState.SILENT) {
 			this.stopAnim();
-		} else if (walking == WalkingState.RUNNING) {
+		} else if (running == RunningState.RUNNING) {
 			this.playAnim();
-		} else if (walking == WalkingState.WALKING) {
+		} else if (running == RunningState.WALKING) {
 			this.playAnim();
 		}
 

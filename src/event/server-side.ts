@@ -1,6 +1,6 @@
 import { LandData } from '../server/land/types';
 import { ActorType } from '../server/shared/entity';
-import { Direction, WalkingState } from '../shared/actor';
+import { Direction, RunningState } from '../shared/actor';
 import { RemoteEvent } from './event';
 
 export class ActorNewPosEvent extends RemoteEvent {
@@ -9,8 +9,8 @@ export class ActorNewPosEvent extends RemoteEvent {
 	}
 }
 
-export class ActorSetStateEvent extends RemoteEvent {
-	constructor(public actorId: number, public direction: Direction, public walking: WalkingState) {
+export class ActorSetWalkEvent extends RemoteEvent {
+	constructor(public actorId: number, public direction: Direction, public running: RunningState) {
 		super();
 	}
 }

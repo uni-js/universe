@@ -33,9 +33,6 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 		super();
 	}
 
-	protected handleRecordAdded<R>(entity: T, propertyName: string, record: R): void {}
-	protected handleRecordRemoved<R>(entity: T, propertyName: string, record: R): void {}
-
 	getEntityList(): ICollection<T> {
 		return this.entityList;
 	}
@@ -85,8 +82,6 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 		if (recordSet.has(record)) return;
 
 		recordSet.add(record);
-
-		this.handleRecordAdded(entity, propertyName, record);
 	}
 
 	removeAtRecord<R>(entity: T, propertyName: string, record: R) {
@@ -94,8 +89,6 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 		if (!recordSet.has(record)) return;
 
 		recordSet.remove(record);
-
-		this.handleRecordRemoved(entity, propertyName, record);
 	}
 
 	hasAtRecord<R>(entity: T, propertyName: string, record: R) {
@@ -112,17 +105,11 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Manage
 		});
 	}
 
-	protected handleRecordAdded<R>(entity: T, propertyName: string, record: R): void {}
-
-	protected handleRecordRemoved<R>(entity: T, propertyName: string, record: R): void {}
-
 	addAtRecord<R>(entity: T, propertyName: string, record: R): void {
 		this.manager.addAtRecord(entity, propertyName, record);
-		this.handleRecordAdded(entity, propertyName, record);
 	}
 	removeAtRecord<R>(entity: T, propertyName: string, record: R): void {
 		this.manager.removeAtRecord(entity, propertyName, record);
-		this.handleRecordRemoved(entity, propertyName, record);
 	}
 	hasAtRecord<R>(entity: T, propertyName: string, record: R): boolean {
 		return this.manager.hasAtRecord(entity, propertyName, record);
