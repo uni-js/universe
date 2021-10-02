@@ -2,15 +2,15 @@ import { LAND_WIDTH } from '../../server/land/const';
 import { LandData } from '../../server/land/types';
 import { Vector2 } from '../../server/shared/math';
 import { StaticObject } from '../shared/game-object';
-import { TextureContainer } from '../texture';
+import { TextureProvider } from '../texture';
 import { BRICK_WIDTH } from './brick';
 import { CompositeRectTileLayer } from '@pixi/tilemap';
 
 export class LandObject extends StaticObject {
 	private tileLayer: CompositeRectTileLayer;
 
-	constructor(initLandData: LandData, texture: TextureContainer, objectId: number, private landLoc: Vector2) {
-		super(texture, objectId, new Vector2(1, 1), landLoc.mul(LAND_WIDTH), landLoc.mul(LAND_WIDTH));
+	constructor(texture: TextureProvider, initLandData: LandData, objectId: number, private landPos: Vector2) {
+		super(texture, objectId, new Vector2(1, 1), landPos.mul(LAND_WIDTH));
 		this.zIndex = 0;
 
 		this.tileLayer = new CompositeRectTileLayer();
@@ -21,7 +21,7 @@ export class LandObject extends StaticObject {
 		this.setLandData(initLandData);
 	}
 	getLandLoc() {
-		return this.landLoc;
+		return this.landPos;
 	}
 
 	setLandData(landData: LandData) {

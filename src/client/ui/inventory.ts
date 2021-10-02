@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { ItemType } from '../../server/entity/item/item';
-import { IGameObject } from '../shared/game-object';
-import { TextureContainer } from '../texture';
+import { GameObject } from '../shared/game-object';
+import { TextureProvider } from '../texture';
 
 export class ItemBlock extends PIXI.Container {
 	private itemEmpty = true;
@@ -10,7 +10,7 @@ export class ItemBlock extends PIXI.Container {
 
 	private background;
 
-	constructor(private posX: number, private posY: number, private blockWidth: number, private textureManager: TextureContainer) {
+	constructor(private posX: number, private posY: number, private blockWidth: number, private textureManager: TextureProvider) {
 		super();
 
 		this.position.set(this.posX, this.posY);
@@ -23,7 +23,7 @@ export class ItemBlock extends PIXI.Container {
 	}
 }
 
-export class PlayerInventory extends PIXI.Container implements IGameObject {
+export class PlayerInventory extends GameObject {
 	private blocks: ItemBlock[] = [];
 	private size = 15;
 	private sizePerLine = 5;
@@ -46,8 +46,9 @@ export class PlayerInventory extends PIXI.Container implements IGameObject {
 	private getUiHeight() {
 		return this.padding * 2 + this.blockWidth * this.getLineCount() + (this.getLineCount() - 1) * this.blockPadding;
 	}
-	constructor(private textureManager: TextureContainer, private parentWidth: number, private parentHeight: number) {
-		super();
+	constructor(texture: TextureProvider, private parentWidth: number, private parentHeight: number) {
+		super(texture);
+
 		this.visible = false;
 
 		this.updateLayout();
@@ -55,7 +56,7 @@ export class PlayerInventory extends PIXI.Container implements IGameObject {
 		this.initBlocks();
 	}
 	private initBackground() {
-		this.background = PIXI.Sprite.from(this.textureManager.getOne('inventory.background'));
+		this.background = PIXI.Sprite.from(this.texture.getOne('inventory.background'));
 		this.background.width = this.getUiWidth();
 		this.background.height = this.getUiHeight();
 
@@ -74,7 +75,7 @@ export class PlayerInventory extends PIXI.Container implements IGameObject {
 
 			const blockX = this.padding + indexAtLine * (this.blockWidth + this.blockPadding);
 			const blockY = this.padding + lineAt * (this.blockWidth + this.blockPadding);
-			const block = new ItemBlock(blockX, blockY, this.blockWidth, this.textureManager);
+			const block = new ItemBlock(blockX, blockY, this.blockWidth, this.texture);
 			this.addChild(block);
 			this.blocks.push(block);
 		}

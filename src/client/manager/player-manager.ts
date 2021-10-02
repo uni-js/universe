@@ -30,7 +30,7 @@ export class PlayerManager extends GameManager {
 		this.gameInfoList.insertOne(playerInfo);
 	}
 	setCurrentPlayer(player: Player) {
-		this.playerInfo.playerActorId = player.getObjectId();
+		this.playerInfo.actorId = player.getServerId();
 		this.playerInfo.playerName = 'Player';
 		this.gameInfoList.update(this.playerInfo);
 

@@ -1,11 +1,11 @@
 import { HashedStore } from '../../shared/store';
-import { ActorObject } from '../shared/game-object';
 import { LandObject } from '../object/land';
 import { inject, injectable } from 'inversify';
 
 import * as PIXI from 'pixi.js';
 import { Entity, MemoryDatabase } from '../../shared/database/memory';
 import { EventEmitter } from '../../server/shared/event';
+import { ActorObject } from './actor';
 
 @injectable()
 export class ActorContainer extends PIXI.Container {}
@@ -19,7 +19,7 @@ export class ActorStore extends HashedStore<ActorObject> {
 		super(actorContainer);
 	}
 	hash(item: ActorObject) {
-		return [item.getObjectId()];
+		return [item.getServerId()];
 	}
 }
 
@@ -29,7 +29,7 @@ export class LandStore extends HashedStore<LandObject> {
 		super(landContainer);
 	}
 	hash(item: LandObject) {
-		return [[item.getObjectId()], [item.x, item.y]];
+		return [[item.getServerId()], [item.x, item.y]];
 	}
 }
 
@@ -48,7 +48,7 @@ export class PlayerInfo extends Entity {
 	/**
 	 * 玩家角色id
 	 */
-	playerActorId: number;
+	actorId: number;
 }
 
 export class PlayerInventoryInfo extends Entity {

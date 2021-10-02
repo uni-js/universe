@@ -30,7 +30,12 @@ export class PlayerService implements Service {
 	}
 	private onActorSpawned(actorId: number, player: Player) {
 		const actor = this.actorManager.getEntityById(actorId);
-		const event = new AddActorEvent(actorId, player.playerName, actor.type, actor.posX, actor.posY);
+		const event = new AddActorEvent(actor.type, {
+			serverId: actor.$loki,
+			posX: actor.posX,
+			posY: actor.posY,
+			playerName: player.playerName,
+		});
 
 		this.eventBus.emitTo([player.connId], event);
 	}

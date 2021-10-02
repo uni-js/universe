@@ -1,13 +1,7 @@
-import { Direction, RunningState } from '../../shared/actor';
+import { ActorType, Direction, RunningState } from '../../shared/actor';
 import { Entity } from '../../shared/database/memory';
 
 export const MOVEMENT_TICK_MIN_DISTANCE = 0.0001;
-
-export enum ActorType {
-	NONE = 'none',
-	HUMAN = 'human',
-	PLAYER = 'player',
-}
 
 export class Actor extends Entity {
 	posX = 0;

@@ -1,6 +1,5 @@
 import { LandData } from '../server/land/types';
-import { ActorType } from '../server/shared/entity';
-import { Direction, RunningState } from '../shared/actor';
+import { ActorType, Direction, RunningState } from '../shared/actor';
 import { RemoteEvent } from './event';
 
 export class ActorNewPosEvent extends RemoteEvent {
@@ -22,7 +21,7 @@ export class LoginedEvent extends RemoteEvent {
 }
 
 export class AddActorEvent extends RemoteEvent {
-	constructor(public actorId: number, public playerName: string, public type: ActorType, public x: number, public y: number) {
+	constructor(public type: ActorType, public ctorOption: Record<string, any>) {
 		super();
 	}
 }

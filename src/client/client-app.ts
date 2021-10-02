@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 
 import { HTMLInputProvider } from './input';
 import { ActorManager } from './manager/actor-manager';
-import { ParseTexturePath, TextureContainer, TextureType } from './texture';
+import { ParseTexturePath, TextureProvider, TextureType } from './texture';
 import { EventBusClient } from '../event/bus-client';
 import { Viewport } from './viewport';
 import { LandManager } from './manager/land-manager';
@@ -25,6 +25,8 @@ import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase } from '../sha
 import { GameUI } from './ui/game-ui';
 
 import { LandContainer, ActorStore, DataStore, DataStoreEntities, LandStore, UIEventBus, ActorContainer } from './shared/store';
+import { ActorFactory } from './shared/actor';
+import { ActorMapper } from './object';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -42,13 +44,15 @@ export class ClientApp {
 	private managers: any[] = [];
 	private services: any[] = [];
 
-	private textureContainer = new TextureContainer();
+	private textureProvider = new TextureProvider();
 
 	private viewport: Viewport;
 	private busClient: EventBusClient;
 	private inputProvider: HTMLInputProvider;
 	private dataStore: IMemoryDatabase;
 	private uiEventBus: UIEventBus;
+
+	private actorFactory: ActorFactory;
 
 	private iocContainer!: Container;
 	private resolution = 32;
@@ -77,11 +81,19 @@ export class ClientApp {
 		);
 		this.busClient = new EventBusClient(this.serverUrl);
 		this.inputProvider = new HTMLInputProvider(this.app.view);
-		this.dataStore = createMemoryDatabase(DataStoreEntities);
 		this.uiEventBus = new UIEventBus();
 
+		this.dataStore = createMemoryDatabase(DataStoreEntities);
+
+		this.initActorFactory();
 		this.initWrapper();
 		this.initUiContainer();
+	}
+
+	private initActorFactory() {
+		this.actorFactory = new ActorFactory();
+
+		this.actorFactory.addImpls(ActorMapper);
 	}
 	private initWrapper() {
 		const wrapper = document.createElement('div');
@@ -114,9 +126,11 @@ export class ClientApp {
 		ioc.bind(HTMLInputProvider).toConstantValue(this.inputProvider);
 		ioc.bind(EventBusClient).toConstantValue(this.busClient);
 		ioc.bind(Viewport).toConstantValue(this.viewport);
-		ioc.bind(TextureContainer).toConstantValue(this.textureContainer);
+		ioc.bind(TextureProvider).toConstantValue(this.textureProvider);
 		ioc.bind(DataStore).toConstantValue(this.dataStore);
 		ioc.bind(UIEventBus).toConstantValue(this.uiEventBus);
+
+		ioc.bind(ActorFactory).toConstantValue(this.actorFactory);
 
 		bindCollectionsTo(ioc, DataStoreEntities, this.dataStore);
 
@@ -167,9 +181,9 @@ export class ClientApp {
 			if (Boolean(parsed) === false) continue;
 			const [key, relPath, type] = parsed;
 			if (type == TextureType.IMAGESET) {
-				await this.textureContainer.addJSON(key, relPath);
+				await this.textureProvider.addJSON(key, relPath);
 			} else {
-				await this.textureContainer.add(key, relPath);
+				await this.textureProvider.add(key, relPath);
 			}
 		}
 	}

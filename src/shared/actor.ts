@@ -1,3 +1,8 @@
+export enum ActorType {
+	PLAYER = 'player',
+	BOW = 'bow',
+}
+
 export enum Direction {
 	LEFT = 'left',
 	RIGHT = 'right',

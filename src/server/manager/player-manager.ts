@@ -1,6 +1,6 @@
 import { Player } from '../entity/player';
 import { ExtendedEntityManager } from '../shared/manager';
-import { Actor, ActorType } from '../shared/entity';
+import { Actor } from '../shared/entity';
 import { GetRadiusLands } from '../entity/land';
 import { inject, injectable } from 'inversify';
 import { ActorManager } from './actor-manager';
@@ -8,6 +8,7 @@ import { Vector2 } from '../shared/math';
 import { GameEvent } from '../event';
 import { GetArrayDiff } from '../utils';
 import { GetPosByHash, GetPosHash } from '../../shared/land';
+import { ActorType } from '../../shared/actor';
 
 export interface PlayerCreatingInfo {
 	connId: string;
@@ -55,24 +56,24 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		return player;
 	}
 
-	spawnActor(player: Player, actorId: number){
+	spawnActor(player: Player, actorId: number) {
 		this.addAtRecord(player, 'spawnedActors', actorId);
 		this.emit(GameEvent.SpawnActorEvent, actorId, player);
 	}
 
-	despawnActor(player: Player, actorId: number){
+	despawnActor(player: Player, actorId: number) {
 		this.removeAtRecord(player, 'spawnedActors', actorId);
 		this.emit(GameEvent.DespawnActorEvent, actorId, player);
 	}
 
 	useLand(player: Player, landHash: string) {
 		this.addAtRecord(player, 'usedLands', landHash);
-		this.emit(GameEvent.LandUsedEvent, player, GetPosByHash(landHash))
+		this.emit(GameEvent.LandUsedEvent, player, GetPosByHash(landHash));
 	}
 
 	unuseLand(player: Player, landHash: string) {
 		this.removeAtRecord(player, 'usedLands', landHash);
-		this.emit(GameEvent.LandNeverUsedEvent, player, GetPosByHash(landHash))
+		this.emit(GameEvent.LandNeverUsedEvent, player, GetPosByHash(landHash));
 	}
 
 	private updateUsedLands(player: Player) {

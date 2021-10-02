@@ -25,7 +25,7 @@ export function Shortcut(props: any) {
 		for (let i = 0; i < SHORTCUT_SIZE; i++) {
 			const isCurrent = i == inventoryInfo.currentIndexAt;
 			const clsName = classnames({ 'shortcut-block': true, 'shortcut-block-highlight': isCurrent });
-			blocks[i] = <div className={clsName} />;
+			blocks[i] = <div className={clsName} key={i} />;
 		}
 	}
 

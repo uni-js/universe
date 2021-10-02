@@ -26,7 +26,7 @@ export async function LoadResource(url: string) {
 }
 
 @injectable()
-export class TextureContainer {
+export class TextureProvider {
 	private textures = new Map<string, PIXI.Texture[]>();
 	constructor() {}
 	async add(name: string, url: string) {

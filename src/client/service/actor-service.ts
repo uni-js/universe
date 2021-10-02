@@ -1,21 +1,21 @@
 import { EventBusClient } from '../../event/bus-client';
 import { ActorNewPosEvent, ActorSetWalkEvent, AddActorEvent, RemoveActorEvent } from '../../event/server-side';
-import { ActorType } from '../../server/shared/entity';
 import { Vector2 } from '../../server/shared/math';
-import { ActorObject } from '../shared/game-object';
 import { ActorManager } from '../manager/actor-manager';
 import { Player } from '../object/player';
-import { TextureContainer } from '../texture';
+import { TextureProvider } from '../texture';
 import { inject, injectable } from 'inversify';
 import { PlayerManager } from '../manager/player-manager';
+import { ActorFactory, ActorObject } from '../shared/actor';
 
 @injectable()
 export class ActorService {
 	constructor(
 		@inject(EventBusClient) private eventBus: EventBusClient,
 		@inject(ActorManager) private actorManager: ActorManager,
-		@inject(TextureContainer) private texture: TextureContainer,
+		@inject(TextureProvider) private texture: TextureProvider,
 		@inject(PlayerManager) private playerManager: PlayerManager,
+		@inject(ActorFactory) private actorFactory: ActorFactory,
 	) {
 		this.eventBus.on(AddActorEvent.name, this.handleActorAdded.bind(this));
 		this.eventBus.on(RemoveActorEvent.name, this.handleActorRemoved.bind(this));
@@ -23,15 +23,10 @@ export class ActorService {
 		this.eventBus.on(ActorSetWalkEvent.name, this.handleActorNewWalkState.bind(this));
 	}
 	private handleActorAdded(event: AddActorEvent) {
-		console.debug('Spawned', event.actorId, event);
-		const pos = new Vector2(event.x, event.y);
-		if (event.type == ActorType.PLAYER) {
-			const player = new Player(this.texture, event.actorId, pos, event.playerName);
-			this.actorManager.addGameObject(player);
-		} else {
-			const actor = new ActorObject(event.type, this.texture, event.actorId, new Vector2(1, 1), pos, '');
-			this.actorManager.addGameObject(actor);
-		}
+		console.debug('Spawned', event.type, event.ctorOption);
+
+		const newActor = this.actorFactory.getNewObject(event.type, [event.ctorOption, this.texture]);
+		this.actorManager.addGameObject(newActor);
 	}
 	private handleActorRemoved(event: RemoveActorEvent) {
 		const object = this.actorManager.getObjectById(event.actorId);

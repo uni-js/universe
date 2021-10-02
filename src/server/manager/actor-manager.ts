@@ -67,10 +67,10 @@ export class ActorManager extends EntityManager<Actor> {
 		const dirtyActors = this.actorList.find({ isLandMoveDirty: true });
 		for (const actor of dirtyActors) {
 			actor.isLandMoveDirty = false;
-			
+
 			const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
 			const lastLandPos = new Vector2(actor.atLandX, actor.atLandY);
-			
+
 			actor.atLandX = landPos.x;
 			actor.atLandY = landPos.y;
 			this.actorList.update(actor);
