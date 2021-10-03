@@ -1,24 +1,10 @@
+import { Vector2 } from '../../server/shared/math';
 import { ActorType } from '../../shared/actor';
-import { ActorObject } from '../shared/actor';
+import { ActorCtorOption, ActorObject } from '../shared/actor';
 import { TextureProvider } from '../texture';
 
 export class Bow extends ActorObject {
-	constructor(
-		option: {
-			serverId: number;
-		},
-		texture: TextureProvider,
-	) {
-		super(
-			{
-				serverId: option.serverId,
-				width: 0.5,
-				height: 0.5,
-				posX: 0,
-				posY: 0,
-			},
-			ActorType.BOW,
-			texture,
-		);
+	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
+		super(serverId, option, new Vector2(0.5, 0.5), ActorType.BOW, texture);
 	}
 }

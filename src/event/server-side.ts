@@ -21,7 +21,7 @@ export class LoginedEvent extends RemoteEvent {
 }
 
 export class AddActorEvent extends RemoteEvent {
-	constructor(public type: ActorType, public ctorOption: Record<string, any>) {
+	constructor(public type: ActorType, public serverId: number, public ctorOption: any) {
 		super();
 	}
 }

@@ -25,7 +25,7 @@ export class ActorService {
 	private handleActorAdded(event: AddActorEvent) {
 		console.debug('Spawned', event.type, event.ctorOption);
 
-		const newActor = this.actorFactory.getNewObject(event.type, [event.ctorOption, this.texture]);
+		const newActor = this.actorFactory.getNewObject(event.type, [event.serverId, event.ctorOption, this.texture]);
 		this.actorManager.addGameObject(newActor);
 	}
 	private handleActorRemoved(event: RemoveActorEvent) {

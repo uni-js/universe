@@ -13,7 +13,6 @@ import { Container } from 'inversify';
 import { bindToContainer } from '../shared/ioc';
 import { CursorManager } from './manager/cursor-manager';
 import { DefaultSceneManager } from './manager/default-scene-manager';
-import { InventoryManager } from './manager/inventory-manager';
 import { PlayerManager } from './manager/player-manager';
 import { ShortcutManager } from './manager/shortcut-manager';
 import { ActorService } from './service/actor-service';
@@ -70,7 +69,7 @@ export class ClientApp {
 			width: this.worldWidth,
 			height: this.worldHeight,
 		});
-		this.managers = [ActorManager, LandManager, CursorManager, DefaultSceneManager, InventoryManager, PlayerManager, ShortcutManager];
+		this.managers = [ActorManager, LandManager, CursorManager, DefaultSceneManager, PlayerManager, ShortcutManager];
 		this.services = [ActorService, BootService, LandService, PlayerService];
 
 		this.viewport = new Viewport(

@@ -1,7 +1,4 @@
 import { Entity } from '../../../shared/database/memory';
-import { Item } from '../item/item';
-
-export type Block = Item | undefined;
 
 export class Inventory extends Entity {}
 

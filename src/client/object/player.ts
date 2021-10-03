@@ -2,7 +2,7 @@ import { BILLION_VALUE, Vector2 } from '../../server/shared/math';
 import { TextureProvider } from '../texture';
 import { ActorType, Direction, RunningState } from '../../shared/actor';
 import { GameEvent } from '../event';
-import { ActorObject } from '../shared/actor';
+import { ActorCtorOption, ActorObject } from '../shared/actor';
 
 export interface ControlMoved {
 	moved: Vector2;
@@ -14,31 +14,12 @@ export class Player extends ActorObject {
 	private takeControl = false;
 	private playerName: string;
 
-	constructor(
-		option: {
-			serverId: number;
-			posX: number;
-			posY: number;
-			playerName: string;
-		},
-		texture: TextureProvider,
-	) {
-		super(
-			{
-				serverId: option.serverId,
-				width: 1,
-				height: 1.5,
-				posX: option.posX,
-				posY: option.posY,
-				canWalk: true,
-				walkTextureIndex: 0,
-			},
-			ActorType.PLAYER,
-			texture,
-		);
+	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
+		super(serverId, option, new Vector2(1, 1.5), ActorType.PLAYER, texture, true, 0);
 
 		this.playerName = option.playerName;
 
+		this.setTagName(this.playerName);
 		this.setAnchor(0.5, 1);
 		this.setAnimateSpeed(0.12);
 		this.setRunning(RunningState.SILENT);

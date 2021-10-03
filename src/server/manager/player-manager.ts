@@ -1,6 +1,6 @@
 import { Player } from '../entity/player';
 import { ExtendedEntityManager } from '../shared/manager';
-import { Actor } from '../shared/entity';
+import { Actor, GetCtorOptions } from '../shared/entity';
 import { GetRadiusLands } from '../entity/land';
 import { inject, injectable } from 'inversify';
 import { ActorManager } from './actor-manager';
@@ -58,7 +58,11 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 
 	spawnActor(player: Player, actorId: number) {
 		this.addAtRecord(player, 'spawnedActors', actorId);
-		this.emit(GameEvent.SpawnActorEvent, actorId, player);
+
+		const actor = this.actorManager.getEntityById(actorId);
+		const ctorOption = GetCtorOptions(actor);
+
+		this.emit(GameEvent.SpawnActorEvent, actorId, player, ctorOption);
 	}
 
 	despawnActor(player: Player, actorId: number) {

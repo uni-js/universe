@@ -72,23 +72,18 @@ export class ActorObject extends GameObject {
 	private playing = false;
 
 	constructor(
-		option: {
-			serverId: number;
-			posX: number;
-			posY: number;
-			width: number;
-			height: number;
-			canWalk?: boolean;
-			walkTextureIndex?: number;
-			tagname?: string;
-		},
+		serverId: number,
+		option: ActorCtorOption,
+		size: Vector2,
 		actorType: ActorType,
 		texture: TextureProvider,
+		canWalk = false,
+		walkTextureIndex = 0,
 	) {
-		super(texture, option.serverId);
+		super(texture, serverId);
 
 		this.pos = new Vector2(option.posX, option.posY);
-		this.size = new Vector2(option.width, option.height);
+		this.size = size;
 
 		this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);
 		this.usedTextures = this.texture.get(`actor.${actorType}`);
@@ -108,8 +103,8 @@ export class ActorObject extends GameObject {
 		this.addChildAt(this.nametag, 0);
 		this.addChildAt(this.sprite, 1);
 
-		if (option.canWalk) {
-			this.walkTextureIndex = option.walkTextureIndex;
+		if (canWalk) {
+			this.walkTextureIndex = walkTextureIndex;
 			this.shadow = new PIXI.Sprite(this.texture.getOne('system.shadow'));
 			this.addChildAt(this.shadow, 2);
 		}
@@ -189,6 +184,8 @@ export class ActorObject extends GameObject {
 	setTagName(tagname: string) {
 		this.tagname = tagname;
 		this.nametag.text = this.tagname;
+
+		this.resize();
 	}
 	private resize() {
 		this.sprite.width = this.size.x;
@@ -201,13 +198,10 @@ export class ActorObject extends GameObject {
 		this.shadow.height = this.size.x * shadowRatio;
 		this.shadow.position.set(0, -0.15);
 
-		const nametagBounds = this.nametag.getBounds();
-		const nametagRatio = nametagBounds.height / nametagBounds.width;
+		this.nametag.style.fontSize = 1;
+		this.nametag.scale.set(0.5, 0.5);
 
-		this.nametag.width = 0.5 / nametagRatio;
-		this.nametag.height = 0.5;
-
-		this.nametag.position.set(0, -this.size.y - 0.3);
+		this.nametag.position.set(0, -this.size.y - 0.2);
 	}
 	setAnchor(x: number, y: number) {
 		this.sprite.anchor.set(x, y);
@@ -244,7 +238,18 @@ export class ActorObject extends GameObject {
 	}
 }
 
-export type ActorCtor = [any, TextureProvider, ...any];
+export interface ActorCtorOption {
+	posX: number;
+	posY: number;
+	width: number;
+	height: number;
+	canWalk?: boolean;
+	walkTextureIndex?: number;
+	tagname?: string;
+	[key: string]: any;
+}
+
+export type ActorCtor = [number, ActorCtorOption, TextureProvider, ...any];
 export class ActorFactory extends Factory<ActorType, ActorObject, ActorCtor> {}
 
 export type ActorFactoryMapper = FactoryMapper<ActorType, ActorObject, ActorCtor>;

@@ -28,14 +28,9 @@ export class PlayerService implements Service {
 
 		this.actorManager.setWalkState(player.$loki, event.running, event.dir);
 	}
-	private onActorSpawned(actorId: number, player: Player) {
+	private onActorSpawned(actorId: number, player: Player, ctorOption: any) {
 		const actor = this.actorManager.getEntityById(actorId);
-		const event = new AddActorEvent(actor.type, {
-			serverId: actor.$loki,
-			posX: actor.posX,
-			posY: actor.posY,
-			playerName: player.playerName,
-		});
+		const event = new AddActorEvent(actor.type, actor.$loki, ctorOption);
 
 		this.eventBus.emitTo([player.connId], event);
 	}
