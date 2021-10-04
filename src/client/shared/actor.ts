@@ -47,6 +47,26 @@ export class MoveInterpolator extends EventEmitter2 {
 	}
 }
 
+export interface Attachment {
+	key: string;
+	relativePos: Vector2;
+	actorId: number;
+}
+
+export interface AttachMapping {
+	[key: string]: {
+		relativeX: number;
+		relativeY: number;
+	};
+}
+
+export const AttachMapping: AttachMapping = {
+	RIGHT_HAND: {
+		relativeX: 0,
+		relativeY: 0,
+	},
+};
+
 export class ActorObject extends GameObject {
 	private moveInterpolator;
 	/**
@@ -62,7 +82,7 @@ export class ActorObject extends GameObject {
 	protected direction: Direction = Direction.BACK;
 	protected running: RunningState = RunningState.SILENT;
 
-	private usedTextures: PIXI.Texture[] = [];
+	protected usedTextures: PIXI.Texture[] = [];
 	private walkTextureIndex: number;
 
 	private pos: Vector2;
@@ -71,12 +91,15 @@ export class ActorObject extends GameObject {
 
 	private playing = false;
 
+	private attachments = new Map<string, Attachment>();
+
 	constructor(
 		serverId: number,
 		option: ActorCtorOption,
 		size: Vector2,
 		actorType: ActorType,
 		texture: TextureProvider,
+		usedTextureLength = 0,
 		canWalk = false,
 		walkTextureIndex = 0,
 	) {
@@ -86,7 +109,7 @@ export class ActorObject extends GameObject {
 		this.size = size;
 
 		this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);
-		this.usedTextures = this.texture.get(`actor.${actorType}`);
+		this.usedTextures = this.texture.get(`actor.${actorType}`) || this.texture.getGroup('{0}', usedTextureLength);
 
 		this.nametag = new PIXI.Text('');
 		this.nametag.style = new PIXI.TextStyle({
@@ -107,6 +130,12 @@ export class ActorObject extends GameObject {
 			this.walkTextureIndex = walkTextureIndex;
 			this.shadow = new PIXI.Sprite(this.texture.getOne('system.shadow'));
 			this.addChildAt(this.shadow, 2);
+		}
+
+		if (option.attachments) {
+			option.attachments.forEach((attachment) => {
+				this.setAttachment(attachment.key, attachment.actorId);
+			});
 		}
 
 		this.setDirection(Direction.FORWARD);
@@ -191,12 +220,14 @@ export class ActorObject extends GameObject {
 		this.sprite.width = this.size.x;
 		this.sprite.height = this.size.y;
 
-		const shadowBounds = this.shadow.getLocalBounds();
-		const shadowRatio = shadowBounds.height / shadowBounds.width;
+		if (this.shadow) {
+			const shadowBounds = this.shadow.getLocalBounds();
+			const shadowRatio = shadowBounds.height / shadowBounds.width;
 
-		this.shadow.width = this.size.x;
-		this.shadow.height = this.size.x * shadowRatio;
-		this.shadow.position.set(0, -0.15);
+			this.shadow.width = this.size.x;
+			this.shadow.height = this.size.x * shadowRatio;
+			this.shadow.position.set(0, -0.15);
+		}
 
 		this.nametag.style.fontSize = 1;
 		this.nametag.scale.set(0.5, 0.5);
@@ -229,6 +260,24 @@ export class ActorObject extends GameObject {
 	addMovePoint(point: Vector2) {
 		this.moveInterpolator.addMovePoint(point);
 	}
+
+	/**
+	 * 设置附着物
+	 */
+	setAttachment(key: string, actorId: number) {
+		const map = AttachMapping[key];
+
+		this.attachments.set(key, { key, relativePos: new Vector2(map.relativeX, map.relativeY), actorId });
+	}
+
+	removeAttachment(key: string) {
+		this.attachments.delete(key);
+	}
+
+	getAttachment(key: string) {
+		return this.attachments.get(key);
+	}
+
 	async doTick(tick: number) {
 		this.moveInterpolator.doTick();
 		if (this.isStatesDirty) {
@@ -243,8 +292,7 @@ export interface ActorCtorOption {
 	posY: number;
 	width: number;
 	height: number;
-	canWalk?: boolean;
-	walkTextureIndex?: number;
+	attachments: any[];
 	tagname?: string;
 	[key: string]: any;
 }

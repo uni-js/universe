@@ -1,4 +1,4 @@
-import { Actor } from '../shared/entity';
+import { Actor, Attachment } from '../shared/entity';
 import { EntityManager } from '../shared/manager';
 import { injectable } from 'inversify';
 import { ICollection, injectCollection } from '../../shared/database/memory';
@@ -11,6 +11,41 @@ import { Direction, RunningState } from '../../shared/actor';
 export class ActorManager extends EntityManager<Actor> {
 	constructor(@injectCollection(Actor) private actorList: ICollection<Actor>) {
 		super(actorList);
+	}
+
+	setAttachment(targetActorId: number, key: string, actorId: number) {
+		const targetActor = this.actorList.findOne({ $loki: targetActorId });
+		const actor = this.actorList.findOne({ $loki: actorId });
+
+		this.addAtRecord<Attachment>(
+			targetActor,
+			'attachments',
+			{
+				key,
+				actorId,
+			},
+			key,
+		);
+
+		this.moveToPosition(actor, new Vector2(targetActor.posX, targetActor.posY));
+		this.emit(GameEvent.ActorSetAttachment, targetActor.$loki, key, actorId);
+	}
+
+	getAttachment(targetActorId: number, key: string) {
+		const actor = this.actorList.findOne({ $loki: targetActorId });
+		return actor.attachments.get(key);
+	}
+
+	getAttachments(targetActorId: number) {
+		const actor = this.actorList.findOne({ $loki: targetActorId });
+		return actor.attachments.getAll();
+	}
+
+	removeAttachment(targetActorId: number, key: string) {
+		const actor = this.actorList.findOne({ $loki: targetActorId });
+		this.removeAtRecord(actor, 'attachments', key);
+
+		this.emit(GameEvent.ActorRemoveAttachment, actor.$loki, key);
 	}
 
 	setWalkState(actorId: number, running: RunningState, direction: Direction) {
@@ -28,9 +63,21 @@ export class ActorManager extends EntityManager<Actor> {
 		return inserted as T;
 	}
 
+	removeEntity<T extends Actor>(actor: T): void {
+		super.removeEntity.call(this, actor);
+
+		for (const attachment of actor.attachments.getAll()) {
+			this.removeEntity(this.getEntityById(attachment.actorId));
+		}
+	}
+
 	moveToPosition(actor: Actor, position: Vector2) {
-		const delta = position.sub(new Vector2(actor.posX, actor.posY));
-		if (delta.getSqrt() <= 0) return;
+		const originPosX = actor.posX;
+		const originPosY = actor.posY;
+
+		const isOriginEmpty = originPosX == undefined || originPosY == undefined;
+
+		const delta = position.sub(new Vector2(originPosX, originPosY));
 
 		actor.posX += delta.x;
 		actor.posY += delta.y;
@@ -39,7 +86,7 @@ export class ActorManager extends EntityManager<Actor> {
 		const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
 		const landDelta = landPos.sub(new Vector2(actor.atLandX, actor.atLandY));
 
-		if (landDelta.getSqrt() > 0) {
+		if (isOriginEmpty || landDelta.getSqrt() > 0) {
 			actor.isLandMoveDirty = true;
 		}
 		this.actorList.update(actor);
@@ -48,13 +95,15 @@ export class ActorManager extends EntityManager<Actor> {
 	private updateMoveDirty() {
 		const dirtyActors = this.actorList.find({ isMoveDirty: true });
 		for (const actor of dirtyActors) {
+			this.updateAttachment(actor.$loki);
+
 			actor.isMoveDirty = false;
 			this.actorList.update(actor);
 			this.emit(GameEvent.NewPosEvent, actor.$loki);
 		}
 	}
 
-	private updateBaseStateDirty() {
+	private updateWalkDirty() {
 		const dirtyActors = this.actorList.find({ isWalkDirty: true });
 		for (const actor of dirtyActors) {
 			actor.isWalkDirty = false;
@@ -79,9 +128,17 @@ export class ActorManager extends EntityManager<Actor> {
 		}
 	}
 
+	private updateAttachment(targetActorId: number) {
+		const targetActor = this.getEntityById(targetActorId);
+		this.getAttachments(targetActorId).forEach((attachment) => {
+			const actor = this.getEntityById(attachment.actorId);
+			this.moveToPosition(actor, new Vector2(targetActor.posX, targetActor.posY));
+		});
+	}
+
 	doTick(tick: number) {
 		this.updateMoveDirty();
-		this.updateBaseStateDirty();
+		this.updateWalkDirty();
 		this.updateLandMoveDirty();
 	}
 }

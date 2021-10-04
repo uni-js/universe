@@ -1,7 +1,6 @@
 import { Entity, ICollection } from '../../shared/database/memory';
 import { GameEvent } from '../event';
 import { EventEmitter } from '../shared/event';
-import { RecordSet } from '../utils';
 
 export type ObjectQueryCondition<T> = Partial<T & LokiObj> & Record<string, any>;
 
@@ -77,23 +76,26 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 		this.emit(GameEvent.RemoveEntityEvent, entityId, entity);
 	}
 
-	addAtRecord<R>(entity: T, propertyName: string, record: R) {
-		const recordSet = (entity as any)[propertyName] as RecordSet<R>;
-		if (recordSet.has(record)) return;
+	addAtRecord<R>(entity: T, propertyName: string, record: R, key?: string) {
+		const recordStore = (entity as any)[propertyName] as any;
+		if (recordStore.has(record)) return;
 
-		recordSet.add(record);
+		if (key) {
+			recordStore.add(key, record);
+		} else {
+			recordStore.add(record);
+		}
 	}
 
-	removeAtRecord<R>(entity: T, propertyName: string, record: R) {
-		const recordSet = (entity as any)[propertyName] as RecordSet<R>;
-		if (!recordSet.has(record)) return;
-
-		recordSet.remove(record);
+	removeAtRecord<R>(entity: T, propertyName: string, recordOrKey: R | string) {
+		const recordStore = (entity as any)[propertyName] as any;
+		if (!recordStore.has(recordOrKey)) return;
+		recordStore.remove(recordOrKey);
 	}
 
-	hasAtRecord<R>(entity: T, propertyName: string, record: R) {
-		const recordSet = (entity as any)[propertyName] as RecordSet<R>;
-		return recordSet.has(record);
+	hasAtRecord<R>(entity: T, propertyName: string, recordOrKey: R | string) {
+		const recordStore = (entity as any)[propertyName] as any;
+		return recordStore.has(recordOrKey);
 	}
 }
 

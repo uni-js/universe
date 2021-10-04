@@ -151,16 +151,6 @@ export class LandManager extends EntityManager<Land> {
 		this.addNewLand(landPos);
 	}
 
-	addLandActor(landPos: Vector2, actorId: number) {
-		const land = this.getLand(landPos);
-		this.addAtRecord(land, 'actors', actorId);
-	}
-
-	removeLandActor(landPos: Vector2, actorId: number) {
-		const land = this.getLand(landPos);
-		this.removeAtRecord(land, 'actors', actorId);
-	}
-
 	hasLand(landLoc: Vector2) {
 		return Boolean(this.getLand(landLoc));
 	}

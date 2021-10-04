@@ -1,4 +1,4 @@
-import { ActorNewPosEvent, ActorSetWalkEvent } from '../../event/server-side';
+import { ActorNewPosEvent, ActorRemoveAttachment, ActorSetAttachment, ActorSetWalkEvent } from '../../event/server-side';
 import { EventBus } from '../../event/bus-server';
 import { ActorManager } from '../manager/actor-manager';
 import { PlayerManager } from '../manager/player-manager';
@@ -20,18 +20,27 @@ export class ActorService implements Service {
 		this.actorManager.on(GameEvent.AddEntityEvent, this.onActorAdded.bind(this));
 		this.actorManager.on(GameEvent.RemoveEntityEvent, this.onActorRemoved.bind(this));
 		this.actorManager.on(GameEvent.NewWalkStateEvent, this.onWalkStateSet.bind(this));
+
+		this.actorManager.on(GameEvent.ActorSetAttachment, this.onActorSetAttachment.bind(this));
+		this.actorManager.on(GameEvent.ActorRemoveAttachment, this.onActorRemoveAttachment.bind(this));
+	}
+
+	private onActorSetAttachment(targetActorId: number, key: string, actorId: number) {
+		this.emitToActorSpawned(targetActorId, new ActorSetAttachment(targetActorId, key, actorId));
+	}
+
+	private onActorRemoveAttachment(targetActorId: number, key: string) {
+		this.emitToActorSpawned(targetActorId, new ActorRemoveAttachment(targetActorId, key));
 	}
 
 	private onActorAdded(actorId: number) {
 		for (const player of this.playerManager.getAllEntities()) {
-			if (!this.playerManager.hasAtRecord(player, 'spawnedActors', actorId))
-				this.playerManager.addAtRecord(player, 'spawnedActors', actorId);
+			this.playerManager.spawnActor(player, actorId);
 		}
 	}
 	private onActorRemoved(actorId: number) {
 		for (const player of this.playerManager.getAllEntities()) {
-			if (this.playerManager.hasAtRecord(player, 'spawnedActors', actorId))
-				this.playerManager.removeAtRecord(player, 'spawnedActors', actorId);
+			this.playerManager.despawnActor(player, actorId);
 		}
 	}
 	private onWalkStateSet(actorId: number) {

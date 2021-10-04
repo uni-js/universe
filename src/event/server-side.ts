@@ -33,13 +33,25 @@ export class RemoveActorEvent extends RemoteEvent {
 }
 
 export class AddLandEvent extends RemoteEvent {
-	constructor(public entityId: number, public landX: number, public landY: number, public landData: LandData) {
+	constructor(public actorId: number, public landX: number, public landY: number, public landData: LandData) {
 		super();
 	}
 }
 
 export class RemoveLandEvent extends RemoteEvent {
-	constructor(public entityId: number, public landX: number, public landY: number) {
+	constructor(public actorId: number, public landX: number, public landY: number) {
+		super();
+	}
+}
+
+export class ActorSetAttachment extends RemoteEvent {
+	constructor(public targetActorId: number, public key: string, public actorId: number) {
+		super();
+	}
+}
+
+export class ActorRemoveAttachment extends RemoteEvent {
+	constructor(public targetActorId: number, public key: string) {
 		super();
 	}
 }

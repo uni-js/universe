@@ -18,12 +18,12 @@ export class LandService {
 	}
 	private handleLandAdded = (event: AddLandEvent) => {
 		const pos = new Vector2(event.landX, event.landY);
-		const land = new LandObject(this.texture, event.landData, event.entityId, pos);
+		const land = new LandObject(this.texture, event.landData, event.actorId, pos);
 		this.landManager.addGameObject(land);
 	};
 
 	private handleLandRemoved = (event: RemoveLandEvent) => {
-		const land = this.landManager.getObjectById(event.entityId);
+		const land = this.landManager.getObjectById(event.actorId);
 		this.landManager.removeGameObject(land);
 	};
 }

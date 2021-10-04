@@ -29,31 +29,18 @@ export async function LoadResource(url: string) {
 export class TextureProvider {
 	private textures = new Map<string, PIXI.Texture[]>();
 	constructor() {}
+
 	async add(name: string, url: string) {
 		const resource = await LoadResource(url);
 		const texture = resource.texture;
 		this.textures.set(name, [texture]);
 	}
+
 	async addJSON(name: string, json_url: string) {
 		const resource = await LoadResource(json_url);
 		this.textures.set(name, Object.values(resource.textures));
 	}
-	/**
-	 * 增加一组被编号的材质
-	 * 一般用于动画帧
-	 *
-	 * 请注意 name的格式如 texture.player.{order}
-	 *
-	 * url_pattern的格式如 ./textures/player/{order}.png
-	 */
-	async addGroup(name_pattern: string, url_pattern: string, count: number) {
-		for (let order = 0; order < count; order++) {
-			const name = Pupa(name_pattern, { order });
-			const url = Pupa(url_pattern, { order });
 
-			await this.add(name, url);
-		}
-	}
 	/**
 	 * 取出一组被编号的材质
 	 */
@@ -61,20 +48,20 @@ export class TextureProvider {
 		const group = [];
 		for (let order = 0; order < count; order++) {
 			const name = Pupa(name_pattern, { order });
-			const texture = this.get(name);
+			const texture = this.getOne(name);
 			if (!texture) return;
 			group.push(texture);
 		}
 		return group;
 	}
-	get(name: string) {
-		if (!this.textures.has(name)) throw new Error(`该材质不存在 ${name}`);
+	get(name: string): PIXI.Texture[] | undefined {
+		if (!this.textures.has(name)) return;
 
 		return this.textures.get(name);
 	}
-	getOne(name: string) {
+	getOne(name: string): PIXI.Texture | undefined {
 		const textures = this.get(name);
-		if (!textures[0]) throw new Error(`该材质不存在 ${name} at index [0]`);
+		if (!textures || !textures[0]) return;
 
 		return textures[0];
 	}

@@ -1,7 +1,10 @@
+import { ActorType } from '../../shared/actor';
 import { Actor, CtorOption } from '../shared/entity';
 import { RecordSet } from '../utils';
 
 export class Player extends Actor {
+	type = ActorType.PLAYER;
+
 	connId: string;
 
 	@CtorOption()

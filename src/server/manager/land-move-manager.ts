@@ -30,17 +30,34 @@ export class LandMoveManager extends Manager {
 		this.actorManager.on(GameEvent.LandMoveEvent, this.onActorLandMoved);
 		this.actorManager.on(GameEvent.RemoveEntityEvent, this.onActorRemoved);
 	}
+
+	addLandActor(landPos: Vector2, actorId: number) {
+		this.landManager.ensureLand(landPos);
+
+		const land = this.landManager.getLand(landPos);
+		this.landManager.addAtRecord(land, 'actors', actorId);
+
+		this.playerManager.getCanseeLandPlayers(landPos).forEach((player) => {
+			this.playerManager.spawnActor(player, actorId);
+		});
+	}
+
+	removeLandActor(landPos: Vector2, actorId: number) {
+		const land = this.landManager.getLand(landPos);
+		this.landManager.removeAtRecord(land, 'actors', actorId);
+	}
+
 	private onActorRemoved = (actorId: number, actor: Actor) => {
 		const pos = new Vector2(actor.posX, actor.posY);
 		const landPos = PosToLandPos(pos);
-		this.landManager.removeLandActor(landPos, actorId);
+		this.removeLandActor(landPos, actorId);
 	};
 	private onActorLandMoved = (actorId: number, landPos: Vector2, lastLandPos?: Vector2) => {
-		if (lastLandPos) this.landManager.removeLandActor(lastLandPos, actorId);
+		if (lastLandPos) this.removeLandActor(lastLandPos, actorId);
 
-		this.landManager.ensureLand(landPos);
-		this.landManager.addLandActor(landPos, actorId);
+		this.addLandActor(landPos, actorId);
 	};
+
 	private onLandUsed = (player: Player, landPos: Vector2) => {
 		this.landManager.ensureLand(landPos);
 

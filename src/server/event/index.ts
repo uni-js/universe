@@ -9,6 +9,9 @@ export enum GameEvent {
 	LandUnloaded = 'LandUnloaded',
 	LandDataToPlayer = 'LandDataToPlayer',
 
+	LandAddActorEvent = 'LandAddActorEvent',
+	LandRemoveActorEvent = 'LandRemoveActorEvent',
+
 	LandMoveEvent = 'LandMoveEvent',
 	SpawnActorEvent = 'SpawnActorEvent',
 	DespawnActorEvent = 'DespawnActorEvent',
@@ -21,4 +24,7 @@ export enum GameEvent {
 
 	NewPosEvent = 'NewPosEvent',
 	NewWalkStateEvent = 'NewWalkStateEvent',
+
+	ActorSetAttachment = 'ActorSetAttachment',
+	ActorRemoveAttachment = 'ActorRemoveAttachment',
 }

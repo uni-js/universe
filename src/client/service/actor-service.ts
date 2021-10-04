@@ -1,5 +1,12 @@
 import { EventBusClient } from '../../event/bus-client';
-import { ActorNewPosEvent, ActorSetWalkEvent, AddActorEvent, RemoveActorEvent } from '../../event/server-side';
+import {
+	ActorNewPosEvent,
+	ActorRemoveAttachment,
+	ActorSetAttachment,
+	ActorSetWalkEvent,
+	AddActorEvent,
+	RemoveActorEvent,
+} from '../../event/server-side';
 import { Vector2 } from '../../server/shared/math';
 import { ActorManager } from '../manager/actor-manager';
 import { Player } from '../object/player';
@@ -21,12 +28,25 @@ export class ActorService {
 		this.eventBus.on(RemoveActorEvent.name, this.handleActorRemoved.bind(this));
 		this.eventBus.on(ActorNewPosEvent.name, this.handleActorNewPos.bind(this));
 		this.eventBus.on(ActorSetWalkEvent.name, this.handleActorNewWalkState.bind(this));
-	}
-	private handleActorAdded(event: AddActorEvent) {
-		console.debug('Spawned', event.type, event.ctorOption);
 
+		this.eventBus.on(ActorSetAttachment.name, this.handleSetAttachment.bind(this));
+		this.eventBus.on(ActorRemoveAttachment.name, this.handleRemoveAttachment.bind(this));
+	}
+	private handleSetAttachment(event: ActorSetAttachment) {
+		const actor = this.actorManager.getObjectById(event.targetActorId);
+		actor.setAttachment(event.key, event.actorId);
+	}
+
+	private handleRemoveAttachment(event: ActorRemoveAttachment) {
+		const actor = this.actorManager.getObjectById(event.targetActorId);
+		actor.removeAttachment(event.key);
+	}
+
+	private handleActorAdded(event: AddActorEvent) {
 		const newActor = this.actorFactory.getNewObject(event.type, [event.serverId, event.ctorOption, this.texture]);
 		this.actorManager.addGameObject(newActor);
+
+		console.debug('Spawned', event.type, event.ctorOption, newActor);
 	}
 	private handleActorRemoved(event: RemoveActorEvent) {
 		const object = this.actorManager.getObjectById(event.actorId);

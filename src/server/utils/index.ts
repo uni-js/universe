@@ -56,3 +56,26 @@ export class RecordSet<T> {
 		return Array.from(this.set.values());
 	}
 }
+
+export class RecordMap<T> {
+	private map = new Map<string, T>();
+	constructor() {}
+	add(key: string, record: T) {
+		this.map.set(key, record);
+	}
+	has(key: string) {
+		return this.map.has(key);
+	}
+	get(key: string) {
+		return this.map.get(key);
+	}
+	remove(key: string) {
+		this.map.delete(key);
+	}
+	getSize() {
+		return this.map.size;
+	}
+	getAll() {
+		return Array.from(this.map.values());
+	}
+}

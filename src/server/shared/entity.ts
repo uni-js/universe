@@ -1,5 +1,6 @@
 import { ActorType, Direction, RunningState } from '../../shared/actor';
 import { Entity } from '../../shared/database/memory';
+import { RecordMap, RecordSet } from '../utils';
 
 export const MOVEMENT_TICK_MIN_DISTANCE = 0.0001;
 export const CTOR_OPTION_PROPERTY_SYMBOL = Symbol('ctor-option');
@@ -20,11 +21,21 @@ export function GetCtorOptions(target: any) {
 	const options: any = {};
 	for (const propertyName of Object.getOwnPropertyNames(target)) {
 		const metadataValue = Reflect.getMetadata(CTOR_OPTION_PROPERTY_SYMBOL, target, propertyName);
+		const targetProperty = target[propertyName];
 		if (metadataValue === true) {
-			options[propertyName] = target[propertyName];
+			if (targetProperty instanceof RecordMap || targetProperty instanceof RecordSet) {
+				options[propertyName] = targetProperty.getAll();
+			} else {
+				options[propertyName] = targetProperty;
+			}
 		}
 	}
 	return options;
+}
+
+export interface Attachment {
+	key: string;
+	actorId: number;
 }
 
 export class Actor extends Entity {
@@ -45,6 +56,9 @@ export class Actor extends Entity {
 
 	@CtorOption()
 	motionY = 0;
+
+	@CtorOption()
+	attachments: RecordMap<Attachment> = new RecordMap();
 
 	type: ActorType;
 

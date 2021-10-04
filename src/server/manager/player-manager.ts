@@ -8,13 +8,6 @@ import { Vector2 } from '../shared/math';
 import { GameEvent } from '../event';
 import { GetArrayDiff } from '../utils';
 import { GetPosByHash, GetPosHash } from '../../shared/land';
-import { ActorType } from '../../shared/actor';
-
-export interface PlayerCreatingInfo {
-	connId: string;
-	posX: number;
-	posY: number;
-}
 
 @injectable()
 export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
@@ -39,16 +32,33 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		return GetRadiusLands(new Vector2(player.posX, player.posY), 1);
 	}
 
+	getCanseeLandPlayers(landPos: Vector2) {
+		const players = this.getAllEntities();
+		const results = [];
+		for (const player of players) {
+			const result = this.getCanSeeLands(player).find((vec2) => {
+				return vec2.equals(landPos);
+			});
+			if (result) {
+				results.push(player);
+			}
+		}
+		return results;
+	}
+
 	addNewEntity(): Player {
 		throw new Error(`use addNewPlayer API instead.`);
 	}
 
-	addNewPlayer(info: PlayerCreatingInfo) {
+	getAllEntities(): Player[] {
+		return this.findEntities({ isPlayer: true });
+	}
+
+	addNewPlayer(connId: string) {
 		const player = new Player();
-		player.connId = info.connId;
+		player.connId = connId;
 		player.posX = 0;
 		player.posY = 0;
-		player.type = ActorType.PLAYER;
 
 		this.actorManager.addNewEntity(player);
 		this.updateUsedLands(player);
@@ -57,6 +67,8 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	}
 
 	spawnActor(player: Player, actorId: number) {
+		if (this.hasAtRecord(player, 'spawnedActors', actorId)) return;
+
 		this.addAtRecord(player, 'spawnedActors', actorId);
 
 		const actor = this.actorManager.getEntityById(actorId);
@@ -66,6 +78,8 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	}
 
 	despawnActor(player: Player, actorId: number) {
+		if (!this.hasAtRecord(player, 'spawnedActors', actorId)) return;
+
 		this.removeAtRecord(player, 'spawnedActors', actorId);
 		this.emit(GameEvent.DespawnActorEvent, actorId, player);
 	}
