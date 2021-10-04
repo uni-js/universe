@@ -33,8 +33,11 @@ export class ActorService {
 		this.eventBus.on(ActorRemoveAttachment.name, this.handleRemoveAttachment.bind(this));
 	}
 	private handleSetAttachment(event: ActorSetAttachment) {
-		const actor = this.actorManager.getObjectById(event.targetActorId);
-		actor.setAttachment(event.key, event.actorId);
+		const targetActor = this.actorManager.getObjectById(event.targetActorId);
+		const actor = this.actorManager.getObjectById(event.actorId);
+
+		targetActor.setAttachment(event.key, event.actorId);
+		actor.setAttaching(event.key, event.targetActorId);
 	}
 
 	private handleRemoveAttachment(event: ActorRemoveAttachment) {

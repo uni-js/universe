@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-import { ActorType, Direction, RunningState } from '../../shared/actor';
+import { ActorType, AttachMapping, Direction, RunningState } from '../../shared/actor';
 import { GameEvent } from '../event';
 import { GameObject } from './game-object';
 import { GetEmptyTexture, TextureProvider } from '../texture';
@@ -43,29 +43,17 @@ export class MoveInterpolator extends EventEmitter2 {
 				this.locatedAt = 0;
 				this.movePoints.shift();
 			}
+		} else if (this.movePoints.length == 1) {
+			this.emit('position', this.movePoints[0]);
 		}
 	}
 }
 
 export interface Attachment {
 	key: string;
-	relativePos: Vector2;
+	relativePos?: Vector2;
 	actorId: number;
 }
-
-export interface AttachMapping {
-	[key: string]: {
-		relativeX: number;
-		relativeY: number;
-	};
-}
-
-export const AttachMapping: AttachMapping = {
-	RIGHT_HAND: {
-		relativeX: 0,
-		relativeY: 0,
-	},
-};
 
 export class ActorObject extends GameObject {
 	private moveInterpolator;
@@ -92,6 +80,7 @@ export class ActorObject extends GameObject {
 	private playing = false;
 
 	private attachments = new Map<string, Attachment>();
+	private attaching?: Attachment;
 
 	constructor(
 		serverId: number,
@@ -109,7 +98,9 @@ export class ActorObject extends GameObject {
 		this.size = size;
 
 		this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);
-		this.usedTextures = this.texture.get(`actor.${actorType}`) || this.texture.getGroup('{0}', usedTextureLength);
+
+		this.usedTextures =
+			this.texture.get(`actor.${actorType}`) || this.texture.getGroup(`actor.${actorType}.{order}`, usedTextureLength);
 
 		this.nametag = new PIXI.Text('');
 		this.nametag.style = new PIXI.TextStyle({
@@ -236,8 +227,8 @@ export class ActorObject extends GameObject {
 	}
 	setAnchor(x: number, y: number) {
 		this.sprite.anchor.set(x, y);
-		this.shadow.anchor.set(0.5, 0.5);
-		this.nametag.anchor.set(0.5, 0.5);
+		this.shadow && this.shadow.anchor.set(0.5, 0.5);
+		this.nametag && this.nametag.anchor.set(0.5, 0.5);
 	}
 	setTextures(textures: PIXI.Texture[]) {
 		this.sprite.textures = textures;
@@ -270,6 +261,16 @@ export class ActorObject extends GameObject {
 		this.attachments.set(key, { key, relativePos: new Vector2(map.relativeX, map.relativeY), actorId });
 	}
 
+	setAttaching(key: string, actorId: number) {
+		this.attaching = { key, actorId };
+		this.zIndex = 3;
+		this.setAnchor(0.5, 0.5);
+	}
+
+	getAttaching() {
+		return this.attaching;
+	}
+
 	removeAttachment(key: string) {
 		this.attachments.delete(key);
 	}
@@ -280,6 +281,7 @@ export class ActorObject extends GameObject {
 
 	async doTick(tick: number) {
 		this.moveInterpolator.doTick();
+
 		if (this.isStatesDirty) {
 			this.emit(GameEvent.SetActorStateEvent, this);
 			this.isStatesDirty = false;

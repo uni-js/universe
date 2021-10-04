@@ -5,7 +5,7 @@ import { ICollection, injectCollection } from '../../shared/database/memory';
 import { GameEvent } from '../event';
 import { Vector2 } from '../shared/math';
 import { PosToLandPos } from '../land/helper';
-import { Direction, RunningState } from '../../shared/actor';
+import { AttachMapping, Direction, RunningState } from '../../shared/actor';
 
 @injectable()
 export class ActorManager extends EntityManager<Actor> {
@@ -15,7 +15,6 @@ export class ActorManager extends EntityManager<Actor> {
 
 	setAttachment(targetActorId: number, key: string, actorId: number) {
 		const targetActor = this.actorList.findOne({ $loki: targetActorId });
-		const actor = this.actorList.findOne({ $loki: actorId });
 
 		this.addAtRecord<Attachment>(
 			targetActor,
@@ -27,7 +26,7 @@ export class ActorManager extends EntityManager<Actor> {
 			key,
 		);
 
-		this.moveToPosition(actor, new Vector2(targetActor.posX, targetActor.posY));
+		this.updateAttachment(targetActorId);
 		this.emit(GameEvent.ActorSetAttachment, targetActor.$loki, key, actorId);
 	}
 
@@ -132,7 +131,10 @@ export class ActorManager extends EntityManager<Actor> {
 		const targetActor = this.getEntityById(targetActorId);
 		this.getAttachments(targetActorId).forEach((attachment) => {
 			const actor = this.getEntityById(attachment.actorId);
-			this.moveToPosition(actor, new Vector2(targetActor.posX, targetActor.posY));
+			const posX = targetActor.posX + AttachMapping[attachment.key].relativeX;
+			const posY = targetActor.posY + AttachMapping[attachment.key].relativeY;
+
+			this.moveToPosition(actor, new Vector2(posX, posY));
 		});
 	}
 
