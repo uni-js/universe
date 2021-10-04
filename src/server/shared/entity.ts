@@ -60,6 +60,9 @@ export class Actor extends Entity {
 	@CtorOption()
 	attachments: RecordMap<Attachment> = new RecordMap();
 
+	@CtorOption()
+	attaching: Attachment;
+
 	type: ActorType;
 
 	isMoveDirty = false;

@@ -15,6 +15,7 @@ export class ActorManager extends EntityManager<Actor> {
 
 	setAttachment(targetActorId: number, key: string, actorId: number) {
 		const targetActor = this.actorList.findOne({ $loki: targetActorId });
+		const actor = this.actorList.findOne({ $loki: actorId });
 
 		this.addAtRecord<Attachment>(
 			targetActor,
@@ -25,6 +26,8 @@ export class ActorManager extends EntityManager<Actor> {
 			},
 			key,
 		);
+
+		actor.attaching = { key, actorId: targetActorId };
 
 		this.updateAttachment(targetActorId);
 		this.emit(GameEvent.ActorSetAttachment, targetActor.$loki, key, actorId);

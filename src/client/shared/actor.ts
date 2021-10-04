@@ -129,6 +129,10 @@ export class ActorObject extends GameObject {
 			});
 		}
 
+		if (option.attaching) {
+			this.setAttaching(option.attaching.key, option.attaching.actorId);
+		}
+
 		this.setDirection(Direction.FORWARD);
 
 		this.setPosition(this.pos);
