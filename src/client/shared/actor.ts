@@ -78,9 +78,12 @@ export class ActorObject extends GameObject {
 	private tagname = '';
 
 	private playing = false;
+	private isUsing = false;
 
 	private attachments = new Map<string, Attachment>();
 	private attaching?: Attachment;
+
+	private attachMapping?: AttachMapping;
 
 	constructor(
 		serverId: number,
@@ -131,6 +134,10 @@ export class ActorObject extends GameObject {
 
 		if (option.attaching) {
 			this.setAttaching(option.attaching.key, option.attaching.actorId);
+		}
+
+		if (option.attachMapping) {
+			this.attachMapping = option.attachMapping;
 		}
 
 		this.setDirection(Direction.FORWARD);
@@ -256,13 +263,18 @@ export class ActorObject extends GameObject {
 		this.moveInterpolator.addMovePoint(point);
 	}
 
+	getAttachRelPos(key: string) {
+		const keyMapped = this.attachMapping && this.attachMapping[key];
+		const mappedRelPos = keyMapped && keyMapped[this.getDirection()];
+		const relPos = mappedRelPos ? new Vector2(mappedRelPos[0], mappedRelPos[1]) : new Vector2(0, 0);
+		return relPos;
+	}
+
 	/**
 	 * 设置附着物
 	 */
 	setAttachment(key: string, actorId: number) {
-		const map = AttachMapping[key];
-
-		this.attachments.set(key, { key, relativePos: new Vector2(map.relativeX, map.relativeY), actorId });
+		this.attachments.set(key, { key, relativePos: this.getAttachRelPos(key), actorId });
 	}
 
 	setAttaching(key: string, actorId: number) {
@@ -281,6 +293,18 @@ export class ActorObject extends GameObject {
 
 	getAttachment(key: string) {
 		return this.attachments.get(key);
+	}
+
+	getIsUsing() {
+		return this.isUsing;
+	}
+
+	startUsing() {
+		this.isUsing = true;
+	}
+
+	endUsing() {
+		this.isUsing = false;
 	}
 
 	async doTick(tick: number) {

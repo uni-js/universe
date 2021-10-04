@@ -1,4 +1,4 @@
-import { ActorType, Direction, RunningState } from '../../shared/actor';
+import { ActorType, AttachMapping, Direction, RunningState } from '../../shared/actor';
 import { Entity } from '../../shared/database/memory';
 import { RecordMap, RecordSet } from '../utils';
 
@@ -64,6 +64,9 @@ export class Actor extends Entity {
 	attaching: Attachment;
 
 	type: ActorType;
+
+	@CtorOption()
+	attachMapping: AttachMapping;
 
 	isMoveDirty = false;
 	isWalkDirty = false;

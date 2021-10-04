@@ -16,16 +16,19 @@ export enum RunningState {
 	RUNNING = 'running',
 }
 
-export interface AttachMapping {
-	[key: string]: {
-		relativeX: number;
-		relativeY: number;
-	};
+export enum AttachType {
+	RIGHT_HAND = 'right_hand',
 }
 
-export const AttachMapping: AttachMapping = {
-	RIGHT_HAND: {
-		relativeX: 0.4,
-		relativeY: -0.5,
-	},
-};
+export interface AttachMappingUnit {
+	[Direction.BACK]: [number, number];
+	[Direction.FORWARD]: [number, number];
+	[Direction.LEFT]: [number, number];
+	[Direction.RIGHT]: [number, number];
+	[key: string]: [number, number];
+}
+
+export interface AttachMapping {
+	[AttachType.RIGHT_HAND]: AttachMappingUnit;
+	[key: string]: AttachMappingUnit;
+}

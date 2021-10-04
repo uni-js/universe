@@ -1,4 +1,4 @@
-import { ActorType } from '../../shared/actor';
+import { ActorType, AttachMapping } from '../../shared/actor';
 import { Actor, CtorOption } from '../shared/entity';
 import { RecordSet } from '../utils';
 
@@ -9,6 +9,16 @@ export class Player extends Actor {
 
 	@CtorOption()
 	playerName = 'Player';
+
+	@CtorOption()
+	attachMapping: AttachMapping = {
+		right_hand: {
+			left: [-0.4, -0.5],
+			right: [0.4, -0.5],
+			back: [0, -0.5],
+			forward: [0, -0.4],
+		},
+	};
 
 	isPlayer = true;
 

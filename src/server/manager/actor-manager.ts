@@ -5,7 +5,7 @@ import { ICollection, injectCollection } from '../../shared/database/memory';
 import { GameEvent } from '../event';
 import { Vector2 } from '../shared/math';
 import { PosToLandPos } from '../land/helper';
-import { AttachMapping, Direction, RunningState } from '../../shared/actor';
+import { Direction, RunningState } from '../../shared/actor';
 
 @injectable()
 export class ActorManager extends EntityManager<Actor> {
@@ -130,12 +130,23 @@ export class ActorManager extends EntityManager<Actor> {
 		}
 	}
 
+	private getAttachPosition(actor: Actor, key: string) {
+		if (actor.attachMapping && actor.attachMapping[key]) {
+			return actor.attachMapping[key][actor.direction];
+		} else {
+			return [0, 0];
+		}
+	}
+
 	private updateAttachment(targetActorId: number) {
 		const targetActor = this.getEntityById(targetActorId);
 		this.getAttachments(targetActorId).forEach((attachment) => {
 			const actor = this.getEntityById(attachment.actorId);
-			const posX = targetActor.posX + AttachMapping[attachment.key].relativeX;
-			const posY = targetActor.posY + AttachMapping[attachment.key].relativeY;
+
+			const relPos = this.getAttachPosition(actor, attachment.key);
+
+			const posX = targetActor.posX + relPos[0];
+			const posY = targetActor.posY + relPos[1];
 
 			this.moveToPosition(actor, new Vector2(posX, posY));
 		});

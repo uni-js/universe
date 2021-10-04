@@ -2,12 +2,13 @@ import { Vector2 } from '../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '../input';
 import { GameManager } from '../shared/manager';
 import { Viewport } from '../viewport';
-import { Direction, RunningState } from '../../shared/actor';
+import { AttachType, Direction, RunningState } from '../../shared/actor';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
 import { ICollection, injectCollection } from '../../shared/database/memory';
 import { PlayerInfo, UIEventBus } from '../shared/store';
 import { Player } from '../object/player';
+import { ActorManager } from './actor-manager';
 
 @injectable()
 export class PlayerManager extends GameManager {
@@ -19,6 +20,7 @@ export class PlayerManager extends GameManager {
 		@inject(HTMLInputProvider) private inputProvider: HTMLInputProvider,
 		@inject(Viewport) private stage: Viewport,
 		@inject(UIEventBus) private uiEvent: UIEventBus,
+		@inject(ActorManager) private actorManager: ActorManager,
 	) {
 		super();
 
@@ -88,7 +90,25 @@ export class PlayerManager extends GameManager {
 
 		this.stage.moveCenter(player.position.x, player.position.y);
 	}
+
+	private doUsingRightHand() {
+		const player = this.currentPlayer;
+		if (!player) return;
+		const rightHand = player.getAttachment(AttachType.RIGHT_HAND);
+
+		if (rightHand) {
+			const actor = this.actorManager.getObjectById(rightHand.actorId);
+
+			if (this.inputProvider.cursorPress()) {
+				!actor.getIsUsing() && actor.startUsing();
+			} else {
+				actor.getIsUsing() && actor.endUsing();
+			}
+		}
+	}
+
 	async doTick(tick: number) {
 		this.doControlMoveTick();
+		this.doUsingRightHand();
 	}
 }

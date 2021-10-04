@@ -9,6 +9,7 @@ import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
 import { ActorManager } from '../manager/actor-manager';
 import { Bow } from '../entity/bow';
+import { AttachType } from '../../shared/actor';
 
 @injectable()
 export class PlayerService implements Service {
@@ -43,7 +44,7 @@ export class PlayerService implements Service {
 		const player = this.playerManager.addNewPlayer(connId);
 
 		const bow = this.actorManager.addNewEntity(new Bow());
-		this.actorManager.setAttachment(player.$loki, 'RIGHT_HAND', bow.$loki);
+		this.actorManager.setAttachment(player.$loki, AttachType.RIGHT_HAND, bow.$loki);
 
 		this.eventBus.emitTo([connId], new LoginedEvent(player.$loki));
 		console.log(`user logined :`, player.connId);
