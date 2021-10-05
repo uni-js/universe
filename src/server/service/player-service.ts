@@ -1,5 +1,5 @@
 import { EventBus } from '../../event/bus-server';
-import { LoginEvent, MovePlayerEvent, SetPlayerStateEvent } from '../../event/client-side';
+import { ActorToggleWalkEvent, LoginEvent, MovePlayerEvent } from '../../event/client-side';
 import { AddActorEvent, LoginedEvent, RemoveActorEvent } from '../../event/server-side';
 import { Player } from '../entity/player';
 import { PlayerManager } from '../manager/player-manager';
@@ -20,12 +20,12 @@ export class PlayerService implements Service {
 	) {
 		this.eventBus.on(LoginEvent.name, this.handleLogin.bind(this));
 		this.eventBus.on(MovePlayerEvent.name, this.handleMovePlayer.bind(this));
-		this.eventBus.on(SetPlayerStateEvent.name, this.handleSetActorState.bind(this));
+		this.eventBus.on(ActorToggleWalkEvent.name, this.handleActorToggleWalk.bind(this));
 
 		this.playerManager.on(GameEvent.SpawnActorEvent, this.onActorSpawned.bind(this));
 		this.playerManager.on(GameEvent.DespawnActorEvent, this.onActorDespawned.bind(this));
 	}
-	private handleSetActorState(connId: string, event: SetPlayerStateEvent) {
+	private handleActorToggleWalk(connId: string, event: ActorToggleWalkEvent) {
 		const player = this.playerManager.findEntity({ connId });
 
 		this.actorManager.setWalkState(player.$loki, event.running, event.dir);

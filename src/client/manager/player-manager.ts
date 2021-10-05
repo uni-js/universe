@@ -37,8 +37,6 @@ export class PlayerManager extends GameManager {
 		this.gameInfoList.update(this.playerInfo);
 
 		player.on(GameEvent.ControlMovedEvent, this.onPlayerControlMoved);
-		player.on(GameEvent.SetActorStateEvent, this.onSetActorState);
-
 		player.setTakeControl();
 
 		this.currentPlayer = player;
@@ -46,9 +44,7 @@ export class PlayerManager extends GameManager {
 	private onPlayerControlMoved = (position: Vector2, direction: Direction, running: RunningState) => {
 		this.emit(GameEvent.ControlMovedEvent, position, direction, running);
 	};
-	private onSetActorState = (player: Player) => {
-		this.emit(GameEvent.SetActorStateEvent, player);
-	};
+
 	getCurrentPlayer() {
 		return this.currentPlayer;
 	}

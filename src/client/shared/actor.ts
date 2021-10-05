@@ -57,10 +57,7 @@ export interface Attachment {
 
 export class ActorObject extends GameObject {
 	private moveInterpolator;
-	/**
-	 * 设置该状态后,实体会自动过渡到目标位置
-	 */
-	protected smoothMove = true;
+
 	protected isStatesDirty = true;
 
 	protected shadow;
@@ -78,12 +75,14 @@ export class ActorObject extends GameObject {
 	private tagname = '';
 
 	private playing = false;
-	private isUsing = false;
 
 	private attachments = new Map<string, Attachment>();
 	private attaching?: Attachment;
 
 	private attachMapping?: AttachMapping;
+
+	protected isUsing = false;
+	private isUsingDirty = false;
 
 	constructor(
 		serverId: number,
@@ -138,6 +137,12 @@ export class ActorObject extends GameObject {
 
 		if (option.attachMapping) {
 			this.attachMapping = option.attachMapping;
+		}
+
+		if (option.isUsing) {
+			this.startUsing();
+		} else if (this.isUsing) {
+			this.endUsing();
 		}
 
 		this.setDirection(Direction.FORWARD);
@@ -250,15 +255,11 @@ export class ActorObject extends GameObject {
 
 		this.resize();
 	}
-	setSmoothMove(smooth: boolean) {
-		this.smoothMove = smooth;
-	}
+
 	getPosition() {
 		return this.pos;
 	}
-	getRelativeLoc() {
-		return new Vector2(this.position.x, this.position.y);
-	}
+
 	addMovePoint(point: Vector2) {
 		this.moveInterpolator.addMovePoint(point);
 	}
@@ -299,19 +300,30 @@ export class ActorObject extends GameObject {
 		return this.isUsing;
 	}
 
-	startUsing() {
+	startUsing(dirty = true) {
 		this.isUsing = true;
+		if (dirty) {
+			this.isUsingDirty = true;
+		}
 	}
 
-	endUsing() {
+	endUsing(dirty = true) {
 		this.isUsing = false;
+		if (dirty) {
+			this.isUsingDirty = true;
+		}
 	}
 
 	async doTick(tick: number) {
 		this.moveInterpolator.doTick();
 
+		if (this.isUsingDirty) {
+			this.emit(GameEvent.ActorToggleUsingEvent, this.serverId, this.isUsing ? true : false);
+			this.isUsingDirty = false;
+		}
+
 		if (this.isStatesDirty) {
-			this.emit(GameEvent.SetActorStateEvent, this);
+			this.emit(GameEvent.ActorToggleWalkEvent, this);
 			this.isStatesDirty = false;
 		}
 	}

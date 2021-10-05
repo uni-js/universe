@@ -30,7 +30,6 @@ export class Player extends ActorObject {
 	}
 	setTakeControl() {
 		this.takeControl = true;
-		this.smoothMove = false;
 	}
 	setDirection(direction: Direction, dirty = true) {
 		if (this.direction == direction) return;

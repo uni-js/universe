@@ -1,4 +1,4 @@
-import { ActorNewPosEvent, ActorRemoveAttachment, ActorSetAttachment, ActorSetWalkEvent } from '../../event/server-side';
+import { ActorNewPosEvent, ActorRemoveAttachment, ActorSetAttachment, ActorSetWalkEvent, ActorToggleUsing } from '../../event/server-side';
 import { EventBus } from '../../event/bus-server';
 import { ActorManager } from '../manager/actor-manager';
 import { PlayerManager } from '../manager/player-manager';
@@ -6,6 +6,7 @@ import { Service } from '../shared/service';
 import { LandManager } from '../manager/land-manager';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
+import { ActorToggleUsingEvent } from '../../event/client-side';
 
 @injectable()
 export class ActorService implements Service {
@@ -16,6 +17,8 @@ export class ActorService implements Service {
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(LandManager) private landManager: LandManager,
 	) {
+		this.eventBus.on(ActorToggleUsingEvent.name, this.handleActorToggleUsingEvent.bind(this));
+
 		this.actorManager.on(GameEvent.NewPosEvent, this.onNewPosEvent.bind(this));
 		this.actorManager.on(GameEvent.AddEntityEvent, this.onActorAdded.bind(this));
 		this.actorManager.on(GameEvent.RemoveEntityEvent, this.onActorRemoved.bind(this));
@@ -23,6 +26,21 @@ export class ActorService implements Service {
 
 		this.actorManager.on(GameEvent.ActorSetAttachment, this.onActorSetAttachment.bind(this));
 		this.actorManager.on(GameEvent.ActorRemoveAttachment, this.onActorRemoveAttachment.bind(this));
+
+		this.actorManager.on(GameEvent.ActorToggleUsingEvent, this.onActorToggleUsing.bind(this));
+	}
+
+	private onActorToggleUsing(actorId: number, startOrEnd: boolean) {
+		const event = new ActorToggleUsing(actorId, startOrEnd);
+		this.emitToActorSpawned(actorId, event);
+	}
+
+	private handleActorToggleUsingEvent(connId: string, event: ActorToggleUsingEvent) {
+		if (event.startOrEnd) {
+			this.actorManager.startUsing(event.actorId);
+		} else {
+			this.actorManager.endUsing(event.actorId);
+		}
 	}
 
 	private onActorSetAttachment(targetActorId: number, key: string, actorId: number) {

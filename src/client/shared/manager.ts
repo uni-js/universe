@@ -9,16 +9,31 @@ export abstract class GameManager extends EventEmitter2 implements IGameManager 
 	async doTick(tick: number): Promise<void> {}
 }
 
+export interface GameObjectManagerOption {
+	emitOutEvents: string[];
+}
+
 /**
  * 用于管理某种游戏对象的管理器
  */
 export class GameObjectManager<T extends IGameObject> extends GameManager {
-	constructor(private objectStore: HashedStore<T>) {
+	constructor(
+		private objectStore: HashedStore<T>,
+		private option: GameObjectManagerOption = {
+			emitOutEvents: [],
+		},
+	) {
 		super();
 	}
 
 	addGameObject(gameObject: T) {
 		this.objectStore.add(gameObject);
+
+		for (const event of this.option.emitOutEvents) {
+			gameObject.on(event, (...args) => {
+				this.emit(event, ...args);
+			});
+		}
 	}
 
 	removeGameObject(gameObject: T) {

@@ -58,6 +58,12 @@ export class Actor extends Entity {
 	motionY = 0;
 
 	@CtorOption()
+	isUsing = false;
+
+	@CtorOption()
+	useTick = 0;
+
+	@CtorOption()
 	attachments: RecordMap<Attachment> = new RecordMap();
 
 	@CtorOption()

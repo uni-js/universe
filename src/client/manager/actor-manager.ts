@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Direction } from '../../shared/actor';
+import { GameEvent } from '../event';
 import { ActorObject } from '../shared/actor';
 import { GameObjectManager } from '../shared/manager';
 import { ActorStore, ActorContainer } from '../shared/store';
@@ -7,7 +8,9 @@ import { ActorStore, ActorContainer } from '../shared/store';
 @injectable()
 export class ActorManager extends GameObjectManager<ActorObject> {
 	constructor(@inject(ActorStore) private actorStore: ActorStore, @inject(ActorContainer) private actorContainer: ActorContainer) {
-		super(actorStore);
+		super(actorStore, {
+			emitOutEvents: [GameEvent.ActorToggleUsingEvent, GameEvent.ActorToggleWalkEvent],
+		});
 	}
 
 	private updateAttachingMovement(actor: ActorObject) {

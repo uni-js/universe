@@ -7,7 +7,7 @@ export class MovePlayerEvent extends RemoteEvent {
 	}
 }
 
-export class SetPlayerStateEvent extends RemoteEvent {
+export class ActorToggleWalkEvent extends RemoteEvent {
 	constructor(public running: RunningState, public dir: Direction) {
 		super();
 	}
@@ -19,14 +19,14 @@ export class LoginEvent extends RemoteEvent {
 	}
 }
 
-export class UseItemEvent extends RemoteEvent {
-	constructor() {
+export class ShortcutSelectEvent extends RemoteEvent {
+	constructor(public index: number) {
 		super();
 	}
 }
 
-export class ShortcutSelectEvent extends RemoteEvent {
-	constructor(index: number) {
+export class ActorToggleUsingEvent extends RemoteEvent {
+	constructor(public actorId: number, public startOrEnd: boolean) {
 		super();
 	}
 }

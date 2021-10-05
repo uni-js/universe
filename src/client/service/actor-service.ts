@@ -4,6 +4,7 @@ import {
 	ActorRemoveAttachment,
 	ActorSetAttachment,
 	ActorSetWalkEvent,
+	ActorToggleUsing,
 	AddActorEvent,
 	RemoveActorEvent,
 } from '../../event/server-side';
@@ -14,6 +15,8 @@ import { TextureProvider } from '../texture';
 import { inject, injectable } from 'inversify';
 import { PlayerManager } from '../manager/player-manager';
 import { ActorFactory, ActorObject } from '../shared/actor';
+import { GameEvent } from '../event';
+import { ActorToggleUsingEvent, ActorToggleWalkEvent } from '../../event/client-side';
 
 @injectable()
 export class ActorService {
@@ -31,7 +34,30 @@ export class ActorService {
 
 		this.eventBus.on(ActorSetAttachment.name, this.handleSetAttachment.bind(this));
 		this.eventBus.on(ActorRemoveAttachment.name, this.handleRemoveAttachment.bind(this));
+
+		this.eventBus.on(ActorToggleUsing.name, this.handleActorToggleUsing.bind(this));
+
+		this.actorManager.on(GameEvent.ActorToggleUsingEvent, this.onActorToggleUsing.bind(this));
+		this.actorManager.on(GameEvent.ActorToggleWalkEvent, this.onActorToggleWalk.bind(this));
 	}
+
+	private onActorToggleWalk(actor: ActorObject) {
+		this.eventBus.emitEvent(new ActorToggleWalkEvent(actor.getRunning(), actor.getDirection()));
+	}
+
+	private onActorToggleUsing(actorId: number, startOrEnd: boolean) {
+		this.eventBus.emitEvent(new ActorToggleUsingEvent(actorId, startOrEnd));
+	}
+
+	private handleActorToggleUsing(event: ActorToggleUsing) {
+		const actor = this.actorManager.getObjectById(event.actorId);
+		if (event.startOrEnd) {
+			actor.startUsing(false);
+		} else {
+			actor.endUsing(false);
+		}
+	}
+
 	private handleSetAttachment(event: ActorSetAttachment) {
 		const targetActor = this.actorManager.getObjectById(event.targetActorId);
 		const actor = this.actorManager.getObjectById(event.actorId);
@@ -62,8 +88,8 @@ export class ActorService {
 	private handleActorNewWalkState(event: ActorSetWalkEvent) {
 		const object = this.actorManager.getObjectById(event.actorId) as ActorObject;
 
-		object.setDirection(event.direction);
-		object.setRunning(event.running);
+		object.setDirection(event.direction, false);
+		object.setRunning(event.running, false);
 	}
 	private handleActorNewPos(event: ActorNewPosEvent) {
 		const object = this.actorManager.getObjectById(event.actorId) as ActorObject;

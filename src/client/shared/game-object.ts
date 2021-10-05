@@ -11,8 +11,6 @@ export interface IGameObject extends doTickable, PIXI.DisplayObject {
 	doTick(tick: number): Promise<void>;
 }
 
-export enum GameObjectEvent {}
-
 export class GameObject extends PIXI.Container implements IGameObject {
 	static objectCount = 0;
 

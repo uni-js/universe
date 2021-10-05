@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '../../event/bus-client';
-import { MovePlayerEvent, SetPlayerStateEvent } from '../../event/client-side';
+import { MovePlayerEvent } from '../../event/client-side';
 import { LoginedEvent } from '../../event/server-side';
 import { Vector2 } from '../../server/shared/math';
 import { ActorManager } from '../manager/actor-manager';
@@ -15,21 +15,18 @@ export class PlayerService {
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(ActorManager) private actorManager: ActorManager,
 	) {
-		this.eventBus.on(LoginedEvent.name, this.handleLogined.bind(this));
+		this.eventBus.on(LoginedEvent.name, this.handleLogined);
 
-		this.playerManager.on(GameEvent.ControlMovedEvent, this.onControlMoved.bind(this));
-		this.playerManager.on(GameEvent.SetActorStateEvent, this.onSetActorState.bind(this));
+		this.playerManager.on(GameEvent.ControlMovedEvent, this.onControlMoved);
 	}
-	private onControlMoved(pos: Vector2) {
+
+	private onControlMoved = (pos: Vector2) => {
 		this.eventBus.emitEvent(new MovePlayerEvent(pos.x, pos.y));
-	}
-	private onSetActorState(player: Player) {
-		this.eventBus.emitEvent(new SetPlayerStateEvent(player.getRunning(), player.getDirection()));
-	}
-	private handleLogined(event: LoginedEvent) {
+	};
+	private handleLogined = (event: LoginedEvent) => {
 		console.debug('logined_event', event);
 		const actorId = event.actorId;
 		const player = this.actorManager.getObjectById(actorId) as Player;
 		this.playerManager.setCurrentPlayer(player);
-	}
+	};
 }

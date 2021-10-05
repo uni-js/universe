@@ -55,3 +55,9 @@ export class ActorRemoveAttachment extends RemoteEvent {
 		super();
 	}
 }
+
+export class ActorToggleUsing extends RemoteEvent {
+	constructor(public actorId: number, public startOrEnd: boolean) {
+		super();
+	}
+}

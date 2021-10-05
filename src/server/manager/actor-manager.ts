@@ -59,6 +59,26 @@ export class ActorManager extends EntityManager<Actor> {
 		this.actorList.update(actor);
 	}
 
+	startUsing(actorId: number) {
+		const actor = this.actorList.findOne({ $loki: actorId });
+		actor.isUsing = true;
+		actor.useTick = 0;
+
+		this.actorList.update(actor);
+
+		this.emit(GameEvent.ActorToggleUsingEvent, actorId, true);
+	}
+
+	endUsing(actorId: number) {
+		const actor = this.actorList.findOne({ $loki: actorId });
+		actor.isUsing = false;
+		actor.useTick = 0;
+
+		this.actorList.update(actor);
+
+		this.emit(GameEvent.ActorToggleUsingEvent, actorId, false);
+	}
+
 	addNewEntity<T extends Actor>(actor: T): T {
 		const inserted = super.addNewEntity.call(this, actor);
 		this.emit(GameEvent.LandMoveEvent, actor.$loki, new Vector2(actor.posX, actor.posY));
@@ -152,9 +172,18 @@ export class ActorManager extends EntityManager<Actor> {
 		});
 	}
 
+	private updateUsing() {
+		const actorsIsUsing = this.actorList.find({ isUsing: true });
+		for (const actor of actorsIsUsing) {
+			actor.useTick++;
+			this.actorList.update(actor);
+		}
+	}
+
 	doTick(tick: number) {
 		this.updateMoveDirty();
 		this.updateWalkDirty();
 		this.updateLandMoveDirty();
+		this.updateUsing();
 	}
 }
