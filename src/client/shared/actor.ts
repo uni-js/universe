@@ -84,6 +84,8 @@ export class ActorObject extends GameObject {
 	protected isUsing = false;
 	private isUsingDirty = false;
 
+	private actorType: ActorType;
+
 	constructor(
 		serverId: number,
 		option: ActorCtorOption,
@@ -101,8 +103,12 @@ export class ActorObject extends GameObject {
 
 		this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);
 
+		this.actorType = actorType;
+
 		this.usedTextures =
-			this.texture.get(`actor.${actorType}`) || this.texture.getGroup(`actor.${actorType}.{order}`, usedTextureLength);
+			this.texture.get(`actor.${actorType}`) ||
+			this.texture.get(`actor.${actorType}.normal`) ||
+			this.texture.getGroup(`actor.${actorType}.{order}`, usedTextureLength);
 
 		this.nametag = new PIXI.Text('');
 		this.nametag.style = new PIXI.TextStyle({
@@ -145,6 +151,7 @@ export class ActorObject extends GameObject {
 			this.endUsing();
 		}
 
+		this.setTextures(this.usedTextures);
 		this.setDirection(Direction.FORWARD);
 
 		this.setPosition(this.pos);
@@ -255,6 +262,9 @@ export class ActorObject extends GameObject {
 
 		this.resize();
 	}
+	setTexture(texture: PIXI.Texture) {
+		this.setTextures([texture]);
+	}
 
 	getPosition() {
 		return this.pos;
@@ -301,6 +311,8 @@ export class ActorObject extends GameObject {
 	}
 
 	startUsing(dirty = true) {
+		if (this.isUsing == true) return;
+
 		this.isUsing = true;
 		if (dirty) {
 			this.isUsingDirty = true;
@@ -308,6 +320,8 @@ export class ActorObject extends GameObject {
 	}
 
 	endUsing(dirty = true) {
+		if (this.isUsing == false) return;
+
 		this.isUsing = false;
 		if (dirty) {
 			this.isUsingDirty = true;
@@ -323,7 +337,7 @@ export class ActorObject extends GameObject {
 		}
 
 		if (this.isStatesDirty) {
-			this.emit(GameEvent.ActorToggleWalkEvent, this);
+			this.emit(GameEvent.ActorToggleWalkEvent, this.serverId, this.getRunning(), this.getDirection());
 			this.isStatesDirty = false;
 		}
 	}

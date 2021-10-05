@@ -95,7 +95,7 @@ export class PlayerManager extends GameManager {
 		if (rightHand) {
 			const actor = this.actorManager.getObjectById(rightHand.actorId);
 
-			if (this.inputProvider.cursorPress()) {
+			if (this.inputProvider.cursorPress() || this.inputProvider.keyPress(InputKey.J)) {
 				!actor.getIsUsing() && actor.startUsing();
 			} else {
 				actor.getIsUsing() && actor.endUsing();

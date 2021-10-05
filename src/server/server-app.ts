@@ -20,6 +20,7 @@ import { Actor } from './shared/entity';
 import { Inventory } from './entity/inventory';
 import { Brick } from './entity/brick';
 import { Service } from './shared/service';
+import { BowManager } from './manager/bow-manager';
 
 export interface AppConfig {
 	port: number;
@@ -45,7 +46,7 @@ export class ServerApp {
 		this.config = config;
 
 		this.entities = [Land, Actor, Brick, Inventory];
-		this.managers = [LandManager, ActorManager, PlayerManager, LandMoveManager];
+		this.managers = [LandManager, ActorManager, PlayerManager, LandMoveManager, BowManager];
 		this.services = [ActorService, PlayerService, ConnectionService, LandService];
 
 		this.initDatabase();

@@ -35,6 +35,7 @@ export function GetCtorOptions(target: any) {
 
 export interface Attachment {
 	key: string;
+	relPos?: [number, number];
 	actorId: number;
 }
 

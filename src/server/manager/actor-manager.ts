@@ -61,22 +61,25 @@ export class ActorManager extends EntityManager<Actor> {
 
 	startUsing(actorId: number) {
 		const actor = this.actorList.findOne({ $loki: actorId });
+
 		actor.isUsing = true;
 		actor.useTick = 0;
 
 		this.actorList.update(actor);
 
-		this.emit(GameEvent.ActorToggleUsingEvent, actorId, true);
+		this.emit(GameEvent.ActorToggleUsingEvent, actorId, true, 0, actor);
 	}
 
 	endUsing(actorId: number) {
 		const actor = this.actorList.findOne({ $loki: actorId });
+		const useTick = actor.useTick;
+
 		actor.isUsing = false;
 		actor.useTick = 0;
 
 		this.actorList.update(actor);
 
-		this.emit(GameEvent.ActorToggleUsingEvent, actorId, false);
+		this.emit(GameEvent.ActorToggleUsingEvent, actorId, false, useTick, actor);
 	}
 
 	addNewEntity<T extends Actor>(actor: T): T {
@@ -150,7 +153,7 @@ export class ActorManager extends EntityManager<Actor> {
 		}
 	}
 
-	private getAttachPosition(actor: Actor, key: string) {
+	private getAttachPosition(actor: Actor, key: string): [number, number] {
 		if (actor.attachMapping && actor.attachMapping[key]) {
 			return actor.attachMapping[key][actor.direction];
 		} else {
@@ -163,7 +166,7 @@ export class ActorManager extends EntityManager<Actor> {
 		this.getAttachments(targetActorId).forEach((attachment) => {
 			const actor = this.getEntityById(attachment.actorId);
 
-			const relPos = this.getAttachPosition(actor, attachment.key);
+			const relPos = this.getAttachPosition(targetActor, attachment.key);
 
 			const posX = targetActor.posX + relPos[0];
 			const posY = targetActor.posY + relPos[1];
@@ -180,10 +183,32 @@ export class ActorManager extends EntityManager<Actor> {
 		}
 	}
 
+	private updateMotion() {
+		const motionActors = this.actorList.find({
+			$or: [
+				{
+					motionX: {
+						$ne: 0,
+					},
+				},
+				{
+					motionY: {
+						$ne: 0,
+					},
+				},
+			],
+		});
+
+		for (const actor of motionActors) {
+			this.moveToPosition(actor, new Vector2(actor.posX + actor.motionX, actor.posY + actor.motionY));
+		}
+	}
+
 	doTick(tick: number) {
 		this.updateMoveDirty();
 		this.updateWalkDirty();
 		this.updateLandMoveDirty();
 		this.updateUsing();
+		this.updateMotion();
 	}
 }

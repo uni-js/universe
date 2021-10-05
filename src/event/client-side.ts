@@ -8,7 +8,7 @@ export class MovePlayerEvent extends RemoteEvent {
 }
 
 export class ActorToggleWalkEvent extends RemoteEvent {
-	constructor(public running: RunningState, public dir: Direction) {
+	constructor(public actorId: number, public running: RunningState, public dir: Direction) {
 		super();
 	}
 }

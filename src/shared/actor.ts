@@ -1,6 +1,7 @@
 export enum ActorType {
 	PLAYER = 'player',
 	BOW = 'bow',
+	ARROW = 'arrow',
 }
 
 export enum Direction {

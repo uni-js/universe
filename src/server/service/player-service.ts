@@ -27,6 +27,7 @@ export class PlayerService implements Service {
 	}
 	private handleActorToggleWalk(connId: string, event: ActorToggleWalkEvent) {
 		const player = this.playerManager.findEntity({ connId });
+		if (event.actorId !== player.$loki) return;
 
 		this.actorManager.setWalkState(player.$loki, event.running, event.dir);
 	}

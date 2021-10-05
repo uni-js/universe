@@ -14,6 +14,7 @@ export enum InputKey {
 	S = 'S',
 
 	E = 'E',
+	J = 'J',
 
 	NUM_1 = 'NUM_1',
 	NUM_2 = 'NUM_2',
@@ -56,6 +57,7 @@ export class HTMLInputProvider implements InputProvider {
 		this.bindKey('d', InputKey.D);
 
 		this.bindKey('e', InputKey.E);
+		this.bindKey('j', InputKey.J);
 
 		this.bindKey('1', InputKey.NUM_1);
 		this.bindKey('2', InputKey.NUM_2);

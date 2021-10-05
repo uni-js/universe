@@ -17,6 +17,7 @@ import { PlayerManager } from '../manager/player-manager';
 import { ActorFactory, ActorObject } from '../shared/actor';
 import { GameEvent } from '../event';
 import { ActorToggleUsingEvent, ActorToggleWalkEvent } from '../../event/client-side';
+import { Direction, RunningState } from '../../shared/actor';
 
 @injectable()
 export class ActorService {
@@ -41,8 +42,11 @@ export class ActorService {
 		this.actorManager.on(GameEvent.ActorToggleWalkEvent, this.onActorToggleWalk.bind(this));
 	}
 
-	private onActorToggleWalk(actor: ActorObject) {
-		this.eventBus.emitEvent(new ActorToggleWalkEvent(actor.getRunning(), actor.getDirection()));
+	private onActorToggleWalk(actorId: number, running: RunningState, direction: Direction) {
+		const player = this.playerManager.getCurrentPlayer();
+		if (player.getServerId() !== actorId) return;
+
+		this.eventBus.emitEvent(new ActorToggleWalkEvent(actorId, running, direction));
 	}
 
 	private onActorToggleUsing(actorId: number, startOrEnd: boolean) {
