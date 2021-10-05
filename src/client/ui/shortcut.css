@@ -19,7 +19,12 @@
     border: 2px solid #555;
     border-radius: 5px;
     background-color: #FFF;
+    padding: 1px;
 }
 .shortcut-block-highlight{
     background-color: #CCC;    
+}
+.shortcut-img{
+    width: 100%;
+    height: 100%;
 }

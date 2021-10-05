@@ -26,6 +26,7 @@ import { GameUI } from './ui/game-ui';
 import { LandContainer, ActorStore, DataStore, DataStoreEntities, LandStore, UIEventBus, ActorContainer } from './shared/store';
 import { ActorFactory } from './shared/actor';
 import { ActorMapper } from './object';
+import { ShortcutService } from './service/shortcut-service';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -70,7 +71,7 @@ export class ClientApp {
 			height: this.worldHeight,
 		});
 		this.managers = [ActorManager, LandManager, CursorManager, DefaultSceneManager, PlayerManager, ShortcutManager];
-		this.services = [ActorService, BootService, LandService, PlayerService];
+		this.services = [ActorService, BootService, LandService, PlayerService, ShortcutService];
 
 		this.viewport = new Viewport(
 			this.worldWidth * this.resolution,
@@ -160,8 +161,12 @@ export class ClientApp {
 		const dataSource = this.iocContainer.get(DataStore);
 		const ticker = this.app.ticker;
 		const eventBus = this.uiEventBus;
+		const textureProvider = this.textureProvider;
 
-		ReactDOM.render(React.createElement(UIEntry, { dataSource, ticker, eventBus }, React.createElement(GameUI)), this.uiContainer);
+		ReactDOM.render(
+			React.createElement(UIEntry, { dataSource, ticker, eventBus, textureProvider }, React.createElement(GameUI)),
+			this.uiContainer,
+		);
 	}
 	private doTick() {
 		this.iocContainer.get<HTMLInputProvider>(HTMLInputProvider).doTick();

@@ -17,10 +17,12 @@ import { Manager } from './shared/manager';
 import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../shared/database/memory';
 import { Land } from './entity/land';
 import { Actor } from './shared/entity';
-import { Inventory } from './entity/inventory';
+import { InventoryEntities } from './entity/inventory';
 import { Brick } from './entity/brick';
 import { Service } from './shared/service';
 import { BowManager } from './manager/bow-manager';
+import { InventoryManager } from './manager/inventory-manager';
+import { InventoryService } from './service/inventory-service';
 
 export interface AppConfig {
 	port: number;
@@ -45,9 +47,9 @@ export class ServerApp {
 	constructor(config: AppConfig) {
 		this.config = config;
 
-		this.entities = [Land, Actor, Brick, Inventory];
-		this.managers = [LandManager, ActorManager, PlayerManager, LandMoveManager, BowManager];
-		this.services = [ActorService, PlayerService, ConnectionService, LandService];
+		this.entities = [Land, Actor, Brick, ...InventoryEntities];
+		this.managers = [LandManager, ActorManager, PlayerManager, LandMoveManager, BowManager, InventoryManager];
+		this.services = [ActorService, PlayerService, ConnectionService, LandService, InventoryService];
 
 		this.initDatabase();
 		this.initEventBus();

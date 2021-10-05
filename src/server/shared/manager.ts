@@ -2,6 +2,7 @@ import { Entity, ICollection } from '../../shared/database/memory';
 import { GameEvent } from '../event';
 import { EventEmitter } from '../shared/event';
 
+export type ClassOf<T> = { new (...args: any[]): T };
 export type ObjectQueryCondition<T> = Partial<T & LokiObj> & Record<string, any>;
 
 export interface IManager {
@@ -100,11 +101,8 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 }
 
 export class ExtendedEntityManager<T extends Entity, K extends T> extends Manager implements IEntityManager<T, K> {
-	constructor(private manager: EntityManager<T>) {
+	constructor(private manager: EntityManager<T>, private clazz: ClassOf<K>) {
 		super();
-		this.manager.onAny((event, ...args) => {
-			this.emit(event, ...args);
-		});
 	}
 
 	addAtRecord<R>(entity: T, propertyName: string, record: R): void {
@@ -135,10 +133,20 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Manage
 		return this.manager.hasEntity(query);
 	}
 	addNewEntity(newEntity: K): K {
-		return this.manager.addNewEntity(newEntity) as K;
+		const inserted = this.manager.addNewEntity(newEntity) as K;
+
+		if (inserted instanceof this.clazz) {
+			this.emit(GameEvent.AddEntityEvent, newEntity.$loki, newEntity);
+		}
+		return inserted;
 	}
 	removeEntity(entity: K): void {
-		return this.manager.removeEntity(entity);
+		const entityId = entity.$loki;
+		this.manager.removeEntity(entity);
+
+		if (entity instanceof this.clazz) {
+			this.emit(GameEvent.RemoveEntityEvent, entityId, entity);
+		}
 	}
 	getEntityList(): ICollection<T> {
 		return this.manager.getEntityList();

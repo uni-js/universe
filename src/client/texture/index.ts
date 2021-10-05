@@ -25,20 +25,26 @@ export async function LoadResource(url: string) {
 	return resource;
 }
 
+export interface TextureItem {
+	isJsonUrl: boolean;
+	url: string;
+	textures: PIXI.Texture[];
+}
+
 @injectable()
 export class TextureProvider {
-	private textures = new Map<string, PIXI.Texture[]>();
+	private textures = new Map<string, TextureItem>();
 	constructor() {}
 
 	async add(name: string, url: string) {
 		const resource = await LoadResource(url);
 		const texture = resource.texture;
-		this.textures.set(name, [texture]);
+		this.textures.set(name, { url, isJsonUrl: false, textures: [texture] });
 	}
 
 	async addJSON(name: string, json_url: string) {
 		const resource = await LoadResource(json_url);
-		this.textures.set(name, Object.values(resource.textures));
+		this.textures.set(name, { url: json_url, isJsonUrl: true, textures: Object.values(resource.textures) });
 	}
 
 	/**
@@ -57,13 +63,16 @@ export class TextureProvider {
 	get(name: string): PIXI.Texture[] | undefined {
 		if (!this.textures.has(name)) return;
 
-		return this.textures.get(name);
+		return this.textures.get(name)?.textures;
 	}
 	getOne(name: string): PIXI.Texture | undefined {
 		const textures = this.get(name);
 		if (!textures || !textures[0]) return;
 
 		return textures[0];
+	}
+	getItem(name: string) {
+		return this.textures.get(name);
 	}
 }
 

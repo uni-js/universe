@@ -58,7 +58,7 @@ export interface Attachment {
 export class ActorObject extends GameObject {
 	private moveInterpolator;
 
-	protected isStatesDirty = true;
+	protected isStatesDirty = false;
 
 	protected shadow;
 	protected sprite;

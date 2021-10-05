@@ -44,7 +44,7 @@ export class ActorService {
 
 	private onActorToggleWalk(actorId: number, running: RunningState, direction: Direction) {
 		const player = this.playerManager.getCurrentPlayer();
-		if (player.getServerId() !== actorId) return;
+		if (!player || player.getServerId() !== actorId) return;
 
 		this.eventBus.emitEvent(new ActorToggleWalkEvent(actorId, running, direction));
 	}

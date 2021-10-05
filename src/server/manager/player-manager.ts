@@ -12,7 +12,7 @@ import { GetPosByHash, GetPosHash } from '../../shared/land';
 @injectable()
 export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	constructor(@inject(ActorManager) private actorManager: ActorManager) {
-		super(actorManager);
+		super(actorManager, Player);
 
 		this.actorManager.on(GameEvent.NewPosEvent, this.onActorNewPos);
 	}
@@ -46,10 +46,6 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		return results;
 	}
 
-	addNewEntity(): Player {
-		throw new Error(`use addNewPlayer API instead.`);
-	}
-
 	getAllEntities(): Player[] {
 		return this.findEntities({ isPlayer: true });
 	}
@@ -60,7 +56,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		player.posX = 0;
 		player.posY = 0;
 
-		this.actorManager.addNewEntity(player);
+		this.addNewEntity(player);
 		this.updateUsedLands(player);
 
 		return player;

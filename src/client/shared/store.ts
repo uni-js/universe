@@ -6,6 +6,8 @@ import * as PIXI from 'pixi.js';
 import { Entity, MemoryDatabase } from '../../shared/database/memory';
 import { EventEmitter } from '../../server/shared/event';
 import { ActorObject } from './actor';
+import { ItemType } from '../../shared/item';
+import { ContainerType } from '../../shared/inventory';
 
 @injectable()
 export class ActorContainer extends PIXI.Container {}
@@ -51,11 +53,41 @@ export class PlayerInfo extends Entity {
 	actorId: number;
 }
 
-export class PlayerInventoryInfo extends Entity {
+export class ShortcutContainerInfo extends Entity {
+	/**
+	 * 快捷栏的容器id
+	 */
+	containerId: number;
+
 	/**
 	 * 当前背包指向的格子坐标
 	 */
 	currentIndexAt = 0;
 }
 
-export const DataStoreEntities = [PlayerInfo, PlayerInventoryInfo];
+/**
+ * 背包中的一个格子
+ */
+export class InventoryBlockInfo extends Entity {
+	/**
+	 * 来自于容器
+	 */
+	containerType: ContainerType;
+
+	/**
+	 * 格子在背包中的坐标
+	 */
+	index: number;
+
+	/**
+	 * 物品类型
+	 */
+	itemType: ItemType;
+
+	/**
+	 * 物品存储数量
+	 */
+	itemCount = 0;
+}
+
+export const DataStoreEntities = [PlayerInfo, ShortcutContainerInfo, InventoryBlockInfo];

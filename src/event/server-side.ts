@@ -1,5 +1,6 @@
 import { LandData } from '../server/land/types';
 import { ActorType, Direction, RunningState } from '../shared/actor';
+import { ContainerType, ContainerUpdateData } from '../shared/inventory';
 import { RemoteEvent } from './event';
 
 export class ActorNewPosEvent extends RemoteEvent {
@@ -58,6 +59,21 @@ export class ActorRemoveAttachment extends RemoteEvent {
 
 export class ActorToggleUsing extends RemoteEvent {
 	constructor(public actorId: number, public startOrEnd: boolean) {
+		super();
+	}
+}
+
+export class UpdateContainer extends RemoteEvent {
+	/**
+	 * @param updateData 更新数据
+	 * @param isFullUpdate 更新数据是否是对全部格子进行更新的
+	 */
+	constructor(
+		public containerId: number,
+		public containerType: ContainerType,
+		public updateData: ContainerUpdateData,
+		public isFullUpdate: boolean,
+	) {
 		super();
 	}
 }

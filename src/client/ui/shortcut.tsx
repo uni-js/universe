@@ -1,8 +1,9 @@
 import React from 'react';
 import classnames from 'classnames';
-import { PlayerInventoryInfo } from '../shared/store';
-import { useData } from './entry';
+import { InventoryBlockInfo, ShortcutContainerInfo } from '../shared/store';
+import { useData, useDatas, useTexturePath, useTextureProvider } from './entry';
 import './shortcut.css';
+import { ContainerType } from '../../shared/inventory';
 
 export const SHORTCUT_SIZE = 5;
 
@@ -18,20 +19,28 @@ export interface ShortcutProps {}
  * 快捷栏
  */
 export function Shortcut(props: any) {
-	const inventoryInfo = useData(PlayerInventoryInfo);
-	const blocks = [];
+	const shortcutInfo = useData(ShortcutContainerInfo);
+	const blocks = useDatas(InventoryBlockInfo, { containerType: ContainerType.SHORTCUT_CONTAINER });
+	const provider = useTextureProvider();
 
-	if (inventoryInfo) {
+	const blockElems = [];
+
+	if (shortcutInfo && blocks.length > 0) {
 		for (let i = 0; i < SHORTCUT_SIZE; i++) {
-			const isCurrent = i == inventoryInfo.currentIndexAt;
+			const texturePath = useTexturePath(provider, `item.${blocks[i].itemType}.normal`);
+			const isCurrent = i == shortcutInfo.currentIndexAt;
 			const clsName = classnames({ 'shortcut-block': true, 'shortcut-block-highlight': isCurrent });
-			blocks[i] = <div className={clsName} key={i} />;
+			blockElems[i] = (
+				<div className={clsName} key={i}>
+					<img className="shortcut-img" src={texturePath} />
+				</div>
+			);
 		}
 	}
 
 	return (
 		<div className="shortcut-wrapper">
-			<div className="shortcut-blank">{blocks}</div>
+			<div className="shortcut-blank">{blockElems}</div>
 		</div>
 	);
 }
