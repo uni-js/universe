@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-import { ActorType, AttachMapping, Direction, RunningState } from '../../shared/actor';
+import { ActorType, AttachMapping, Direction, RunningState } from '../../server/actor/spec';
 import { GameEvent } from '../event';
 import { GameObject } from './game-object';
 import { GetEmptyTexture, TextureProvider } from '../texture';

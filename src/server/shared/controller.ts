@@ -1,3 +1,3 @@
-export interface Service {
+export interface Controller {
 	doTick(tick: number): void;
 }

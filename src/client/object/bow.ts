@@ -1,5 +1,5 @@
 import { Vector2 } from '../../server/shared/math';
-import { ActorType } from '../../shared/actor';
+import { ActorType } from '../../server/actor/spec';
 import { ActorCtorOption, ActorObject } from '../shared/actor';
 import { TextureProvider } from '../texture';
 

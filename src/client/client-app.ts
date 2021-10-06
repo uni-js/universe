@@ -15,10 +15,10 @@ import { CursorManager } from './manager/cursor-manager';
 import { DefaultSceneManager } from './manager/default-scene-manager';
 import { PlayerManager } from './manager/player-manager';
 import { ShortcutManager } from './manager/shortcut-manager';
-import { ActorService } from './service/actor-service';
-import { BootService } from './service/boot-service';
-import { LandService } from './service/land-service';
-import { PlayerService } from './service/player-service';
+import { ActorController } from './controller/actor-controller';
+import { BootController } from './controller/boot-controller';
+import { LandController } from './controller/land-controller';
+import { PlayerController } from './controller/player-controller';
 import { UIEntry } from './ui/entry';
 import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase } from '../shared/database/memory';
 import { GameUI } from './ui/game-ui';
@@ -26,7 +26,7 @@ import { GameUI } from './ui/game-ui';
 import { LandContainer, ActorStore, DataStore, DataStoreEntities, LandStore, UIEventBus, ActorContainer } from './shared/store';
 import { ActorFactory } from './shared/actor';
 import { ActorMapper } from './object';
-import { ShortcutService } from './service/shortcut-service';
+import { ShortcutController } from './controller/shortcut-controller';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -42,7 +42,7 @@ export class ClientApp {
 	private app: PIXI.Application;
 
 	private managers: any[] = [];
-	private services: any[] = [];
+	private controllers: any[] = [];
 
 	private textureProvider = new TextureProvider();
 
@@ -71,7 +71,7 @@ export class ClientApp {
 			height: this.worldHeight,
 		});
 		this.managers = [ActorManager, LandManager, CursorManager, DefaultSceneManager, PlayerManager, ShortcutManager];
-		this.services = [ActorService, BootService, LandService, PlayerService, ShortcutService];
+		this.controllers = [ActorController, BootController, LandController, PlayerController, ShortcutController];
 
 		this.viewport = new Viewport(
 			this.worldWidth * this.resolution,
@@ -134,7 +134,7 @@ export class ClientApp {
 
 		bindCollectionsTo(ioc, DataStoreEntities, this.dataStore);
 
-		bindToContainer(ioc, [ActorContainer, LandContainer, ActorStore, LandStore, ...this.managers, ...this.services]);
+		bindToContainer(ioc, [ActorContainer, LandContainer, ActorStore, LandStore, ...this.managers, ...this.controllers]);
 
 		const viewport = ioc.get(Viewport);
 

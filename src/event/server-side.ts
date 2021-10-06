@@ -1,6 +1,6 @@
 import { LandData } from '../server/land/types';
-import { ActorType, Direction, RunningState } from '../shared/actor';
-import { ContainerType, ContainerUpdateData } from '../shared/inventory';
+import { ActorType, Direction, RunningState } from '../server/actor/spec';
+import { ContainerType, ContainerUpdateData } from '../server/inventory';
 import { RemoteEvent } from './event';
 
 export class ActorNewPosEvent extends RemoteEvent {

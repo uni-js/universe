@@ -1,4 +1,4 @@
-import { ActorType } from '../../shared/actor';
+import { ActorType } from '../../server/actor/spec';
 import { ActorFactoryMapper } from '../shared/actor';
 import { Arrow, Bow } from './bow';
 import { Player } from './player';

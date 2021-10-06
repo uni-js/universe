@@ -3,7 +3,7 @@ import { EventBusClient } from '../../event/bus-client';
 import { LoginEvent } from '../../event/client-side';
 
 @injectable()
-export class BootService {
+export class BootController {
 	constructor(@inject(EventBusClient) private eventBus: EventBusClient) {
 		this.startGame();
 	}

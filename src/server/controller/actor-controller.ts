@@ -2,14 +2,14 @@ import { ActorNewPosEvent, ActorRemoveAttachment, ActorSetAttachment, ActorSetWa
 import { EventBus } from '../../event/bus-server';
 import { ActorManager } from '../manager/actor-manager';
 import { PlayerManager } from '../manager/player-manager';
-import { Service } from '../shared/service';
+import { Controller } from '../shared/controller';
 import { LandManager } from '../manager/land-manager';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
 import { ActorToggleUsingEvent } from '../../event/client-side';
 
 @injectable()
-export class ActorService implements Service {
+export class ActorController implements Controller {
 	constructor(
 		@inject(EventBus) private eventBus: EventBus,
 

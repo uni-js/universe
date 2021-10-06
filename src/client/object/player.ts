@@ -1,6 +1,6 @@
 import { BILLION_VALUE, Vector2 } from '../../server/shared/math';
 import { TextureProvider } from '../texture';
-import { ActorType, Direction, RunningState } from '../../shared/actor';
+import { ActorType, Direction, RunningState } from '../../server/actor/spec';
 import { GameEvent } from '../event';
 import { ActorCtorOption, ActorObject } from '../shared/actor';
 

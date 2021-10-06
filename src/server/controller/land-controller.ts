@@ -1,7 +1,7 @@
 import { EventBus } from '../../event/bus-server';
 import { AddLandEvent, RemoveLandEvent } from '../../event/server-side';
 import { Player } from '../entity/player';
-import { Service } from '../shared/service';
+import { Controller } from '../shared/controller';
 import { PlayerManager } from '../manager/player-manager';
 import { inject, injectable } from 'inversify';
 import { LandManager } from '../manager/land-manager';
@@ -11,7 +11,7 @@ import { LandData } from '../land/types';
 import { TaskWorker } from '../utils';
 
 @injectable()
-export class LandService implements Service {
+export class LandController implements Controller {
 	private loadWorker: TaskWorker<Vector2>;
 
 	constructor(

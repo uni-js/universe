@@ -1,4 +1,4 @@
-import { Direction, RunningState } from '../shared/actor';
+import { Direction, RunningState } from '../server/actor/spec';
 import { RemoteEvent } from './event';
 
 export class MovePlayerEvent extends RemoteEvent {
@@ -19,8 +19,8 @@ export class LoginEvent extends RemoteEvent {
 	}
 }
 
-export class ShortcutSelectEvent extends RemoteEvent {
-	constructor(public index: number) {
+export class SetShortcutIndexEvent extends RemoteEvent {
+	constructor(public containerId: number, public index: number) {
 		super();
 	}
 }

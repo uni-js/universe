@@ -1,5 +1,5 @@
 import { Land } from '../entity/land';
-import { Actor } from '../shared/entity';
+import { Actor } from '../actor/spec';
 import { EntityManager } from '../shared/manager';
 import { Vector2 } from '../shared/math';
 import { PersistDatabaseSymbol, IPersistDatabase } from '../../shared/database/persist';

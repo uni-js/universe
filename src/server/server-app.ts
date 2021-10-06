@@ -2,27 +2,29 @@ import { EventBus } from '../event/bus-server';
 import { ActorManager } from './manager/actor-manager';
 import { PlayerManager } from './manager/player-manager';
 import { LandMoveManager } from './manager/land-move-manager';
-import { ActorService } from './service/actor-service';
-import { PlayerService } from './service/player-service';
+import { ActorController } from './controller/actor-controller';
+import { PlayerController } from './controller/player-controller';
 
 import { wait } from './utils';
 import { LandManager } from './manager/land-manager';
-import { ConnectionService } from './service/connection-service';
+import { ConnectionController } from './controller/connection-controller';
 import { createPersistDatabase, PersistDatabaseSymbol, IPersistDatabase } from '../shared/database/persist';
-import { LandService } from './service/land-service';
+import { LandController } from './controller/land-controller';
 
 import { Container } from 'inversify';
 import { bindToContainer } from '../shared/ioc';
 import { Manager } from './shared/manager';
 import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../shared/database/memory';
 import { Land } from './entity/land';
-import { Actor } from './shared/entity';
 import { InventoryEntities } from './entity/inventory';
 import { Brick } from './entity/brick';
-import { Service } from './shared/service';
+import { Controller } from './shared/controller';
 import { BowManager } from './manager/bow-manager';
 import { InventoryManager } from './manager/inventory-manager';
-import { InventoryService } from './service/inventory-service';
+import { InventoryController } from './controller/inventory-controller';
+import { Actor, ActorFactory } from './actor/spec';
+import { ItemDef } from './item';
+import { ActorMapper } from './actor/mapper';
 
 export interface AppConfig {
 	port: number;
@@ -35,10 +37,12 @@ export class ServerApp {
 
 	private entities: any[] = [];
 	private managers: any[] = [];
-	private services: any[] = [];
+	private controllers: any[] = [];
+
+	private actorFactory: ActorFactory;
 
 	private eventBus = new EventBus();
-	private iocContainer!: Container;
+	private iocContainer: Container;
 
 	private config: AppConfig;
 
@@ -47,14 +51,21 @@ export class ServerApp {
 	constructor(config: AppConfig) {
 		this.config = config;
 
-		this.entities = [Land, Actor, Brick, ...InventoryEntities];
+		this.entities = [Land, Actor, Brick, ItemDef, ...InventoryEntities];
 		this.managers = [LandManager, ActorManager, PlayerManager, LandMoveManager, BowManager, InventoryManager];
-		this.services = [ActorService, PlayerService, ConnectionService, LandService, InventoryService];
+		this.controllers = [ActorController, PlayerController, ConnectionController, LandController, InventoryController];
 
 		this.initDatabase();
 		this.initEventBus();
+		this.initActoryFactory();
 		this.initIocContainer();
 		this.startLoop();
+	}
+	private initActoryFactory() {
+		const factory = new ActorFactory();
+		factory.addImpls(ActorMapper);
+
+		this.actorFactory = factory;
 	}
 	private initDatabase() {
 		this.pdb = createPersistDatabase(this.config.dbLocation);
@@ -71,9 +82,10 @@ export class ServerApp {
 		ioc.bind(MemoryDatabaseSymbol).toConstantValue(this.mdb);
 
 		ioc.bind(EventBus).toConstantValue(this.eventBus);
+		ioc.bind(ActorFactory).toConstantValue(this.actorFactory);
 
 		bindCollectionsTo(ioc, this.entities, this.mdb);
-		bindToContainer(ioc, [...this.managers, ...this.services]);
+		bindToContainer(ioc, [...this.managers, ...this.controllers]);
 
 		this.iocContainer = ioc;
 	}
@@ -87,8 +99,8 @@ export class ServerApp {
 				const singleton: Manager = this.iocContainer.get(manager);
 				singleton.doTick(this.tick);
 			}
-			for (const service of this.services) {
-				const singleton: Service = this.iocContainer.get(service);
+			for (const controller of this.controllers) {
+				const singleton: Controller = this.iocContainer.get(controller);
 				singleton.doTick(this.tick);
 			}
 			const endTime = new Date().getTime();

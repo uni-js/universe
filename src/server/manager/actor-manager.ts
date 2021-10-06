@@ -1,11 +1,11 @@
-import { Actor, Attachment } from '../shared/entity';
+import { Attachment } from '../shared/entity';
 import { EntityManager } from '../shared/manager';
 import { injectable } from 'inversify';
 import { ICollection, injectCollection } from '../../shared/database/memory';
 import { GameEvent } from '../event';
 import { Vector2 } from '../shared/math';
 import { PosToLandPos } from '../land/helper';
-import { Direction, RunningState } from '../../shared/actor';
+import { Direction, RunningState, Actor } from '../actor/spec';
 
 @injectable()
 export class ActorManager extends EntityManager<Actor> {
@@ -48,6 +48,17 @@ export class ActorManager extends EntityManager<Actor> {
 		this.removeAtRecord(actor, 'attachments', key);
 
 		this.emit(GameEvent.ActorRemoveAttachment, actor.$loki, key);
+	}
+
+	clearAttachments(targetActorId: number, removeActors = false) {
+		const attachments = this.getAttachments(targetActorId);
+		for (const attachment of attachments) {
+			this.removeAttachment(targetActorId, attachment.key);
+			if (removeActors) {
+				const actor = this.getEntityById(attachment.actorId);
+				this.removeEntity(actor);
+			}
+		}
 	}
 
 	setWalkState(actorId: number, running: RunningState, direction: Direction) {

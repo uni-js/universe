@@ -1,5 +1,3 @@
-import { ActorType, AttachMapping, Direction, RunningState } from '../../shared/actor';
-import { Entity } from '../../shared/database/memory';
 import { RecordMap, RecordSet } from '../utils';
 
 export const MOVEMENT_TICK_MIN_DISTANCE = 0.0001;
@@ -37,50 +35,4 @@ export interface Attachment {
 	key: string;
 	relPos?: [number, number];
 	actorId: number;
-}
-
-export class Actor extends Entity {
-	@CtorOption()
-	posX = 0;
-
-	@CtorOption()
-	posY = 0;
-
-	@CtorOption()
-	atLandX = 0;
-
-	@CtorOption()
-	atLandY = 0;
-
-	@CtorOption()
-	motionX = 0;
-
-	@CtorOption()
-	motionY = 0;
-
-	@CtorOption()
-	isUsing = false;
-
-	@CtorOption()
-	useTick = 0;
-
-	@CtorOption()
-	attachments: RecordMap<Attachment> = new RecordMap();
-
-	@CtorOption()
-	attaching: Attachment;
-
-	type: ActorType;
-
-	@CtorOption()
-	attachMapping: AttachMapping;
-
-	isMoveDirty = false;
-	isWalkDirty = false;
-	isLandMoveDirty = false;
-
-	isActor = true;
-
-	direction: Direction = Direction.FORWARD;
-	running: RunningState = RunningState.SILENT;
 }

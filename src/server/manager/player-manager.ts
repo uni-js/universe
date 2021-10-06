@@ -1,6 +1,6 @@
 import { Player } from '../entity/player';
 import { ExtendedEntityManager } from '../shared/manager';
-import { Actor, GetCtorOptions } from '../shared/entity';
+import { Actor } from '../actor/spec';
 import { GetRadiusLands } from '../entity/land';
 import { inject, injectable } from 'inversify';
 import { ActorManager } from './actor-manager';
@@ -8,6 +8,7 @@ import { Vector2 } from '../shared/math';
 import { GameEvent } from '../event';
 import { GetArrayDiff } from '../utils';
 import { GetPosByHash, GetPosHash } from '../../shared/land';
+import { GetCtorOptions } from '../shared/entity';
 
 @injectable()
 export class PlayerManager extends ExtendedEntityManager<Actor, Player> {

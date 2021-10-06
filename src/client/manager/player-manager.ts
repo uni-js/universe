@@ -2,7 +2,7 @@ import { Vector2 } from '../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '../input';
 import { GameManager } from '../shared/manager';
 import { Viewport } from '../viewport';
-import { AttachType, Direction, RunningState } from '../../shared/actor';
+import { AttachType, Direction, RunningState } from '../../server/actor/spec';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
 import { ICollection, injectCollection } from '../../shared/database/memory';

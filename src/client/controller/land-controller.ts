@@ -7,7 +7,7 @@ import { LandObject } from '../object/land';
 import { TextureProvider } from '../texture';
 
 @injectable()
-export class LandService {
+export class LandController {
 	constructor(
 		@inject(EventBusClient) private eventBus: EventBusClient,
 		@inject(LandManager) private landManager: LandManager,

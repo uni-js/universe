@@ -17,10 +17,10 @@ import { PlayerManager } from '../manager/player-manager';
 import { ActorFactory, ActorObject } from '../shared/actor';
 import { GameEvent } from '../event';
 import { ActorToggleUsingEvent, ActorToggleWalkEvent } from '../../event/client-side';
-import { Direction, RunningState } from '../../shared/actor';
+import { Direction, RunningState } from '../../server/actor/spec';
 
 @injectable()
-export class ActorService {
+export class ActorController {
 	constructor(
 		@inject(EventBusClient) private eventBus: EventBusClient,
 		@inject(ActorManager) private actorManager: ActorManager,

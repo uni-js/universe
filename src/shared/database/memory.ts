@@ -11,9 +11,9 @@ export type IMemoryDatabase = LokiJS;
 
 export class MemoryDatabase extends LokiJS {}
 
-export class Entity implements LokiObj {
-	$loki: number;
-	meta: {
+export class Entity {
+	$loki?: number;
+	meta?: {
 		created: number;
 		revision: number;
 		updated: number;

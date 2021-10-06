@@ -6,8 +6,8 @@ import * as PIXI from 'pixi.js';
 import { Entity, MemoryDatabase } from '../../shared/database/memory';
 import { EventEmitter } from '../../server/shared/event';
 import { ActorObject } from './actor';
-import { ItemType } from '../../shared/item';
-import { ContainerType } from '../../shared/inventory';
+import { ContainerType } from '../../server/inventory';
+import { ItemType } from '../../server/item';
 
 @injectable()
 export class ActorContainer extends PIXI.Container {}
@@ -54,6 +54,10 @@ export class PlayerInfo extends Entity {
 }
 
 export class ShortcutContainerInfo extends Entity {
+	/**
+	 * 已经更新过至少一次
+	 */
+	firstUpdated = false;
 	/**
 	 * 快捷栏的容器id
 	 */

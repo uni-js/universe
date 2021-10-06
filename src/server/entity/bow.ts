@@ -1,5 +1,5 @@
-import { ActorType } from '../../shared/actor';
-import { Actor, CtorOption } from '../shared/entity';
+import { Actor, ActorType } from '../actor/spec';
+import { CtorOption } from '../shared/entity';
 
 export class Bow extends Actor {
 	type = ActorType.BOW;

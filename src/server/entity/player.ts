@@ -1,5 +1,5 @@
-import { ActorType, AttachMapping } from '../../shared/actor';
-import { Actor, CtorOption } from '../shared/entity';
+import { ActorType, AttachMapping, Actor } from '../actor/spec';
+import { CtorOption } from '../shared/entity';
 import { RecordSet } from '../utils';
 
 export class Player extends Actor {

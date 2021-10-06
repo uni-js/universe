@@ -2,8 +2,8 @@ import React from 'react';
 import classnames from 'classnames';
 import { InventoryBlockInfo, ShortcutContainerInfo } from '../shared/store';
 import { useData, useDatas, useTexturePath, useTextureProvider } from './entry';
+import { ContainerType } from '../../server/inventory';
 import './shortcut.css';
-import { ContainerType } from '../../shared/inventory';
 
 export const SHORTCUT_SIZE = 5;
 

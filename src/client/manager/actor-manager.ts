@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { Direction } from '../../shared/actor';
+import { Direction } from '../../server/actor/spec';
 import { GameEvent } from '../event';
 import { ActorObject } from '../shared/actor';
 import { GameObjectManager } from '../shared/manager';

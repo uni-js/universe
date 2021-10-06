@@ -9,7 +9,7 @@ import { Player } from '../object/player';
 import { GameEvent } from '../event';
 
 @injectable()
-export class PlayerService {
+export class PlayerController {
 	constructor(
 		@inject(EventBusClient) private eventBus: EventBusClient,
 		@inject(PlayerManager) private playerManager: PlayerManager,

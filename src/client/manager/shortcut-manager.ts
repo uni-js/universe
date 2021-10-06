@@ -1,10 +1,11 @@
 import { inject, injectable } from 'inversify';
 import { ICollection, injectCollection } from '../../shared/database/memory';
-import { ContainerUpdateData, ContainerUpdateDataUnit, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from '../../shared/inventory';
-import { ItemType } from '../../shared/item';
+import { ContainerUpdateData, ContainerUpdateDataUnit, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from '../../server/inventory';
 import { HTMLInputProvider, InputKey } from '../input';
 import { GameManager } from '../shared/manager';
 import { ShortcutContainerInfo, InventoryBlockInfo } from '../shared/store';
+import { ItemType } from '../../server/item';
+import { GameEvent } from '../event';
 
 @injectable()
 export class ShortcutManager extends GameManager {
@@ -56,7 +57,15 @@ export class ShortcutManager extends GameManager {
 	/**
 	 * 批量设置全部格子的数据
 	 */
-	updateBlocks(updateData: ContainerUpdateData) {
+	updateBlocks(containerId: number, updateData: ContainerUpdateData) {
+		this.shortcut.containerId = containerId;
+
+		const firstUpdated = this.shortcut.firstUpdated;
+		if (!firstUpdated) {
+			this.shortcut.firstUpdated = true;
+			this.handleFirstUpdate();
+		}
+
 		this.blocksList.removeWhere({ containerType: ContainerType.SHORTCUT_CONTAINER });
 		const blocks: InventoryBlockInfo[] = [];
 		for (const unit of updateData.units) {
@@ -68,28 +77,37 @@ export class ShortcutManager extends GameManager {
 
 			blocks[unit.index] = block;
 		}
+
+		this.shortcutStore.update(this.shortcut);
 		this.blocksList.insert(blocks);
 	}
 
-	private updateShortcutIndex() {
-		let isDirty = true;
+	setCurrentIndex(indexAt: number, dirty = true) {
+		if (!this.shortcut.firstUpdated) return;
 
-		if (this.input.keyDown(InputKey.NUM_1)) {
-			this.shortcut.currentIndexAt = 0;
-		} else if (this.input.keyDown(InputKey.NUM_2)) {
-			this.shortcut.currentIndexAt = 1;
-		} else if (this.input.keyDown(InputKey.NUM_3)) {
-			this.shortcut.currentIndexAt = 2;
-		} else if (this.input.keyDown(InputKey.NUM_4)) {
-			this.shortcut.currentIndexAt = 3;
-		} else if (this.input.keyDown(InputKey.NUM_5)) {
-			this.shortcut.currentIndexAt = 4;
-		} else {
-			isDirty = false;
+		this.shortcut.currentIndexAt = indexAt;
+		this.shortcutStore.update(this.shortcut);
+
+		if (dirty) {
+			this.emit(GameEvent.SetShortcutIndexEvent, indexAt, this.shortcut.containerId);
 		}
+	}
 
-		if (isDirty) {
-			this.shortcutStore.update(this.shortcut);
+	private handleFirstUpdate() {
+		this.setCurrentIndex(0);
+	}
+
+	private updateShortcutIndex() {
+		if (this.input.keyDown(InputKey.NUM_1)) {
+			this.setCurrentIndex(0);
+		} else if (this.input.keyDown(InputKey.NUM_2)) {
+			this.setCurrentIndex(1);
+		} else if (this.input.keyDown(InputKey.NUM_3)) {
+			this.setCurrentIndex(2);
+		} else if (this.input.keyDown(InputKey.NUM_4)) {
+			this.setCurrentIndex(3);
+		} else if (this.input.keyDown(InputKey.NUM_5)) {
+			this.setCurrentIndex(4);
 		}
 	}
 	async doTick(tick: number) {

@@ -4,15 +4,13 @@ import { AddActorEvent, LoginedEvent, RemoveActorEvent } from '../../event/serve
 import { Player } from '../entity/player';
 import { PlayerManager } from '../manager/player-manager';
 import { Vector2 } from '../shared/math';
-import { Service } from '../shared/service';
+import { Controller } from '../shared/controller';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
 import { ActorManager } from '../manager/actor-manager';
-import { Bow } from '../entity/bow';
-import { AttachType } from '../../shared/actor';
 
 @injectable()
-export class PlayerService implements Service {
+export class PlayerController implements Controller {
 	constructor(
 		@inject(EventBus) private eventBus: EventBus,
 		@inject(PlayerManager) private playerManager: PlayerManager,
@@ -43,9 +41,6 @@ export class PlayerService implements Service {
 	}
 	private handleLogin(connId: string) {
 		const player = this.playerManager.addNewPlayer(connId);
-
-		const bow = this.actorManager.addNewEntity(new Bow());
-		this.actorManager.setAttachment(player.$loki, AttachType.RIGHT_HAND, bow.$loki);
 
 		this.eventBus.emitTo([connId], new LoginedEvent(player.$loki));
 		console.log(`user logined :`, player.connId);

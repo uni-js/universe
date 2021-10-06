@@ -1,8 +1,8 @@
 import { inject, injectable } from 'inversify';
+import { Actor } from '../actor/spec';
 import { Player } from '../entity/player';
 import { GameEvent } from '../event';
 import { PosToLandPos } from '../land/helper';
-import { Actor } from '../shared/entity';
 import { Manager } from '../shared/manager';
 import { Vector2 } from '../shared/math';
 import { ActorManager } from './actor-manager';

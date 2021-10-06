@@ -1,4 +1,4 @@
-export interface FactoryItemImpl<T> {
+/*export interface FactoryItemImpl<T> {
 	new (...args: any[]): T;
 }
 
@@ -28,3 +28,4 @@ export class Factory<IT extends string, T> implements IFactory<IT, T> {
 		return new Impl(...args);
 	}
 }
+*/
