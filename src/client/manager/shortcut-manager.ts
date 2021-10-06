@@ -59,12 +59,7 @@ export class ShortcutManager extends GameManager {
 	 */
 	updateBlocks(containerId: number, updateData: ContainerUpdateData) {
 		this.shortcut.containerId = containerId;
-
-		const firstUpdated = this.shortcut.firstUpdated;
-		if (!firstUpdated) {
-			this.shortcut.firstUpdated = true;
-			this.handleFirstUpdate();
-		}
+		this.shortcut.firstUpdated = true;
 
 		this.blocksList.removeWhere({ containerType: ContainerType.SHORTCUT_CONTAINER });
 		const blocks: InventoryBlockInfo[] = [];
@@ -91,10 +86,6 @@ export class ShortcutManager extends GameManager {
 		if (dirty) {
 			this.emit(GameEvent.SetShortcutIndexEvent, indexAt, this.shortcut.containerId);
 		}
-	}
-
-	private handleFirstUpdate() {
-		this.setCurrentIndex(0);
 	}
 
 	private updateShortcutIndex() {

@@ -1,6 +1,11 @@
 import { Player } from '../entity/player';
 import { BackpackMainContainer, Container, ContainerBlock, Inventory, PlayerInventory, ShortcutContainer } from '../entity/inventory';
-import { BLOCKS_PER_PLAYER_INVENTORY_CONTAINER, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerUpdateData } from '../../server/inventory';
+import {
+	BLOCKS_PER_PLAYER_INVENTORY_CONTAINER,
+	BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER,
+	ContainerType,
+	ContainerUpdateData,
+} from '../../server/inventory';
 import { PlayerManager } from './player-manager';
 import { ICollection, injectCollection } from '../../shared/database/memory';
 import { inject, injectable } from 'inversify';
@@ -57,11 +62,17 @@ export class InventoryManager extends EntityManager<Inventory> {
 	}
 
 	setBlock(containerId: number, index: number, itemType: ItemType, count: number) {
+		const container = this.containerList.findOne({ $loki: containerId });
 		const block = this.blocksList.findOne({ containerId, index });
 		block.itemType = itemType;
 		block.itemCount = count;
 
 		this.blocksList.update(block);
+
+		if (container.containerType === ContainerType.SHORTCUT_CONTAINER) {
+			const shortcut = container as ShortcutContainer;
+			if (shortcut.currentIndex === index) this.updateHoldItem(shortcut);
+		}
 
 		//TODO: notify this change
 	}
@@ -71,6 +82,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 		shortcut.playerId = playerId;
 		this.containerList.insertOne(shortcut);
 		this.addNewEmptyBlocks(shortcut.$loki, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER);
+
 		return shortcut;
 	}
 
@@ -100,7 +112,6 @@ export class InventoryManager extends EntityManager<Inventory> {
 		//HACK: remove in the future
 		//add player a bow in shortcut
 		this.setBlock(inventory.containers[0], 0, ItemType.BOW, 1);
-
 		this.sendInventoryUpdateData(player, inventory.$loki);
 	};
 	private onPlayerRemoved = (actorId: number, player: Player) => {
@@ -151,23 +162,29 @@ export class InventoryManager extends EntityManager<Inventory> {
 	}
 
 	private updateHoldItem(shortcut: ShortcutContainer) {
+		const player = this.playerManager.getEntityById(shortcut.playerId);
 		const block = this.getBlock(shortcut.$loki, shortcut.currentIndex);
 
 		const itemDef = this.itemDefList.findOne({ itemType: block.itemType });
 
+		this.actorManager.clearAttachments(shortcut.playerId, true);
+
 		if (itemDef.holdAction === ItemHoldAction.ATTACH_SPEC_ACTOR) {
 			const actor = this.actorFactory.getNewObject(itemDef.specActorType, []);
+			actor.posX = player.posX;
+			actor.posY = player.posY;
 
 			this.actorManager.addNewEntity(actor);
 			this.actorManager.setAttachment(shortcut.playerId, AttachType.RIGHT_HAND, actor.$loki);
-		} else if (itemDef.holdAction === ItemHoldAction.NONE) {
-			this.actorManager.clearAttachments(shortcut.playerId, true);
 		}
 	}
 
 	setShortcutIndex(containerId: number, indexAt: number) {
 		const container = this.shortcutContainerList.findOne({ $loki: containerId });
+		if (indexAt == container.currentIndex) return;
+
 		container.currentIndex = indexAt;
+
 		this.shortcutContainerList.update(container);
 		this.updateHoldItem(container);
 	}

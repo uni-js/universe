@@ -92,13 +92,6 @@ export class ActorManager extends EntityManager<Actor> {
 
 		this.emit(GameEvent.ActorToggleUsingEvent, actorId, false, useTick, actor);
 	}
-
-	addNewEntity<T extends Actor>(actor: T): T {
-		const inserted = super.addNewEntity.call(this, actor);
-		this.emit(GameEvent.LandMoveEvent, actor.$loki, new Vector2(actor.posX, actor.posY));
-		return inserted as T;
-	}
-
 	removeEntity<T extends Actor>(actor: T): void {
 		super.removeEntity.call(this, actor);
 
@@ -111,8 +104,6 @@ export class ActorManager extends EntityManager<Actor> {
 		const originPosX = actor.posX;
 		const originPosY = actor.posY;
 
-		const isOriginEmpty = originPosX == undefined || originPosY == undefined;
-
 		const delta = position.sub(new Vector2(originPosX, originPosY));
 
 		actor.posX += delta.x;
@@ -122,8 +113,8 @@ export class ActorManager extends EntityManager<Actor> {
 		const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
 		const landDelta = landPos.sub(new Vector2(actor.atLandX, actor.atLandY));
 
-		if (isOriginEmpty || landDelta.getSqrt() > 0) {
-			actor.isLandMoveDirty = true;
+		if (landDelta.getSqrt() > 0) {
+			this.updateLandMove(actor);
 		}
 		this.actorList.update(actor);
 	}
@@ -148,20 +139,15 @@ export class ActorManager extends EntityManager<Actor> {
 		}
 	}
 
-	private updateLandMoveDirty() {
-		const dirtyActors = this.actorList.find({ isLandMoveDirty: true });
-		for (const actor of dirtyActors) {
-			actor.isLandMoveDirty = false;
+	private updateLandMove(actor: Actor) {
+		const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
+		const lastLandPos = new Vector2(actor.atLandX, actor.atLandY);
 
-			const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
-			const lastLandPos = new Vector2(actor.atLandX, actor.atLandY);
+		actor.atLandX = landPos.x;
+		actor.atLandY = landPos.y;
+		this.actorList.update(actor);
 
-			actor.atLandX = landPos.x;
-			actor.atLandY = landPos.y;
-			this.actorList.update(actor);
-
-			this.emit(GameEvent.LandMoveEvent, actor.$loki, landPos, lastLandPos);
-		}
+		this.emit(GameEvent.LandMoveEvent, actor.$loki, landPos, lastLandPos);
 	}
 
 	private getAttachPosition(actor: Actor, key: string): [number, number] {
@@ -218,7 +204,6 @@ export class ActorManager extends EntityManager<Actor> {
 	doTick(tick: number) {
 		this.updateMoveDirty();
 		this.updateWalkDirty();
-		this.updateLandMoveDirty();
 		this.updateUsing();
 		this.updateMotion();
 	}

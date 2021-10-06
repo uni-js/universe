@@ -28,6 +28,7 @@ export class LandMoveManager extends Manager {
 		this.playerManager.on(GameEvent.LandNeverUsedEvent, this.onLandNeverUsed);
 
 		this.actorManager.on(GameEvent.LandMoveEvent, this.onActorLandMoved);
+		this.actorManager.on(GameEvent.AddEntityEvent, this.onActorAdded);
 		this.actorManager.on(GameEvent.RemoveEntityEvent, this.onActorRemoved);
 	}
 
@@ -47,14 +48,19 @@ export class LandMoveManager extends Manager {
 		this.landManager.removeAtRecord(land, 'actors', actorId);
 	}
 
+	private onActorAdded = (actorId: number, actor: Actor) => {
+		const pos = new Vector2(actor.posX, actor.posY);
+		const landPos = PosToLandPos(pos);
+		this.addLandActor(landPos, actorId);
+	};
+
 	private onActorRemoved = (actorId: number, actor: Actor) => {
 		const pos = new Vector2(actor.posX, actor.posY);
 		const landPos = PosToLandPos(pos);
 		this.removeLandActor(landPos, actorId);
 	};
-	private onActorLandMoved = (actorId: number, landPos: Vector2, lastLandPos?: Vector2) => {
-		if (lastLandPos) this.removeLandActor(lastLandPos, actorId);
-
+	private onActorLandMoved = (actorId: number, landPos: Vector2, lastLandPos: Vector2) => {
+		this.removeLandActor(lastLandPos, actorId);
 		this.addLandActor(landPos, actorId);
 	};
 

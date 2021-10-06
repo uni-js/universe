@@ -78,7 +78,6 @@ export class Actor extends Entity {
 
 	isMoveDirty = false;
 	isWalkDirty = false;
-	isLandMoveDirty = false;
 
 	isActor = true;
 
