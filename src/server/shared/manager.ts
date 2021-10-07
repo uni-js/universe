@@ -1,4 +1,4 @@
-import { Entity, ICollection } from '../../shared/database/memory';
+import { Entity, NotLimitCollection } from '../../shared/database/memory';
 import { GameEvent } from '../event';
 import { EventEmitter } from '../shared/event';
 
@@ -13,28 +13,82 @@ export class Manager extends EventEmitter implements IManager {
 	doTick(tick: number): void {}
 }
 
-export interface IEntityManager<T, K> extends Manager {
+export interface UpdateOnlyCollection<T extends Record<string, any>> extends NotLimitCollection<T> {
+	/**
+	 * @deprecated 请使用实体管理器的 removeEntity 方法删除实体
+	 */
+	remove(): any;
+
+	/**
+	 * @deprecated 请使用实体管理器的 removeEntity 方法删除实体
+	 */
+	removeWhere(): any;
+
+	/**
+	 * @deprecated 请使用实体管理器的 removeEntity 方法删除实体
+	 */
+	findAndRemove(): any;
+
+	/**
+	 * @deprecated 请使用实体管理器的 addEntity 方法添加实体
+	 */
+	add(): any;
+
+	/**
+	 * @deprecated 请使用实体管理器的 addEntity 方法添加实体
+	 */
+	insert(): any;
+
+	/**
+	 * @deprecated 请使用实体管理器的 addEntity 方法添加实体
+	 */
+	insertOne(): any;
+}
+
+export interface IEntityManager<K> extends Manager {
 	getEntityById(entityId: number): K;
-	updateEntity(entity: K): K;
 	findEntity(query: ObjectQueryCondition<K>): K;
 	findEntities(query?: ObjectQueryCondition<K>): K[];
 	getAllEntities(): K[];
 	hasEntity(query?: ObjectQueryCondition<K>): boolean;
 	addNewEntity(newEntity: K): K;
+	addNewEntities(newEntities: K[]): K[];
 	removeEntity(entity: K): void;
-	getEntityList(): ICollection<T>;
 	addAtRecord<R>(entity: K, propertyName: string, record: R): void;
 	removeAtRecord<R>(entity: K, propertyName: string, record: R): void;
 	hasAtRecord<R>(entity: K, propertyName: string, record: R): boolean;
 }
 
-export class EntityManager<T extends Entity> extends Manager implements IEntityManager<T, T> {
-	constructor(private entityList: ICollection<T>) {
+/**
+ * 实体管理器是专门用于管理某一种实体的管理器
+ *
+ * 所有实体管理器共同构成实体管理层
+ */
+export class EntityManager<T extends Entity> extends Manager implements IEntityManager<T> {
+	static canInjectCollection = true;
+
+	private entityList: NotLimitCollection<T>;
+
+	/**
+	 * @param updateOnlyEntityList 被管理的实体的集合, 必须是一个 UpdateOnly 的集合
+	 */
+	constructor(updateOnlyEntityList: UpdateOnlyCollection<T>) {
 		super();
+
+		this.entityList = updateOnlyEntityList;
 	}
 
-	getEntityList(): ICollection<T> {
+	/**
+	 * 直接获取实体列表进行修改可能造成数据不一致
+	 */
+	getEntityList(): NotLimitCollection<T> {
 		return this.entityList;
+	}
+
+	addNewEntities(newEntities: T[]): T[] {
+		return newEntities.map((newEntity) => {
+			return this.addNewEntity(newEntity);
+		});
 	}
 
 	getEntityById(entityId: number): Readonly<T> {
@@ -43,10 +97,6 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 				$eq: entityId,
 			},
 		});
-	}
-
-	updateEntity(entity: T): Readonly<T> {
-		return this.entityList.update(entity);
 	}
 
 	findEntity(query: ObjectQueryCondition<T>): Readonly<T> {
@@ -100,9 +150,13 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 	}
 }
 
-export class ExtendedEntityManager<T extends Entity, K extends T> extends Manager implements IEntityManager<T, K> {
+export class ExtendedEntityManager<T extends Entity, K extends T> extends Manager implements IEntityManager<K> {
 	constructor(private manager: EntityManager<T>, private clazz: ClassOf<K>) {
 		super();
+	}
+
+	addNewEntities(newEntities: K[]): K[] {
+		return this.manager.addNewEntities(newEntities) as K[];
 	}
 
 	addAtRecord<R>(entity: T, propertyName: string, record: R): void {
@@ -117,8 +171,9 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Manage
 	getEntityById(entityId: number): Readonly<K> {
 		return this.manager.getEntityById(entityId) as K;
 	}
-	updateEntity(entity: K): Readonly<K> {
-		return this.manager.updateEntity(entity) as K;
+	protected updateEntity(entity: K): Readonly<K> {
+		const list = this.manager.getEntityList();
+		return list.update(entity) as K;
 	}
 	findEntity(query: ObjectQueryCondition<K>): Readonly<K> {
 		return this.manager.findEntity(query) as K;
@@ -148,7 +203,11 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Manage
 			this.emit(GameEvent.RemoveEntityEvent, entityId, entity);
 		}
 	}
-	getEntityList(): ICollection<T> {
+
+	/**
+	 * 直接获取实体列表进行修改可能造成数据不一致
+	 */
+	getEntityList(): NotLimitCollection<T> {
 		return this.manager.getEntityList();
 	}
 }

@@ -5,7 +5,8 @@ import { GameEvent } from '../event';
 import { ExtendedEntityManager } from '../shared/manager';
 import { ActorManager } from './actor-manager';
 
-export const ARROW_DEAD_TICKS = 10;
+export const ARROW_DROP_TICKS = 10;
+export const ARROW_DEAD_TICKS = 30;
 
 @injectable()
 export class BowManager extends ExtendedEntityManager<Actor, Bow> {
@@ -33,17 +34,19 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		arrow.posX = actor.posX;
 		arrow.posY = actor.posY;
 
+		const power = 2;
+
 		if (attachingActor.direction == Direction.LEFT) {
-			arrow.motionX = -1;
+			arrow.motionX = -power;
 			arrow.shootingDirection = Math.PI;
 		} else if (attachingActor.direction == Direction.RIGHT) {
-			arrow.motionX = 1;
+			arrow.motionX = power;
 			arrow.shootingDirection = 0;
 		} else if (attachingActor.direction == Direction.FORWARD) {
-			arrow.motionY = 1;
+			arrow.motionY = power;
 			arrow.shootingDirection = Math.PI / 2;
 		} else if (attachingActor.direction == Direction.BACK) {
-			arrow.motionY = -1;
+			arrow.motionY = -power;
 			arrow.shootingDirection = (3 * Math.PI) / 2;
 		}
 
@@ -56,8 +59,19 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 			const arrow = item as Arrow;
 			arrow.aliveTick += 1;
 
-			this.updateEntity(arrow);
-			if (arrow.aliveTick >= ARROW_DEAD_TICKS) this.removeEntity(arrow);
+			if (arrow.aliveTick >= ARROW_DROP_TICKS) {
+				arrow.motionX = 0;
+				arrow.motionY = 0;
+			} else {
+				arrow.motionX *= 0.8;
+				arrow.motionY *= 0.8;
+			}
+
+			if (arrow.aliveTick >= ARROW_DEAD_TICKS) {
+				this.removeEntity(arrow);
+			} else {
+				this.updateEntity(arrow);
+			}
 		}
 	}
 	doTick() {

@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { ICollection, injectCollection } from '../../shared/database/memory';
+import { injectCollection, NotLimitCollection } from '../../shared/database/memory';
 import { ContainerUpdateData, ContainerUpdateDataUnit, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from '../../server/inventory';
 import { HTMLInputProvider, InputKey } from '../input';
 import { GameManager } from '../shared/manager';
@@ -12,8 +12,8 @@ export class ShortcutManager extends GameManager {
 	private shortcut: ShortcutContainerInfo;
 	constructor(
 		@inject(HTMLInputProvider) private input: HTMLInputProvider,
-		@injectCollection(ShortcutContainerInfo) private shortcutStore: ICollection<ShortcutContainerInfo>,
-		@injectCollection(InventoryBlockInfo) private blocksList: ICollection<InventoryBlockInfo>,
+		@injectCollection(ShortcutContainerInfo) private shortcutStore: NotLimitCollection<ShortcutContainerInfo>,
+		@injectCollection(InventoryBlockInfo) private blocksList: NotLimitCollection<InventoryBlockInfo>,
 	) {
 		super();
 

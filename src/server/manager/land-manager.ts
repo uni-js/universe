@@ -1,13 +1,12 @@
 import { Land } from '../entity/land';
-import { Actor } from '../actor/spec';
-import { EntityManager } from '../shared/manager';
+import { EntityManager, UpdateOnlyCollection } from '../shared/manager';
 import { Vector2 } from '../shared/math';
 import { PersistDatabaseSymbol, IPersistDatabase } from '../../shared/database/persist';
 import { spawn } from 'threads';
 
 import { BrickData, LandData } from '../land/types';
 import { inject, injectable } from 'inversify';
-import { ICollection, injectCollection } from '../../shared/database/memory';
+import { NotLimitCollection, injectCollection } from '../../shared/database/memory';
 import { Brick } from '../entity/brick';
 import { GameEvent } from '../event';
 
@@ -20,9 +19,8 @@ export class LandManager extends EntityManager<Land> {
 	private generatorWorker = spawn(new Worker('../land/generator.worker'));
 
 	constructor(
-		@injectCollection(Land) private landList: ICollection<Land>,
-		@injectCollection(Brick) private brickList: ICollection<Brick>,
-		@injectCollection(Actor) private actorList: ICollection<Actor>,
+		@injectCollection(Land) private landList: UpdateOnlyCollection<Land>,
+		@injectCollection(Brick) private brickList: NotLimitCollection<Brick>,
 		@inject(PersistDatabaseSymbol) private pdb: IPersistDatabase,
 	) {
 		super(landList);

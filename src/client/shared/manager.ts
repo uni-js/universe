@@ -6,6 +6,8 @@ import { IGameObject } from './game-object';
 export interface IGameManager extends doTickable, EventEmitter2 {}
 
 export abstract class GameManager extends EventEmitter2 implements IGameManager {
+	static canInjectCollection = true;
+
 	async doTick(tick: number): Promise<void> {}
 }
 

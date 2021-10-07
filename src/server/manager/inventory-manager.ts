@@ -7,10 +7,10 @@ import {
 	ContainerUpdateData,
 } from '../../server/inventory';
 import { PlayerManager } from './player-manager';
-import { ICollection, injectCollection } from '../../shared/database/memory';
+import { injectCollection, NotLimitCollection } from '../../shared/database/memory';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
-import { EntityManager } from '../shared/manager';
+import { EntityManager, UpdateOnlyCollection } from '../shared/manager';
 import { ItemDef, ItemDefList, ItemHoldAction, ItemType } from '../item';
 import { ActorManager } from './actor-manager';
 import { ActorFactory, AttachType } from '../actor/spec';
@@ -18,14 +18,14 @@ import { ActorFactory, AttachType } from '../actor/spec';
 @injectable()
 export class InventoryManager extends EntityManager<Inventory> {
 	constructor(
-		@injectCollection(Container) private containerList: ICollection<Container>,
-		@injectCollection(Container) private shortcutContainerList: ICollection<ShortcutContainer>,
+		@injectCollection(Inventory) private inventoryList: UpdateOnlyCollection<Inventory>,
+		@injectCollection(Inventory) private playerInventoryList: UpdateOnlyCollection<PlayerInventory>,
 
-		@injectCollection(Inventory) private inventoryList: ICollection<Inventory>,
-		@injectCollection(Inventory) private playerInventoryList: ICollection<PlayerInventory>,
+		@injectCollection(Container) private containerList: NotLimitCollection<Container>,
+		@injectCollection(Container) private shortcutContainerList: NotLimitCollection<ShortcutContainer>,
 
-		@injectCollection(ContainerBlock) private blocksList: ICollection<ContainerBlock>,
-		@injectCollection(ItemDef) private itemDefList: ICollection<ItemDef>,
+		@injectCollection(ContainerBlock) private blocksList: NotLimitCollection<ContainerBlock>,
+		@injectCollection(ItemDef) private itemDefList: NotLimitCollection<ItemDef>,
 
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(ActorManager) private actorManager: ActorManager,
@@ -103,7 +103,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 		inventory.containers = [shortcutId, mainContainerId];
 		inventory.playerId = playerId;
 
-		return this.inventoryList.insertOne(inventory);
+		return this.addNewEntity(inventory);
 	}
 
 	private onPlayerAdded = (actorId: number, player: Player) => {

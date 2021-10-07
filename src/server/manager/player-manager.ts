@@ -59,9 +59,10 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	spawnActor(player: Player, actorId: number) {
 		if (this.hasAtRecord(player, 'spawnedActors', actorId)) return;
 
-		this.addAtRecord(player, 'spawnedActors', actorId);
-
 		const actor = this.actorManager.getEntityById(actorId);
+		if (!actor) return;
+
+		this.addAtRecord(player, 'spawnedActors', actorId);
 		const ctorOption = GetCtorOptions(actor);
 
 		this.emit(GameEvent.SpawnActorEvent, actorId, player, ctorOption);

@@ -5,7 +5,7 @@ import { Viewport } from '../viewport';
 import { AttachType, Direction, RunningState } from '../../server/actor/spec';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
-import { ICollection, injectCollection } from '../../shared/database/memory';
+import { injectCollection, NotLimitCollection } from '../../shared/database/memory';
 import { PlayerInfo, UIEventBus } from '../shared/store';
 import { Player } from '../object/player';
 import { ActorManager } from './actor-manager';
@@ -16,7 +16,7 @@ export class PlayerManager extends GameManager {
 	private playerInfo: PlayerInfo;
 
 	constructor(
-		@injectCollection(PlayerInfo) private gameInfoList: ICollection<PlayerInfo>,
+		@injectCollection(PlayerInfo) private gameInfoList: NotLimitCollection<PlayerInfo>,
 		@inject(HTMLInputProvider) private inputProvider: HTMLInputProvider,
 		@inject(Viewport) private stage: Viewport,
 		@inject(UIEventBus) private uiEvent: UIEventBus,

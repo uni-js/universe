@@ -3,7 +3,7 @@ import LokiJS from 'lokijs';
 
 export const MemoryDatabaseSymbol = Symbol();
 
-export type ICollection<T extends Record<string, any>> = LokiJS.Collection<T>;
+export interface NotLimitCollection<T extends Record<string, any>> extends LokiJS.Collection<T> {}
 
 export type EntityQuery<T> = LokiQuery<T>;
 
@@ -33,7 +33,12 @@ export function createMemoryDatabase(entities: EntityImpl[]): IMemoryDatabase {
 	return db;
 }
 export function injectCollection(cls: any) {
-	return inject(cls);
+	const decorate = inject(cls);
+	return (target: any, targetKey: string, index?: number) => {
+		if (!target.canInjectCollection) throw new Error(`类 ${target.name} 无法注入集合, 只有实体管理器可以注入集合并改变数据`);
+
+		decorate(target, targetKey, index);
+	};
 }
 
 export function bindCollectionsTo(ioc: Container, entities: EntityImpl[], db: IMemoryDatabase) {

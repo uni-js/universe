@@ -1,7 +1,7 @@
 import { Attachment } from '../shared/entity';
-import { EntityManager } from '../shared/manager';
+import { EntityManager, UpdateOnlyCollection } from '../shared/manager';
 import { injectable } from 'inversify';
-import { ICollection, injectCollection } from '../../shared/database/memory';
+import { injectCollection } from '../../shared/database/memory';
 import { GameEvent } from '../event';
 import { Vector2 } from '../shared/math';
 import { PosToLandPos } from '../land/helper';
@@ -9,7 +9,7 @@ import { Direction, RunningState, Actor } from '../actor/spec';
 
 @injectable()
 export class ActorManager extends EntityManager<Actor> {
-	constructor(@injectCollection(Actor) private actorList: ICollection<Actor>) {
+	constructor(@injectCollection(Actor) private actorList: UpdateOnlyCollection<Actor>) {
 		super(actorList);
 	}
 
