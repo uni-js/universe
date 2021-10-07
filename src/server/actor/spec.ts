@@ -51,12 +51,6 @@ export class Actor extends Entity {
 	posY = 0;
 
 	@CtorOption()
-	atLandX = 0;
-
-	@CtorOption()
-	atLandY = 0;
-
-	@CtorOption()
 	motionX = 0;
 
 	@CtorOption()

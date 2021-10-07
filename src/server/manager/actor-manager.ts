@@ -111,10 +111,11 @@ export class ActorManager extends EntityManager<Actor> {
 		actor.isMoveDirty = true;
 
 		const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
-		const landDelta = landPos.sub(new Vector2(actor.atLandX, actor.atLandY));
+		const lastLandPos = PosToLandPos(new Vector2(originPosX, originPosY));
+		const landDelta = landPos.sub(lastLandPos);
 
 		if (landDelta.getSqrt() > 0) {
-			this.updateLandMove(actor);
+			this.emit(GameEvent.LandMoveEvent, actor.$loki, landPos, lastLandPos);
 		}
 		this.actorList.update(actor);
 	}
@@ -137,17 +138,6 @@ export class ActorManager extends EntityManager<Actor> {
 			this.actorList.update(actor);
 			this.emit(GameEvent.NewWalkStateEvent, actor.$loki);
 		}
-	}
-
-	private updateLandMove(actor: Actor) {
-		const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
-		const lastLandPos = new Vector2(actor.atLandX, actor.atLandY);
-
-		actor.atLandX = landPos.x;
-		actor.atLandY = landPos.y;
-		this.actorList.update(actor);
-
-		this.emit(GameEvent.LandMoveEvent, actor.$loki, landPos, lastLandPos);
 	}
 
 	private getAttachPosition(actor: Actor, key: string): [number, number] {
