@@ -8,6 +8,18 @@ export class Player extends Actor {
 	connId: string;
 
 	@CtorOption()
+	sizeX = 1;
+
+	@CtorOption()
+	sizeY = 1.5;
+
+	@CtorOption()
+	anchorX = 0.5;
+
+	@CtorOption()
+	anchorY = 1;
+
+	@CtorOption()
 	playerName = 'Player';
 
 	@CtorOption()
@@ -19,6 +31,8 @@ export class Player extends Actor {
 			forward: [0, -0.4],
 		},
 	};
+
+	canDamage = true;
 
 	isPlayer = true;
 

@@ -29,5 +29,7 @@ export enum GameEvent {
 	ActorRemoveAttachment = 'ActorRemoveAttachment',
 	ActorToggleUsingEvent = 'ActorToggleUsingEvent',
 
+	ActorDamagedEvent = 'ActorDamagedEvent',
+
 	UpdateInventoryEvent = 'UpdateInventoryEvent',
 }

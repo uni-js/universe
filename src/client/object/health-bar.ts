@@ -25,10 +25,14 @@ export class HealthBar extends GameObject {
 	private updateHealthDrawing() {
 		const percent = this.healthValue / this.maxHealth;
 
-		const posX = Math.floor(percent * this.size.x);
+		const posX = percent * this.size.x;
 		this.graph.clear();
 		this.graph.beginFill(0xff0000, 0.8);
 		this.graph.drawRect(0, 0, posX, this.size.y);
+		this.graph.endFill();
+
+		this.graph.beginFill(0xcccccc, 0.5);
+		this.graph.drawRect(posX, 0, this.size.x - posX, this.size.y);
 		this.graph.endFill();
 	}
 	setHealthMax(maxVal: number) {

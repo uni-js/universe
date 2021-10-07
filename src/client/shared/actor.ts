@@ -339,6 +339,15 @@ export class ActorObject extends GameObject {
 		}
 	}
 
+	getHealth() {
+		return this.health;
+	}
+
+	setHealth(val: number) {
+		this.healthBar.setHealthValue(val);
+		this.health = val;
+	}
+
 	async doTick(tick: number) {
 		this.moveInterpolator.doTick();
 

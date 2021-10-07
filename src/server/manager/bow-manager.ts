@@ -33,6 +33,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		const arrow = new Arrow();
 		arrow.posX = actor.posX;
 		arrow.posY = actor.posY;
+		arrow.shooter = attachingActor.$loki;
 
 		const power = 2;
 
@@ -74,7 +75,23 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 			}
 		}
 	}
+
+	private doCollisionTick() {
+		const arrows = this.actorManager.findEntities({ type: ActorType.ARROW });
+		for (const actor of arrows) {
+			const arrow = actor as Arrow;
+			const shooter = this.actorManager.getEntityById(arrow.shooter);
+
+			const collisions = this.actorManager.getActorCollisionWith(arrow, [shooter]);
+			collisions.forEach((collision) => {
+				if (collision.actor.canDamage) {
+					this.actorManager.damageActor(collision.actor, 10);
+				}
+			});
+		}
+	}
 	doTick() {
 		this.doAliveTick();
+		this.doCollisionTick();
 	}
 }

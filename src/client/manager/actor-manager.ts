@@ -42,6 +42,11 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 		actor.setPosition(targetActor.getPosition().add(relPos));
 	}
 
+	damageActor(actorId: number, finalHealth: number) {
+		const actor = this.getObjectById(actorId);
+		actor.setHealth(finalHealth);
+	}
+
 	async doTick(tick: number) {
 		super.doTick.call(this, tick);
 

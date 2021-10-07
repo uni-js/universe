@@ -7,7 +7,7 @@ export class Arrow extends ActorObject {
 	private shootingDirection: number;
 
 	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
-		super(serverId, option, new Vector2(2, 0.2), ActorType.ARROW, texture);
+		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.ARROW, texture);
 		this.shootingDirection = option.shootingDirection;
 
 		this.sprite.anchor.set(0, 0.5);
@@ -23,7 +23,7 @@ export class Bow extends ActorObject {
 	private dragging = false;
 
 	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
-		super(serverId, option, new Vector2(0.65, 0.65), ActorType.BOW, texture, 3);
+		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.BOW, texture, 3);
 
 		this.setAnimateSpeed(0.1);
 		this.sprite.loop = false;

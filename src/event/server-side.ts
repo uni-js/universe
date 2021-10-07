@@ -77,3 +77,9 @@ export class UpdateContainer extends RemoteEvent {
 		super();
 	}
 }
+
+export class ActorDamagedEvent extends RemoteEvent {
+	constructor(public actorId: number, public finalHealth: number) {
+		super();
+	}
+}

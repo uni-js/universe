@@ -45,6 +45,18 @@ export class Actor extends Entity {
 	health = 100;
 
 	@CtorOption()
+	sizeX = 1;
+
+	@CtorOption()
+	sizeY = 1;
+
+	@CtorOption()
+	anchorX = 0;
+
+	@CtorOption()
+	anchorY = 0;
+
+	@CtorOption()
 	posX = 0;
 
 	@CtorOption()
@@ -72,6 +84,8 @@ export class Actor extends Entity {
 
 	@CtorOption()
 	attachMapping: AttachMapping;
+
+	canDamage = false;
 
 	isMoveDirty = false;
 	isWalkDirty = false;

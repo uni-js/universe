@@ -1,4 +1,11 @@
-import { ActorNewPosEvent, ActorRemoveAttachment, ActorSetAttachment, ActorSetWalkEvent, ActorToggleUsing } from '../../event/server-side';
+import {
+	ActorDamagedEvent,
+	ActorNewPosEvent,
+	ActorRemoveAttachment,
+	ActorSetAttachment,
+	ActorSetWalkEvent,
+	ActorToggleUsing,
+} from '../../event/server-side';
 import { EventBus } from '../../event/bus-server';
 import { ActorManager } from '../manager/actor-manager';
 import { PlayerManager } from '../manager/player-manager';
@@ -28,6 +35,11 @@ export class ActorController implements Controller {
 		this.actorManager.on(GameEvent.ActorRemoveAttachment, this.onActorRemoveAttachment.bind(this));
 
 		this.actorManager.on(GameEvent.ActorToggleUsingEvent, this.onActorToggleUsing.bind(this));
+		this.actorManager.on(GameEvent.ActorDamagedEvent, this.onActorDamaged.bind(this));
+	}
+	private onActorDamaged(actorId: number, finalHealth: number) {
+		const event = new ActorDamagedEvent(actorId, finalHealth);
+		this.emitToActorSpawned(actorId, event);
 	}
 
 	private onActorToggleUsing(actorId: number, startOrEnd: boolean) {

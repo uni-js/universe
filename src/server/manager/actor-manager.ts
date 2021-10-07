@@ -1,3 +1,5 @@
+import SAT from 'sat';
+
 import { Attachment } from '../shared/entity';
 import { EntityManager, UpdateOnlyCollection } from '../shared/manager';
 import { injectable } from 'inversify';
@@ -7,10 +9,71 @@ import { Vector2 } from '../shared/math';
 import { PosToLandPos } from '../land/helper';
 import { Direction, RunningState, Actor } from '../actor/spec';
 
+export interface CollisionResult {
+	actor: Actor;
+	response: SAT.Response;
+}
+
 @injectable()
 export class ActorManager extends EntityManager<Actor> {
 	constructor(@injectCollection(Actor) private actorList: UpdateOnlyCollection<Actor>) {
 		super(actorList);
+	}
+
+	damageActor(actor: Actor, costHealth: number) {
+		if (actor.health - costHealth < 0) {
+			actor.health = 0;
+			//TODO: death
+		} else {
+			actor.health -= costHealth;
+		}
+
+		this.actorList.update(actor);
+
+		this.emit(GameEvent.ActorDamagedEvent, actor.$loki, actor.health);
+	}
+
+	getActorBoundingBox(actor: Actor): [number, number, number, number] {
+		const x = actor.posX - actor.sizeX * actor.anchorX;
+		const y = actor.posY - actor.sizeY * actor.anchorY;
+		const w = actor.sizeX;
+		const h = actor.sizeY;
+		return [x, y, w, h];
+	}
+
+	getActorCollisionWith(targetActor: Actor, excepts: Actor[] = []): CollisionResult[] {
+		const [targetX, targetY, targetW, targetH] = this.getActorBoundingBox(targetActor);
+
+		const vecA = new SAT.Vector(targetX, targetY);
+		const boxA = new SAT.Box(vecA, targetW, targetH).toPolygon();
+		const nearActors = this.getNearActors(new Vector2(targetX, targetY));
+		const results: CollisionResult[] = [];
+		for (const actor of nearActors) {
+			if (actor === targetActor) continue;
+			if (excepts.includes(actor)) continue;
+
+			const [x, y, w, h] = this.getActorBoundingBox(actor);
+
+			const vecB = new SAT.Vector(x, y);
+			const boxB = new SAT.Box(vecB, w, h).toPolygon();
+			const response = new SAT.Response();
+			const collided = SAT.testPolygonPolygon(boxB, boxA, response);
+			if (!collided) continue;
+			results.push({
+				actor,
+				response,
+			});
+		}
+		return results;
+	}
+
+	getNearActors(pos: Vector2): Actor[] {
+		const distance = 10;
+
+		return this.actorList.find({
+			posX: { $between: [pos.x - distance, pos.x + distance] },
+			posY: { $between: [pos.y - distance, pos.y + distance] },
+		});
 	}
 
 	setAttachment(targetActorId: number, key: string, actorId: number) {

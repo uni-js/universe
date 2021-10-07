@@ -15,7 +15,7 @@ export class Player extends ActorObject {
 	private playerName: string;
 
 	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
-		super(serverId, option, new Vector2(1, 1.5), ActorType.PLAYER, texture, 12, true, 0);
+		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.PLAYER, texture, 12, true, 0);
 
 		this.playerName = option.playerName;
 

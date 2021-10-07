@@ -66,6 +66,7 @@
     "@types/pixi.js": "^5.0.0",
     "@types/randombytes": "^2.0.0",
     "@types/reflect-metadata": "^0.1.0",
+    "@types/sat": "^0.0.31",
     "@types/three": "^0.128.0",
     "@typescript-eslint/eslint-plugin": "^4.29.3",
     "@typescript-eslint/parser": "^4.29.3",

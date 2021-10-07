@@ -1,5 +1,6 @@
 import { EventBusClient } from '../../event/bus-client';
 import {
+	ActorDamagedEvent,
 	ActorNewPosEvent,
 	ActorRemoveAttachment,
 	ActorSetAttachment,
@@ -37,6 +38,8 @@ export class ActorController {
 		this.eventBus.on(ActorRemoveAttachment.name, this.handleRemoveAttachment.bind(this));
 
 		this.eventBus.on(ActorToggleUsing.name, this.handleActorToggleUsing.bind(this));
+
+		this.eventBus.on(ActorDamagedEvent.name, this.handleActorDamaged.bind(this));
 
 		this.actorManager.on(GameEvent.ActorToggleUsingEvent, this.onActorToggleUsing.bind(this));
 		this.actorManager.on(GameEvent.ActorToggleWalkEvent, this.onActorToggleWalk.bind(this));
@@ -107,5 +110,9 @@ export class ActorController {
 		} else {
 			object.addMovePoint(pos);
 		}
+	}
+
+	private handleActorDamaged(event: ActorDamagedEvent) {
+		this.actorManager.damageActor(event.actorId, event.finalHealth);
 	}
 }
