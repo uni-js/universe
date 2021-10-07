@@ -37,7 +37,7 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 		return this.entityList;
 	}
 
-	getEntityById(entityId: number): T {
+	getEntityById(entityId: number): Readonly<T> {
 		return this.entityList.findOne({
 			$loki: {
 				$eq: entityId,
@@ -45,19 +45,19 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 		});
 	}
 
-	updateEntity(entity: T): T {
+	updateEntity(entity: T): Readonly<T> {
 		return this.entityList.update(entity);
 	}
 
-	findEntity(query: ObjectQueryCondition<T>) {
+	findEntity(query: ObjectQueryCondition<T>): Readonly<T> {
 		return this.entityList.findOne(query);
 	}
 
-	findEntities(query?: ObjectQueryCondition<T>): T[] {
+	findEntities(query?: ObjectQueryCondition<T>): Readonly<T>[] {
 		return this.entityList.find(query) as T[];
 	}
 
-	getAllEntities(): T[] {
+	getAllEntities(): Readonly<T>[] {
 		return this.entityList.find();
 	}
 
@@ -65,7 +65,7 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 		return Boolean(this.findEntity(query));
 	}
 
-	addNewEntity(newEntity: T): T {
+	addNewEntity(newEntity: T): Readonly<T> {
 		const insertedEntity = this.entityList.insertOne(newEntity);
 		this.emit(GameEvent.AddEntityEvent, insertedEntity.$loki, insertedEntity);
 		return insertedEntity;
@@ -114,25 +114,25 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Manage
 	hasAtRecord<R>(entity: T, propertyName: string, record: R): boolean {
 		return this.manager.hasAtRecord(entity, propertyName, record);
 	}
-	getEntityById(entityId: number): K {
+	getEntityById(entityId: number): Readonly<K> {
 		return this.manager.getEntityById(entityId) as K;
 	}
-	updateEntity(entity: K): K {
+	updateEntity(entity: K): Readonly<K> {
 		return this.manager.updateEntity(entity) as K;
 	}
-	findEntity(query: ObjectQueryCondition<K>): K {
+	findEntity(query: ObjectQueryCondition<K>): Readonly<K> {
 		return this.manager.findEntity(query) as K;
 	}
-	findEntities(query?: ObjectQueryCondition<K>): K[] {
+	findEntities(query?: ObjectQueryCondition<K>): Readonly<K>[] {
 		return this.manager.findEntities(query) as K[];
 	}
-	getAllEntities(): K[] {
+	getAllEntities(): Readonly<K>[] {
 		return this.manager.getAllEntities() as K[];
 	}
 	hasEntity(query?: ObjectQueryCondition<K>): boolean {
 		return this.manager.hasEntity(query);
 	}
-	addNewEntity(newEntity: K): K {
+	addNewEntity(newEntity: K): Readonly<K> {
 		const inserted = this.manager.addNewEntity(newEntity) as K;
 
 		if (inserted instanceof this.clazz) {

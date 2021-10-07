@@ -42,6 +42,9 @@ export interface AttachMapping {
 
 export class Actor extends Entity {
 	@CtorOption()
+	health = 100;
+
+	@CtorOption()
 	posX = 0;
 
 	@CtorOption()

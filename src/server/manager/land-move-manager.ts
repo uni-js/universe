@@ -37,10 +37,6 @@ export class LandMoveManager extends Manager {
 
 		const land = this.landManager.getLand(landPos);
 		this.landManager.addAtRecord(land, 'actors', actorId);
-
-		this.playerManager.getCanseeLandPlayers(landPos).forEach((player) => {
-			this.playerManager.spawnActor(player, actorId);
-		});
 	}
 
 	removeLandActor(landPos: Vector2, actorId: number) {
@@ -59,9 +55,18 @@ export class LandMoveManager extends Manager {
 		const landPos = PosToLandPos(pos);
 		this.removeLandActor(landPos, actorId);
 	};
-	private onActorLandMoved = (actorId: number, landPos: Vector2, lastLandPos: Vector2) => {
-		this.removeLandActor(lastLandPos, actorId);
-		this.addLandActor(landPos, actorId);
+	private onActorLandMoved = (actorId: number, targetLandPos: Vector2, sourceLandPos: Vector2) => {
+		this.removeLandActor(sourceLandPos, actorId);
+		this.addLandActor(targetLandPos, actorId);
+
+		const players = this.playerManager.getAllEntities();
+		players.forEach((player) => {
+			if (this.playerManager.isPlayerCansee(player, targetLandPos)) {
+				this.playerManager.spawnActor(player, actorId);
+			} else {
+				this.playerManager.despawnActor(player, actorId);
+			}
+		});
 	};
 
 	private onLandUsed = (player: Player, landPos: Vector2) => {

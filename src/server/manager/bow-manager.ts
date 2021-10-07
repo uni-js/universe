@@ -1,14 +1,17 @@
 import { inject, injectable } from 'inversify';
 import { ActorType, Direction, Actor } from '../actor/spec';
-import { Arrow } from '../entity/bow';
+import { Arrow, Bow } from '../entity/bow';
 import { GameEvent } from '../event';
-import { Manager } from '../shared/manager';
+import { ExtendedEntityManager } from '../shared/manager';
 import { ActorManager } from './actor-manager';
 
+export const ARROW_DEAD_TICKS = 10;
+
 @injectable()
-export class BowManager extends Manager {
+export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 	constructor(@inject(ActorManager) private actorManager: ActorManager) {
-		super();
+		super(actorManager, Bow);
+
 		this.actorManager.on(GameEvent.ActorToggleUsingEvent, this.onActorToggleUsing);
 	}
 	private onActorToggleUsing = (actorId: number, startOrEnd: boolean, useTick: number, actor: Actor) => {
@@ -44,6 +47,20 @@ export class BowManager extends Manager {
 			arrow.shootingDirection = (3 * Math.PI) / 2;
 		}
 
-		this.actorManager.addNewEntity(arrow);
+		this.addNewEntity(arrow);
+	}
+
+	private doAliveTick() {
+		const arrows = this.findEntities({ type: ActorType.ARROW });
+		for (const item of arrows) {
+			const arrow = item as Arrow;
+			arrow.aliveTick += 1;
+
+			this.updateEntity(arrow);
+			if (arrow.aliveTick >= ARROW_DEAD_TICKS) this.removeEntity(arrow);
+		}
+	}
+	doTick() {
+		this.doAliveTick();
 	}
 }

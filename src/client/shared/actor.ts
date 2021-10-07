@@ -7,6 +7,7 @@ import { GetEmptyTexture, TextureProvider } from '../texture';
 import { Interpolate2d, Vector2 } from '../../server/shared/math';
 import { EventEmitter2 } from 'eventemitter2';
 import { Factory, FactoryMapper } from '../../shared/factory';
+import { HealthBar } from '../object/health-bar';
 
 /**
  * 用于平滑处理移动同步包
@@ -63,6 +64,7 @@ export class ActorObject extends GameObject {
 	protected shadow;
 	protected sprite;
 	protected nametag: PIXI.Text;
+	protected healthBar: HealthBar;
 
 	protected direction: Direction = Direction.BACK;
 	protected running: RunningState = RunningState.SILENT;
@@ -73,6 +75,7 @@ export class ActorObject extends GameObject {
 	private pos: Vector2;
 	private size: Vector2;
 	private tagname = '';
+	private health = 100;
 
 	private playing = false;
 
@@ -122,13 +125,13 @@ export class ActorObject extends GameObject {
 			this.setTagName(option.tagname);
 		}
 
-		this.addChildAt(this.nametag, 0);
-		this.addChildAt(this.sprite, 1);
+		this.addChild(this.nametag);
+		this.addChild(this.sprite);
 
 		if (canWalk) {
 			this.walkTextureIndex = walkTextureIndex;
 			this.shadow = new PIXI.Sprite(this.texture.getOne('system.shadow'));
-			this.addChildAt(this.shadow, 2);
+			this.addChild(this.shadow);
 		}
 
 		if (option.attachments) {
@@ -151,11 +154,18 @@ export class ActorObject extends GameObject {
 			this.endUsing();
 		}
 
+		this.initHealthBar();
+
 		this.setTextures(this.usedTextures);
 		this.setDirection(Direction.FORWARD);
 
 		this.setPosition(this.pos);
 		this.resize();
+	}
+
+	private initHealthBar() {
+		this.healthBar = new HealthBar(this.texture);
+		this.addChild(this.healthBar);
 	}
 	private handleInterpolatedPosition(pos: Vector2) {
 		this.setPosition(pos);
@@ -244,12 +254,13 @@ export class ActorObject extends GameObject {
 		}
 
 		this.nametag.style.fontSize = 1;
-		this.nametag.scale.set(0.5, 0.5);
-
-		this.nametag.position.set(0, -this.size.y - 0.2);
+		this.nametag.scale.set(0.4, 0.4);
+		this.nametag.position.set(0, -this.size.y - 0.4);
+		this.healthBar.position.set(0, -this.size.y - 0.2);
 	}
 	setAnchor(x: number, y: number) {
 		this.sprite.anchor.set(x, y);
+
 		this.shadow && this.shadow.anchor.set(0.5, 0.5);
 		this.nametag && this.nametag.anchor.set(0.5, 0.5);
 	}

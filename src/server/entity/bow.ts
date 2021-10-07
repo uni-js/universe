@@ -13,4 +13,6 @@ export class Arrow extends Actor {
 	 */
 	@CtorOption()
 	shootingDirection = 0;
+
+	aliveTick = 0;
 }

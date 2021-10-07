@@ -32,22 +32,15 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	getCanSeeLands(player: Player) {
 		return GetRadiusLands(new Vector2(player.posX, player.posY), 1);
 	}
-
-	getCanseeLandPlayers(landPos: Vector2) {
-		const players = this.getAllEntities();
-		const results = [];
-		for (const player of players) {
-			const result = this.getCanSeeLands(player).find((vec2) => {
-				return vec2.equals(landPos);
-			});
-			if (result) {
-				results.push(player);
-			}
-		}
-		return results;
+	isPlayerCansee(player: Player, landPos: Vector2) {
+		const lands = this.getCanSeeLands(player);
+		const result = lands.find((vec2) => {
+			return vec2.equals(landPos);
+		});
+		return Boolean(result);
 	}
 
-	getAllEntities(): Player[] {
+	getAllEntities(): Readonly<Player>[] {
 		return this.findEntities({ isPlayer: true });
 	}
 

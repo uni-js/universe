@@ -91,36 +91,36 @@ export class LandManager extends EntityManager<Land> {
 		return land.isLoaded;
 	}
 
-	async loadLand(landLoc: Vector2) {
-		const land = this.getLand(landLoc);
+	async loadLand(landPos: Vector2) {
+		const land = this.landList.findOne({ landLocX: landPos.x, landLocY: landPos.y });
 		if (land.isLoaded || land.isLoading) return;
 
-		const hash = BuildLandHash(landLoc);
+		const hash = BuildLandHash(landPos);
 		let landData = await this.pdb.get(hash);
 
 		if (Boolean(landData) == false) {
-			landData = await this.generateLand(landLoc);
+			landData = await this.generateLand(landPos);
 		}
 
 		land.isLoading = true;
 		this.landList.update(land);
 
-		this.setBricksByLandData(landLoc.x, landLoc.y, landData);
+		this.setBricksByLandData(landPos.x, landPos.y, landData);
 
 		land.isLoaded = true;
 		land.isLoading = false;
 		this.landList.update(land);
 
-		this.emit(GameEvent.LandLoaded, landLoc);
+		this.emit(GameEvent.LandLoaded, landPos);
 
-		console.debug(`加载 Land :(${landLoc.x}:${landLoc.y})`);
+		console.debug(`加载 Land :(${landPos.x}:${landPos.y})`);
 	}
-	async unloadLand(landLoc: Vector2) {
-		const land = await this.getLand(landLoc);
+	async unloadLand(landPos: Vector2) {
+		const land = await this.getLand(landPos);
 
-		if (!land || !land.isLoaded) throw new Error(`卸载Land失败 At: ${landLoc.x}:${landLoc.y}`);
+		if (!land || !land.isLoaded) throw new Error(`卸载Land失败 At: ${landPos.x}:${landPos.y}`);
 
-		this.removeLandBricks(landLoc.x, landLoc.y);
+		this.removeLandBricks(landPos.x, landPos.y);
 
 		this.emit(GameEvent.LandUnloaded, land.$loki);
 	}
