@@ -9,6 +9,8 @@ export class HealthBar extends GameObject {
 	private healthValue = 100;
 	private maxHealth = 100;
 
+	private showTicks = 0;
+
 	constructor(texture: TextureProvider) {
 		super(texture);
 
@@ -19,6 +21,7 @@ export class HealthBar extends GameObject {
 		this.graph.x = -this.size.x / 2;
 		this.graph.y = -this.size.y / 2;
 
+		this.visible = false;
 		this.updateHealthDrawing();
 		this.addChild(this.graph);
 	}
@@ -43,5 +46,23 @@ export class HealthBar extends GameObject {
 	setHealthValue(val: number) {
 		this.healthValue = val;
 		this.updateHealthDrawing();
+	}
+
+	/**
+	 * 使用该方法后, 血量条会显示一段时间
+	 */
+	setShowTicks(ticks: number) {
+		this.showTicks = ticks;
+	}
+
+	async doTick() {
+		if (this.showTicks > 0) {
+			this.visible = true;
+			this.showTicks--;
+		}
+
+		if (this.showTicks == 0) {
+			this.visible = false;
+		}
 	}
 }

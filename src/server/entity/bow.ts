@@ -27,6 +27,12 @@ export class Arrow extends Actor {
 	anchorY = 0.5;
 
 	/**
+	 * 力度
+	 */
+	@CtorOption()
+	power = 0.5;
+
+	/**
 	 * 发射者
 	 */
 	shooter: number;

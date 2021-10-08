@@ -1,6 +1,6 @@
 .shortcut-wrapper{
-    position: absolute;
-    bottom: 10px;
+    position: relative;
+    bottom: 0px;
     width: 100%;
 }
 .shortcut-blank{

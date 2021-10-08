@@ -23,7 +23,7 @@ export class Bow extends ActorObject {
 	private dragging = false;
 
 	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
-		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.BOW, texture, 3);
+		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.BOW, texture, false, 3);
 
 		this.setAnimateSpeed(0.1);
 		this.sprite.loop = false;

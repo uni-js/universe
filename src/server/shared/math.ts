@@ -37,6 +37,9 @@ export class Vector2 {
 	static getVectorDelta(v1: Vector2, v2: Vector2): Vector2 {
 		return new Vector2(v2.x - v1.x, v2.y - v1.y);
 	}
+	static getVector2ByDistance(distance: number, rad: number) {
+		return new Vector2(Math.cos(rad), Math.sin(rad)).mul(distance);
+	}
 }
 
 /**

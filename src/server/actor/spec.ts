@@ -68,6 +68,8 @@ export class Actor extends Entity {
 	@CtorOption()
 	motionY = 0;
 
+	motionDecreaseRate = 0.9;
+
 	@CtorOption()
 	isUsing = false;
 

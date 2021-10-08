@@ -8,6 +8,7 @@ import { Interpolate2d, Vector2 } from '../../server/shared/math';
 import { EventEmitter2 } from 'eventemitter2';
 import { Factory, FactoryMapper } from '../../shared/factory';
 import { HealthBar } from '../object/health-bar';
+import { NameTag } from '../object/nametag';
 
 /**
  * 用于平滑处理移动同步包
@@ -63,7 +64,7 @@ export class ActorObject extends GameObject {
 
 	protected shadow;
 	protected sprite;
-	protected nametag: PIXI.Text;
+	protected nametag: NameTag;
 	protected healthBar: HealthBar;
 
 	protected direction: Direction = Direction.BACK;
@@ -78,6 +79,8 @@ export class ActorObject extends GameObject {
 	private health = 100;
 
 	private playing = false;
+
+	private showHealth = false;
 
 	private attachments = new Map<string, Attachment>();
 	private attaching?: Attachment;
@@ -95,6 +98,7 @@ export class ActorObject extends GameObject {
 		size: Vector2,
 		actorType: ActorType,
 		texture: TextureProvider,
+		showHealth = false,
 		usedTextureLength = 0,
 		canWalk = false,
 		walkTextureIndex = 0,
@@ -107,16 +111,14 @@ export class ActorObject extends GameObject {
 		this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);
 
 		this.actorType = actorType;
+		this.showHealth = showHealth;
 
 		this.usedTextures =
 			this.texture.get(`actor.${actorType}`) ||
 			this.texture.get(`actor.${actorType}.normal`) ||
 			this.texture.getGroup(`actor.${actorType}.{order}`, usedTextureLength);
 
-		this.nametag = new PIXI.Text('');
-		this.nametag.style = new PIXI.TextStyle({
-			fill: 'white',
-		});
+		this.nametag = new NameTag();
 
 		this.moveInterpolator = new MoveInterpolator(6);
 		this.moveInterpolator.on('position', this.handleInterpolatedPosition.bind(this));
@@ -164,11 +166,16 @@ export class ActorObject extends GameObject {
 	}
 
 	private initHealthBar() {
+		if (!this.showHealth) return;
+
 		this.healthBar = new HealthBar(this.texture);
 		this.addChild(this.healthBar);
 	}
 	private handleInterpolatedPosition(pos: Vector2) {
 		this.setPosition(pos);
+	}
+	getActorType() {
+		return this.actorType;
 	}
 	getRunning() {
 		return this.running;
@@ -255,8 +262,11 @@ export class ActorObject extends GameObject {
 
 		this.nametag.style.fontSize = 1;
 		this.nametag.scale.set(0.4, 0.4);
-		this.nametag.position.set(0, -this.size.y - 0.4);
-		this.healthBar.position.set(0, -this.size.y - 0.2);
+		this.nametag.position.set(0, -this.size.y - 0.2);
+
+		if (this.healthBar) {
+			this.healthBar.position.set(0, -this.size.y - 0.2);
+		}
 	}
 	setAnchor(x: number, y: number) {
 		this.sprite.anchor.set(x, y);
@@ -343,13 +353,22 @@ export class ActorObject extends GameObject {
 		return this.health;
 	}
 
-	setHealth(val: number) {
-		this.healthBar.setHealthValue(val);
+	damage(val: number) {
+		if (this.nametag) {
+			this.nametag.setHiddenTicks(100);
+		}
+
+		if (this.healthBar) {
+			this.healthBar.setShowTicks(100);
+			this.healthBar.setHealthValue(val);
+		}
 		this.health = val;
 	}
 
 	async doTick(tick: number) {
 		this.moveInterpolator.doTick();
+		this.nametag && this.nametag.doTick();
+		this.healthBar && this.healthBar.doTick();
 
 		if (this.isUsingDirty) {
 			this.emit(GameEvent.ActorToggleUsingEvent, this.serverId, this.isUsing ? true : false);

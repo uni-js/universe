@@ -7,6 +7,8 @@ import { ActorManager } from './actor-manager';
 
 export const ARROW_DROP_TICKS = 10;
 export const ARROW_DEAD_TICKS = 30;
+export const BOW_DRAGGING_MAX_TICKS = 25; //拉弓增加力度的最大值
+export const BOW_RELEASING_MIN_TICKS = 10; //可以释放的最小值
 
 @injectable()
 export class BowManager extends ExtendedEntityManager<Actor, Bow> {
@@ -26,7 +28,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 	private startDragging(actor: Actor) {}
 
 	private endDragging(actor: Actor, useTick: number) {
-		if (useTick <= 10) return;
+		if (useTick <= BOW_RELEASING_MIN_TICKS) return;
 
 		const attachingActor = this.actorManager.getEntityById(actor.attaching.actorId);
 
@@ -35,19 +37,20 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		arrow.posY = actor.posY;
 		arrow.shooter = attachingActor.$loki;
 
-		const power = 2;
+		arrow.power = Math.min(useTick, BOW_DRAGGING_MAX_TICKS) / 20; //拉弓时间越长力度越大
 
+		const motion = arrow.power * 3;
 		if (attachingActor.direction == Direction.LEFT) {
-			arrow.motionX = -power;
+			arrow.motionX = -motion;
 			arrow.shootingDirection = Math.PI;
 		} else if (attachingActor.direction == Direction.RIGHT) {
-			arrow.motionX = power;
+			arrow.motionX = motion;
 			arrow.shootingDirection = 0;
 		} else if (attachingActor.direction == Direction.FORWARD) {
-			arrow.motionY = power;
+			arrow.motionY = motion;
 			arrow.shootingDirection = Math.PI / 2;
 		} else if (attachingActor.direction == Direction.BACK) {
-			arrow.motionY = -power;
+			arrow.motionY = -motion;
 			arrow.shootingDirection = (3 * Math.PI) / 2;
 		}
 
@@ -63,9 +66,6 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 			if (arrow.aliveTick >= ARROW_DROP_TICKS) {
 				arrow.motionX = 0;
 				arrow.motionY = 0;
-			} else {
-				arrow.motionX *= 0.8;
-				arrow.motionY *= 0.8;
 			}
 
 			if (arrow.aliveTick >= ARROW_DEAD_TICKS) {
@@ -83,12 +83,18 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 			const shooter = this.actorManager.getEntityById(arrow.shooter);
 
 			const collisions = this.actorManager.getActorCollisionWith(arrow, [shooter]);
-			collisions.forEach((collision) => {
-				if (collision.actor.canDamage) {
-					this.actorManager.damageActor(collision.actor, 10);
-				}
-			});
+			const damageTarget = collisions.find((collision) => collision.actor.canDamage);
+			if (damageTarget) {
+				this.arrowDamageActor(arrow, damageTarget.actor);
+				break;
+			}
 		}
+	}
+	private arrowDamageActor(arrow: Arrow, actor: Actor) {
+		this.actorManager.damageActor(actor, 10, arrow.shootingDirection, arrow.power);
+
+		arrow.aliveTick = ARROW_DEAD_TICKS;
+		this.updateEntity(arrow);
 	}
 	doTick() {
 		this.doAliveTick();

@@ -171,9 +171,9 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Manage
 	getEntityById(entityId: number): Readonly<K> {
 		return this.manager.getEntityById(entityId) as K;
 	}
-	protected updateEntity(entity: K): Readonly<K> {
+	protected updateEntity<M extends K | T>(entity: M): Readonly<M> {
 		const list = this.manager.getEntityList();
-		return list.update(entity) as K;
+		return list.update(entity) as M;
 	}
 	findEntity(query: ObjectQueryCondition<K>): Readonly<K> {
 		return this.manager.findEntity(query) as K;

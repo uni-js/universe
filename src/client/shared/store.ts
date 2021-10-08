@@ -94,4 +94,17 @@ export class InventoryBlockInfo extends Entity {
 	itemCount = 0;
 }
 
-export const DataStoreEntities = [PlayerInfo, ShortcutContainerInfo, InventoryBlockInfo];
+export class BowUsingInfo extends Entity {
+	isUsing = false;
+	/**
+	 * 力度, 从 0 到 1
+	 */
+	power = 0;
+
+	/**
+	 * 弓是否已经可以释放了
+	 */
+	canRelease = false;
+}
+
+export const DataStoreEntities = [PlayerInfo, ShortcutContainerInfo, InventoryBlockInfo, BowUsingInfo];

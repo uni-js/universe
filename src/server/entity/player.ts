@@ -32,6 +32,8 @@ export class Player extends Actor {
 		},
 	};
 
+	motionDecreaseRate = 0.75;
+
 	canDamage = true;
 
 	isPlayer = true;

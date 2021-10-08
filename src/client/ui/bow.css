@@ -1,0 +1,23 @@
+.bow-ui{
+    position: relative;
+    top: -10px;
+    display: flex;
+    justify-content: center;
+}
+.bow-ui-power{
+    height: 10px;
+    width: 300px;
+    background-color: rgba(255,255,255, 0.8);
+    border-radius: 5px;
+}
+.bow-ui-progress{
+    background-color: rgba(19, 72, 245, 0.8);
+    border-radius: 5px;
+    height: 100%;
+}
+.bow-ui-progress-release{
+    background-color: rgba(248, 68, 14, 0.8);
+}
+.bow-ui-progress-full{
+    background-color: rgba(226, 52, 39, 0.8);
+}

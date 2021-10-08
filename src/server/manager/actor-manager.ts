@@ -20,13 +20,21 @@ export class ActorManager extends EntityManager<Actor> {
 		super(actorList);
 	}
 
-	damageActor(actor: Actor, costHealth: number) {
+	/**
+	 * 伤害一个 actor
+	 * @param fromRad 伤害来自的角度, 弧度制, [0, 2*PI]
+	 * @param power 力度, 与长度同单位
+	 */
+	damageActor(actor: Actor, costHealth: number, fromRad: number, power = 1) {
 		if (actor.health - costHealth < 0) {
 			actor.health = 0;
 			//TODO: death
 		} else {
 			actor.health -= costHealth;
 		}
+
+		const knockBackMotion = Vector2.getVector2ByDistance(power, fromRad);
+		this.setMotion(actor.$loki, knockBackMotion);
 
 		this.actorList.update(actor);
 
@@ -250,8 +258,21 @@ export class ActorManager extends EntityManager<Actor> {
 		});
 
 		for (const actor of motionActors) {
+			const newMotion = new Vector2(actor.motionX, actor.motionY).mul(actor.motionDecreaseRate);
+
+			this.setMotion(actor.$loki, newMotion.getSqrt() > 0.1 ? newMotion : new Vector2(0, 0));
 			this.moveToPosition(actor, new Vector2(actor.posX + actor.motionX, actor.posY + actor.motionY));
 		}
+	}
+
+	private setMotion(actorId: number, motion: Vector2, motionRate?: number) {
+		const actor = this.actorList.findOne({ $loki: actorId });
+		actor.motionX = motion.x;
+		actor.motionY = motion.y;
+		if (motionRate !== undefined) {
+			actor.motionDecreaseRate = motionRate;
+		}
+		this.actorList.update(actor);
 	}
 
 	doTick(tick: number) {

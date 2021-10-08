@@ -44,7 +44,7 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 
 	damageActor(actorId: number, finalHealth: number) {
 		const actor = this.getObjectById(actorId);
-		actor.setHealth(finalHealth);
+		actor.damage(finalHealth);
 	}
 
 	async doTick(tick: number) {

@@ -83,8 +83,10 @@ export class ShortcutManager extends GameManager {
 		this.shortcut.currentIndexAt = indexAt;
 		this.shortcutStore.update(this.shortcut);
 
+		const block = this.blocksList.findOne({ containerType: ContainerType.SHORTCUT_CONTAINER, index: indexAt });
+
 		if (dirty) {
-			this.emit(GameEvent.SetShortcutIndexEvent, indexAt, this.shortcut.containerId);
+			this.emit(GameEvent.SetShortcutIndexEvent, indexAt, this.shortcut.containerId, block);
 		}
 	}
 

@@ -27,6 +27,7 @@ import { LandContainer, ActorStore, DataStore, DataStoreEntities, LandStore, UIE
 import { ActorFactory } from './shared/actor';
 import { ActorMapper } from './object';
 import { ShortcutController } from './controller/shortcut-controller';
+import { BowManager } from './manager/bow-manager';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -70,7 +71,7 @@ export class ClientApp {
 			width: this.worldWidth,
 			height: this.worldHeight,
 		});
-		this.managers = [ActorManager, LandManager, CursorManager, DefaultSceneManager, PlayerManager, ShortcutManager];
+		this.managers = [ActorManager, LandManager, CursorManager, DefaultSceneManager, PlayerManager, ShortcutManager, BowManager];
 		this.controllers = [ActorController, BootController, LandController, PlayerController, ShortcutController];
 
 		this.viewport = new Viewport(
@@ -155,7 +156,6 @@ export class ClientApp {
 		this.app.start();
 		this.renderUI();
 		this.startLoop();
-		console.log('start');
 	}
 	private renderUI() {
 		const dataSource = this.iocContainer.get(DataStore);
