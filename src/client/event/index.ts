@@ -4,4 +4,6 @@ export enum GameEvent {
 	ActorToggleWalkEvent = 'ActorToggleWalkEvent',
 	ActorToggleUsingEvent = 'ActorToggleUsingEvent',
 	SetShortcutIndexEvent = 'SetShortcutIndexEvent',
+	DropItemEvent = 'DropItemEvent',
+	PickItemEvent = 'PickItemEvent',
 }

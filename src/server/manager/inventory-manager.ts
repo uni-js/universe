@@ -14,6 +14,8 @@ import { EntityManager, UpdateOnlyCollection } from '../shared/manager';
 import { ItemDef, ItemDefList, ItemHoldAction, ItemType } from '../item';
 import { ActorManager } from './actor-manager';
 import { ActorFactory, AttachType } from '../actor/spec';
+import { DroppedItemActor } from '../entity/dropped-item';
+import { Vector2 } from '../shared/math';
 
 @injectable()
 export class InventoryManager extends EntityManager<Inventory> {
@@ -72,6 +74,9 @@ export class InventoryManager extends EntityManager<Inventory> {
 		if (container.containerType === ContainerType.SHORTCUT_CONTAINER) {
 			const shortcut = container as ShortcutContainer;
 			if (shortcut.currentIndex === index) this.updateHoldItem(shortcut);
+
+			const player = this.playerManager.getEntityById(shortcut.playerId);
+			this.sendBlockUpdateData(player, shortcut.$loki, index);
 		}
 
 		//TODO: notify this change
@@ -161,6 +166,21 @@ export class InventoryManager extends EntityManager<Inventory> {
 		this.emit(GameEvent.UpdateInventoryEvent, updateData, container, true, player);
 	}
 
+	sendBlockUpdateData(player: Player, containerId: number, indexAt: number) {
+		const container = this.containerList.findOne({ $loki: containerId });
+		const block = this.blocksList.findOne({ containerId, index: indexAt });
+
+		const updateData: ContainerUpdateData = { units: [] };
+
+		updateData.units.push({
+			index: block.index,
+			itemType: block.itemType,
+			count: block.itemCount,
+		});
+
+		this.emit(GameEvent.UpdateInventoryEvent, updateData, container, false, player);
+	}
+
 	private updateHoldItem(shortcut: ShortcutContainer) {
 		const player = this.playerManager.getEntityById(shortcut.playerId);
 		const block = this.getBlock(shortcut.$loki, shortcut.currentIndex);
@@ -187,6 +207,25 @@ export class InventoryManager extends EntityManager<Inventory> {
 
 		this.shortcutContainerList.update(container);
 		this.updateHoldItem(container);
+	}
+
+	dropContainerItem(containerId: number, indexAt: number, dropAtPos: Vector2) {
+		const block = this.blocksList.findOne({ containerId, index: indexAt });
+		if (block.itemType === ItemType.EMPTY) return;
+
+		const actor = new DroppedItemActor();
+		actor.itemType = block.itemType;
+		actor.posX = dropAtPos.x;
+		actor.posY = dropAtPos.y;
+
+		this.actorManager.addNewEntity(actor);
+		this.setBlock(containerId, indexAt, ItemType.EMPTY, 0);
+	}
+
+	getShortcut(player: Player): Readonly<ShortcutContainer> {
+		const inventory = this.getPlayerInventory(player);
+		const containerId = inventory.containers[0];
+		return this.containerList.findOne({ $loki: containerId }) as ShortcutContainer;
 	}
 
 	getPlayerInventory(player: Player) {

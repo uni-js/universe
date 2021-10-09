@@ -55,13 +55,12 @@ export class ShortcutManager extends GameManager {
 	}
 
 	/**
-	 * 批量设置全部格子的数据
+	 * 批量设置格子的数据
 	 */
-	updateBlocks(containerId: number, updateData: ContainerUpdateData) {
+	updateBlocks(containerId: number, updateData: ContainerUpdateData, isFullUpdate: boolean) {
 		this.shortcut.containerId = containerId;
 		this.shortcut.firstUpdated = true;
 
-		this.blocksList.removeWhere({ containerType: ContainerType.SHORTCUT_CONTAINER });
 		const blocks: InventoryBlockInfo[] = [];
 		for (const unit of updateData.units) {
 			const block = new InventoryBlockInfo();
@@ -74,7 +73,23 @@ export class ShortcutManager extends GameManager {
 		}
 
 		this.shortcutStore.update(this.shortcut);
-		this.blocksList.insert(blocks);
+		if (isFullUpdate) {
+			this.blocksList.removeWhere({ containerType: ContainerType.SHORTCUT_CONTAINER });
+			this.blocksList.insert(blocks);
+		} else {
+			blocks.forEach((block) => {
+				this.blocksList.findAndUpdate(
+					{
+						containerType: ContainerType.SHORTCUT_CONTAINER,
+						index: block.index,
+					},
+					(target) => {
+						target.itemType = block.itemType;
+						target.itemCount = block.itemCount;
+					},
+				);
+			});
+		}
 	}
 
 	setCurrentIndex(indexAt: number, dirty = true) {

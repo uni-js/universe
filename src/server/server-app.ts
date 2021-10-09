@@ -25,6 +25,7 @@ import { InventoryController } from './controller/inventory-controller';
 import { Actor, ActorFactory } from './actor/spec';
 import { ItemDef } from './item';
 import { ActorMapper } from './actor/mapper';
+import { PickDropController } from './controller/pick-drop-controller';
 
 export interface AppConfig {
 	port: number;
@@ -53,7 +54,14 @@ export class ServerApp {
 
 		this.entities = [Land, Actor, Brick, ItemDef, ...InventoryEntities];
 		this.managers = [LandManager, ActorManager, PlayerManager, LandMoveManager, BowManager, InventoryManager];
-		this.controllers = [ActorController, PlayerController, ConnectionController, LandController, InventoryController];
+		this.controllers = [
+			ActorController,
+			PlayerController,
+			ConnectionController,
+			LandController,
+			InventoryController,
+			PickDropController,
+		];
 
 		this.initDatabase();
 		this.initEventBus();

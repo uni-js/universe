@@ -30,3 +30,9 @@ export class ActorToggleUsingEvent extends RemoteEvent {
 		super();
 	}
 }
+
+export class DropItemEvent extends RemoteEvent {
+	constructor() {
+		super();
+	}
+}

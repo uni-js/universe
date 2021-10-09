@@ -21,7 +21,7 @@ export class ShortcutController {
 	};
 	private handleUpdateContainer = (event: UpdateContainer) => {
 		if (event.containerType == ContainerType.SHORTCUT_CONTAINER) {
-			this.shortcutManager.updateBlocks(event.containerId, event.updateData);
+			this.shortcutManager.updateBlocks(event.containerId, event.updateData, event.isFullUpdate);
 		}
 	};
 }

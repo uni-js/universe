@@ -8,6 +8,7 @@ export enum ActorType {
 	PLAYER = 'player',
 	BOW = 'bow',
 	ARROW = 'arrow',
+	DROPPED_ITEM = 'dropped_item',
 }
 
 export enum Direction {

@@ -275,6 +275,8 @@ export class ActorObject extends GameObject {
 		this.nametag && this.nametag.anchor.set(0.5, 0.5);
 	}
 	setTextures(textures: PIXI.Texture[]) {
+		if (textures.length <= 0) return;
+
 		this.sprite.textures = textures;
 		this.sprite.stop();
 		if (this.playing) {

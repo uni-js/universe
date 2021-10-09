@@ -12,7 +12,6 @@ import { LandManager } from './manager/land-manager';
 import { Container } from 'inversify';
 import { bindToContainer } from '../shared/ioc';
 import { CursorManager } from './manager/cursor-manager';
-import { DefaultSceneManager } from './manager/default-scene-manager';
 import { PlayerManager } from './manager/player-manager';
 import { ShortcutManager } from './manager/shortcut-manager';
 import { ActorController } from './controller/actor-controller';
@@ -28,6 +27,8 @@ import { ActorFactory } from './shared/actor';
 import { ActorMapper } from './object';
 import { ShortcutController } from './controller/shortcut-controller';
 import { BowManager } from './manager/bow-manager';
+import { PickDropManager } from './manager/pick-drop-manager';
+import { PickDropController } from './controller/pick-drop-controller';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -71,8 +72,8 @@ export class ClientApp {
 			width: this.worldWidth,
 			height: this.worldHeight,
 		});
-		this.managers = [ActorManager, LandManager, CursorManager, DefaultSceneManager, PlayerManager, ShortcutManager, BowManager];
-		this.controllers = [ActorController, BootController, LandController, PlayerController, ShortcutController];
+		this.managers = [ActorManager, LandManager, CursorManager, PlayerManager, ShortcutManager, BowManager, PickDropManager];
+		this.controllers = [ActorController, BootController, LandController, PlayerController, ShortcutController, PickDropController];
 
 		this.viewport = new Viewport(
 			this.worldWidth * this.resolution,
