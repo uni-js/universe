@@ -22,7 +22,7 @@ function start() {
 	if (Boolean(dbLocation) === false) throw new Error(`please provide env: DB_LOCATION`);
 
 	new ServerApp({
-		port: 7000,
+		port: 6100,
 		dbLocation,
 	});
 }

@@ -1,0 +1,15 @@
+FROM node:14
+
+ARG server_url
+ENV UNIVERSE_SERVER_URL ${server_url}
+
+WORKDIR /app
+
+COPY . .
+
+RUN yarn --registry=https://registry.npmmirror.com/
+RUN yarn build:client
+RUN yarn global add serve
+
+EXPOSE 5000
+CMD [ "serve", "-s", "web-dist" ]

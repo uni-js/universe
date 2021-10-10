@@ -1,0 +1,12 @@
+FROM node:14
+
+WORKDIR /app
+ENV DB_LOCATION=./data/
+
+COPY . .
+
+RUN yarn --registry=https://registry.npmmirror.com/
+RUN yarn build:server
+
+EXPOSE 6100
+CMD [ "node", "./lib/server/bootstrap" ]

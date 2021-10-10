@@ -17,7 +17,8 @@ export class EventBus extends EventEmitter {
 		super();
 
 		const isDebug = Boolean(process.env['DEBUG']);
-		const option = isDebug ? { cors: {} } : { cors: {}, parser: MsgPackParser };
+		const cors = { origin: '*', methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] };
+		const option = isDebug ? { cors } : { cors, parser: MsgPackParser };
 
 		this.server = new Server(option);
 		this.server.on('connect', this.handleConnection.bind(this));
