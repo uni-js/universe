@@ -7,7 +7,7 @@ export function bootstrap() {
 	const serverUrl = process.env.UNIVERSE_SERVER_URL;
 	const app = new ClientApp(serverUrl, playground, texturePaths);
 
-	console.log("Server URL is: ", serverUrl);
+	console.log('Server URL is: ', serverUrl);
 
 	app.start();
 }

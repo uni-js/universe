@@ -179,9 +179,9 @@ export class ActorManager extends EntityManager<Actor> {
 
 		actor.posX += delta.x;
 		actor.posY += delta.y;
-		if(!controlMove){
+		if (!controlMove) {
 			actor.isMoveDirty = true;
-		}else{
+		} else {
 			actor.isControlMoveDirty = true;
 		}
 
@@ -196,15 +196,15 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	private updateMoveDirty() {
-		const dirtyActors = this.actorList.find({ $or:[{isMoveDirty: true},{isControlMoveDirty: true}] });
+		const dirtyActors = this.actorList.find({ $or: [{ isMoveDirty: true }, { isControlMoveDirty: true }] });
 		for (const actor of dirtyActors) {
 			this.updateAttachment(actor.$loki);
 
-			if(actor.isMoveDirty){
+			if (actor.isMoveDirty) {
 				actor.isMoveDirty = false;
 				this.actorList.update(actor);
 				this.emit(GameEvent.NewPosEvent, actor.$loki, false);
-			}else if(actor.isControlMoveDirty){
+			} else if (actor.isControlMoveDirty) {
 				actor.isControlMoveDirty = false;
 				this.actorList.update(actor);
 				this.emit(GameEvent.NewPosEvent, actor.$loki, true);

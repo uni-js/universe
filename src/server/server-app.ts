@@ -43,7 +43,7 @@ export class ServerApp {
 
 	private actorFactory: ActorFactory;
 
-	private eventBus : IEventBus;
+	private eventBus: IEventBus;
 	private iocContainer: Container;
 
 	private config: AppConfig;

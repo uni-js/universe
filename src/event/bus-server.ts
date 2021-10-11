@@ -4,18 +4,18 @@ import { GetServerDebugDelay } from '../debug';
 import { EventEmitter } from '../server/shared/event';
 import { IRemoteEvent } from './event';
 
-const wait = (time: number) => new Promise(resolve => setTimeout(resolve, time));
+const wait = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 
 const MsgPackParser = require('socket.io-msgpack-parser');
 
-export const EventBusSymbol = Symbol()
+export const EventBusSymbol = Symbol();
 
 export const enum BusEvent {
 	ClientDisconnectEvent = 'ClientDisconnectEvent',
 	ClientConnectEvent = 'ClientConnectEvent',
 }
 
-export interface IEventBus extends EventEmitter{
+export interface IEventBus extends EventEmitter {
 	emitTo(connIds: string[], event: IRemoteEvent): void;
 	emitToAll(event: IRemoteEvent): void;
 	listen(port: number): void;
@@ -66,33 +66,33 @@ export class EventBus extends EventEmitter implements IEventBus {
 	}
 }
 
-export interface DelayedRequest{
+export interface DelayedRequest {
 	emitToAll: boolean;
 	connIds: string[];
 	event: IRemoteEvent;
 }
 
-export class DelayedEventBus extends EventEmitter implements IEventBus{
+export class DelayedEventBus extends EventEmitter implements IEventBus {
 	private eventBus: EventBus;
 	private requestQueue: DelayedRequest[] = [];
 	private consuming = false;
-	constructor(){
+	constructor() {
 		super();
 		this.eventBus = new EventBus();
-		this.eventBus.onAny((eventName, ...args)=>{
+		this.eventBus.onAny((eventName, ...args) => {
 			this.emit(eventName, ...args);
-		})
+		});
 		this.startConsuming();
 	}
-	private async startConsuming(){
+	private async startConsuming() {
 		this.consuming = true;
-		while(this.consuming){
-			while(this.requestQueue.length > 0){
+		while (this.consuming) {
+			while (this.requestQueue.length > 0) {
 				const request = this.requestQueue.shift();
-				if(request.emitToAll){
+				if (request.emitToAll) {
 					this.eventBus.emitToAll(request.event);
-				}else{
-					this.eventBus.emitTo(request.connIds, request.event);					
+				} else {
+					this.eventBus.emitTo(request.connIds, request.event);
 				}
 			}
 			await wait(GetServerDebugDelay());
@@ -103,18 +103,17 @@ export class DelayedEventBus extends EventEmitter implements IEventBus{
 		this.requestQueue.push({
 			emitToAll: false,
 			connIds,
-			event
-		})
+			event,
+		});
 	}
 	emitToAll(event: IRemoteEvent): void {
 		this.requestQueue.push({
 			emitToAll: true,
 			connIds: [],
-			event
-		})
+			event,
+		});
 	}
 	listen(port: number): void {
 		this.eventBus.listen(port);
 	}
-	
 }
