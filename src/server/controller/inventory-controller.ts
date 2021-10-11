@@ -1,4 +1,4 @@
-import { EventBus } from '../../event/bus-server';
+import { EventBus, EventBusSymbol } from '../../event/bus-server';
 import { Controller } from '../shared/controller';
 import { inject, injectable } from 'inversify';
 import { InventoryManager } from '../manager/inventory-manager';
@@ -11,7 +11,7 @@ import { SetShortcutIndexEvent } from '../../event/client-side';
 
 @injectable()
 export class InventoryController implements Controller {
-	constructor(@inject(EventBus) private eventBus: EventBus, @inject(InventoryManager) private inventoryManager: InventoryManager) {
+	constructor(@inject(EventBusSymbol) private eventBus: EventBus, @inject(InventoryManager) private inventoryManager: InventoryManager) {
 		this.inventoryManager.on(GameEvent.UpdateInventoryEvent, this.onUpdateInventoryEvent);
 
 		this.eventBus.on(SetShortcutIndexEvent.name, this.handleSetShortcutIndex);

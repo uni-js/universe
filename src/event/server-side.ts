@@ -4,7 +4,7 @@ import { ContainerType, ContainerUpdateData } from '../server/inventory';
 import { RemoteEvent } from './event';
 
 export class ActorNewPosEvent extends RemoteEvent {
-	constructor(public actorId: number, public x: number, public y: number) {
+	constructor(public actorId: number, public x: number, public y: number, public controlMove: boolean) {
 		super();
 	}
 }

@@ -91,6 +91,7 @@ export class Actor extends Entity {
 	canDamage = false;
 
 	isMoveDirty = false;
+	isControlMoveDirty = false;
 	isWalkDirty = false;
 
 	isActor = true;

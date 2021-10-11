@@ -1,16 +1,27 @@
 import { Server, Socket } from 'socket.io';
+import { GetServerDebugDelay } from '../debug';
 
 import { EventEmitter } from '../server/shared/event';
 import { IRemoteEvent } from './event';
 
+const wait = (time: number) => new Promise(resolve => setTimeout(resolve, time));
+
 const MsgPackParser = require('socket.io-msgpack-parser');
+
+export const EventBusSymbol = Symbol()
 
 export const enum BusEvent {
 	ClientDisconnectEvent = 'ClientDisconnectEvent',
 	ClientConnectEvent = 'ClientConnectEvent',
 }
 
-export class EventBus extends EventEmitter {
+export interface IEventBus extends EventEmitter{
+	emitTo(connIds: string[], event: IRemoteEvent): void;
+	emitToAll(event: IRemoteEvent): void;
+	listen(port: number): void;
+}
+
+export class EventBus extends EventEmitter implements IEventBus {
 	private server: Server;
 	private map = new Map<string, Socket>();
 	constructor() {
@@ -37,7 +48,7 @@ export class EventBus extends EventEmitter {
 
 		this.emit(BusEvent.ClientConnectEvent, conn.id);
 	}
-	getConnection(connId: string) {
+	private getConnection(connId: string) {
 		return this.map.get(connId);
 	}
 	emitTo(connIds: string[], event: IRemoteEvent) {
@@ -48,13 +59,62 @@ export class EventBus extends EventEmitter {
 		}
 	}
 	emitToAll(event: IRemoteEvent) {
-		for (const id of this.map.keys()) {
-			const conn = this.getConnection(id);
-			if (!conn) continue;
-			conn.emit(event.getEventName(), event.serialize());
-		}
+		this.emitTo(Array.from(this.map.keys()), event);
 	}
 	listen(port: number) {
 		this.server.listen(port);
 	}
+}
+
+export interface DelayedRequest{
+	emitToAll: boolean;
+	connIds: string[];
+	event: IRemoteEvent;
+}
+
+export class DelayedEventBus extends EventEmitter implements IEventBus{
+	private eventBus: EventBus;
+	private requestQueue: DelayedRequest[] = [];
+	private consuming = false;
+	constructor(){
+		super();
+		this.eventBus = new EventBus();
+		this.eventBus.onAny((eventName, ...args)=>{
+			this.emit(eventName, ...args);
+		})
+		this.startConsuming();
+	}
+	private async startConsuming(){
+		this.consuming = true;
+		while(this.consuming){
+			while(this.requestQueue.length > 0){
+				const request = this.requestQueue.shift();
+				if(request.emitToAll){
+					this.eventBus.emitToAll(request.event);
+				}else{
+					this.eventBus.emitTo(request.connIds, request.event);					
+				}
+			}
+			await wait(GetServerDebugDelay());
+		}
+	}
+
+	emitTo(connIds: string[], event: IRemoteEvent): void {
+		this.requestQueue.push({
+			emitToAll: false,
+			connIds,
+			event
+		})
+	}
+	emitToAll(event: IRemoteEvent): void {
+		this.requestQueue.push({
+			emitToAll: true,
+			connIds: [],
+			event
+		})
+	}
+	listen(port: number): void {
+		this.eventBus.listen(port);
+	}
+	
 }

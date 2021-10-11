@@ -6,7 +6,7 @@ import {
 	ActorSetWalkEvent,
 	ActorToggleUsing,
 } from '../../event/server-side';
-import { EventBus } from '../../event/bus-server';
+import { EventBus, EventBusSymbol } from '../../event/bus-server';
 import { ActorManager } from '../manager/actor-manager';
 import { PlayerManager } from '../manager/player-manager';
 import { Controller } from '../shared/controller';
@@ -18,7 +18,7 @@ import { ActorToggleUsingEvent } from '../../event/client-side';
 @injectable()
 export class ActorController implements Controller {
 	constructor(
-		@inject(EventBus) private eventBus: EventBus,
+		@inject(EventBusSymbol) private eventBus: EventBus,
 
 		@inject(ActorManager) private actorManager: ActorManager,
 		@inject(PlayerManager) private playerManager: PlayerManager,
@@ -79,10 +79,10 @@ export class ActorController implements Controller {
 		const event = new ActorSetWalkEvent(actorId, actor.direction, actor.running);
 		this.emitToActorSpawned(actorId, event);
 	}
-	private onNewPosEvent(actorId: number) {
+	private onNewPosEvent(actorId: number, controlMove: boolean) {
 		const actor = this.actorManager.getEntityById(actorId);
 
-		const event = new ActorNewPosEvent(actorId, actor.posX, actor.posY);
+		const event = new ActorNewPosEvent(actorId, actor.posX, actor.posY, controlMove);
 
 		this.emitToActorSpawned(actorId, event);
 	}

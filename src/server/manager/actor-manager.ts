@@ -171,7 +171,7 @@ export class ActorManager extends EntityManager<Actor> {
 		}
 	}
 
-	moveToPosition(actor: Actor, position: Vector2) {
+	moveToPosition(actor: Actor, position: Vector2, controlMove = false) {
 		const originPosX = actor.posX;
 		const originPosY = actor.posY;
 
@@ -179,7 +179,11 @@ export class ActorManager extends EntityManager<Actor> {
 
 		actor.posX += delta.x;
 		actor.posY += delta.y;
-		actor.isMoveDirty = true;
+		if(!controlMove){
+			actor.isMoveDirty = true;
+		}else{
+			actor.isControlMoveDirty = true;
+		}
 
 		const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
 		const lastLandPos = PosToLandPos(new Vector2(originPosX, originPosY));
@@ -192,13 +196,19 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	private updateMoveDirty() {
-		const dirtyActors = this.actorList.find({ isMoveDirty: true });
+		const dirtyActors = this.actorList.find({ $or:[{isMoveDirty: true},{isControlMoveDirty: true}] });
 		for (const actor of dirtyActors) {
 			this.updateAttachment(actor.$loki);
 
-			actor.isMoveDirty = false;
-			this.actorList.update(actor);
-			this.emit(GameEvent.NewPosEvent, actor.$loki);
+			if(actor.isMoveDirty){
+				actor.isMoveDirty = false;
+				this.actorList.update(actor);
+				this.emit(GameEvent.NewPosEvent, actor.$loki, false);
+			}else if(actor.isControlMoveDirty){
+				actor.isControlMoveDirty = false;
+				this.actorList.update(actor);
+				this.emit(GameEvent.NewPosEvent, actor.$loki, true);
+			}
 		}
 	}
 

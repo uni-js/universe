@@ -39,7 +39,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 
 		arrow.power = Math.min(useTick, BOW_DRAGGING_MAX_TICKS) / 20; //拉弓时间越长力度越大
 
-		const motion = arrow.power * 3;
+		const motion = arrow.power * 2;
 		if (attachingActor.direction == Direction.LEFT) {
 			arrow.motionX = -motion;
 			arrow.shootingDirection = Math.PI;

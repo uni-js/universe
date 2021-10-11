@@ -104,7 +104,7 @@ export class ActorController {
 		const pos = new Vector2(event.x, event.y);
 
 		if (isCurrentPlayer) {
-			if (pos.distanceTo(object.getPosition()) >= 0.2) {
+			if(!event.controlMove){
 				object.addMovePoint(pos);
 			}
 		} else {

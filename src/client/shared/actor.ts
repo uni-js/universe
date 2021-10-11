@@ -9,6 +9,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import { Factory, FactoryMapper } from '../../shared/factory';
 import { HealthBar } from '../object/health-bar';
 import { NameTag } from '../object/nametag';
+import { SERVER_TICKS_MULTIPLE } from '../../server/shared/server';
 
 /**
  * 用于平滑处理移动同步包
@@ -20,7 +21,7 @@ export class MoveInterpolator extends EventEmitter2 {
 	 */
 	private movePoints: Vector2[] = [];
 	private locatedAt = 0;
-	private perTicks = 3;
+	private perTicks = SERVER_TICKS_MULTIPLE;
 
 	constructor(private maxTick: number) {
 		super();

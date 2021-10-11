@@ -1,4 +1,4 @@
-import { EventBus } from '../../event/bus-server';
+import { EventBus, EventBusSymbol } from '../../event/bus-server';
 import { ActorToggleWalkEvent, LoginEvent, MovePlayerEvent } from '../../event/client-side';
 import { AddActorEvent, LoginedEvent, RemoveActorEvent } from '../../event/server-side';
 import { Player } from '../entity/player';
@@ -12,7 +12,7 @@ import { ActorManager } from '../manager/actor-manager';
 @injectable()
 export class PlayerController implements Controller {
 	constructor(
-		@inject(EventBus) private eventBus: EventBus,
+		@inject(EventBusSymbol) private eventBus: EventBus,
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(ActorManager) private actorManager: ActorManager,
 	) {
@@ -47,7 +47,7 @@ export class PlayerController implements Controller {
 	}
 	private handleMovePlayer(connId: string, event: MovePlayerEvent) {
 		const player = this.playerManager.findEntity({ connId });
-		this.actorManager.moveToPosition(player, new Vector2(event.x, event.y));
+		this.actorManager.moveToPosition(player, new Vector2(event.x, event.y), true);
 	}
 
 	doTick(): void {}

@@ -17,8 +17,8 @@ const compileTypeScript = ts.createProject(tsconfig.compilerOptions);
 const path = {
 	webDest: 'web-dist',
 	serverDest: 'lib',
-	sourceClient: ['src/?(client|server|shared|event)/**/*{.ts,.tsx,.css}'],
-	sourceServer: ['src/?(server|shared|event)/**/*.ts'],
+	sourceClient: ['src/?(client|debug|server|shared|event)/**/*{.ts,.tsx,.css}'],
+	sourceServer: ['src/?(server|debug|shared|event)/**/*.ts'],
 	entry: 'src/client/index.ts',
 	publicDir: 'public',
 	public: 'public/**/*',

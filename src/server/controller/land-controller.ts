@@ -1,4 +1,4 @@
-import { EventBus } from '../../event/bus-server';
+import { EventBus, EventBusSymbol } from '../../event/bus-server';
 import { AddLandEvent, RemoveLandEvent } from '../../event/server-side';
 import { Player } from '../entity/player';
 import { Controller } from '../shared/controller';
@@ -15,7 +15,7 @@ export class LandController implements Controller {
 	private loadWorker: TaskWorker<Vector2>;
 
 	constructor(
-		@inject(EventBus) private eventBus: EventBus,
+		@inject(EventBusSymbol) private eventBus: EventBus,
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(LandManager) private landManager: LandManager,
 	) {
