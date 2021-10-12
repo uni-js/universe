@@ -1,20 +1,15 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '../../event/bus-client';
-import { DropItemEvent } from '../../event/client-side';
-import { GameEvent } from '../event';
 import { PickDropManager } from '../manager/pick-drop-manager';
+import * as Events from '../event/internal';
+import * as ExternalEvents from '../event/external';
+import { GameController } from '../system/controller';
 
 @injectable()
-export class PickDropController {
-	constructor(
-		@inject(EventBusClient) private eventBus: EventBusClient,
-		@inject(PickDropManager) private pickDropManager: PickDropManager,
-	) {
-		this.pickDropManager.on(GameEvent.DropItemEvent, this.onDroppedItem);
-		this.pickDropManager.on(GameEvent.PickItemEvent, this.onPickingItem);
+export class PickDropController extends GameController {
+	constructor(@inject(EventBusClient) eventBus: EventBusClient, @inject(PickDropManager) private pickDropManager: PickDropManager) {
+		super(eventBus);
+
+		this.redirectToRemoteEvent(this.pickDropManager, Events.DropItemEvent, ExternalEvents.DropItemEvent);
 	}
-	private onPickingItem = () => {};
-	private onDroppedItem = () => {
-		this.eventBus.emitEvent(new DropItemEvent());
-	};
 }

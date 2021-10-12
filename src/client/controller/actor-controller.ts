@@ -16,19 +16,21 @@ import { TextureProvider } from '../texture';
 import { inject, injectable } from 'inversify';
 import { PlayerManager } from '../manager/player-manager';
 import { ActorFactory, ActorObject } from '../shared/actor';
-import { GameEvent } from '../event';
-import { ActorToggleUsingEvent, ActorToggleWalkEvent } from '../../event/client-side';
-import { Direction, RunningState } from '../../server/actor/spec';
+import { GameController } from '../system/controller';
+import * as Events from '../event/internal';
+import * as ExternalEvents from '../event/external';
 
 @injectable()
-export class ActorController {
+export class ActorController extends GameController {
 	constructor(
-		@inject(EventBusClient) private eventBus: EventBusClient,
+		@inject(EventBusClient) eventBus: EventBusClient,
 		@inject(ActorManager) private actorManager: ActorManager,
 		@inject(TextureProvider) private texture: TextureProvider,
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(ActorFactory) private actorFactory: ActorFactory,
 	) {
+		super(eventBus);
+
 		this.eventBus.on(AddActorEvent.name, this.handleActorAdded.bind(this));
 		this.eventBus.on(RemoveActorEvent.name, this.handleActorRemoved.bind(this));
 		this.eventBus.on(ActorNewPosEvent.name, this.handleActorNewPos.bind(this));
@@ -41,19 +43,22 @@ export class ActorController {
 
 		this.eventBus.on(ActorDamagedEvent.name, this.handleActorDamaged.bind(this));
 
-		this.actorManager.on(GameEvent.ActorToggleUsingEvent, this.onActorToggleUsing.bind(this));
-		this.actorManager.on(GameEvent.ActorToggleWalkEvent, this.onActorToggleWalk.bind(this));
+		this.redirectToRemoteEvent(this.actorManager, Events.ActorToggleUsingEvent, ExternalEvents.ActorToggleUsingEvent);
+
+		this.actorManager.onEvent(Events.ActorToggleWalkEvent, this.onActorToggleWalk.bind(this));
 	}
 
-	private onActorToggleWalk(actorId: number, running: RunningState, direction: Direction) {
+	private onActorToggleWalk(event: Events.ActorToggleWalkEvent) {
 		const player = this.playerManager.getCurrentPlayer();
-		if (!player || player.getServerId() !== actorId) return;
+		if (!player || player.getServerId() !== event.actorId) return;
 
-		this.eventBus.emitEvent(new ActorToggleWalkEvent(actorId, running, direction));
-	}
+		const exEvent = new ExternalEvents.ActorToggleWalkEvent();
+		exEvent.actorId = event.actorId;
+		exEvent.direction = event.direction;
+		exEvent.running = event.running;
+		exEvent.isExternal = true;
 
-	private onActorToggleUsing(actorId: number, startOrEnd: boolean) {
-		this.eventBus.emitEvent(new ActorToggleUsingEvent(actorId, startOrEnd));
+		this.eventBus.emitEvent(exEvent);
 	}
 
 	private handleActorToggleUsing(event: ActorToggleUsing) {

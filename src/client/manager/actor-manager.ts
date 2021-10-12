@@ -1,15 +1,15 @@
 import { inject, injectable } from 'inversify';
 import { Direction } from '../../server/actor/spec';
-import { GameEvent } from '../event';
 import { ActorObject } from '../shared/actor';
-import { GameObjectManager } from '../shared/manager';
+import { GameObjectManager } from '../system/manager';
 import { ActorStore, ActorContainer } from '../shared/store';
+import * as Events from '../event/internal';
 
 @injectable()
 export class ActorManager extends GameObjectManager<ActorObject> {
 	constructor(@inject(ActorStore) private actorStore: ActorStore, @inject(ActorContainer) private actorContainer: ActorContainer) {
 		super(actorStore, {
-			emitOutEvents: [GameEvent.ActorToggleUsingEvent, GameEvent.ActorToggleWalkEvent],
+			emitObjectEvents: [Events.ActorToggleUsingEvent, Events.ActorToggleWalkEvent],
 		});
 	}
 

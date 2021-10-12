@@ -1,8 +1,7 @@
 import * as PIXI from 'pixi.js';
 
 import { ActorType, AttachMapping, Direction, RunningState } from '../../server/actor/spec';
-import { GameEvent } from '../event';
-import { GameObject } from './game-object';
+import { GameObject } from '../system/game-object';
 import { GetEmptyTexture, TextureProvider } from '../texture';
 import { Interpolate2d, Vector2 } from '../../server/shared/math';
 import { EventEmitter2 } from 'eventemitter2';
@@ -10,6 +9,8 @@ import { Factory, FactoryMapper } from '../../shared/factory';
 import { HealthBar } from '../object/health-bar';
 import { NameTag } from '../object/nametag';
 import { SERVER_TICKS_MULTIPLE } from '../../server/shared/server';
+
+import * as Events from '../event/internal';
 
 /**
  * 用于平滑处理移动同步包
@@ -374,12 +375,16 @@ export class ActorObject extends GameObject {
 		this.healthBar && this.healthBar.doTick();
 
 		if (this.isUsingDirty) {
-			this.emit(GameEvent.ActorToggleUsingEvent, this.serverId, this.isUsing ? true : false);
+			this.emitEvent(Events.ActorToggleUsingEvent, { actorId: this.serverId, startOrEnd: this.isUsing ? true : false });
 			this.isUsingDirty = false;
 		}
 
 		if (this.isStatesDirty) {
-			this.emit(GameEvent.ActorToggleWalkEvent, this.serverId, this.getRunning(), this.getDirection());
+			this.emitEvent(Events.ActorToggleWalkEvent, {
+				actorId: this.serverId,
+				running: this.getRunning(),
+				direction: this.getDirection(),
+			});
 			this.isStatesDirty = false;
 		}
 	}

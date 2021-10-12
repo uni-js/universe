@@ -1,7 +1,7 @@
 import { EventEmitter2 } from 'eventemitter2';
 import { injectable } from 'inversify';
 import { io } from 'socket.io-client';
-import { IRemoteEvent } from './event';
+import { ExternalEvent } from '../client/system/event';
 
 /**
  * 这是将对象转换成二进制序列的Socket.IO解析器,极大降低了传输大小
@@ -22,7 +22,7 @@ export class EventBusClient extends EventEmitter2 {
 			this.emit(event, ...args);
 		});
 	}
-	emitEvent(event: IRemoteEvent) {
-		this.client.emit(event.getEventName(), event.serialize());
+	emitEvent(event: ExternalEvent) {
+		this.client.emit(event.constructor.name, event);
 	}
 }

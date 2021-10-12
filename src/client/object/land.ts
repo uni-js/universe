@@ -1,7 +1,7 @@
 import { LAND_WIDTH } from '../../server/land/const';
 import { LandData } from '../../server/land/types';
 import { Vector2 } from '../../server/shared/math';
-import { StaticObject } from '../shared/game-object';
+import { StaticObject } from '../system/game-object';
 import { TextureProvider } from '../texture';
 import { BRICK_WIDTH } from './brick';
 import { CompositeRectTileLayer } from '@pixi/tilemap';

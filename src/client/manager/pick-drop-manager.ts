@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
-import { GameEvent } from '../event';
 import { HTMLInputProvider, InputKey, InputProvider } from '../input';
-import { GameManager } from '../shared/manager';
+import { GameManager } from '../system/manager';
+import * as Events from '../event/internal';
 
 @injectable()
 export class PickDropManager extends GameManager {
@@ -10,7 +10,7 @@ export class PickDropManager extends GameManager {
 	}
 	async doTick() {
 		if (this.input.keyDown(InputKey.Q)) {
-			this.emit(GameEvent.DropItemEvent);
+			this.emitEvent(Events.DropItemEvent, {});
 		}
 	}
 }

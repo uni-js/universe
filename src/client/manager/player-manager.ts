@@ -1,14 +1,14 @@
 import { Vector2 } from '../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '../input';
-import { GameManager } from '../shared/manager';
+import { GameManager } from '../system/manager';
 import { Viewport } from '../viewport';
-import { AttachType, Direction, RunningState } from '../../server/actor/spec';
+import { AttachType } from '../../server/actor/spec';
 import { inject, injectable } from 'inversify';
-import { GameEvent } from '../event';
 import { injectCollection, NotLimitCollection } from '../../shared/database/memory';
 import { PlayerInfo, UIEventBus } from '../shared/store';
 import { Player } from '../object/player';
 import { ActorManager } from './actor-manager';
+import * as Events from '../event/internal';
 
 @injectable()
 export class PlayerManager extends GameManager {
@@ -36,13 +36,13 @@ export class PlayerManager extends GameManager {
 		this.playerInfo.playerName = 'Player';
 		this.gameInfoList.update(this.playerInfo);
 
-		player.on(GameEvent.ControlMovedEvent, this.onPlayerControlMoved);
+		player.onEvent(Events.ControlMovedEvent, this.onPlayerControlMoved);
 		player.setTakeControl();
 
 		this.currentPlayer = player;
 	}
-	private onPlayerControlMoved = (position: Vector2, direction: Direction, running: RunningState) => {
-		this.emit(GameEvent.ControlMovedEvent, position, direction, running);
+	private onPlayerControlMoved = (event: Events.ControlMovedEvent) => {
+		this.emitEvent(Events.ControlMovedEvent, event);
 	};
 
 	getCurrentPlayer() {

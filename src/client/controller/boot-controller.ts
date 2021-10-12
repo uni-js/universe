@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '../../event/bus-client';
-import { LoginEvent } from '../../event/client-side';
+import { LoginEvent } from '../event/external';
 
 @injectable()
 export class BootController {

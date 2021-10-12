@@ -1,10 +1,10 @@
 import { inject, injectable } from 'inversify';
 import { EventBus, EventBusSymbol } from '../../event/bus-server';
-import { DropItemEvent } from '../../event/client-side';
 import { InventoryManager } from '../manager/inventory-manager';
 import { PlayerManager } from '../manager/player-manager';
 import { Controller } from '../shared/controller';
 import { Vector2 } from '../shared/math';
+import * as ClientEvents from '../../client/event/external';
 
 @injectable()
 export class PickDropController implements Controller {
@@ -13,7 +13,7 @@ export class PickDropController implements Controller {
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(InventoryManager) private inventoryManager: InventoryManager,
 	) {
-		this.eventBus.on(DropItemEvent.name, this.handleDropItem);
+		this.eventBus.on(ClientEvents.DropItemEvent.name, this.handleDropItem);
 	}
 
 	private handleDropItem = (connId: string) => {

@@ -4,12 +4,12 @@ import { ItemType } from '../../server/item';
 import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../../server/manager/bow-manager';
 import { SERVER_TICKS_MULTIPLE } from '../../server/shared/server';
 import { injectCollection, NotLimitCollection } from '../../shared/database/memory';
-import { GameEvent } from '../event';
-import { GameManager } from '../shared/manager';
-import { BowUsingInfo, InventoryBlockInfo } from '../shared/store';
+import { GameManager } from '../system/manager';
+import { BowUsingInfo } from '../shared/store';
 import { ActorManager } from './actor-manager';
 import { PlayerManager } from './player-manager';
 import { ShortcutManager } from './shortcut-manager';
+import * as Events from '../event/internal';
 
 @injectable()
 export class BowManager extends GameManager {
@@ -26,15 +26,15 @@ export class BowManager extends GameManager {
 		this.bowUsingInfo = new BowUsingInfo();
 		this.bowInfoStore.insertOne(this.bowUsingInfo);
 
-		this.actorManager.on(GameEvent.ActorToggleUsingEvent, this.onActorToggleUsing);
-		this.shortcutManager.on(GameEvent.SetShortcutIndexEvent, this.onShortcutSetIndex);
+		this.actorManager.onEvent(Events.ActorToggleUsingEvent, this.onActorToggleUsing);
+		this.shortcutManager.onEvent(Events.SetShortcutIndexEvent, this.onShortcutSetIndex);
 	}
-	private onActorToggleUsing = (actorId: number, startOrEnd: boolean) => {
-		const actor = this.actorManager.getObjectById(actorId);
+	private onActorToggleUsing = (event: Events.ActorToggleUsingEvent) => {
+		const actor = this.actorManager.getObjectById(event.actorId);
 		if (actor.getActorType() !== ActorType.BOW) return;
 		if (actor.getAttaching().actorId !== this.playerManager.getCurrentPlayer().getServerId()) return;
 
-		if (startOrEnd) {
+		if (event.startOrEnd) {
 			this.bowUsingInfo.isUsing = true;
 		} else {
 			this.bowUsingInfo.isUsing = false;
@@ -44,8 +44,8 @@ export class BowManager extends GameManager {
 
 		this.bowInfoStore.update(this.bowUsingInfo);
 	};
-	private onShortcutSetIndex = (indexAt: number, containerId: number, block: InventoryBlockInfo) => {
-		if (block.itemType !== ItemType.BOW) {
+	private onShortcutSetIndex = (event: Events.SetShortcutIndexEvent) => {
+		if (event.itemType !== ItemType.BOW) {
 			this.bowUsingInfo.isUsing = false;
 			this.bowInfoStore.update(this.bowUsingInfo);
 		}

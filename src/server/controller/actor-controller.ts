@@ -13,7 +13,7 @@ import { Controller } from '../shared/controller';
 import { LandManager } from '../manager/land-manager';
 import { inject, injectable } from 'inversify';
 import { GameEvent } from '../event';
-import { ActorToggleUsingEvent } from '../../event/client-side';
+import * as ClientEvents from '../../client/event/external';
 
 @injectable()
 export class ActorController implements Controller {
@@ -24,7 +24,7 @@ export class ActorController implements Controller {
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(LandManager) private landManager: LandManager,
 	) {
-		this.eventBus.on(ActorToggleUsingEvent.name, this.handleActorToggleUsingEvent.bind(this));
+		this.eventBus.on(ClientEvents.ActorToggleUsingEvent.name, this.handleActorToggleUsingEvent.bind(this));
 
 		this.actorManager.on(GameEvent.NewPosEvent, this.onNewPosEvent.bind(this));
 		this.actorManager.on(GameEvent.AddEntityEvent, this.onActorAdded.bind(this));
@@ -47,7 +47,7 @@ export class ActorController implements Controller {
 		this.emitToActorSpawned(actorId, event);
 	}
 
-	private handleActorToggleUsingEvent(connId: string, event: ActorToggleUsingEvent) {
+	private handleActorToggleUsingEvent(connId: string, event: ClientEvents.ActorToggleUsingEvent) {
 		if (event.startOrEnd) {
 			this.actorManager.startUsing(event.actorId);
 		} else {

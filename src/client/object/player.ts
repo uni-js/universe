@@ -1,8 +1,8 @@
 import { BILLION_VALUE, Vector2 } from '../../server/shared/math';
 import { TextureProvider } from '../texture';
 import { ActorType, Direction, RunningState } from '../../server/actor/spec';
-import { GameEvent } from '../event';
 import { ActorCtorOption, ActorObject } from '../shared/actor';
+import * as Events from '../event/internal';
 
 export interface ControlMoved {
 	moved: Vector2;
@@ -68,7 +68,7 @@ export class Player extends ActorObject {
 			this.setPosition(target);
 			this.setRunning(RunningState.WALKING);
 
-			this.emit(GameEvent.ControlMovedEvent, target, this.direction, this.running);
+			this.emitEvent(Events.ControlMovedEvent, { posX: target.x, posY: target.y, direction: this.direction, running: this.running });
 		}
 		if (!this.controlMoved) {
 			if (this.takeControl) {

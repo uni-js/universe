@@ -5,9 +5,14 @@ import { Vector2 } from '../../server/shared/math';
 import { doTickable } from '../../shared/update';
 import { TextureProvider } from '../texture';
 
+export type ClassOf<T> = { new (...args: any[]): T };
+
 export interface IGameObject extends doTickable, PIXI.DisplayObject {
 	getLocalId(): number;
 	getServerId(): number;
+	onEvent<T>(eventClazz: ClassOf<T>, listener: (event: T) => void): void;
+	offEvent<T>(eventClazz: ClassOf<T>, listener: (event: T) => void): void;
+	emitEvent<T>(eventClazz: ClassOf<T>, event: T): void;
 	doTick(tick: number): Promise<void>;
 }
 
@@ -19,6 +24,17 @@ export class GameObject extends PIXI.Container implements IGameObject {
 	constructor(protected texture: TextureProvider, protected serverId?: number) {
 		super();
 		this.localId = -++GameObject.objectCount;
+	}
+
+	onEvent<T>(eventClazz: ClassOf<T>, listener: (event: T) => void) {
+		this.on(eventClazz.name, listener);
+	}
+	offEvent<T>(eventClazz: ClassOf<T>, listener: (event: T) => void) {
+		this.off(eventClazz.name, listener);
+	}
+
+	emitEvent<T>(eventClazz: ClassOf<T>, event: T) {
+		this.emit(eventClazz.name, event);
 	}
 	/**
 	 * 游戏对象的本地id

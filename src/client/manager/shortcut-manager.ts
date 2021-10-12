@@ -2,10 +2,10 @@ import { inject, injectable } from 'inversify';
 import { injectCollection, NotLimitCollection } from '../../shared/database/memory';
 import { ContainerUpdateData, ContainerUpdateDataUnit, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from '../../server/inventory';
 import { HTMLInputProvider, InputKey } from '../input';
-import { GameManager } from '../shared/manager';
+import { GameManager } from '../system/manager';
 import { ShortcutContainerInfo, InventoryBlockInfo } from '../shared/store';
 import { ItemType } from '../../server/item';
-import { GameEvent } from '../event';
+import * as Events from '../event/internal';
 
 @injectable()
 export class ShortcutManager extends GameManager {
@@ -101,7 +101,11 @@ export class ShortcutManager extends GameManager {
 		const block = this.blocksList.findOne({ containerType: ContainerType.SHORTCUT_CONTAINER, index: indexAt });
 
 		if (dirty) {
-			this.emit(GameEvent.SetShortcutIndexEvent, indexAt, this.shortcut.containerId, block);
+			this.emitEvent(Events.SetShortcutIndexEvent, {
+				itemType: block.itemType,
+				indexAt,
+				containerId: this.shortcut.containerId,
+			});
 		}
 	}
 

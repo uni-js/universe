@@ -1,18 +1,18 @@
-import { EventEmitter2 } from 'eventemitter2';
 import { HashedStore, HashItem } from '../../shared/store';
 import { doTickable } from '../../shared/update';
-import { IGameObject } from './game-object';
+import { GameEventEmitter, InternalEvent, ClassOf } from '../system/event';
+import { IGameObject } from '../system/game-object';
 
-export interface IGameManager extends doTickable, EventEmitter2 {}
+export interface IGameManager extends doTickable, GameEventEmitter {}
 
-export abstract class GameManager extends EventEmitter2 implements IGameManager {
+export abstract class GameManager extends GameEventEmitter implements IGameManager {
 	static canInjectCollection = true;
 
 	async doTick(tick: number): Promise<void> {}
 }
 
 export interface GameObjectManagerOption {
-	emitOutEvents: string[];
+	emitObjectEvents: ClassOf<InternalEvent>[];
 }
 
 /**
@@ -22,7 +22,7 @@ export class GameObjectManager<T extends IGameObject> extends GameManager {
 	constructor(
 		private objectStore: HashedStore<T>,
 		private option: GameObjectManagerOption = {
-			emitOutEvents: [],
+			emitObjectEvents: [],
 		},
 	) {
 		super();
@@ -31,9 +31,9 @@ export class GameObjectManager<T extends IGameObject> extends GameManager {
 	addGameObject(gameObject: T) {
 		this.objectStore.add(gameObject);
 
-		for (const event of this.option.emitOutEvents) {
-			gameObject.on(event, (...args) => {
-				this.emit(event, ...args);
+		for (const eventClazz of this.option.emitObjectEvents) {
+			gameObject.onEvent(eventClazz, (event: InternalEvent) => {
+				this.emitEvent(eventClazz, event);
 			});
 		}
 	}
