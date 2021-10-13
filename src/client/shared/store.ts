@@ -3,7 +3,7 @@ import { LandObject } from '../object/land';
 import { inject, injectable } from 'inversify';
 
 import * as PIXI from 'pixi.js';
-import { Entity, MemoryDatabase } from '../../shared/database/memory';
+import { Entity, MemoryDatabase } from '../../database/memory';
 import { EventEmitter } from '../../server/shared/event';
 import { ActorObject } from './actor';
 import { ContainerType } from '../../server/inventory';

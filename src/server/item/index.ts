@@ -1,4 +1,4 @@
-import { Entity } from '../../shared/database/memory';
+import { Entity } from '../../database/memory';
 import { ActorType } from '../actor/spec';
 
 export enum ItemType {

@@ -8,13 +8,13 @@ import { PlayerController } from './controller/player-controller';
 import { wait } from './utils';
 import { LandManager } from './manager/land-manager';
 import { ConnectionController } from './controller/connection-controller';
-import { createPersistDatabase, PersistDatabaseSymbol, IPersistDatabase } from '../shared/database/persist';
+import { createPersistDatabase, PersistDatabaseSymbol, IPersistDatabase } from '../database/persist';
 import { LandController } from './controller/land-controller';
 
 import { Container } from 'inversify';
 import { bindToContainer } from '../shared/ioc';
 import { Manager } from './shared/manager';
-import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../shared/database/memory';
+import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../database/memory';
 import { Land } from './entity/land';
 import { InventoryEntities } from './entity/inventory';
 import { Brick } from './entity/brick';

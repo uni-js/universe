@@ -1,4 +1,4 @@
-import { Entity } from '../../shared/database/memory';
+import { Entity } from '../../database/memory';
 import { BLOCKS_PER_PLAYER_INVENTORY_CONTAINER, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from '../../server/inventory';
 import { ItemType } from '../../server/item';
 

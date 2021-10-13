@@ -1,14 +1,14 @@
 import { EventBus, EventBusSymbol } from '../../event/bus-server';
-import { AddActorEvent, LoginedEvent, RemoveActorEvent } from '../../event/server-side';
-import { Player } from '../entity/player';
 import { PlayerManager } from '../manager/player-manager';
 import { Vector2 } from '../shared/math';
 import { Controller } from '../shared/controller';
 import { inject, injectable } from 'inversify';
-import { GameEvent } from '../event';
 import { ActorManager } from '../manager/actor-manager';
 
 import * as ClientEvents from '../../client/event/external';
+
+import * as Events from '../event/internal';
+import * as ExternalEvents from '../event/external';
 
 @injectable()
 export class PlayerController implements Controller {
@@ -21,8 +21,8 @@ export class PlayerController implements Controller {
 		this.eventBus.on(ClientEvents.ControlMovedEvent.name, this.handleMovePlayer.bind(this));
 		this.eventBus.on(ClientEvents.ActorToggleWalkEvent.name, this.handleActorToggleWalk.bind(this));
 
-		this.playerManager.on(GameEvent.SpawnActorEvent, this.onActorSpawned.bind(this));
-		this.playerManager.on(GameEvent.DespawnActorEvent, this.onActorDespawned.bind(this));
+		this.playerManager.onEvent(Events.SpawnActorEvent, this.onActorSpawned.bind(this));
+		this.playerManager.onEvent(Events.DespawnActorEvent, this.onActorDespawned.bind(this));
 	}
 	private handleActorToggleWalk(connId: string, event: ClientEvents.ActorToggleWalkEvent) {
 		const player = this.playerManager.findEntity({ connId });
@@ -30,20 +30,30 @@ export class PlayerController implements Controller {
 
 		this.actorManager.setWalkState(player.$loki, event.running, event.direction);
 	}
-	private onActorSpawned(actorId: number, player: Player, ctorOption: any) {
-		const actor = this.actorManager.getEntityById(actorId);
-		const event = new AddActorEvent(actor.type, actor.$loki, ctorOption);
+	private onActorSpawned(event: Events.SpawnActorEvent) {
+		const player = this.playerManager.getEntityById(event.fromPlayerId);
+		const actor = this.actorManager.getEntityById(event.actorId);
 
-		this.eventBus.emitTo([player.connId], event);
+		const exEvent = new ExternalEvents.AddActorEvent();
+		exEvent.type = actor.type;
+		exEvent.serverId = actor.$loki;
+		exEvent.ctorOption = event.ctorOption;
+
+		this.eventBus.emitTo([player.connId], exEvent);
 	}
-	private onActorDespawned(actorId: number, player: Player) {
-		const event = new RemoveActorEvent(actorId);
-		this.eventBus.emitTo([player.connId], event);
+	private onActorDespawned(event: Events.DespawnActorEvent) {
+		const player = this.playerManager.getEntityById(event.fromPlayerId);
+		const exEvent = new ExternalEvents.RemoveActorEvent();
+		exEvent.actorId = event.actorId;
+
+		this.eventBus.emitTo([player.connId], exEvent);
 	}
 	private handleLogin(connId: string) {
 		const player = this.playerManager.addNewPlayer(connId);
+		const event = new ExternalEvents.LoginedEvent();
+		event.actorId = player.$loki;
 
-		this.eventBus.emitTo([connId], new LoginedEvent(player.$loki));
+		this.eventBus.emitTo([connId], event);
 		console.log(`user logined :`, player.connId);
 	}
 	private handleMovePlayer(connId: string, event: ClientEvents.ControlMovedEvent) {

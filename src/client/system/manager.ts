@@ -1,6 +1,6 @@
 import { HashedStore, HashItem } from '../../shared/store';
 import { doTickable } from '../../shared/update';
-import { GameEventEmitter, InternalEvent, ClassOf } from '../system/event';
+import { GameEventEmitter, InternalEvent, ClassOf } from '../../event/spec';
 import { IGameObject } from '../system/game-object';
 
 export interface IGameManager extends doTickable, GameEventEmitter {}

@@ -1,14 +1,15 @@
 import { Land } from '../entity/land';
 import { EntityManager, UpdateOnlyCollection } from '../shared/manager';
 import { Vector2 } from '../shared/math';
-import { PersistDatabaseSymbol, IPersistDatabase } from '../../shared/database/persist';
+import { PersistDatabaseSymbol, IPersistDatabase } from '../../database/persist';
 import { spawn } from 'threads';
 
 import { BrickData, LandData } from '../land/types';
 import { inject, injectable } from 'inversify';
-import { NotLimitCollection, injectCollection } from '../../shared/database/memory';
+import { NotLimitCollection, injectCollection } from '../../database/memory';
 import { Brick } from '../entity/brick';
-import { GameEvent } from '../event';
+
+import * as Events from '../event/internal';
 
 export function BuildLandHash(pos: Vector2) {
 	return `land.${pos.x}.${pos.y}`;
@@ -68,7 +69,13 @@ export class LandManager extends EntityManager<Land> {
 		const land = this.getLand(landPos);
 		const landData = this.getLandData(landPos.x, landPos.y);
 
-		this.emit(GameEvent.LandDataToPlayer, playerId, land.$loki, land.landLocX, land.landLocY, landData);
+		this.emitEvent(Events.LandDataToPlayerEvent, {
+			playerId,
+			landId: land.$loki,
+			landPosX: land.landLocX,
+			landPosY: land.landLocY,
+			landData,
+		});
 	}
 
 	getLand(landPos: Vector2) {
@@ -109,7 +116,10 @@ export class LandManager extends EntityManager<Land> {
 		land.isLoading = false;
 		this.landList.update(land);
 
-		this.emit(GameEvent.LandLoaded, landPos);
+		this.emitEvent(Events.LandLoaded, {
+			landPosX: landPos.x,
+			landPosY: landPos.y,
+		});
 
 		console.debug(`加载 Land :(${landPos.x}:${landPos.y})`);
 	}
@@ -120,7 +130,9 @@ export class LandManager extends EntityManager<Land> {
 
 		this.removeLandBricks(landPos.x, landPos.y);
 
-		this.emit(GameEvent.LandUnloaded, land.$loki);
+		this.emitEvent(Events.LandUnloaded, {
+			landId: land.$loki,
+		});
 	}
 
 	getLandByLoc(landPos: Vector2) {

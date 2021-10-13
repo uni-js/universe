@@ -5,21 +5,23 @@ import { GetRadiusLands } from '../entity/land';
 import { inject, injectable } from 'inversify';
 import { ActorManager } from './actor-manager';
 import { Vector2 } from '../shared/math';
-import { GameEvent } from '../event';
 import { GetArrayDiff } from '../utils';
 import { GetPosByHash, GetPosHash } from '../../shared/land';
 import { GetCtorOptions } from '../shared/entity';
 
+import * as Events from '../event/internal';
+import { LandManager } from './land-manager';
+
 @injectable()
 export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
-	constructor(@inject(ActorManager) private actorManager: ActorManager) {
+	constructor(@inject(ActorManager) private actorManager: ActorManager, @inject(LandManager) private landManager: LandManager) {
 		super(actorManager, Player);
 
-		this.actorManager.on(GameEvent.NewPosEvent, this.onActorNewPos);
+		this.actorManager.onEvent(Events.NewPosEvent, this.onActorNewPos);
 	}
 
-	private onActorNewPos = (actorId: number) => {
-		const player = this.actorManager.getEntityById(actorId) as Player;
+	private onActorNewPos = (event: Events.NewPosEvent) => {
+		const player = this.actorManager.getEntityById(event.actorId) as Player;
 		if (!player.isPlayer) return;
 
 		this.updateUsedLands(player);
@@ -64,24 +66,27 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		this.addAtRecord(player, 'spawnedActors', actorId);
 		const ctorOption = GetCtorOptions(actor);
 
-		this.emit(GameEvent.SpawnActorEvent, actorId, player, ctorOption);
+		this.emitEvent(Events.SpawnActorEvent, { actorId, fromPlayerId: player.$loki, ctorOption });
 	}
 
 	despawnActor(player: Player, actorId: number) {
 		if (!this.hasAtRecord(player, 'spawnedActors', actorId)) return;
 
 		this.removeAtRecord(player, 'spawnedActors', actorId);
-		this.emit(GameEvent.DespawnActorEvent, actorId, player);
+		this.emitEvent(Events.DespawnActorEvent, { actorId, fromPlayerId: player.$loki });
 	}
 
 	useLand(player: Player, landHash: string) {
+		const landPos = GetPosByHash(landHash);
 		this.addAtRecord(player, 'usedLands', landHash);
-		this.emit(GameEvent.LandUsedEvent, player, GetPosByHash(landHash));
+		this.emitEvent(Events.LandUsedEvent, { playerId: player.$loki, landPosX: landPos.x, landPosY: landPos.y });
 	}
 
 	unuseLand(player: Player, landHash: string) {
+		const landPos = GetPosByHash(landHash);
+		const land = this.landManager.getLand(landPos);
 		this.removeAtRecord(player, 'usedLands', landHash);
-		this.emit(GameEvent.LandNeverUsedEvent, player, GetPosByHash(landHash));
+		this.emitEvent(Events.LandNeverUsedEvent, { playerId: player.$loki, landPosX: landPos.x, landPosY: landPos.y, landId: land.$loki });
 	}
 
 	private updateUsedLands(player: Player) {

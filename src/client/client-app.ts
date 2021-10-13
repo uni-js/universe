@@ -19,7 +19,7 @@ import { BootController } from './controller/boot-controller';
 import { LandController } from './controller/land-controller';
 import { PlayerController } from './controller/player-controller';
 import { UIEntry } from './ui/entry';
-import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase } from '../shared/database/memory';
+import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase } from '../database/memory';
 import { GameUI } from './ui/game-ui';
 
 import { LandContainer, ActorStore, DataStore, DataStoreEntities, LandStore, UIEventBus, ActorContainer } from './shared/store';

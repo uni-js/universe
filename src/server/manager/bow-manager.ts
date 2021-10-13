@@ -1,9 +1,10 @@
 import { inject, injectable } from 'inversify';
 import { ActorType, Direction, Actor } from '../actor/spec';
 import { Arrow, Bow } from '../entity/bow';
-import { GameEvent } from '../event';
 import { ExtendedEntityManager } from '../shared/manager';
 import { ActorManager } from './actor-manager';
+
+import * as Events from '../event/internal';
 
 export const ARROW_DROP_TICKS = 10;
 export const ARROW_DEAD_TICKS = 30;
@@ -15,14 +16,16 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 	constructor(@inject(ActorManager) private actorManager: ActorManager) {
 		super(actorManager, Bow);
 
-		this.actorManager.on(GameEvent.ActorToggleUsingEvent, this.onActorToggleUsing);
+		this.actorManager.onEvent(Events.ActorToggleUsingEvent, this.onActorToggleUsing);
 	}
-	private onActorToggleUsing = (actorId: number, startOrEnd: boolean, useTick: number, actor: Actor) => {
+	private onActorToggleUsing = (event: Events.ActorToggleUsingEvent) => {
+		const actor = this.actorManager.getEntityById(event.actorId);
 		if (actor.type != ActorType.BOW) return;
-		if (startOrEnd) {
+
+		if (event.startOrEnd) {
 			this.startDragging(actor);
 		} else {
-			this.endDragging(actor, useTick);
+			this.endDragging(actor, event.useTick);
 		}
 	};
 	private startDragging(actor: Actor) {}

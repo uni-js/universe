@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { injectCollection, NotLimitCollection } from '../../shared/database/memory';
+import { injectCollection, NotLimitCollection } from '../../database/memory';
 import { ContainerUpdateData, ContainerUpdateDataUnit, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from '../../server/inventory';
 import { HTMLInputProvider, InputKey } from '../input';
 import { GameManager } from '../system/manager';

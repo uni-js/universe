@@ -4,7 +4,7 @@ import { GameManager } from '../system/manager';
 import { Viewport } from '../viewport';
 import { AttachType } from '../../server/actor/spec';
 import { inject, injectable } from 'inversify';
-import { injectCollection, NotLimitCollection } from '../../shared/database/memory';
+import { injectCollection, NotLimitCollection } from '../../database/memory';
 import { PlayerInfo, UIEventBus } from '../shared/store';
 import { Player } from '../object/player';
 import { ActorManager } from './actor-manager';

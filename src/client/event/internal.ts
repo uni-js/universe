@@ -1,6 +1,6 @@
 import { Direction, RunningState } from '../../server/actor/spec';
 import { ItemType } from '../../server/item';
-import { InternalEvent } from '../system/event';
+import { InternalEvent } from '../../event/spec';
 
 export class ControlMovedEvent extends InternalEvent {
 	posX: number;

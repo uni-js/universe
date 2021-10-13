@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Entity, EntityQuery, IMemoryDatabase } from '../../shared/database/memory';
+import { Entity, EntityQuery, IMemoryDatabase } from '../../database/memory';
 import { UIEventBus } from '../shared/store';
 import { TextureProvider } from '../texture';
 

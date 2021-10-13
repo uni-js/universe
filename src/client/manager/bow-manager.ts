@@ -3,7 +3,7 @@ import { ActorType } from '../../server/actor/spec';
 import { ItemType } from '../../server/item';
 import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../../server/manager/bow-manager';
 import { SERVER_TICKS_MULTIPLE } from '../../server/shared/server';
-import { injectCollection, NotLimitCollection } from '../../shared/database/memory';
+import { injectCollection, NotLimitCollection } from '../../database/memory';
 import { GameManager } from '../system/manager';
 import { BowUsingInfo } from '../shared/store';
 import { ActorManager } from './actor-manager';

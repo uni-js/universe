@@ -1,10 +1,11 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '../../event/bus-client';
-import { AddLandEvent, RemoveLandEvent } from '../../event/server-side';
 import { Vector2 } from '../../server/shared/math';
 import { LandManager } from '../manager/land-manager';
 import { LandObject } from '../object/land';
 import { TextureProvider } from '../texture';
+
+import * as ServerEvents from '../../server/event/external';
 
 @injectable()
 export class LandController {
@@ -13,17 +14,19 @@ export class LandController {
 		@inject(LandManager) private landManager: LandManager,
 		@inject(TextureProvider) private texture: TextureProvider,
 	) {
-		this.eventBus.on(AddLandEvent.name, this.handleLandAdded);
-		this.eventBus.on(RemoveLandEvent.name, this.handleLandRemoved);
+		this.eventBus.on(ServerEvents.AddLandEvent.name, this.handleLandAdded);
+		this.eventBus.on(ServerEvents.RemoveLandEvent.name, this.handleLandRemoved);
 	}
-	private handleLandAdded = (event: AddLandEvent) => {
+	private handleLandAdded = (event: ServerEvents.AddLandEvent) => {
 		const pos = new Vector2(event.landX, event.landY);
 		const land = new LandObject(this.texture, event.landData, event.actorId, pos);
 		this.landManager.addGameObject(land);
+		console.log(`add new land:(${event.landX},${event.landY})`, event);
 	};
 
-	private handleLandRemoved = (event: RemoveLandEvent) => {
+	private handleLandRemoved = (event: ServerEvents.RemoveLandEvent) => {
 		const land = this.landManager.getObjectById(event.actorId);
 		this.landManager.removeGameObject(land);
+		console.log(`remove land:(${event.landX},${event.landY})`, event);
 	};
 }

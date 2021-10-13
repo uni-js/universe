@@ -1,14 +1,4 @@
 import { EventBusClient } from '../../event/bus-client';
-import {
-	ActorDamagedEvent,
-	ActorNewPosEvent,
-	ActorRemoveAttachment,
-	ActorSetAttachment,
-	ActorSetWalkEvent,
-	ActorToggleUsing,
-	AddActorEvent,
-	RemoveActorEvent,
-} from '../../event/server-side';
 import { Vector2 } from '../../server/shared/math';
 import { ActorManager } from '../manager/actor-manager';
 import { Player } from '../object/player';
@@ -17,6 +7,9 @@ import { inject, injectable } from 'inversify';
 import { PlayerManager } from '../manager/player-manager';
 import { ActorFactory, ActorObject } from '../shared/actor';
 import { GameController } from '../system/controller';
+
+import * as ServerEvents from '../../server/event/external';
+
 import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
 
@@ -31,17 +24,17 @@ export class ActorController extends GameController {
 	) {
 		super(eventBus);
 
-		this.eventBus.on(AddActorEvent.name, this.handleActorAdded.bind(this));
-		this.eventBus.on(RemoveActorEvent.name, this.handleActorRemoved.bind(this));
-		this.eventBus.on(ActorNewPosEvent.name, this.handleActorNewPos.bind(this));
-		this.eventBus.on(ActorSetWalkEvent.name, this.handleActorNewWalkState.bind(this));
+		this.eventBus.on(ServerEvents.AddActorEvent.name, this.handleActorAdded.bind(this));
+		this.eventBus.on(ServerEvents.RemoveActorEvent.name, this.handleActorRemoved.bind(this));
+		this.eventBus.on(ServerEvents.ActorNewPosEvent.name, this.handleActorNewPos.bind(this));
+		this.eventBus.on(ServerEvents.ActorSetWalkEvent.name, this.handleActorNewWalkState.bind(this));
 
-		this.eventBus.on(ActorSetAttachment.name, this.handleSetAttachment.bind(this));
-		this.eventBus.on(ActorRemoveAttachment.name, this.handleRemoveAttachment.bind(this));
+		this.eventBus.on(ServerEvents.ActorSetAttachment.name, this.handleSetAttachment.bind(this));
+		this.eventBus.on(ServerEvents.ActorRemoveAttachment.name, this.handleRemoveAttachment.bind(this));
 
-		this.eventBus.on(ActorToggleUsing.name, this.handleActorToggleUsing.bind(this));
+		this.eventBus.on(ServerEvents.ActorToggleUsing.name, this.handleActorToggleUsing.bind(this));
 
-		this.eventBus.on(ActorDamagedEvent.name, this.handleActorDamaged.bind(this));
+		this.eventBus.on(ServerEvents.ActorDamagedEvent.name, this.handleActorDamaged.bind(this));
 
 		this.redirectToRemoteEvent(this.actorManager, Events.ActorToggleUsingEvent, ExternalEvents.ActorToggleUsingEvent);
 
@@ -61,7 +54,7 @@ export class ActorController extends GameController {
 		this.eventBus.emitEvent(exEvent);
 	}
 
-	private handleActorToggleUsing(event: ActorToggleUsing) {
+	private handleActorToggleUsing(event: ServerEvents.ActorToggleUsing) {
 		const actor = this.actorManager.getObjectById(event.actorId);
 		if (event.startOrEnd) {
 			actor.startUsing(false);
@@ -70,7 +63,7 @@ export class ActorController extends GameController {
 		}
 	}
 
-	private handleSetAttachment(event: ActorSetAttachment) {
+	private handleSetAttachment(event: ServerEvents.ActorSetAttachment) {
 		const targetActor = this.actorManager.getObjectById(event.targetActorId);
 		const actor = this.actorManager.getObjectById(event.actorId);
 
@@ -78,18 +71,18 @@ export class ActorController extends GameController {
 		actor.setAttaching(event.key, event.targetActorId);
 	}
 
-	private handleRemoveAttachment(event: ActorRemoveAttachment) {
+	private handleRemoveAttachment(event: ServerEvents.ActorRemoveAttachment) {
 		const actor = this.actorManager.getObjectById(event.targetActorId);
 		actor.removeAttachment(event.key);
 	}
 
-	private handleActorAdded(event: AddActorEvent) {
+	private handleActorAdded(event: ServerEvents.AddActorEvent) {
 		const newActor = this.actorFactory.getNewObject(event.type, [event.serverId, event.ctorOption, this.texture]);
 		this.actorManager.addGameObject(newActor);
 
 		console.debug('Spawned', event.type, event.ctorOption, newActor);
 	}
-	private handleActorRemoved(event: RemoveActorEvent) {
+	private handleActorRemoved(event: ServerEvents.RemoveActorEvent) {
 		const object = this.actorManager.getObjectById(event.actorId);
 		console.debug('Despawned', event.actorId, event, object);
 
@@ -97,19 +90,19 @@ export class ActorController extends GameController {
 
 		this.actorManager.removeGameObject(object);
 	}
-	private handleActorNewWalkState(event: ActorSetWalkEvent) {
+	private handleActorNewWalkState(event: ServerEvents.ActorSetWalkEvent) {
 		const object = this.actorManager.getObjectById(event.actorId) as ActorObject;
 
 		object.setDirection(event.direction, false);
 		object.setRunning(event.running, false);
 	}
-	private handleActorNewPos(event: ActorNewPosEvent) {
+	private handleActorNewPos(event: ServerEvents.ActorNewPosEvent) {
 		const object = this.actorManager.getObjectById(event.actorId) as ActorObject;
 		const isCurrentPlayer = this.playerManager.isCurrentPlayer(object as Player);
-		const pos = new Vector2(event.x, event.y);
+		const pos = new Vector2(event.posX, event.posY);
 
 		if (isCurrentPlayer) {
-			if (!event.controlMove) {
+			if (!event.isControlMoved) {
 				object.addMovePoint(pos);
 			}
 		} else {
@@ -117,7 +110,7 @@ export class ActorController extends GameController {
 		}
 	}
 
-	private handleActorDamaged(event: ActorDamagedEvent) {
+	private handleActorDamaged(event: ServerEvents.ActorDamagedEvent) {
 		this.actorManager.damageActor(event.actorId, event.finalHealth);
 	}
 }

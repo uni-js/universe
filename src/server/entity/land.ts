@@ -1,6 +1,6 @@
 import { PosToLandPos } from '../land/helper';
 import { Vector2 } from '../shared/math';
-import { Entity } from '../../shared/database/memory';
+import { Entity } from '../../database/memory';
 import { RecordSet } from '../utils';
 
 /**

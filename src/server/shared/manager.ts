@@ -1,6 +1,6 @@
-import { Entity, NotLimitCollection } from '../../shared/database/memory';
-import { GameEvent } from '../event';
-import { EventEmitter } from '../shared/event';
+import { Entity, NotLimitCollection } from '../../database/memory';
+import { GameEventEmitter } from '../../event/spec';
+import * as Events from '../event/internal';
 
 export type ClassOf<T> = { new (...args: any[]): T };
 export type ObjectQueryCondition<T> = Partial<T & LokiObj> & Record<string, any>;
@@ -9,7 +9,7 @@ export interface IManager {
 	doTick(tick: number): void;
 }
 
-export class Manager extends EventEmitter implements IManager {
+export class Manager extends GameEventEmitter implements IManager {
 	doTick(tick: number): void {}
 }
 
@@ -117,14 +117,14 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 
 	addNewEntity(newEntity: T): Readonly<T> {
 		const insertedEntity = this.entityList.insertOne(newEntity);
-		this.emit(GameEvent.AddEntityEvent, insertedEntity.$loki, insertedEntity);
+		this.emitEvent(Events.AddEntityEvent, { entityId: insertedEntity.$loki, entity: insertedEntity });
 		return insertedEntity;
 	}
 
 	removeEntity(entity: T) {
 		const entityId = entity.$loki;
 		this.entityList.remove(entity);
-		this.emit(GameEvent.RemoveEntityEvent, entityId, entity);
+		this.emitEvent(Events.RemoveEntityEvent, { entityId: entityId, entity });
 	}
 
 	addAtRecord<R>(entity: T, propertyName: string, record: R, key?: string) {
@@ -191,7 +191,7 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Manage
 		const inserted = this.manager.addNewEntity(newEntity) as K;
 
 		if (inserted instanceof this.clazz) {
-			this.emit(GameEvent.AddEntityEvent, newEntity.$loki, newEntity);
+			this.emitEvent(Events.AddEntityEvent, { entityId: newEntity.$loki, entity: newEntity });
 		}
 		return inserted;
 	}
@@ -200,7 +200,7 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Manage
 		this.manager.removeEntity(entity);
 
 		if (entity instanceof this.clazz) {
-			this.emit(GameEvent.RemoveEntityEvent, entityId, entity);
+			this.emitEvent(Events.RemoveEntityEvent, { entityId, entity });
 		}
 	}
 

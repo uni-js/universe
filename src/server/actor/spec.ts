@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { Entity } from '../../shared/database/memory';
+import { Entity } from '../../database/memory';
 import { Factory } from '../../shared/factory';
 import { Attachment, CtorOption } from '../shared/entity';
 import { RecordMap } from '../utils';

@@ -2,7 +2,7 @@ import { Server, Socket } from 'socket.io';
 import { GetServerDebugDelay } from '../debug';
 
 import { EventEmitter } from '../server/shared/event';
-import { IRemoteEvent } from './event';
+import { ExternalEvent } from './spec';
 
 const wait = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 
@@ -16,8 +16,8 @@ export const enum BusEvent {
 }
 
 export interface IEventBus extends EventEmitter {
-	emitTo(connIds: string[], event: IRemoteEvent): void;
-	emitToAll(event: IRemoteEvent): void;
+	emitTo(connIds: string[], event: ExternalEvent): void;
+	emitToAll(event: ExternalEvent): void;
 	listen(port: number): void;
 }
 
@@ -51,14 +51,14 @@ export class EventBus extends EventEmitter implements IEventBus {
 	private getConnection(connId: string) {
 		return this.map.get(connId);
 	}
-	emitTo(connIds: string[], event: IRemoteEvent) {
+	emitTo(connIds: string[], event: ExternalEvent) {
 		for (const id of connIds) {
 			const conn = this.getConnection(id);
 			if (!conn) continue;
-			conn.emit(event.getEventName(), event.serialize());
+			conn.emit(event.constructor.name, event);
 		}
 	}
-	emitToAll(event: IRemoteEvent) {
+	emitToAll(event: ExternalEvent) {
 		this.emitTo(Array.from(this.map.keys()), event);
 	}
 	listen(port: number) {
@@ -69,7 +69,7 @@ export class EventBus extends EventEmitter implements IEventBus {
 export interface DelayedRequest {
 	emitToAll: boolean;
 	connIds: string[];
-	event: IRemoteEvent;
+	event: ExternalEvent;
 }
 
 export class DelayedEventBus extends EventEmitter implements IEventBus {
@@ -99,14 +99,14 @@ export class DelayedEventBus extends EventEmitter implements IEventBus {
 		}
 	}
 
-	emitTo(connIds: string[], event: IRemoteEvent): void {
+	emitTo(connIds: string[], event: ExternalEvent): void {
 		this.requestQueue.push({
 			emitToAll: false,
 			connIds,
 			event,
 		});
 	}
-	emitToAll(event: IRemoteEvent): void {
+	emitToAll(event: ExternalEvent): void {
 		this.requestQueue.push({
 			emitToAll: true,
 			connIds: [],

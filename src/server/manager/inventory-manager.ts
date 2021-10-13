@@ -7,15 +7,16 @@ import {
 	ContainerUpdateData,
 } from '../../server/inventory';
 import { PlayerManager } from './player-manager';
-import { injectCollection, NotLimitCollection } from '../../shared/database/memory';
+import { injectCollection, NotLimitCollection } from '../../database/memory';
 import { inject, injectable } from 'inversify';
-import { GameEvent } from '../event';
 import { EntityManager, UpdateOnlyCollection } from '../shared/manager';
 import { ItemDef, ItemDefList, ItemHoldAction, ItemType } from '../item';
 import { ActorManager } from './actor-manager';
 import { ActorFactory, AttachType } from '../actor/spec';
 import { DroppedItemActor } from '../entity/dropped-item';
 import { Vector2 } from '../shared/math';
+
+import * as Events from '../event/internal';
 
 @injectable()
 export class InventoryManager extends EntityManager<Inventory> {
@@ -36,8 +37,8 @@ export class InventoryManager extends EntityManager<Inventory> {
 	) {
 		super(inventoryList);
 
-		this.playerManager.on(GameEvent.AddEntityEvent, this.onPlayerAdded);
-		this.playerManager.on(GameEvent.RemoveEntityEvent, this.onPlayerRemoved);
+		this.playerManager.onEvent(Events.AddEntityEvent, this.onPlayerAdded);
+		this.playerManager.onEvent(Events.RemoveEntityEvent, this.onPlayerRemoved);
 
 		this.initItemDefList();
 	}
@@ -111,7 +112,8 @@ export class InventoryManager extends EntityManager<Inventory> {
 		return this.addNewEntity(inventory);
 	}
 
-	private onPlayerAdded = (actorId: number, player: Player) => {
+	private onPlayerAdded = (event: Events.AddEntityEvent) => {
+		const player = event.entity as Player;
 		const inventory = this.addNewPlayerInventory(player.$loki);
 
 		//HACK: remove in the future
@@ -119,8 +121,8 @@ export class InventoryManager extends EntityManager<Inventory> {
 		this.setBlock(inventory.containers[0], 0, ItemType.BOW, 1);
 		this.sendInventoryUpdateData(player, inventory.$loki);
 	};
-	private onPlayerRemoved = (actorId: number, player: Player) => {
-		const invetory = this.playerInventoryList.findOne({ playerId: actorId });
+	private onPlayerRemoved = (event: Events.RemoveEntityEvent) => {
+		const invetory = this.playerInventoryList.findOne({ playerId: event.entityId });
 		this.removeInventory(invetory.$loki);
 	};
 
@@ -163,7 +165,13 @@ export class InventoryManager extends EntityManager<Inventory> {
 			});
 		}
 
-		this.emit(GameEvent.UpdateInventoryEvent, updateData, container, true, player);
+		this.emitEvent(Events.UpdateContainer, {
+			playerId: player.$loki,
+			containerType: container.containerType,
+			updateData,
+			containerId,
+			isFullUpdate: true,
+		});
 	}
 
 	sendBlockUpdateData(player: Player, containerId: number, indexAt: number) {
@@ -178,7 +186,13 @@ export class InventoryManager extends EntityManager<Inventory> {
 			count: block.itemCount,
 		});
 
-		this.emit(GameEvent.UpdateInventoryEvent, updateData, container, false, player);
+		this.emitEvent(Events.UpdateContainer, {
+			playerId: player.$loki,
+			containerType: container.containerType,
+			updateData,
+			containerId,
+			isFullUpdate: false,
+		});
 	}
 
 	private updateHoldItem(shortcut: ShortcutContainer) {

@@ -1,4 +1,39 @@
 import { EventEmitter2 } from 'eventemitter2';
+import { GetAllMethodsOfObject } from '../utils';
+
+export type ClassOf<T> = { new (...args: any[]): T };
+
+export class InternalEvent {}
+
+export class ExternalEvent extends InternalEvent {
+	isExternal = true;
+}
+
+export interface EventBound {
+	eventClass: ClassOf<ExternalEvent>;
+	bindToMethod: (event: ExternalEvent) => void;
+}
+
+export const HANDLE_EVENT_LISTENER = Symbol();
+
+/**
+ * 该装饰器用于Controller, 添加一个指定事件的监听器并绑定到被修饰的方法
+ *
+ * @param eventClazz 指定的事件类
+ */
+export function HandleEvent<T extends InternalEvent>(eventClazz: ClassOf<T>) {
+	return Reflect.metadata(HANDLE_EVENT_LISTENER, eventClazz);
+}
+
+export function GetHandledEventBounds(object: any): EventBound[] {
+	const methods = GetAllMethodsOfObject(object);
+	const bounds: EventBound[] = [];
+	for (const method of methods) {
+		const clazz = Reflect.getMetadata(HANDLE_EVENT_LISTENER, object, method);
+		bounds.push({ eventClass: clazz, bindToMethod: object[method] });
+	}
+	return bounds;
+}
 
 export function CopyOwnPropertiesTo(from: any, target: any) {
 	const names = Object.getOwnPropertyNames(from);
@@ -7,7 +42,7 @@ export function CopyOwnPropertiesTo(from: any, target: any) {
 	}
 }
 
-export function ConvertInternalToExternalEvent<I extends InternalEvent, E extends ExternalEvent & InternalEvent>(
+export function ConvertInternalToExternalEvent<I extends InternalEvent, E extends ExternalEvent>(
 	internalEvent: I,
 	internalEventClazz: ClassOf<I>,
 	externalEventClazz: ClassOf<E>,
@@ -16,14 +51,6 @@ export function ConvertInternalToExternalEvent<I extends InternalEvent, E extend
 	exEvent.isExternal = true;
 	CopyOwnPropertiesTo(internalEvent, exEvent);
 	return exEvent;
-}
-
-export type ClassOf<T> = { new (...args: any[]): T };
-
-export class InternalEvent {}
-
-export class ExternalEvent extends InternalEvent {
-	isExternal = true;
 }
 
 export class GameEventEmitter extends EventEmitter2 {

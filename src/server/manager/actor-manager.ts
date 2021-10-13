@@ -3,11 +3,12 @@ import SAT from 'sat';
 import { Attachment } from '../shared/entity';
 import { EntityManager, UpdateOnlyCollection } from '../shared/manager';
 import { injectable } from 'inversify';
-import { injectCollection } from '../../shared/database/memory';
-import { GameEvent } from '../event';
+import { injectCollection } from '../../database/memory';
 import { Vector2 } from '../shared/math';
 import { PosToLandPos } from '../land/helper';
 import { Direction, RunningState, Actor } from '../actor/spec';
+
+import * as Events from '../event/internal';
 
 export interface CollisionResult {
 	actor: Actor;
@@ -38,7 +39,7 @@ export class ActorManager extends EntityManager<Actor> {
 
 		this.actorList.update(actor);
 
-		this.emit(GameEvent.ActorDamagedEvent, actor.$loki, actor.health);
+		this.emitEvent(Events.ActorDamagedEvent, { actorId: actor.$loki, finalHealth: actor.health });
 	}
 
 	getActorBoundingBox(actor: Actor): [number, number, number, number] {
@@ -101,7 +102,12 @@ export class ActorManager extends EntityManager<Actor> {
 		actor.attaching = { key, actorId: targetActorId };
 
 		this.updateAttachment(targetActorId);
-		this.emit(GameEvent.ActorSetAttachment, targetActor.$loki, key, actorId);
+
+		this.emitEvent(Events.ActorSetAttachment, {
+			targetActorId: targetActor.$loki,
+			key,
+			actorId,
+		});
 	}
 
 	getAttachment(targetActorId: number, key: string) {
@@ -118,7 +124,7 @@ export class ActorManager extends EntityManager<Actor> {
 		const actor = this.actorList.findOne({ $loki: targetActorId });
 		this.removeAtRecord(actor, 'attachments', key);
 
-		this.emit(GameEvent.ActorRemoveAttachment, actor.$loki, key);
+		this.emitEvent(Events.ActorRemoveAttachment, { actorId: actor.$loki, key });
 	}
 
 	clearAttachments(targetActorId: number, removeActors = false) {
@@ -149,7 +155,7 @@ export class ActorManager extends EntityManager<Actor> {
 
 		this.actorList.update(actor);
 
-		this.emit(GameEvent.ActorToggleUsingEvent, actorId, true, 0, actor);
+		this.emitEvent(Events.ActorToggleUsingEvent, { actorId, startOrEnd: true, useTick: 0 });
 	}
 
 	endUsing(actorId: number) {
@@ -161,7 +167,7 @@ export class ActorManager extends EntityManager<Actor> {
 
 		this.actorList.update(actor);
 
-		this.emit(GameEvent.ActorToggleUsingEvent, actorId, false, useTick, actor);
+		this.emitEvent(Events.ActorToggleUsingEvent, { actorId, startOrEnd: false, useTick });
 	}
 	removeEntity<T extends Actor>(actor: T): void {
 		super.removeEntity.call(this, actor);
@@ -190,7 +196,13 @@ export class ActorManager extends EntityManager<Actor> {
 		const landDelta = landPos.sub(lastLandPos);
 
 		if (landDelta.getSqrt() > 0) {
-			this.emit(GameEvent.LandMoveEvent, actor.$loki, landPos, lastLandPos);
+			this.emitEvent(Events.LandMoveEvent, {
+				actorId: actor.$loki,
+				targetLandPosX: landPos.x,
+				targetLandPosY: landPos.y,
+				sourceLandPosX: lastLandPos.x,
+				sourceLandPosY: lastLandPos.y,
+			});
 		}
 		this.actorList.update(actor);
 	}
@@ -203,11 +215,23 @@ export class ActorManager extends EntityManager<Actor> {
 			if (actor.isMoveDirty) {
 				actor.isMoveDirty = false;
 				this.actorList.update(actor);
-				this.emit(GameEvent.NewPosEvent, actor.$loki, false);
+
+				this.emitEvent(Events.NewPosEvent, {
+					actorId: actor.$loki,
+					isControlMoved: false,
+					posX: actor.posX,
+					posY: actor.posY,
+				});
 			} else if (actor.isControlMoveDirty) {
 				actor.isControlMoveDirty = false;
 				this.actorList.update(actor);
-				this.emit(GameEvent.NewPosEvent, actor.$loki, true);
+
+				this.emitEvent(Events.NewPosEvent, {
+					actorId: actor.$loki,
+					isControlMoved: true,
+					posX: actor.posX,
+					posY: actor.posY,
+				});
 			}
 		}
 	}
@@ -217,7 +241,9 @@ export class ActorManager extends EntityManager<Actor> {
 		for (const actor of dirtyActors) {
 			actor.isWalkDirty = false;
 			this.actorList.update(actor);
-			this.emit(GameEvent.NewWalkStateEvent, actor.$loki);
+			this.emitEvent(Events.NewWalkStateEvent, {
+				actorId: actor.$loki,
+			});
 		}
 	}
 
