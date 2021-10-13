@@ -10,27 +10,33 @@ export class ExternalEvent extends InternalEvent {
 }
 
 export interface EventBound {
-	eventClass: ClassOf<ExternalEvent>;
-	bindToMethod: (event: ExternalEvent) => void;
+	bindToMethod: (...args: any[]) => void;
+	eventClass: ClassOf<any>;
+	[key: string]: any;
 }
 
-export const HANDLE_EVENT_LISTENER = Symbol();
+export const EXTERNAL_EVENT_HANDLER = Symbol();
+export const INTERNAL_EVENT_HANDLER = Symbol();
 
 /**
  * 该装饰器用于Controller, 添加一个指定事件的监听器并绑定到被修饰的方法
  *
  * @param eventClazz 指定的事件类
  */
-export function HandleEvent<T extends InternalEvent>(eventClazz: ClassOf<T>) {
-	return Reflect.metadata(HANDLE_EVENT_LISTENER, eventClazz);
+export function HandleExternalEvent<T extends ExternalEvent>(eventClazz: ClassOf<T>) {
+	return Reflect.metadata(EXTERNAL_EVENT_HANDLER, { eventClazz });
 }
 
-export function GetHandledEventBounds(object: any): EventBound[] {
+export function HandleInternalEvent<T extends InternalEvent>(emitterPropertyName: string, eventClazz: ClassOf<T>) {
+	return Reflect.metadata(INTERNAL_EVENT_HANDLER, { emitterPropertyName, eventClazz });
+}
+
+export function GetHandledEventBounds(object: any, sign: symbol): EventBound[] {
 	const methods = GetAllMethodsOfObject(object);
 	const bounds: EventBound[] = [];
 	for (const method of methods) {
-		const clazz = Reflect.getMetadata(HANDLE_EVENT_LISTENER, object, method);
-		bounds.push({ eventClass: clazz, bindToMethod: object[method] });
+		const metadata = Reflect.getMetadata(sign, object, method);
+		if (metadata !== undefined) bounds.push({ bindToMethod: object[method], eventClass: metadata.eventClazz, ...metadata });
 	}
 	return bounds;
 }
@@ -54,6 +60,8 @@ export function ConvertInternalToExternalEvent<I extends InternalEvent, E extend
 }
 
 export class GameEventEmitter extends EventEmitter2 {
+	isGameEventEmitter = true;
+
 	onEvent<T extends InternalEvent>(eventClazz: ClassOf<T>, listener: (event: T) => void) {
 		this.on(eventClazz.name, listener);
 	}

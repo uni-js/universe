@@ -1,5 +1,6 @@
 export function GetAllMethodsOfObject(object: any) {
-	return Object.getOwnPropertyNames(object).filter(function (property) {
+	const prototype = Object.getPrototypeOf(object);
+	return Object.getOwnPropertyNames(prototype).filter(function (property) {
 		return typeof object[property] == 'function';
 	});
 }

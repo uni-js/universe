@@ -1,5 +1,5 @@
 import { EventBus, EventBusSymbol } from '../../event/bus-server';
-import { Controller } from '../shared/controller';
+import { ServerController } from '../shared/controller';
 import { PlayerManager } from '../manager/player-manager';
 import { inject, injectable } from 'inversify';
 import { LandManager } from '../manager/land-manager';
@@ -8,28 +8,28 @@ import { TaskWorker } from '../utils';
 
 import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
+import { HandleInternalEvent } from '../../event/spec';
 
 @injectable()
-export class LandController implements Controller {
+export class LandController extends ServerController {
 	private loadWorker: TaskWorker<Vector2>;
 
 	constructor(
-		@inject(EventBusSymbol) private eventBus: EventBus,
+		@inject(EventBusSymbol) eventBus: EventBus,
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(LandManager) private landManager: LandManager,
 	) {
-		this.playerManager.onEvent(Events.LandUsedEvent, this.onLandUsedEvent);
-		this.playerManager.onEvent(Events.LandNeverUsedEvent, this.onLandNeverUsedEvent);
+		super(eventBus);
 
-		this.landManager.onEvent(Events.LandLoaded, this.onLandLoaded);
-		this.landManager.onEvent(Events.LandDataToPlayerEvent, this.onLandDataToPlayer);
-
-		this.loadWorker = new TaskWorker(this.onLoadTask);
+		this.loadWorker = new TaskWorker(this.onLoadTask.bind(this));
 	}
-	private onLoadTask = async (landPos: Vector2) => {
+
+	private async onLoadTask(landPos: Vector2) {
 		await this.landManager.loadLand(landPos);
-	};
-	private onLandDataToPlayer = (event: Events.LandDataToPlayerEvent) => {
+	}
+
+	@HandleInternalEvent('landManager', Events.LandDataToPlayerEvent)
+	private onLandDataToPlayer(event: Events.LandDataToPlayerEvent) {
 		const player = this.playerManager.getEntityById(event.playerId);
 
 		const exEvent = new ExternalEvents.AddLandEvent();
@@ -39,8 +39,10 @@ export class LandController implements Controller {
 		exEvent.actorId = event.landId;
 
 		this.eventBus.emitTo([player.connId], exEvent);
-	};
-	private onLandLoaded = (event: Events.LandLoaded) => {
+	}
+
+	@HandleInternalEvent('landManager', Events.LandLoaded)
+	private onLandLoaded(event: Events.LandLoaded) {
 		const players = this.playerManager.getAllEntities();
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 
@@ -49,8 +51,10 @@ export class LandController implements Controller {
 
 			this.landManager.sendLandDataToPlayer(player.$loki, landPos);
 		}
-	};
-	private onLandUsedEvent = (event: Events.LandUsedEvent) => {
+	}
+
+	@HandleInternalEvent('playerManager', Events.LandUsedEvent)
+	private onLandUsedEvent(event: Events.LandUsedEvent) {
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 
 		if (this.landManager.isLandLoaded(landPos)) {
@@ -58,8 +62,10 @@ export class LandController implements Controller {
 		} else {
 			this.loadWorker.addTask(landPos);
 		}
-	};
-	private onLandNeverUsedEvent = (event: Events.LandNeverUsedEvent) => {
+	}
+
+	@HandleInternalEvent('playerManager', Events.LandNeverUsedEvent)
+	private onLandNeverUsedEvent(event: Events.LandNeverUsedEvent) {
 		const player = this.playerManager.getEntityById(event.playerId);
 
 		const exEvent = new ExternalEvents.RemoveLandEvent();
@@ -68,7 +74,8 @@ export class LandController implements Controller {
 		exEvent.landY = event.landPosY;
 
 		this.eventBus.emitTo([player.connId], exEvent);
-	};
+	}
+
 	doTick() {
 		this.loadWorker.doTick();
 	}

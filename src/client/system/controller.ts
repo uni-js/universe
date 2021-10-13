@@ -1,5 +1,12 @@
 import { EventBusClient } from '../../event/bus-client';
-import { ConvertInternalToExternalEvent, ExternalEvent, GameEventEmitter, GetHandledEventBounds, InternalEvent } from '../../event/spec';
+import {
+	ConvertInternalToExternalEvent,
+	ExternalEvent,
+	GameEventEmitter,
+	GetHandledEventBounds,
+	InternalEvent,
+	EXTERNAL_EVENT_HANDLER,
+} from '../../event/spec';
 
 export type ClassOf<T> = { new (...args: any[]): T };
 
@@ -11,13 +18,13 @@ export class GameController extends GameEventEmitter {
 	constructor(protected eventBus: EventBusClient) {
 		super();
 
-		this.initHandledEvents();
+		this.initExternalHandledEvents();
 	}
 
-	private initHandledEvents() {
-		const bounds = GetHandledEventBounds(this);
+	private initExternalHandledEvents() {
+		const bounds = GetHandledEventBounds(this, EXTERNAL_EVENT_HANDLER);
 		for (const bound of bounds) {
-			this.onEvent(bound.eventClass, bound.bindToMethod);
+			this.eventBus.onEvent(bound.eventClass, bound.bindToMethod.bind(this));
 		}
 	}
 
@@ -31,7 +38,7 @@ export class GameController extends GameEventEmitter {
 	) {
 		from.onEvent(internalEvent, (event: I) => {
 			const remoteEvent = ConvertInternalToExternalEvent(event, internalEvent, externalEvent);
-			this.eventBus.emitEvent(remoteEvent);
+			this.eventBus.emitBusEvent(remoteEvent);
 		});
 	}
 }

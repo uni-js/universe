@@ -6,24 +6,28 @@ import { LandObject } from '../object/land';
 import { TextureProvider } from '../texture';
 
 import * as ServerEvents from '../../server/event/external';
+import { HandleExternalEvent } from '../../event/spec';
+import { GameController } from '../system/controller';
 
 @injectable()
-export class LandController {
+export class LandController extends GameController {
 	constructor(
-		@inject(EventBusClient) private eventBus: EventBusClient,
+		@inject(EventBusClient) eventBus: EventBusClient,
 		@inject(LandManager) private landManager: LandManager,
 		@inject(TextureProvider) private texture: TextureProvider,
 	) {
-		this.eventBus.on(ServerEvents.AddLandEvent.name, this.handleLandAdded);
-		this.eventBus.on(ServerEvents.RemoveLandEvent.name, this.handleLandRemoved);
+		super(eventBus);
 	}
-	private handleLandAdded = (event: ServerEvents.AddLandEvent) => {
+
+	@HandleExternalEvent(ServerEvents.AddLandEvent)
+	private handleLandAdded(event: ServerEvents.AddLandEvent) {
 		const pos = new Vector2(event.landX, event.landY);
 		const land = new LandObject(this.texture, event.landData, event.actorId, pos);
 		this.landManager.addGameObject(land);
 		console.log(`add new land:(${event.landX},${event.landY})`, event);
-	};
+	}
 
+	@HandleExternalEvent(ServerEvents.RemoveLandEvent)
 	private handleLandRemoved = (event: ServerEvents.RemoveLandEvent) => {
 		const land = this.landManager.getObjectById(event.actorId);
 		this.landManager.removeGameObject(land);

@@ -11,7 +11,9 @@
         "forceConsistentCasingInFileNames": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "types": ["reflect-metadata"]
+        "types": ["reflect-metadata","node"],
+        "noUnusedParameters": false,
+        "noUnusedLocals": false
     },
     "include": ["src/**/*"]
 }

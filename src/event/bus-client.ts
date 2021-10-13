@@ -1,7 +1,6 @@
-import { EventEmitter2 } from 'eventemitter2';
 import { injectable } from 'inversify';
 import { io } from 'socket.io-client';
-import { ExternalEvent } from './spec';
+import { ExternalEvent, GameEventEmitter } from './spec';
 
 /**
  * 这是将对象转换成二进制序列的Socket.IO解析器,极大降低了传输大小
@@ -9,7 +8,7 @@ import { ExternalEvent } from './spec';
 const MsgPackParser = require('socket.io-msgpack-parser');
 
 @injectable()
-export class EventBusClient extends EventEmitter2 {
+export class EventBusClient extends GameEventEmitter {
 	private client;
 	constructor(url: string) {
 		super();
@@ -22,7 +21,7 @@ export class EventBusClient extends EventEmitter2 {
 			this.emit(event, ...args);
 		});
 	}
-	emitEvent(event: ExternalEvent) {
+	emitBusEvent(event: ExternalEvent) {
 		this.client.emit(event.constructor.name, event);
 	}
 }

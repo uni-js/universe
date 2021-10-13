@@ -8,6 +8,6 @@ export class BootController {
 		this.startGame();
 	}
 	startGame() {
-		this.eventBus.emitEvent(new LoginEvent());
+		this.eventBus.emitBusEvent(new LoginEvent());
 	}
 }

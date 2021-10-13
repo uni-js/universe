@@ -18,7 +18,7 @@ import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabas
 import { Land } from './entity/land';
 import { InventoryEntities } from './entity/inventory';
 import { Brick } from './entity/brick';
-import { Controller } from './shared/controller';
+import { ServerController } from './shared/controller';
 import { BowManager } from './manager/bow-manager';
 import { InventoryManager } from './manager/inventory-manager';
 import { InventoryController } from './controller/inventory-controller';
@@ -110,7 +110,7 @@ export class ServerApp {
 				singleton.doTick(this.tick);
 			}
 			for (const controller of this.controllers) {
-				const singleton: Controller = this.iocContainer.get(controller);
+				const singleton: ServerController = this.iocContainer.get(controller);
 				singleton.doTick(this.tick);
 			}
 			const endTime = new Date().getTime();

@@ -8,6 +8,7 @@ import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
 
 import * as ServerEvents from '../../server/event/external';
+import { HandleExternalEvent } from '../../event/spec';
 
 @injectable()
 export class PlayerController extends GameController {
@@ -18,15 +19,14 @@ export class PlayerController extends GameController {
 	) {
 		super(eventBus);
 
-		this.eventBus.on(ServerEvents.LoginedEvent.name, this.handleLogined);
-
 		this.redirectToRemoteEvent(this.playerManager, Events.ControlMovedEvent, ExternalEvents.ControlMovedEvent);
 	}
 
-	private handleLogined = (event: ServerEvents.LoginedEvent) => {
+	@HandleExternalEvent(ServerEvents.LoginedEvent)
+	private handleLogined(event: ServerEvents.LoginedEvent) {
 		console.debug('logined_event', event);
 		const actorId = event.actorId;
 		const player = this.actorManager.getObjectById(actorId) as Player;
 		this.playerManager.setCurrentPlayer(player);
-	};
+	}
 }

@@ -1,8 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { GetServerDebugDelay } from '../debug';
 
-import { EventEmitter } from '../server/shared/event';
-import { ExternalEvent } from './spec';
+import { ExternalEvent, GameEventEmitter } from './spec';
 
 const wait = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 
@@ -15,13 +14,13 @@ export const enum BusEvent {
 	ClientConnectEvent = 'ClientConnectEvent',
 }
 
-export interface IEventBus extends EventEmitter {
+export interface IEventBus extends GameEventEmitter {
 	emitTo(connIds: string[], event: ExternalEvent): void;
 	emitToAll(event: ExternalEvent): void;
 	listen(port: number): void;
 }
 
-export class EventBus extends EventEmitter implements IEventBus {
+export class EventBus extends GameEventEmitter implements IEventBus {
 	private server: Server;
 	private map = new Map<string, Socket>();
 	constructor() {
@@ -72,7 +71,7 @@ export interface DelayedRequest {
 	event: ExternalEvent;
 }
 
-export class DelayedEventBus extends EventEmitter implements IEventBus {
+export class DelayedEventBus extends GameEventEmitter implements IEventBus {
 	private eventBus: EventBus;
 	private requestQueue: DelayedRequest[] = [];
 	private consuming = false;

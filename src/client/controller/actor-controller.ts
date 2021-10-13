@@ -12,6 +12,7 @@ import * as ServerEvents from '../../server/event/external';
 
 import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
+import { HandleExternalEvent } from '../../event/spec';
 
 @injectable()
 export class ActorController extends GameController {
@@ -24,37 +25,13 @@ export class ActorController extends GameController {
 	) {
 		super(eventBus);
 
-		this.eventBus.on(ServerEvents.AddActorEvent.name, this.handleActorAdded.bind(this));
-		this.eventBus.on(ServerEvents.RemoveActorEvent.name, this.handleActorRemoved.bind(this));
-		this.eventBus.on(ServerEvents.ActorNewPosEvent.name, this.handleActorNewPos.bind(this));
-		this.eventBus.on(ServerEvents.ActorSetWalkEvent.name, this.handleActorNewWalkState.bind(this));
-
-		this.eventBus.on(ServerEvents.ActorSetAttachment.name, this.handleSetAttachment.bind(this));
-		this.eventBus.on(ServerEvents.ActorRemoveAttachment.name, this.handleRemoveAttachment.bind(this));
-
-		this.eventBus.on(ServerEvents.ActorToggleUsing.name, this.handleActorToggleUsing.bind(this));
-
-		this.eventBus.on(ServerEvents.ActorDamagedEvent.name, this.handleActorDamaged.bind(this));
-
 		this.redirectToRemoteEvent(this.actorManager, Events.ActorToggleUsingEvent, ExternalEvents.ActorToggleUsingEvent);
-
-		this.actorManager.onEvent(Events.ActorToggleWalkEvent, this.onActorToggleWalk.bind(this));
+		this.redirectToRemoteEvent(this.actorManager, Events.ActorToggleWalkEvent, ExternalEvents.ActorToggleWalkEvent);
 	}
 
-	private onActorToggleWalk(event: Events.ActorToggleWalkEvent) {
-		const player = this.playerManager.getCurrentPlayer();
-		if (!player || player.getServerId() !== event.actorId) return;
-
-		const exEvent = new ExternalEvents.ActorToggleWalkEvent();
-		exEvent.actorId = event.actorId;
-		exEvent.direction = event.direction;
-		exEvent.running = event.running;
-		exEvent.isExternal = true;
-
-		this.eventBus.emitEvent(exEvent);
-	}
-
+	@HandleExternalEvent(ServerEvents.ActorToggleUsing)
 	private handleActorToggleUsing(event: ServerEvents.ActorToggleUsing) {
+		console.log('handled', event);
 		const actor = this.actorManager.getObjectById(event.actorId);
 		if (event.startOrEnd) {
 			actor.startUsing(false);
@@ -63,6 +40,7 @@ export class ActorController extends GameController {
 		}
 	}
 
+	@HandleExternalEvent(ServerEvents.ActorSetAttachment)
 	private handleSetAttachment(event: ServerEvents.ActorSetAttachment) {
 		const targetActor = this.actorManager.getObjectById(event.targetActorId);
 		const actor = this.actorManager.getObjectById(event.actorId);
@@ -71,17 +49,21 @@ export class ActorController extends GameController {
 		actor.setAttaching(event.key, event.targetActorId);
 	}
 
+	@HandleExternalEvent(ServerEvents.ActorRemoveAttachment)
 	private handleRemoveAttachment(event: ServerEvents.ActorRemoveAttachment) {
 		const actor = this.actorManager.getObjectById(event.targetActorId);
 		actor.removeAttachment(event.key);
 	}
 
+	@HandleExternalEvent(ServerEvents.AddActorEvent)
 	private handleActorAdded(event: ServerEvents.AddActorEvent) {
 		const newActor = this.actorFactory.getNewObject(event.type, [event.serverId, event.ctorOption, this.texture]);
 		this.actorManager.addGameObject(newActor);
 
 		console.debug('Spawned', event.type, event.ctorOption, newActor);
 	}
+
+	@HandleExternalEvent(ServerEvents.RemoveActorEvent)
 	private handleActorRemoved(event: ServerEvents.RemoveActorEvent) {
 		const object = this.actorManager.getObjectById(event.actorId);
 		console.debug('Despawned', event.actorId, event, object);
@@ -90,12 +72,16 @@ export class ActorController extends GameController {
 
 		this.actorManager.removeGameObject(object);
 	}
+
+	@HandleExternalEvent(ServerEvents.ActorSetWalkEvent)
 	private handleActorNewWalkState(event: ServerEvents.ActorSetWalkEvent) {
 		const object = this.actorManager.getObjectById(event.actorId) as ActorObject;
 
 		object.setDirection(event.direction, false);
 		object.setRunning(event.running, false);
 	}
+
+	@HandleExternalEvent(ServerEvents.ActorNewPosEvent)
 	private handleActorNewPos(event: ServerEvents.ActorNewPosEvent) {
 		const object = this.actorManager.getObjectById(event.actorId) as ActorObject;
 		const isCurrentPlayer = this.playerManager.isCurrentPlayer(object as Player);
@@ -110,6 +96,7 @@ export class ActorController extends GameController {
 		}
 	}
 
+	@HandleExternalEvent(ServerEvents.ActorDamagedEvent)
 	private handleActorDamaged(event: ServerEvents.ActorDamagedEvent) {
 		this.actorManager.damageActor(event.actorId, event.finalHealth);
 	}
