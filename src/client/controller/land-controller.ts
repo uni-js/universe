@@ -21,16 +21,16 @@ export class LandController extends GameController {
 
 	@HandleExternalEvent(ServerEvents.AddLandEvent)
 	private handleLandAdded(event: ServerEvents.AddLandEvent) {
-		const pos = new Vector2(event.landX, event.landY);
-		const land = new LandObject(this.texture, event.landData, event.actorId, pos);
+		const pos = new Vector2(event.landPosX, event.landPosY);
+		const land = new LandObject(this.texture, event.landData, event.landId, pos);
 		this.landManager.addGameObject(land);
-		console.log(`add new land:(${event.landX},${event.landY})`, event);
+		console.log(`add new land:(${event.landPosX},${event.landPosY})`, event);
 	}
 
 	@HandleExternalEvent(ServerEvents.RemoveLandEvent)
 	private handleLandRemoved = (event: ServerEvents.RemoveLandEvent) => {
-		const land = this.landManager.getObjectById(event.actorId);
+		const land = this.landManager.getObjectById(event.landId);
 		this.landManager.removeGameObject(land);
-		console.log(`remove land:(${event.landX},${event.landY})`, event);
+		console.log(`remove land:(${event.landPosX},${event.landPosY})`, event);
 	};
 }

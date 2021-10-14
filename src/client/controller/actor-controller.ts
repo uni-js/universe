@@ -56,10 +56,10 @@ export class ActorController extends GameController {
 
 	@HandleExternalEvent(ServerEvents.AddActorEvent)
 	private handleActorAdded(event: ServerEvents.AddActorEvent) {
-		const newActor = this.actorFactory.getNewObject(event.type, [event.serverId, event.ctorOption, this.texture]);
+		const newActor = this.actorFactory.getNewObject(event.actorType, [event.actorId, event.ctorOption, this.texture]);
 		this.actorManager.addGameObject(newActor);
 
-		console.debug('Spawned', event.type, event.ctorOption, newActor);
+		console.debug('Spawned', event.actorType, event.ctorOption, newActor);
 	}
 
 	@HandleExternalEvent(ServerEvents.RemoveActorEvent)

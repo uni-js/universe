@@ -9,7 +9,7 @@ import {
 	InternalEvent,
 } from '../../event/spec';
 
-export type TargetConnIdsProvider<T> = (param: T) => string[];
+export type TargetConnIdsProvider<T> = (param: T) => string[] | string;
 
 export class ServerController extends GameEventEmitter {
 	constructor(protected eventBus: IEventBus) {
@@ -36,7 +36,8 @@ export class ServerController extends GameEventEmitter {
 	) {
 		from.onEvent(internalEvent, (event: I) => {
 			const remoteEvent = ConvertInternalToExternalEvent(event, internalEvent, externalEvent);
-			const connIds = targetConnIdsProvider(event);
+			const connIdsRet = targetConnIdsProvider(event);
+			const connIds = typeof connIdsRet == 'string' ? [connIdsRet] : connIdsRet;
 			this.eventBus.emitTo(connIds, remoteEvent);
 		});
 	}

@@ -19,6 +19,20 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		super(actorManager, Player);
 	}
 
+	@HandleInternalEvent('actorManager', Events.AddEntityEvent)
+	private onActorAdded(event: Events.AddEntityEvent) {
+		for (const player of this.getAllEntities()) {
+			this.spawnActor(player, event.entityId);
+		}
+	}
+
+	@HandleInternalEvent('actorManager', Events.RemoveEntityEvent)
+	private onActorRemoved(event: Events.RemoveEntityEvent) {
+		for (const player of this.getAllEntities()) {
+			this.despawnActor(player, event.entityId);
+		}
+	}
+
 	@HandleInternalEvent('actorManager', Events.NewPosEvent)
 	private onActorNewPos(event: Events.NewPosEvent) {
 		const player = this.actorManager.getEntityById(event.actorId) as Player;
@@ -66,7 +80,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		this.addAtRecord(player, 'spawnedActors', actorId);
 		const ctorOption = GetCtorOptions(actor);
 
-		this.emitEvent(Events.SpawnActorEvent, { actorId, fromPlayerId: player.$loki, ctorOption });
+		this.emitEvent(Events.SpawnActorEvent, { actorId, actorType: actor.type, fromPlayerId: player.$loki, ctorOption });
 	}
 
 	despawnActor(player: Player, actorId: number) {

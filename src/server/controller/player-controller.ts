@@ -9,7 +9,7 @@ import * as ClientEvents from '../../client/event/external';
 
 import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
-import { HandleExternalEvent, HandleInternalEvent } from '../../event/spec';
+import { HandleExternalEvent } from '../../event/spec';
 
 @injectable()
 export class PlayerController extends ServerController {
@@ -19,28 +19,19 @@ export class PlayerController extends ServerController {
 		@inject(ActorManager) private actorManager: ActorManager,
 	) {
 		super(eventBus);
-	}
 
-	@HandleInternalEvent('playerManager', Events.SpawnActorEvent)
-	private onActorSpawned(event: Events.SpawnActorEvent) {
-		const player = this.playerManager.getEntityById(event.fromPlayerId);
-		const actor = this.actorManager.getEntityById(event.actorId);
-
-		const exEvent = new ExternalEvents.AddActorEvent();
-		exEvent.type = actor.type;
-		exEvent.serverId = actor.$loki;
-		exEvent.ctorOption = event.ctorOption;
-
-		this.eventBus.emitTo([player.connId], exEvent);
-	}
-
-	@HandleInternalEvent('playerManager', Events.DespawnActorEvent)
-	private onActorDespawned(event: Events.DespawnActorEvent) {
-		const player = this.playerManager.getEntityById(event.fromPlayerId);
-		const exEvent = new ExternalEvents.RemoveActorEvent();
-		exEvent.actorId = event.actorId;
-
-		this.eventBus.emitTo([player.connId], exEvent);
+		this.redirectToBusEvent(
+			this.playerManager,
+			Events.SpawnActorEvent,
+			ExternalEvents.AddActorEvent,
+			(ev) => this.playerManager.getEntityById(ev.fromPlayerId).connId,
+		);
+		this.redirectToBusEvent(
+			this.playerManager,
+			Events.DespawnActorEvent,
+			ExternalEvents.RemoveActorEvent,
+			(ev) => this.playerManager.getEntityById(ev.fromPlayerId).connId,
+		);
 	}
 
 	@HandleExternalEvent(ClientEvents.ActorToggleWalkEvent)

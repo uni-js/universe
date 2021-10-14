@@ -27,6 +27,7 @@ import { ItemDef } from './item';
 import { ActorMapper } from './actor/mapper';
 import { PickDropController } from './controller/pick-drop-controller';
 import { GetIsServerUseDelay } from '../debug';
+import { LandLoadManager } from './manager/land-load-manager';
 
 export interface AppConfig {
 	port: number;
@@ -54,7 +55,7 @@ export class ServerApp {
 		this.config = config;
 
 		this.entities = [Land, Actor, Brick, ItemDef, ...InventoryEntities];
-		this.managers = [LandManager, ActorManager, PlayerManager, LandMoveManager, BowManager, InventoryManager];
+		this.managers = [LandManager, ActorManager, PlayerManager, LandMoveManager, LandLoadManager, BowManager, InventoryManager];
 		this.controllers = [
 			ActorController,
 			PlayerController,

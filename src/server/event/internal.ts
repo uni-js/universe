@@ -1,5 +1,5 @@
 import { InternalEvent } from '../../event/spec';
-import { Direction, RunningState } from '../actor/spec';
+import { ActorType, Direction, RunningState } from '../actor/spec';
 import { ContainerType, ContainerUpdateData } from '../inventory';
 import { LandData } from '../land/types';
 
@@ -94,6 +94,7 @@ export class LandNeverUsedEvent extends InternalEvent {
 export class SpawnActorEvent extends InternalEvent {
 	fromPlayerId: number;
 	actorId: number;
+	actorType: ActorType;
 	ctorOption: any;
 }
 

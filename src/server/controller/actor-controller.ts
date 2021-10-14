@@ -7,7 +7,7 @@ import * as ClientEvents from '../../client/event/external';
 
 import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
-import { HandleExternalEvent, HandleInternalEvent } from '../../event/spec';
+import { HandleExternalEvent } from '../../event/spec';
 import { ServerController } from '../shared/controller';
 
 @injectable()
@@ -48,20 +48,6 @@ export class ActorController extends ServerController {
 		this.redirectToBusEvent(this.actorManager, Events.NewPosEvent, ExternalEvents.ActorNewPosEvent, (ev) =>
 			this.getSpawnedActorConnIds(ev.actorId),
 		);
-	}
-
-	@HandleInternalEvent('actorManager', Events.AddEntityEvent)
-	private onActorAdded(event: Events.AddEntityEvent) {
-		for (const player of this.playerManager.getAllEntities()) {
-			this.playerManager.spawnActor(player, event.entityId);
-		}
-	}
-
-	@HandleInternalEvent('actorManager', Events.RemoveEntityEvent)
-	private onActorRemoved(event: Events.RemoveEntityEvent) {
-		for (const player of this.playerManager.getAllEntities()) {
-			this.playerManager.despawnActor(player, event.entityId);
-		}
 	}
 
 	@HandleExternalEvent(ClientEvents.ActorToggleUsingEvent)

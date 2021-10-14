@@ -3,7 +3,7 @@ import { ServerController } from '../shared/controller';
 import { inject, injectable } from 'inversify';
 import { InventoryManager } from '../manager/inventory-manager';
 import { PlayerManager } from '../manager/player-manager';
-import { ConvertInternalToExternalEvent, HandleExternalEvent, HandleInternalEvent } from '../../event/spec';
+import { HandleExternalEvent } from '../../event/spec';
 import * as ClientEvents from '../../client/event/external';
 
 import * as Events from '../event/internal';
@@ -17,14 +17,13 @@ export class InventoryController extends ServerController {
 		@inject(PlayerManager) private playerManager: PlayerManager,
 	) {
 		super(eventBus);
-	}
 
-	@HandleInternalEvent('inventoryManager', Events.UpdateContainer)
-	private onUpdateInventoryEvent(event: Events.UpdateContainer) {
-		const player = this.playerManager.getEntityById(event.playerId);
-		const exEvent = ConvertInternalToExternalEvent(event, Events.UpdateContainer, ExternalEvents.UpdateContainer);
-
-		this.eventBus.emitTo([player.connId], exEvent);
+		this.redirectToBusEvent(
+			this.inventoryManager,
+			Events.UpdateContainer,
+			ExternalEvents.UpdateContainer,
+			(ev) => this.playerManager.getEntityById(ev.playerId).connId,
+		);
 	}
 
 	@HandleExternalEvent(ClientEvents.SetShortcutIndexEvent)

@@ -1,6 +1,5 @@
 import { ExternalEvent } from '../../event/spec';
-import { ActorType, Direction, RunningState } from '../actor/spec';
-import { LandData } from '../land/types';
+import { Direction, RunningState } from '../actor/spec';
 import * as InternalEvents from './internal';
 
 export class ActorNewPosEvent extends InternalEvents.NewPosEvent {
@@ -17,27 +16,20 @@ export class LoginedEvent extends ExternalEvent {
 	actorId: number;
 }
 
-export class AddActorEvent extends ExternalEvent {
-	type: ActorType;
-	serverId: number;
-	ctorOption: any;
+export class AddActorEvent extends InternalEvents.SpawnActorEvent {
+	isExternal = true;
 }
 
 export class RemoveActorEvent extends ExternalEvent {
 	actorId: number;
 }
 
-export class AddLandEvent extends ExternalEvent {
-	actorId: number;
-	landX: number;
-	landY: number;
-	landData: LandData;
+export class AddLandEvent extends InternalEvents.LandDataToPlayerEvent {
+	isExternal = true;
 }
 
-export class RemoveLandEvent extends ExternalEvent {
-	actorId: number;
-	landX: number;
-	landY: number;
+export class RemoveLandEvent extends InternalEvents.LandNeverUsedEvent {
+	isExternal = true;
 }
 
 export class ActorSetAttachment extends ExternalEvent {
