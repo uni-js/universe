@@ -10,6 +10,7 @@ import { ActorManager } from './actor-manager';
 import { PlayerManager } from './player-manager';
 import { ShortcutManager } from './shortcut-manager';
 import * as Events from '../event/internal';
+import { HandleInternalEvent } from '../../event/spec';
 
 @injectable()
 export class BowManager extends GameManager {
@@ -25,11 +26,10 @@ export class BowManager extends GameManager {
 		super();
 		this.bowUsingInfo = new BowUsingInfo();
 		this.bowInfoStore.insertOne(this.bowUsingInfo);
-
-		this.actorManager.onEvent(Events.ActorToggleUsingEvent, this.onActorToggleUsing);
-		this.shortcutManager.onEvent(Events.SetShortcutIndexEvent, this.onShortcutSetIndex);
 	}
-	private onActorToggleUsing = (event: Events.ActorToggleUsingEvent) => {
+
+	@HandleInternalEvent('actorManager', Events.ActorToggleUsingEvent)
+	private onActorToggleUsing(event: Events.ActorToggleUsingEvent) {
 		const actor = this.actorManager.getObjectById(event.actorId);
 		if (actor.getActorType() !== ActorType.BOW) return;
 		if (actor.getAttaching().actorId !== this.playerManager.getCurrentPlayer().getServerId()) return;
@@ -43,13 +43,16 @@ export class BowManager extends GameManager {
 		}
 
 		this.bowInfoStore.update(this.bowUsingInfo);
-	};
-	private onShortcutSetIndex = (event: Events.SetShortcutIndexEvent) => {
+	}
+
+	@HandleInternalEvent('shortcutManager', Events.ActorToggleUsingEvent)
+	private onShortcutSetIndex(event: Events.SetShortcutIndexEvent) {
 		if (event.itemType !== ItemType.BOW) {
 			this.bowUsingInfo.isUsing = false;
 			this.bowInfoStore.update(this.bowUsingInfo);
 		}
-	};
+	}
+
 	async doTick() {
 		if (this.bowUsingInfo.isUsing) {
 			this.useTicks++;

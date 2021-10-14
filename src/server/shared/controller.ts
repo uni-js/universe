@@ -1,25 +1,21 @@
 import { IEventBus } from '../../event/bus-server';
-import { EXTERNAL_EVENT_HANDLER, GameEventEmitter, GetHandledEventBounds, INTERNAL_EVENT_HANDLER } from '../../event/spec';
+import {
+	ClassOf,
+	ConvertInternalToExternalEvent,
+	ExternalEvent,
+	EXTERNAL_EVENT_HANDLER,
+	GameEventEmitter,
+	GetHandledEventBounds,
+	InternalEvent,
+} from '../../event/spec';
+
+export type TargetConnIdsProvider<T> = (param: T) => string[];
 
 export class ServerController extends GameEventEmitter {
 	constructor(protected eventBus: IEventBus) {
 		super();
 
 		this.initExternalHandledEvents();
-		setTimeout(() => this.initInternalHandledEvents(), 0);
-	}
-
-	private initInternalHandledEvents() {
-		const bounds = GetHandledEventBounds(this, INTERNAL_EVENT_HANDLER);
-		for (const bound of bounds) {
-			const emitterName = bound.emitterPropertyName as string;
-			const emitter = (this as any)[emitterName] as GameEventEmitter;
-
-			if (emitter.isGameEventEmitter === false)
-				throw new Error(`绑定了一个不是 GameEventEmitter 的内部事件: ${bound.eventClass.name}`);
-
-			emitter.onEvent(bound.eventClass, bound.bindToMethod.bind(this));
-		}
 	}
 
 	private initExternalHandledEvents() {
@@ -27,6 +23,22 @@ export class ServerController extends GameEventEmitter {
 		for (const bound of bounds) {
 			this.eventBus.onEvent(bound.eventClass, bound.bindToMethod.bind(this));
 		}
+	}
+
+	/**
+	 * 重定向指定事件, 将事件发布到网络总线中
+	 */
+	redirectToBusEvent<I extends InternalEvent, E extends ExternalEvent & InternalEvent>(
+		from: GameEventEmitter,
+		internalEvent: ClassOf<I>,
+		externalEvent: ClassOf<E>,
+		targetConnIdsProvider: TargetConnIdsProvider<I>,
+	) {
+		from.onEvent(internalEvent, (event: I) => {
+			const remoteEvent = ConvertInternalToExternalEvent(event, internalEvent, externalEvent);
+			const connIds = targetConnIdsProvider(event);
+			this.eventBus.emitTo(connIds, remoteEvent);
+		});
 	}
 
 	doTick(tick: number) {}

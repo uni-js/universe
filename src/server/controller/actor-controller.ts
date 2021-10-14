@@ -7,7 +7,7 @@ import * as ClientEvents from '../../client/event/external';
 
 import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
-import { ExternalEvent, HandleExternalEvent, HandleInternalEvent } from '../../event/spec';
+import { HandleExternalEvent, HandleInternalEvent } from '../../event/spec';
 import { ServerController } from '../shared/controller';
 
 @injectable()
@@ -20,43 +20,34 @@ export class ActorController extends ServerController {
 		@inject(LandManager) private landManager: LandManager,
 	) {
 		super(eventBus);
-	}
 
-	@HandleInternalEvent('actorManager', Events.ActorDamagedEvent)
-	private onActorDamaged(event: Events.ActorDamagedEvent) {
-		const exEvent = new ExternalEvents.ActorDamagedEvent();
-		exEvent.actorId = event.actorId;
-		exEvent.finalHealth = event.finalHealth;
+		this.redirectToBusEvent(this.actorManager, Events.ActorDamagedEvent, ExternalEvents.ActorDamagedEvent, (ev) =>
+			this.getSpawnedActorConnIds(ev.actorId),
+		);
 
-		this.emitToActorSpawned(event.actorId, exEvent);
-	}
+		this.redirectToBusEvent(this.actorManager, Events.ActorToggleUsingEvent, ExternalEvents.ActorToggleUsing, (ev) =>
+			this.getSpawnedActorConnIds(ev.actorId),
+		);
 
-	@HandleInternalEvent('actorManager', Events.ActorToggleUsingEvent)
-	private onActorToggleUsing(event: Events.ActorToggleUsingEvent) {
-		const exEvent = new ExternalEvents.ActorToggleUsing();
-		exEvent.actorId = event.actorId;
-		exEvent.startOrEnd = event.startOrEnd;
+		this.redirectToBusEvent(this.actorManager, Events.ActorSetAttachment, ExternalEvents.ActorSetAttachment, (ev) =>
+			this.getSpawnedActorConnIds(ev.targetActorId),
+		);
 
-		this.emitToActorSpawned(event.actorId, exEvent);
-	}
+		this.redirectToBusEvent(this.actorManager, Events.ActorRemoveAttachment, ExternalEvents.ActorRemoveAttachment, (ev) =>
+			this.getSpawnedActorConnIds(ev.targetActorId),
+		);
 
-	@HandleInternalEvent('actorManager', Events.ActorSetAttachment)
-	private onActorSetAttachment(event: Events.ActorSetAttachment) {
-		const exEvent = new ExternalEvents.ActorSetAttachment();
-		exEvent.actorId = event.actorId;
-		exEvent.key = event.key;
-		exEvent.targetActorId = event.targetActorId;
+		this.redirectToBusEvent(this.actorManager, Events.NewWalkStateEvent, ExternalEvents.ActorSetWalkEvent, (ev) =>
+			this.getSpawnedActorConnIds(ev.actorId),
+		);
 
-		this.emitToActorSpawned(event.targetActorId, exEvent);
-	}
+		this.redirectToBusEvent(this.actorManager, Events.NewPosEvent, ExternalEvents.ActorNewPosEvent, (ev) =>
+			this.getSpawnedActorConnIds(ev.actorId),
+		);
 
-	@HandleInternalEvent('actorManager', Events.ActorRemoveAttachment)
-	private onActorRemoveAttachment(event: Events.ActorRemoveAttachment) {
-		const exEvent = new ExternalEvents.ActorRemoveAttachment();
-		exEvent.targetActorId = event.actorId;
-		exEvent.key = event.key;
-
-		this.emitToActorSpawned(event.actorId, exEvent);
+		this.redirectToBusEvent(this.actorManager, Events.NewPosEvent, ExternalEvents.ActorNewPosEvent, (ev) =>
+			this.getSpawnedActorConnIds(ev.actorId),
+		);
 	}
 
 	@HandleInternalEvent('actorManager', Events.AddEntityEvent)
@@ -73,30 +64,6 @@ export class ActorController extends ServerController {
 		}
 	}
 
-	@HandleInternalEvent('actorManager', Events.NewWalkStateEvent)
-	private onWalkStateSet(event: Events.NewWalkStateEvent) {
-		const actor = this.actorManager.getEntityById(event.actorId);
-
-		const exEvent = new ExternalEvents.ActorSetWalkEvent();
-
-		exEvent.actorId = event.actorId;
-		exEvent.direction = actor.direction;
-		exEvent.running = actor.running;
-
-		this.emitToActorSpawned(event.actorId, exEvent);
-	}
-
-	@HandleInternalEvent('actorManager', Events.NewPosEvent)
-	private onNewPosEvent(event: Events.NewPosEvent) {
-		const exEvent = new ExternalEvents.ActorNewPosEvent();
-		exEvent.actorId = event.actorId;
-		exEvent.isControlMoved = event.isControlMoved;
-		exEvent.posX = event.posX;
-		exEvent.posY = event.posY;
-
-		this.emitToActorSpawned(event.actorId, exEvent);
-	}
-
 	@HandleExternalEvent(ClientEvents.ActorToggleUsingEvent)
 	private handleActorToggleUsingEvent(connId: string, event: ClientEvents.ActorToggleUsingEvent) {
 		if (event.startOrEnd) {
@@ -106,12 +73,11 @@ export class ActorController extends ServerController {
 		}
 	}
 
-	private emitToActorSpawned(actorId: number, event: ExternalEvent) {
+	private getSpawnedActorConnIds(actorId: number) {
 		const sids = this.playerManager
 			.getAllEntities()
 			.filter((player) => this.playerManager.hasAtRecord(player, 'spawnedActors', actorId))
 			.map((player) => player.connId);
-
-		this.eventBus.emitTo(sids, event);
+		return sids;
 	}
 }

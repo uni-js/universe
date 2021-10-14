@@ -62,6 +62,25 @@ export function ConvertInternalToExternalEvent<I extends InternalEvent, E extend
 export class GameEventEmitter extends EventEmitter2 {
 	isGameEventEmitter = true;
 
+	constructor() {
+		super();
+
+		setTimeout(() => this.initInternalHandledEvents(), 0);
+	}
+
+	private initInternalHandledEvents() {
+		const bounds = GetHandledEventBounds(this, INTERNAL_EVENT_HANDLER);
+		for (const bound of bounds) {
+			const emitterName = bound.emitterPropertyName as string;
+			const emitter = (this as any)[emitterName] as GameEventEmitter;
+
+			if (emitter.isGameEventEmitter === false)
+				throw new Error(`绑定了一个不是 GameEventEmitter 的内部事件: ${bound.eventClass.name}`);
+
+			emitter.onEvent(bound.eventClass, bound.bindToMethod.bind(this));
+		}
+	}
+
 	onEvent<T extends InternalEvent>(eventClazz: ClassOf<T>, listener: (event: T) => void) {
 		this.on(eventClazz.name, listener);
 	}

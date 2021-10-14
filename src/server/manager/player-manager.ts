@@ -11,21 +11,21 @@ import { GetCtorOptions } from '../shared/entity';
 
 import * as Events from '../event/internal';
 import { LandManager } from './land-manager';
+import { HandleInternalEvent } from '../../event/spec';
 
 @injectable()
 export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	constructor(@inject(ActorManager) private actorManager: ActorManager, @inject(LandManager) private landManager: LandManager) {
 		super(actorManager, Player);
-
-		this.actorManager.onEvent(Events.NewPosEvent, this.onActorNewPos);
 	}
 
-	private onActorNewPos = (event: Events.NewPosEvent) => {
+	@HandleInternalEvent('actorManager', Events.NewPosEvent)
+	private onActorNewPos(event: Events.NewPosEvent) {
 		const player = this.actorManager.getEntityById(event.actorId) as Player;
 		if (!player.isPlayer) return;
 
 		this.updateUsedLands(player);
-	};
+	}
 
 	isUseLand(player: Player, landPos: Vector2) {
 		return this.hasAtRecord(player, 'usedLands', GetPosHash(landPos));

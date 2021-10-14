@@ -10,6 +10,6 @@ export class PickDropController extends GameController {
 	constructor(@inject(EventBusClient) eventBus: EventBusClient, @inject(PickDropManager) private pickDropManager: PickDropManager) {
 		super(eventBus);
 
-		this.redirectToRemoteEvent(this.pickDropManager, Events.DropItemEvent, ExternalEvents.DropItemEvent);
+		this.redirectToBusEvent(this.pickDropManager, Events.DropItemEvent, ExternalEvents.DropItemEvent);
 	}
 }

@@ -7,6 +7,9 @@ export interface IGameManager extends doTickable, GameEventEmitter {}
 
 export abstract class GameManager extends GameEventEmitter implements IGameManager {
 	static canInjectCollection = true;
+	constructor() {
+		super();
+	}
 
 	async doTick(tick: number): Promise<void> {}
 }

@@ -1,4 +1,5 @@
 import { InternalEvent } from '../../event/spec';
+import { Direction, RunningState } from '../actor/spec';
 import { ContainerType, ContainerUpdateData } from '../inventory';
 import { LandData } from '../land/types';
 
@@ -26,6 +27,8 @@ export class NewPosEvent extends InternalEvent {
 
 export class NewWalkStateEvent extends InternalEvent {
 	actorId: number;
+	direction: Direction;
+	running: RunningState;
 }
 
 export class ActorDamagedEvent extends InternalEvent {
@@ -40,7 +43,7 @@ export class ActorSetAttachment extends InternalEvent {
 }
 
 export class ActorRemoveAttachment extends InternalEvent {
-	actorId: number;
+	targetActorId: number;
 	key: string;
 }
 

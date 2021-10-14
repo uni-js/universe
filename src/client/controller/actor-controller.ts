@@ -25,13 +25,12 @@ export class ActorController extends GameController {
 	) {
 		super(eventBus);
 
-		this.redirectToRemoteEvent(this.actorManager, Events.ActorToggleUsingEvent, ExternalEvents.ActorToggleUsingEvent);
-		this.redirectToRemoteEvent(this.actorManager, Events.ActorToggleWalkEvent, ExternalEvents.ActorToggleWalkEvent);
+		this.redirectToBusEvent(this.actorManager, Events.ActorToggleUsingEvent, ExternalEvents.ActorToggleUsingEvent);
+		this.redirectToBusEvent(this.actorManager, Events.ActorToggleWalkEvent, ExternalEvents.ActorToggleWalkEvent);
 	}
 
 	@HandleExternalEvent(ServerEvents.ActorToggleUsing)
 	private handleActorToggleUsing(event: ServerEvents.ActorToggleUsing) {
-		console.log('handled', event);
 		const actor = this.actorManager.getObjectById(event.actorId);
 		if (event.startOrEnd) {
 			actor.startUsing(false);

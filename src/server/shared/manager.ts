@@ -10,6 +10,10 @@ export interface IManager {
 }
 
 export class Manager extends GameEventEmitter implements IManager {
+	constructor() {
+		super();
+	}
+
 	doTick(tick: number): void {}
 }
 

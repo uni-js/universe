@@ -15,7 +15,7 @@ export class ShortcutController extends GameController {
 	constructor(@inject(EventBusClient) eventBus: EventBusClient, @inject(ShortcutManager) private shortcutManager: ShortcutManager) {
 		super(eventBus);
 
-		this.redirectToRemoteEvent(this.shortcutManager, Events.SetShortcutIndexEvent, ExternalEvents.SetShortcutIndexEvent);
+		this.redirectToBusEvent(this.shortcutManager, Events.SetShortcutIndexEvent, ExternalEvents.SetShortcutIndexEvent);
 	}
 
 	@HandleExternalEvent(ServerEvents.UpdateContainer)

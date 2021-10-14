@@ -8,6 +8,7 @@ import { LandManager } from './land-manager';
 import { PlayerManager } from './player-manager';
 
 import * as Events from '../event/internal';
+import { HandleInternalEvent } from '../../event/spec';
 
 /**
  * 该管理器维护与Land跨越、加载有关的状态：
@@ -23,13 +24,6 @@ export class LandMoveManager extends Manager {
 		@inject(LandManager) private landManager: LandManager,
 	) {
 		super();
-
-		this.playerManager.onEvent(Events.LandUsedEvent, this.onLandUsed);
-		this.playerManager.onEvent(Events.LandNeverUsedEvent, this.onLandNeverUsed);
-
-		this.actorManager.onEvent(Events.LandMoveEvent, this.onActorLandMoved);
-		this.actorManager.onEvent(Events.AddEntityEvent, this.onActorAdded);
-		this.actorManager.onEvent(Events.RemoveEntityEvent, this.onActorRemoved);
 	}
 
 	addLandActor(landPos: Vector2, actorId: number) {
@@ -44,21 +38,24 @@ export class LandMoveManager extends Manager {
 		this.landManager.removeAtRecord(land, 'actors', actorId);
 	}
 
-	private onActorAdded = (event: Events.AddEntityEvent) => {
+	@HandleInternalEvent('actorManager', Events.AddEntityEvent)
+	private onActorAdded(event: Events.AddEntityEvent) {
 		const actor = event.entity as Actor;
 		const pos = new Vector2(actor.posX, actor.posY);
 		const landPos = PosToLandPos(pos);
 		this.addLandActor(landPos, event.entityId);
-	};
+	}
 
-	private onActorRemoved = (event: Events.RemoveEntityEvent) => {
+	@HandleInternalEvent('actorManager', Events.RemoveEntityEvent)
+	private onActorRemoved(event: Events.RemoveEntityEvent) {
 		const actor = event.entity as Actor;
 		const pos = new Vector2(actor.posX, actor.posY);
 		const landPos = PosToLandPos(pos);
 		this.removeLandActor(landPos, event.entityId);
-	};
+	}
 
-	private onActorLandMoved = (event: Events.LandMoveEvent) => {
+	@HandleInternalEvent('actorManager', Events.LandMoveEvent)
+	private onActorLandMoved(event: Events.LandMoveEvent) {
 		const sourceLandPos = new Vector2(event.sourceLandPosX, event.sourceLandPosY);
 		const targetLandPos = new Vector2(event.targetLandPosX, event.targetLandPosY);
 
@@ -73,9 +70,10 @@ export class LandMoveManager extends Manager {
 				this.playerManager.despawnActor(player, event.actorId);
 			}
 		});
-	};
+	}
 
-	private onLandUsed = (event: Events.LandUsedEvent) => {
+	@HandleInternalEvent('playerManager', Events.LandUsedEvent)
+	private onLandUsed(event: Events.LandUsedEvent) {
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 		const player = this.playerManager.getEntityById(event.playerId);
 
@@ -84,7 +82,9 @@ export class LandMoveManager extends Manager {
 		for (const actorId of this.landManager.getLandActors(landPos)) {
 			this.playerManager.spawnActor(player, actorId);
 		}
-	};
+	}
+
+	@HandleInternalEvent('playerManager', Events.LandNeverUsedEvent)
 	private onLandNeverUsed = (event: Events.LandNeverUsedEvent) => {
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 		const player = this.playerManager.getEntityById(event.playerId);

@@ -19,7 +19,7 @@ export class PlayerController extends GameController {
 	) {
 		super(eventBus);
 
-		this.redirectToRemoteEvent(this.playerManager, Events.ControlMovedEvent, ExternalEvents.ControlMovedEvent);
+		this.redirectToBusEvent(this.playerManager, Events.ControlMovedEvent, ExternalEvents.ControlMovedEvent);
 	}
 
 	@HandleExternalEvent(ServerEvents.LoginedEvent)

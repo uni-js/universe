@@ -17,6 +17,7 @@ import { DroppedItemActor } from '../entity/dropped-item';
 import { Vector2 } from '../shared/math';
 
 import * as Events from '../event/internal';
+import { HandleInternalEvent } from '../../event/spec';
 
 @injectable()
 export class InventoryManager extends EntityManager<Inventory> {
@@ -36,9 +37,6 @@ export class InventoryManager extends EntityManager<Inventory> {
 		@inject(ActorFactory) private actorFactory: ActorFactory,
 	) {
 		super(inventoryList);
-
-		this.playerManager.onEvent(Events.AddEntityEvent, this.onPlayerAdded);
-		this.playerManager.onEvent(Events.RemoveEntityEvent, this.onPlayerRemoved);
 
 		this.initItemDefList();
 	}
@@ -112,7 +110,8 @@ export class InventoryManager extends EntityManager<Inventory> {
 		return this.addNewEntity(inventory);
 	}
 
-	private onPlayerAdded = (event: Events.AddEntityEvent) => {
+	@HandleInternalEvent('playerManager', Events.AddEntityEvent)
+	private onPlayerAdded(event: Events.AddEntityEvent) {
 		const player = event.entity as Player;
 		const inventory = this.addNewPlayerInventory(player.$loki);
 
@@ -120,11 +119,13 @@ export class InventoryManager extends EntityManager<Inventory> {
 		//add player a bow in shortcut
 		this.setBlock(inventory.containers[0], 0, ItemType.BOW, 1);
 		this.sendInventoryUpdateData(player, inventory.$loki);
-	};
-	private onPlayerRemoved = (event: Events.RemoveEntityEvent) => {
+	}
+
+	@HandleInternalEvent('playerManager', Events.RemoveEntityEvent)
+	private onPlayerRemoved(event: Events.RemoveEntityEvent) {
 		const invetory = this.playerInventoryList.findOne({ playerId: event.entityId });
 		this.removeInventory(invetory.$loki);
-	};
+	}
 
 	/**
 	 * 删除一个容器

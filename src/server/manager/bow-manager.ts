@@ -5,6 +5,7 @@ import { ExtendedEntityManager } from '../shared/manager';
 import { ActorManager } from './actor-manager';
 
 import * as Events from '../event/internal';
+import { HandleInternalEvent } from '../../event/spec';
 
 export const ARROW_DROP_TICKS = 10;
 export const ARROW_DEAD_TICKS = 30;
@@ -15,10 +16,10 @@ export const BOW_RELEASING_MIN_TICKS = 10; //可以释放的最小值
 export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 	constructor(@inject(ActorManager) private actorManager: ActorManager) {
 		super(actorManager, Bow);
-
-		this.actorManager.onEvent(Events.ActorToggleUsingEvent, this.onActorToggleUsing);
 	}
-	private onActorToggleUsing = (event: Events.ActorToggleUsingEvent) => {
+
+	@HandleInternalEvent('actorManager', Events.ActorToggleUsingEvent)
+	private onActorToggleUsing(event: Events.ActorToggleUsingEvent) {
 		const actor = this.actorManager.getEntityById(event.actorId);
 		if (actor.type != ActorType.BOW) return;
 
@@ -27,7 +28,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		} else {
 			this.endDragging(actor, event.useTick);
 		}
-	};
+	}
 	private startDragging(actor: Actor) {}
 
 	private endDragging(actor: Actor, useTick: number) {

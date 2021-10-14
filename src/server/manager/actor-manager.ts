@@ -124,7 +124,7 @@ export class ActorManager extends EntityManager<Actor> {
 		const actor = this.actorList.findOne({ $loki: targetActorId });
 		this.removeAtRecord(actor, 'attachments', key);
 
-		this.emitEvent(Events.ActorRemoveAttachment, { actorId: actor.$loki, key });
+		this.emitEvent(Events.ActorRemoveAttachment, { targetActorId: actor.$loki, key });
 	}
 
 	clearAttachments(targetActorId: number, removeActors = false) {
@@ -243,6 +243,8 @@ export class ActorManager extends EntityManager<Actor> {
 			this.actorList.update(actor);
 			this.emitEvent(Events.NewWalkStateEvent, {
 				actorId: actor.$loki,
+				direction: actor.direction,
+				running: actor.running,
 			});
 		}
 	}
