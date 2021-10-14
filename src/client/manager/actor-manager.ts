@@ -8,9 +8,10 @@ import * as Events from '../event/internal';
 @injectable()
 export class ActorManager extends GameObjectManager<ActorObject> {
 	constructor(@inject(ActorStore) private actorStore: ActorStore, @inject(ActorContainer) private actorContainer: ActorContainer) {
-		super(actorStore, {
-			emitObjectEvents: [Events.ActorToggleUsingEvent, Events.ActorToggleWalkEvent],
-		});
+		super(actorStore);
+
+		this.redirectObjectEvent(Events.ActorToggleUsingEvent);
+		this.redirectObjectEvent(Events.ActorToggleWalkEvent);
 	}
 
 	private updateAttachingMovement(actor: ActorObject) {

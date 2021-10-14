@@ -31,7 +31,7 @@ export class GameController extends GameEventEmitter {
 	/**
 	 * 重定向指定事件, 将事件发布到网络总线中
 	 */
-	redirectToBusEvent<I extends InternalEvent, E extends ExternalEvent & InternalEvent>(
+	protected redirectToBusEvent<I extends InternalEvent, E extends ExternalEvent & InternalEvent>(
 		from: GameEventEmitter,
 		internalEvent: ClassOf<I>,
 		externalEvent: ClassOf<E>,

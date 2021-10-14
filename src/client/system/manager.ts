@@ -14,27 +14,27 @@ export abstract class GameManager extends GameEventEmitter implements IGameManag
 	async doTick(tick: number): Promise<void> {}
 }
 
-export interface GameObjectManagerOption {
-	emitObjectEvents: ClassOf<InternalEvent>[];
-}
-
 /**
  * 用于管理某种游戏对象的管理器
  */
 export class GameObjectManager<T extends IGameObject> extends GameManager {
-	constructor(
-		private objectStore: HashedStore<T>,
-		private option: GameObjectManagerOption = {
-			emitObjectEvents: [],
-		},
-	) {
+	private redirectedObjectEvents: ClassOf<InternalEvent>[] = [];
+
+	constructor(private objectStore: HashedStore<T>) {
 		super();
+	}
+
+	/**
+	 * 将游戏对象的指定事件进行转发
+	 */
+	protected redirectObjectEvent(eventClass: ClassOf<InternalEvent>) {
+		this.redirectedObjectEvents.push(eventClass);
 	}
 
 	addGameObject(gameObject: T) {
 		this.objectStore.add(gameObject);
 
-		for (const eventClazz of this.option.emitObjectEvents) {
+		for (const eventClazz of this.redirectedObjectEvents) {
 			gameObject.onEvent(eventClazz, (event: InternalEvent) => {
 				this.emitEvent(eventClazz, event);
 			});
