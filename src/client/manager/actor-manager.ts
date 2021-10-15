@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Direction } from '../../server/actor/spec';
-import { ActorObject } from '../shared/actor';
+import { ActorObject } from '../object/actor';
 import { GameObjectManager } from '../system/manager';
 import { ActorStore, ActorContainer } from '../shared/store';
 import * as Events from '../event/internal';
@@ -15,12 +15,11 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 	}
 
 	private updateAttachingMovement(actor: ActorObject) {
-		const attaching = actor.getAttaching();
-		if (!attaching) return;
+		if (!actor.attaching) return;
 
-		const targetActor = this.getObjectById(attaching.actorId);
-		const relPos = targetActor.getAttachRelPos(attaching.key);
-		const direction = targetActor.getDirection();
+		const targetActor = this.getObjectById(actor.attaching.actorId);
+		const relPos = targetActor.getAttachRelPos(actor.attaching.key);
+		const direction = targetActor.direction;
 
 		if (direction == Direction.BACK) {
 			actor.rotation = (3 * Math.PI) / 2;
@@ -40,7 +39,7 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 			actor.scale.x = 1;
 		}
 
-		actor.setPosition(targetActor.getPosition().add(relPos));
+		actor.vPos = targetActor.vPos.add(relPos);
 	}
 
 	damageActor(actorId: number, finalHealth: number) {

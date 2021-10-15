@@ -23,7 +23,7 @@ import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase } from '../dat
 import { GameUI } from './ui/game-ui';
 
 import { LandContainer, ActorStore, DataStore, DataStoreEntities, LandStore, UIEventBus, ActorContainer } from './shared/store';
-import { ActorFactory } from './shared/actor';
+import { ActorFactory } from './object/actor';
 import { ActorMapper } from './object';
 import { ShortcutController } from './controller/shortcut-controller';
 import { BowManager } from './manager/bow-manager';

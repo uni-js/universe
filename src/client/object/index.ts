@@ -1,5 +1,5 @@
 import { ActorType } from '../../server/actor/spec';
-import { ActorFactoryMapper } from '../shared/actor';
+import { ActorFactoryMapper } from './actor';
 import { Arrow, Bow } from './bow';
 import { DroppedItemActor } from './dropped-item';
 import { Player } from './player';

@@ -37,7 +37,7 @@ export class PlayerManager extends GameManager {
 		this.gameInfoList.update(this.playerInfo);
 
 		player.onEvent(Events.ControlMovedEvent, this.onPlayerControlMoved);
-		player.setTakeControl();
+		player.takeControl = true;
 
 		this.currentPlayer = player;
 	}
@@ -96,9 +96,9 @@ export class PlayerManager extends GameManager {
 			const actor = this.actorManager.getObjectById(rightHand.actorId);
 
 			if (this.inputProvider.cursorPress() || this.inputProvider.keyPress(InputKey.J)) {
-				!actor.getIsUsing() && actor.startUsing();
+				!actor.isUsing && actor.startUsing();
 			} else {
-				actor.getIsUsing() && actor.endUsing();
+				actor.isUsing && actor.endUsing();
 			}
 		}
 	}

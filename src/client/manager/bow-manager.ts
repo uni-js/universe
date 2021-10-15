@@ -31,8 +31,8 @@ export class BowManager extends GameManager {
 	@HandleInternalEvent('actorManager', Events.ActorToggleUsingEvent)
 	private onActorToggleUsing(event: Events.ActorToggleUsingEvent) {
 		const actor = this.actorManager.getObjectById(event.actorId);
-		if (actor.getActorType() !== ActorType.BOW) return;
-		if (actor.getAttaching().actorId !== this.playerManager.getCurrentPlayer().getServerId()) return;
+		if (actor.actorType !== ActorType.BOW) return;
+		if (actor.attaching.actorId !== this.playerManager.getCurrentPlayer().getServerId()) return;
 
 		if (event.startOrEnd) {
 			this.bowUsingInfo.isUsing = true;

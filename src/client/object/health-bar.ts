@@ -4,12 +4,16 @@ import { GameObject } from '../system/game-object';
 import { TextureProvider } from '../texture';
 
 export class HealthBar extends GameObject {
+	/**
+	 * 设置该属性后, 血量条会显示一段时间
+	 */
+	public showTicks = 0;
+
+	private _healthValue = 100;
+	private _maxHealth = 100;
+
 	private graph: PIXI.Graphics;
 	private size = new Vector2(1, 0.2);
-	private healthValue = 100;
-	private maxHealth = 100;
-
-	private showTicks = 0;
 
 	constructor(texture: TextureProvider) {
 		super(texture);
@@ -25,6 +29,7 @@ export class HealthBar extends GameObject {
 		this.updateHealthDrawing();
 		this.addChild(this.graph);
 	}
+
 	private updateHealthDrawing() {
 		const percent = this.healthValue / this.maxHealth;
 
@@ -38,21 +43,23 @@ export class HealthBar extends GameObject {
 		this.graph.drawRect(posX, 0, this.size.x - posX, this.size.y);
 		this.graph.endFill();
 	}
-	setHealthMax(maxVal: number) {
-		this.maxHealth = maxVal;
+
+	get maxHealth() {
+		return this._maxHealth;
+	}
+
+	set maxHealth(maxVal: number) {
+		this._maxHealth = maxVal;
 		this.updateHealthDrawing();
 	}
 
-	setHealthValue(val: number) {
-		this.healthValue = val;
-		this.updateHealthDrawing();
+	get healthValue() {
+		return this._healthValue;
 	}
 
-	/**
-	 * 使用该方法后, 血量条会显示一段时间
-	 */
-	setShowTicks(ticks: number) {
-		this.showTicks = ticks;
+	set healthValue(val: number) {
+		this._healthValue = val;
+		this.updateHealthDrawing();
 	}
 
 	async doTick() {

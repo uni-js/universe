@@ -5,7 +5,7 @@ import { inject, injectable } from 'inversify';
 import * as PIXI from 'pixi.js';
 import { Entity, MemoryDatabase } from '../../database/memory';
 import { EventEmitter } from '../../server/shared/event';
-import { ActorObject } from './actor';
+import { ActorObject } from '../object/actor';
 import { ContainerType } from '../../server/inventory';
 import { ItemType } from '../../server/item';
 

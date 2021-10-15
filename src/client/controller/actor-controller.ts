@@ -5,7 +5,7 @@ import { Player } from '../object/player';
 import { TextureProvider } from '../texture';
 import { inject, injectable } from 'inversify';
 import { PlayerManager } from '../manager/player-manager';
-import { ActorFactory, ActorObject } from '../shared/actor';
+import { ActorFactory, ActorObject } from '../object/actor';
 import { GameController } from '../system/controller';
 
 import * as ServerEvents from '../../server/event/external';
@@ -45,7 +45,7 @@ export class ActorController extends GameController {
 		const actor = this.actorManager.getObjectById(event.actorId);
 
 		targetActor.setAttachment(event.key, event.actorId);
-		actor.setAttaching(event.key, event.targetActorId);
+		actor.attaching = { key: event.key, actorId: event.targetActorId };
 	}
 
 	@HandleExternalEvent(ServerEvents.ActorRemoveAttachment)
@@ -76,8 +76,8 @@ export class ActorController extends GameController {
 	private handleActorNewWalkState(event: ServerEvents.ActorSetWalkEvent) {
 		const object = this.actorManager.getObjectById(event.actorId) as ActorObject;
 
-		object.setDirection(event.direction, false);
-		object.setRunning(event.running, false);
+		object.direction = event.direction;
+		object.running = event.running;
 	}
 
 	@HandleExternalEvent(ServerEvents.ActorNewPosEvent)
