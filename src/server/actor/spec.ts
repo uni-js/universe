@@ -57,11 +57,20 @@ export class Actor extends Entity {
 	@CtorOption()
 	anchorY = 0;
 
+	bounding = [0, 0, this.sizeX, this.sizeY];
+
+	@CtorOption()
+	rotation = 0;
+
 	@CtorOption()
 	posX = 0;
 
 	@CtorOption()
 	posY = 0;
+
+	lastPosX = 0;
+
+	lastPosY = 0;
 
 	@CtorOption()
 	motionX = 0;

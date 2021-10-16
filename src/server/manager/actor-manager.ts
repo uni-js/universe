@@ -43,28 +43,43 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	getActorBoundingBox(actor: Actor): [number, number, number, number] {
-		const x = actor.posX - actor.sizeX * actor.anchorX;
-		const y = actor.posY - actor.sizeY * actor.anchorY;
-		const w = actor.sizeX;
-		const h = actor.sizeY;
-		return [x, y, w, h];
+		const fromX = actor.posX + actor.bounding[0];
+		const fromY = actor.posY + actor.bounding[1];
+
+		const toX = actor.posX + actor.bounding[2];
+		const toY = actor.posY + actor.bounding[3];
+
+		return [fromX, fromY, toX, toY];
 	}
 
-	getActorCollisionWith(targetActor: Actor, excepts: Actor[] = []): CollisionResult[] {
-		const [targetX, targetY, targetW, targetH] = this.getActorBoundingBox(targetActor);
+	/**
+	 * @param {Actor} targetActor 被检查的Actor
+	 * @param {boolean} lastMovement
+	 * 是否考虑将上次的移动到当前位置
+	 * 形成的矩形，作为碰撞盒的一部分
+	 * （可以解决速度过快跨越碰撞检查问题）
+	 * @param {Actor[]} excepts 检查过程排除的Actor
+	 * @returns {CollisionResult[]} 碰撞检查结果
+	 */
+	getActorCollisionWith(targetActor: Actor, lastMovement = false, excepts: Actor[] = []): CollisionResult[] {
+		const [fX, fY, tX, tY] = this.getActorBoundingBox(targetActor);
+		const { lastPosX, lastPosY } = targetActor;
 
-		const vecA = new SAT.Vector(targetX, targetY);
-		const boxA = new SAT.Box(vecA, targetW, targetH).toPolygon();
-		const nearActors = this.getNearActors(new Vector2(targetX, targetY));
+		const vecA = lastMovement ? new SAT.Vector(lastPosX, lastPosY) : new SAT.Vector(fX, fY);
+		const width = lastMovement ? tX - lastPosX : tX - fX;
+		const height = lastMovement ? tY - lastPosY : tY - fY;
+
+		const boxA = new SAT.Box(vecA, width, height).toPolygon();
+		const nearActors = this.getNearActors(new Vector2(fX, fY));
 		const results: CollisionResult[] = [];
 		for (const actor of nearActors) {
 			if (actor === targetActor) continue;
 			if (excepts.includes(actor)) continue;
 
-			const [x, y, w, h] = this.getActorBoundingBox(actor);
+			const [fromX, fromY, toX, toY] = this.getActorBoundingBox(actor);
 
-			const vecB = new SAT.Vector(x, y);
-			const boxB = new SAT.Box(vecB, w, h).toPolygon();
+			const vecB = new SAT.Vector(fromX, fromY);
+			const boxB = new SAT.Box(vecB, toX - fromX, toY - fromY).toPolygon();
 			const response = new SAT.Response();
 			const collided = SAT.testPolygonPolygon(boxB, boxA, response);
 			if (!collided) continue;
@@ -190,6 +205,9 @@ export class ActorManager extends EntityManager<Actor> {
 		} else {
 			actor.isControlMoveDirty = true;
 		}
+
+		actor.lastPosX = originPosX;
+		actor.lastPosY = originPosY;
 
 		const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
 		const lastLandPos = PosToLandPos(new Vector2(originPosX, originPosY));

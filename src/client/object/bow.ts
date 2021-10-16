@@ -9,7 +9,7 @@ export class Arrow extends ActorObject {
 	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
 		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.ARROW, texture);
 
-		this.shootingDirection = option.shootingDirection;
+		this.shootingDirection = option.rotation;
 		this.anchor = new Vector2(0, 0.5);
 
 		this.updateRotation();

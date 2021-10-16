@@ -34,6 +34,13 @@ export class Vector2 {
 	getSqrt() {
 		return Math.sqrt(this.x * this.x + this.y * this.y);
 	}
+	/**
+	 * 以 ↓→ 坐标系顺时针旋转变换坐标
+	 */
+	rotate(rad: number) {
+		return new Vector2(this.x * Math.cos(rad) - this.y * Math.sin(rad), this.x * Math.sin(rad) + this.y * Math.cos(rad));
+	}
+
 	static getVectorDelta(v1: Vector2, v2: Vector2): Vector2 {
 		return new Vector2(v2.x - v1.x, v2.y - v1.y);
 	}

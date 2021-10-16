@@ -6,6 +6,7 @@ import { ActorManager } from './actor-manager';
 
 import * as Events from '../event/internal';
 import { HandleInternalEvent } from '../../event/spec';
+import { Vector2 } from '../shared/math';
 
 export const ARROW_DROP_TICKS = 10;
 export const ARROW_DEAD_TICKS = 30;
@@ -46,18 +47,19 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		const motion = arrow.power * 2;
 		if (attachingActor.direction == Direction.LEFT) {
 			arrow.motionX = -motion;
-			arrow.shootingDirection = Math.PI;
+			arrow.rotation = Math.PI;
 		} else if (attachingActor.direction == Direction.RIGHT) {
 			arrow.motionX = motion;
-			arrow.shootingDirection = 0;
+			arrow.rotation = 0;
 		} else if (attachingActor.direction == Direction.FORWARD) {
 			arrow.motionY = motion;
-			arrow.shootingDirection = Math.PI / 2;
+			arrow.rotation = Math.PI / 2;
 		} else if (attachingActor.direction == Direction.BACK) {
 			arrow.motionY = -motion;
-			arrow.shootingDirection = (3 * Math.PI) / 2;
+			arrow.rotation = (3 * Math.PI) / 2;
 		}
 
+		this.updateArrowBoundingBox(arrow);
 		this.addNewEntity(arrow);
 	}
 
@@ -80,13 +82,26 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		}
 	}
 
+	private updateArrowBoundingBox(arrow: Arrow) {
+		const boxSize = arrow.sizeY / 2;
+		const arrowTop = new Vector2(arrow.sizeX, 0).rotate(arrow.rotation);
+
+		const fromX = arrowTop.x - boxSize;
+		const fromY = arrowTop.y - boxSize;
+
+		const toX = arrowTop.x + boxSize;
+		const toY = arrowTop.y + boxSize;
+
+		arrow.bounding = [fromX, fromY, toX, toY];
+	}
+
 	private doCollisionTick() {
 		const arrows = this.actorManager.findEntities({ type: ActorType.ARROW });
 		for (const actor of arrows) {
 			const arrow = actor as Arrow;
 			const shooter = this.actorManager.getEntityById(arrow.shooter);
 
-			const collisions = this.actorManager.getActorCollisionWith(arrow, [shooter]);
+			const collisions = this.actorManager.getActorCollisionWith(arrow, true, [shooter]);
 			const damageTarget = collisions.find((collision) => collision.actor.canDamage);
 			if (damageTarget) {
 				this.arrowDamageActor(arrow, damageTarget.actor);
@@ -95,7 +110,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		}
 	}
 	private arrowDamageActor(arrow: Arrow, actor: Actor) {
-		this.actorManager.damageActor(actor, 10, arrow.shootingDirection, arrow.power);
+		this.actorManager.damageActor(actor, 10, arrow.rotation, arrow.power);
 
 		arrow.aliveTick = ARROW_DEAD_TICKS;
 		this.updateEntity(arrow);

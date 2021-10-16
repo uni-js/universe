@@ -26,6 +26,8 @@ export class Arrow extends Actor {
 	@CtorOption()
 	anchorY = 0.5;
 
+	bounding = [1.9, -0.1, 2.1, 0.1];
+
 	/**
 	 * 力度
 	 */
@@ -36,12 +38,6 @@ export class Arrow extends Actor {
 	 * 发射者
 	 */
 	shooter: number;
-
-	/**
-	 * 正在发射的方向
-	 */
-	@CtorOption()
-	shootingDirection = 0;
 
 	aliveTick = 0;
 }

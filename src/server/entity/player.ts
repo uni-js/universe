@@ -13,6 +13,8 @@ export class Player extends Actor {
 	@CtorOption()
 	sizeY = 1.5;
 
+	bounding = [-0.5, -1.5, 0.5, 0];
+
 	@CtorOption()
 	anchorX = 0.5;
 
