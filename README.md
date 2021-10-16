@@ -6,6 +6,20 @@
 
 ![](./docs/pic1.png)
 
+## Play 
+
+本项目在 CI 上持续继承/部署 master 分支的最新版本
+
+
+可以随时访问：
+<http://play.unijs.org/>
+
+来体验游玩构建版本
+
+## CI / CD
+
+查看最新构建状态：<http://ci.unijs.org/>
+
 ## Arch Design
 
 ![](./docs/pic2.png)
