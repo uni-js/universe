@@ -44,10 +44,6 @@ export class ActorController extends ServerController {
 		this.redirectToBusEvent(this.actorManager, Events.NewPosEvent, ExternalEvents.ActorNewPosEvent, (ev) =>
 			this.getSpawnedActorConnIds(ev.actorId),
 		);
-
-		this.redirectToBusEvent(this.actorManager, Events.NewPosEvent, ExternalEvents.ActorNewPosEvent, (ev) =>
-			this.getSpawnedActorConnIds(ev.actorId),
-		);
 	}
 
 	@HandleExternalEvent(ClientEvents.ActorToggleUsingEvent)

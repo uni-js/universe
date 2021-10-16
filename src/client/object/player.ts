@@ -17,7 +17,7 @@ export class Player extends ActorObject {
 	 */
 	public playerName: string;
 
-	private controlMoved: Vector2 | false;
+	private controlMoved: Vector2 | false = false;
 
 	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
 		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.PLAYER, texture);
@@ -34,11 +34,6 @@ export class Player extends ActorObject {
 		this.walkTextures = this.texture.get('actor.player');
 
 		this.controlRunning(RunningState.SILENT);
-	}
-
-	addMovePoint(point: Vector2) {
-		if (this.takeControl) this.vPos = point;
-		else super.addMovePoint(point);
 	}
 
 	controlMove(delta: Vector2 | false) {

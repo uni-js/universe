@@ -33,6 +33,10 @@ export class MoveInterpolator extends EventEmitter2 {
 		if (this.movePoints.length > 10) {
 			this.movePoints.shift();
 		}
+
+		if (this.movePoints.length == 1) {
+			this.emit('position', this.movePoints[0]);
+		}
 	}
 	doTick() {
 		if (this.movePoints.length >= 2) {
@@ -47,8 +51,6 @@ export class MoveInterpolator extends EventEmitter2 {
 				this.locatedAt = 0;
 				this.movePoints.shift();
 			}
-		} else if (this.movePoints.length == 1) {
-			this.emit('position', this.movePoints[0]);
 		}
 	}
 }
