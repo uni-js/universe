@@ -40,19 +40,21 @@
 
 部署开发环境并启动本游戏程序，通过如下的流程：
 
-在项目目录下创建一个 `.env` 文件, 
+首先在本地克隆项目：
+```bash
+git clone https://github.com/wyattzheng/universe
+```
 
+然后，在项目目录下创建一个 `.env` 文件, 
 来指定地图等持久化数据的存储目录。
 
 ```
 DB_LOCATION=./data/
 ```
 
-然后依次执行命令：
+依次执行命令：
 
 ```bash
-git clone <仓库地址>
-
 yarn # 安装项目依赖
 yarn start:server # 启动服务端
 yarn start:client # 启动客户端
