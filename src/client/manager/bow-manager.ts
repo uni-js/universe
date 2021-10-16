@@ -50,6 +50,9 @@ export class BowManager extends GameManager {
 		if (event.itemType !== ItemType.BOW) {
 			this.bowUsingInfo.isUsing = false;
 			this.bowInfoStore.update(this.bowUsingInfo);
+			this.playerManager.canRotateAttachment = false;
+		} else {
+			this.playerManager.canRotateAttachment = true;
 		}
 	}
 

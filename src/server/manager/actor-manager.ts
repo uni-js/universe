@@ -184,6 +184,13 @@ export class ActorManager extends EntityManager<Actor> {
 
 		this.emitEvent(Events.ActorToggleUsingEvent, { actorId, startOrEnd: false, useTick });
 	}
+
+	setRotation(actorId: number, rotation: number) {
+		const actor = this.actorList.findOne({ $loki: actorId });
+		actor.rotation = rotation;
+		this.actorList.update(actor);
+	}
+
 	removeEntity<T extends Actor>(actor: T): void {
 		super.removeEntity.call(this, actor);
 

@@ -26,6 +26,10 @@ export class SetShortcutIndexEvent extends InternalEvent {
 	itemType: ItemType;
 }
 
+export class RotateAttachment extends InternalEvent {
+	rotation: number;
+}
+
 export class DropItemEvent extends InternalEvent {}
 
 export class onPickingItem extends InternalEvent {}

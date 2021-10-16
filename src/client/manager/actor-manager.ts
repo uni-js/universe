@@ -3,6 +3,7 @@ import { Direction } from '../../server/actor/spec';
 import { ActorObject } from '../object/actor';
 import { GameObjectManager } from '../system/manager';
 import { ActorStore, ActorContainer } from '../shared/store';
+
 import * as Events from '../event/internal';
 
 @injectable()

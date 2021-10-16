@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { ActorType, Direction, Actor } from '../actor/spec';
+import { ActorType, Actor } from '../actor/spec';
 import { Arrow, Bow } from '../entity/bow';
 import { ExtendedEntityManager } from '../shared/manager';
 import { ActorManager } from './actor-manager';
@@ -45,19 +45,10 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		arrow.power = Math.min(useTick, BOW_DRAGGING_MAX_TICKS) / 20; //拉弓时间越长力度越大
 
 		const motion = arrow.power * 2;
-		if (attachingActor.direction == Direction.LEFT) {
-			arrow.motionX = -motion;
-			arrow.rotation = Math.PI;
-		} else if (attachingActor.direction == Direction.RIGHT) {
-			arrow.motionX = motion;
-			arrow.rotation = 0;
-		} else if (attachingActor.direction == Direction.FORWARD) {
-			arrow.motionY = motion;
-			arrow.rotation = Math.PI / 2;
-		} else if (attachingActor.direction == Direction.BACK) {
-			arrow.motionY = -motion;
-			arrow.rotation = (3 * Math.PI) / 2;
-		}
+
+		arrow.rotation = actor.rotation;
+		arrow.motionX = motion * Math.cos(actor.rotation);
+		arrow.motionY = motion * Math.sin(actor.rotation);
 
 		this.updateArrowBoundingBox(arrow);
 		this.addNewEntity(arrow);

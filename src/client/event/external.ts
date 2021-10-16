@@ -19,4 +19,8 @@ export class ActorToggleUsingEvent extends InternalEvents.ActorToggleUsingEvent 
 	isExternal = true;
 }
 
+export class RotateAttachmentEvent extends InternalEvents.RotateAttachment {
+	isExternal = true;
+}
+
 export class DropItemEvent extends ExternalEvent {}

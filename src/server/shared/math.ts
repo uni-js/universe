@@ -28,6 +28,15 @@ export class Vector2 {
 		const delta = this.sub(vec);
 		return new Vector2(Math.abs(delta.x), Math.abs(delta.y));
 	}
+	getRad() {
+		const acos = Math.acos(this.getCosine());
+		const rad = this.y > 0 ? acos : 2 * Math.PI - acos;
+		return rad;
+	}
+	getCosine() {
+		const r = Math.sqrt(this.x * this.x + this.y * this.y);
+		return this.x / r;
+	}
 	distanceTo(vec: Vector2) {
 		return vec.sub(this).getSqrt();
 	}

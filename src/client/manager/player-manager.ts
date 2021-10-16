@@ -12,6 +12,8 @@ import * as Events from '../event/internal';
 
 @injectable()
 export class PlayerManager extends GameManager {
+	public canRotateAttachment = true;
+
 	private currentPlayer: Player;
 	private playerInfo: PlayerInfo;
 
@@ -48,9 +50,11 @@ export class PlayerManager extends GameManager {
 	getCurrentPlayer() {
 		return this.currentPlayer;
 	}
+
 	isCurrentPlayer(player: Player) {
 		return this.currentPlayer === player;
 	}
+
 	private doControlMoveTick() {
 		const player = this.currentPlayer;
 		if (!player) return;
@@ -103,8 +107,23 @@ export class PlayerManager extends GameManager {
 		}
 	}
 
+	private doRotateAttachmentTick() {
+		if (!this.canRotateAttachment) return;
+
+		const screenPoint = this.inputProvider.getCursorAt();
+		const cursorAt = this.stage.getWorldPointAt(screenPoint);
+		const playerAt = this.getCurrentPlayer().vPos;
+
+		const rad = cursorAt.sub(playerAt).getRad();
+
+		this.emitEvent(Events.RotateAttachment, {
+			rotation: rad,
+		});
+	}
+
 	async doTick(tick: number) {
 		this.doControlMoveTick();
 		this.doUsingRightHand();
+		this.doRotateAttachmentTick();
 	}
 }

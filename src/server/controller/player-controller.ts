@@ -10,6 +10,7 @@ import * as ClientEvents from '../../client/event/external';
 import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
 import { HandleExternalEvent } from '../../event/spec';
+import { AttachType } from '../actor/spec';
 
 @injectable()
 export class PlayerController extends ServerController {
@@ -56,5 +57,12 @@ export class PlayerController extends ServerController {
 	private handleMovePlayer(connId: string, event: ClientEvents.ControlMovedEvent) {
 		const player = this.playerManager.findEntity({ connId });
 		this.actorManager.moveToPosition(player, new Vector2(event.posX, event.posY), true);
+	}
+
+	@HandleExternalEvent(ClientEvents.RotateAttachmentEvent)
+	private handleRotateAttachment(connId: string, event: ClientEvents.RotateAttachmentEvent) {
+		const player = this.playerManager.findEntity({ connId });
+		const attachment = this.actorManager.getAttachment(player.$loki, AttachType.RIGHT_HAND);
+		this.actorManager.setRotation(attachment.actorId, event.rotation);
 	}
 }
