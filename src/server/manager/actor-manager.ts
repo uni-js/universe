@@ -6,7 +6,7 @@ import { injectable } from 'inversify';
 import { injectCollection } from '../../database/memory';
 import { Vector2 } from '../shared/math';
 import { PosToLandPos } from '../land/helper';
-import { Direction, RunningState, Actor } from '../actor/spec';
+import { Direction, RunningState, Actor, AttachType } from '../actor/spec';
 
 import * as Events from '../event/internal';
 
@@ -155,11 +155,19 @@ export class ActorManager extends EntityManager<Actor> {
 
 	setWalkState(actorId: number, running: RunningState, direction: Direction) {
 		const actor = this.actorList.findOne({ $loki: actorId });
+		const isRunningChanged = actor.running !== running;
+		const isDirectionChanged = actor.direction !== direction;
+		if (!isRunningChanged && !isDirectionChanged) return;
+
 		actor.running = running;
 		actor.direction = direction;
 		actor.isWalkDirty = true;
 
 		this.actorList.update(actor);
+
+		if (isDirectionChanged) {
+			this.rotateAttachment(actorId, actor.rotation);
+		}
 	}
 
 	startUsing(actorId: number) {
@@ -185,10 +193,36 @@ export class ActorManager extends EntityManager<Actor> {
 		this.emitEvent(Events.ActorToggleUsingEvent, { actorId, startOrEnd: false, useTick });
 	}
 
+	rotateAttachment(actorId: number, rotation: number) {
+		const actor = this.getEntityById(actorId);
+		const attachment = this.getAttachment(actorId, AttachType.RIGHT_HAND);
+
+		let overflow = true;
+		let boundValue = 0;
+
+		if (actor.direction === Direction.FORWARD) {
+			if (rotation > 0 && rotation < Math.PI) overflow = false;
+			boundValue = Math.PI / 2;
+		} else if (actor.direction === Direction.BACK) {
+			if (rotation > Math.PI && rotation < 2 * Math.PI) overflow = false;
+			boundValue = (3 * Math.PI) / 2;
+		} else if (actor.direction === Direction.LEFT) {
+			if (rotation > Math.PI / 2 && rotation < (3 * Math.PI) / 2) overflow = false;
+			boundValue = Math.PI;
+		} else {
+			if (rotation > (3 * Math.PI) / 2 || rotation < Math.PI / 2) overflow = false;
+			boundValue = 0;
+		}
+
+		this.setRotation(attachment.actorId, overflow ? boundValue : rotation);
+	}
+
 	setRotation(actorId: number, rotation: number) {
 		const actor = this.actorList.findOne({ $loki: actorId });
 		actor.rotation = rotation;
 		this.actorList.update(actor);
+
+		this.emitEvent(Events.ActorSetRotationEvent, { actorId, rotation });
 	}
 
 	removeEntity<T extends Actor>(actor: T): void {

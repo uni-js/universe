@@ -12,6 +12,10 @@ export class ActorSetWalkEvent extends ExternalEvent {
 	running: RunningState;
 }
 
+export class ActorSetRotationEvent extends InternalEvents.ActorSetRotationEvent {
+	isExternal = true;
+}
+
 export class LoginedEvent extends ExternalEvent {
 	actorId: number;
 }

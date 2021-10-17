@@ -4,13 +4,12 @@ import { Vector2 } from '../shared/math';
 import { ServerController } from '../shared/controller';
 import { inject, injectable } from 'inversify';
 import { ActorManager } from '../manager/actor-manager';
+import { HandleExternalEvent } from '../../event/spec';
 
 import * as ClientEvents from '../../client/event/external';
 
 import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
-import { HandleExternalEvent } from '../../event/spec';
-import { AttachType } from '../actor/spec';
 
 @injectable()
 export class PlayerController extends ServerController {
@@ -62,7 +61,6 @@ export class PlayerController extends ServerController {
 	@HandleExternalEvent(ClientEvents.RotateAttachmentEvent)
 	private handleRotateAttachment(connId: string, event: ClientEvents.RotateAttachmentEvent) {
 		const player = this.playerManager.findEntity({ connId });
-		const attachment = this.actorManager.getAttachment(player.$loki, AttachType.RIGHT_HAND);
-		this.actorManager.setRotation(attachment.actorId, event.rotation);
+		this.actorManager.rotateAttachment(player.$loki, event.rotation);
 	}
 }

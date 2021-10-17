@@ -53,6 +53,11 @@ export class ActorToggleUsingEvent extends InternalEvent {
 	useTick: number;
 }
 
+export class ActorSetRotationEvent extends InternalEvent {
+	actorId: number;
+	rotation: number;
+}
+
 export class LandMoveEvent extends InternalEvent {
 	actorId: number;
 	targetLandPosX: number;

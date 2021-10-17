@@ -100,4 +100,9 @@ export class ActorController extends GameController {
 	private handleActorDamaged(event: ServerEvents.ActorDamagedEvent) {
 		this.actorManager.damageActor(event.actorId, event.finalHealth);
 	}
+
+	@HandleExternalEvent(ServerEvents.ActorSetRotationEvent)
+	private handleSetRotation(event: ServerEvents.ActorSetRotationEvent) {
+		this.actorManager.setRotation(event.actorId, event.rotation);
+	}
 }

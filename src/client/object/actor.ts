@@ -249,6 +249,14 @@ export class ActorObject extends GameObject {
 		return this.sprite.texture;
 	}
 
+	get spriteRotation() {
+		return this.sprite.rotation;
+	}
+
+	set spriteRotation(rotation: number) {
+		this.sprite.rotation = rotation;
+	}
+
 	set textures(textures: PIXI.Texture<PIXI.Resource>[] | PIXI.FrameObject[]) {
 		if (textures.length <= 0) return;
 

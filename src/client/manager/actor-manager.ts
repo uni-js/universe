@@ -23,21 +23,13 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 		const direction = targetActor.direction;
 
 		if (direction == Direction.BACK) {
-			actor.rotation = (3 * Math.PI) / 2;
 			actor.zIndex = 1;
-			actor.scale.x = 1;
 		} else if (direction == Direction.LEFT) {
-			actor.rotation = 0;
 			actor.zIndex = 3;
-			actor.scale.x = -1;
 		} else if (direction == Direction.RIGHT) {
-			actor.rotation = 0;
 			actor.zIndex = 3;
-			actor.scale.x = 1;
 		} else {
-			actor.rotation = Math.PI / 2;
 			actor.zIndex = 3;
-			actor.scale.x = 1;
 		}
 
 		actor.vPos = targetActor.vPos.add(relPos);
@@ -46,6 +38,11 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 	damageActor(actorId: number, finalHealth: number) {
 		const actor = this.getObjectById(actorId);
 		actor.damage(finalHealth);
+	}
+
+	setRotation(actorId: number, rotation: number) {
+		const actor = this.getObjectById(actorId);
+		actor.spriteRotation = rotation;
 	}
 
 	async doTick(tick: number) {

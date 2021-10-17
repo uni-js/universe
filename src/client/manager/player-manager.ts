@@ -17,6 +17,8 @@ export class PlayerManager extends GameManager {
 	private currentPlayer: Player;
 	private playerInfo: PlayerInfo;
 
+	private lastAttachmentRotateRad: number;
+
 	constructor(
 		@injectCollection(PlayerInfo) private gameInfoList: NotLimitCollection<PlayerInfo>,
 		@inject(HTMLInputProvider) private inputProvider: HTMLInputProvider,
@@ -116,9 +118,13 @@ export class PlayerManager extends GameManager {
 
 		const rad = cursorAt.sub(playerAt).getRad();
 
+		if (this.lastAttachmentRotateRad === rad) return;
+
 		this.emitEvent(Events.RotateAttachment, {
 			rotation: rad,
 		});
+
+		this.lastAttachmentRotateRad = rad;
 	}
 
 	async doTick(tick: number) {
