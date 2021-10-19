@@ -109,27 +109,28 @@ export class PlayerManager extends GameManager {
 		}
 	}
 
-	private doRotateAttachmentTick() {
+	private doRotateAttachmentTick(tick: number) {
 		if (!this.canRotateAttachment) return;
 
 		const screenPoint = this.inputProvider.getCursorAt();
 		const cursorAt = this.stage.getWorldPointAt(screenPoint);
-		const playerAt = this.getCurrentPlayer().vPos;
+		const attachment = this.currentPlayer.getAttachment(AttachType.RIGHT_HAND);
+		const vPos = this.actorManager.getObjectById(attachment.actorId).vPos;
 
-		const rad = cursorAt.sub(playerAt).getRad();
+		const rad = cursorAt.sub(vPos).getRad();
 
-		if (this.lastAttachmentRotateRad === rad) return;
-
-		this.emitEvent(Events.RotateAttachment, {
-			rotation: rad,
-		});
-
-		this.lastAttachmentRotateRad = rad;
+		if (tick % 5 === 0) {
+			if (this.lastAttachmentRotateRad === rad) return;
+			this.emitEvent(Events.RotateAttachment, {
+				rotation: rad,
+			});
+			this.lastAttachmentRotateRad = rad;
+		}
 	}
 
 	async doTick(tick: number) {
 		this.doControlMoveTick();
 		this.doUsingRightHand();
-		this.doRotateAttachmentTick();
+		this.doRotateAttachmentTick(tick);
 	}
 }
