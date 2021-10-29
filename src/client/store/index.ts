@@ -1,4 +1,4 @@
-import { HashedStore } from '../../shared/store';
+import { ObjectStore } from '../../shared/store';
 import { LandObject } from '../object/land';
 import { injectable } from 'inversify';
 
@@ -9,14 +9,14 @@ import { ContainerType } from '../../server/inventory';
 import { ItemType } from '../../server/item';
 
 @injectable()
-export class ActorStore extends HashedStore<ActorObject> {
+export class ActorStore extends ObjectStore<ActorObject> {
 	hash(item: ActorObject) {
 		return [item.getServerId()];
 	}
 }
 
 @injectable()
-export class LandStore extends HashedStore<LandObject> {
+export class LandStore extends ObjectStore<LandObject> {
 	hash(item: LandObject) {
 		return [[item.getServerId()], [item.x, item.y]];
 	}

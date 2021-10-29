@@ -1,4 +1,4 @@
-import { HashedStore, HashItem } from '../../shared/store';
+import { ObjectStore, HashItem } from '../../shared/store';
 import { doTickable } from '../../shared/update';
 import { GameEventEmitter, InternalEvent, ClassOf } from '../../event/spec';
 import { IGameObject } from '../system/game-object';
@@ -20,7 +20,7 @@ export abstract class GameManager extends GameEventEmitter implements IGameManag
 export class GameObjectManager<T extends IGameObject> extends GameManager {
 	private redirectedObjectEvents: ClassOf<InternalEvent>[] = [];
 
-	constructor(private objectStore: HashedStore<T>) {
+	constructor(private objectStore: ObjectStore<T>) {
 		super();
 	}
 

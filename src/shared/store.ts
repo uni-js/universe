@@ -7,7 +7,7 @@ export const HASH_SPLIT_CHAR = '#';
 export type HashItem = string | number;
 export type Hasher<T> = (item: T) => HashItem[] | HashItem[][];
 
-export class HashedStore<T extends PIXI.DisplayObject> {
+export class ObjectStore<T extends PIXI.DisplayObject> {
 	public readonly container = new PIXI.Container();
 	private store = new Map<string, T>();
 

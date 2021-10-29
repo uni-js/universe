@@ -29,7 +29,7 @@ import { ShortcutController } from './controller/shortcut-controller';
 import { BowManager } from './manager/bow-manager';
 import { PickDropManager } from './manager/pick-drop-manager';
 import { PickDropController } from './controller/pick-drop-controller';
-import { HashedStore } from '../shared/store';
+import { ObjectStore } from '../shared/store';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -145,7 +145,7 @@ export class ClientApp {
 		const viewport = ioc.get(Viewport);
 
 		for (const store of this.stores) {
-			viewport.addChild(ioc.get<HashedStore<any>>(store).container);
+			viewport.addChild(ioc.get<ObjectStore<any>>(store).container);
 		}
 
 		this.app.stage.addChild(viewport);
