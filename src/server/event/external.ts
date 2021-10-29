@@ -1,4 +1,4 @@
-import { ExternalEvent } from '../../event/spec';
+import { ExternalEvent } from '../../framework/event';
 import { Direction, RunningState } from '../actor/spec';
 import * as InternalEvents from './internal';
 

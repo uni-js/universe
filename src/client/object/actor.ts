@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 
 import { ActorType, AttachMapping, Direction, RunningState } from '../../server/actor/spec';
-import { GameObject } from '../system/game-object';
+import { GameObject } from '../../framework/game-object';
 import { GetEmptyTexture, TextureProvider } from '../texture';
 import { Interpolate2d, Vector2 } from '../../server/shared/math';
 import { EventEmitter2 } from 'eventemitter2';

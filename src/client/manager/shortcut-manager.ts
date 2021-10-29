@@ -1,8 +1,8 @@
 import { inject, injectable } from 'inversify';
-import { injectCollection, NotLimitCollection } from '../../database/memory';
+import { injectCollection, NotLimitCollection } from '../../framework/memory-database';
 import { ContainerUpdateData, ContainerUpdateDataUnit, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from '../../server/inventory';
 import { HTMLInputProvider, InputKey } from '../input';
-import { GameManager } from '../system/manager';
+import { GameManager } from '../../framework/client-manager';
 import { ShortcutContainerInfo, InventoryBlockInfo } from '../store';
 import { ItemType } from '../../server/item';
 import * as Events from '../event/internal';

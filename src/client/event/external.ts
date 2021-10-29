@@ -1,4 +1,4 @@
-import { ExternalEvent } from '../../event/spec';
+import { ExternalEvent } from '../../framework/event';
 import * as InternalEvents from './internal';
 
 export class ControlMovedEvent extends InternalEvents.ControlMovedEvent {

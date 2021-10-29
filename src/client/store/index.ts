@@ -1,8 +1,8 @@
-import { ObjectStore } from '../../shared/store';
+import { ObjectStore } from '../../framework/store';
 import { LandObject } from '../object/land';
 import { injectable } from 'inversify';
 
-import { Entity, MemoryDatabase } from '../../database/memory';
+import { Entity, MemoryDatabase } from '../../framework/memory-database';
 import { EventEmitter } from '../../server/shared/event';
 import { ActorObject } from '../object/actor';
 import { ContainerType } from '../../server/inventory';

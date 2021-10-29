@@ -1,14 +1,14 @@
 import { inject, injectable } from 'inversify';
-import { EventBusClient } from '../../event/bus-client';
+import { EventBusClient } from '../../framework/bus-client';
 import { ActorManager } from '../manager/actor-manager';
 import { PlayerManager } from '../manager/player-manager';
 import { Player } from '../object/player';
-import { GameController } from '../system/controller';
+import { GameController } from '../../framework/client-controller';
 import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
 
 import * as ServerEvents from '../../server/event/external';
-import { HandleExternalEvent } from '../../event/spec';
+import { HandleExternalEvent } from '../../framework/event';
 
 @injectable()
 export class PlayerController extends GameController {

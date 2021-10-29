@@ -1,10 +1,10 @@
 import { Vector2 } from '../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '../input';
-import { GameManager } from '../system/manager';
+import { GameManager } from '../../framework/client-manager';
 import { Viewport } from '../viewport';
 import { AttachType } from '../../server/actor/spec';
 import { inject, injectable } from 'inversify';
-import { injectCollection, NotLimitCollection } from '../../database/memory';
+import { injectCollection, NotLimitCollection } from '../../framework/memory-database';
 import { PlayerInfo, UIEventBus } from '../store';
 import { Player } from '../object/player';
 import { ActorManager } from './actor-manager';

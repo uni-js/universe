@@ -7,9 +7,9 @@ import {
 	ContainerUpdateData,
 } from '../../server/inventory';
 import { PlayerManager } from './player-manager';
-import { injectCollection, NotLimitCollection } from '../../database/memory';
+import { injectCollection, NotLimitCollection } from '../../framework/memory-database';
 import { inject, injectable } from 'inversify';
-import { EntityManager, UpdateOnlyCollection } from '../shared/manager';
+import { EntityManager, UpdateOnlyCollection } from '../../framework/server-manager';
 import { ItemDef, ItemDefList, ItemHoldAction, ItemType } from '../item';
 import { ActorManager } from './actor-manager';
 import { ActorFactory, AttachType } from '../actor/spec';
@@ -17,7 +17,7 @@ import { DroppedItemActor } from '../entity/dropped-item';
 import { Vector2 } from '../shared/math';
 
 import * as Events from '../event/internal';
-import { HandleInternalEvent } from '../../event/spec';
+import { HandleInternalEvent } from '../../framework/event';
 
 @injectable()
 export class InventoryManager extends EntityManager<Inventory> {

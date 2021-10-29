@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { Entity } from '../../database/memory';
+import { Entity } from '../../framework/memory-database';
 import { Factory } from '../../shared/factory';
 import { Attachment, ConstructOption } from '../shared/entity';
 import { RecordMap } from '../utils';

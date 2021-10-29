@@ -1,4 +1,4 @@
-import { DelayedEventBus, EventBus, EventBusSymbol, IEventBus } from '../event/bus-server';
+import { DelayedEventBus, EventBus, EventBusSymbol, IEventBus } from '../framework/bus-server';
 import { ActorManager } from './manager/actor-manager';
 import { PlayerManager } from './manager/player-manager';
 import { LandMoveManager } from './manager/land-move-manager';
@@ -8,17 +8,17 @@ import { PlayerController } from './controller/player-controller';
 import { wait } from './utils';
 import { LandManager } from './manager/land-manager';
 import { ConnectionController } from './controller/connection-controller';
-import { createPersistDatabase, PersistDatabaseSymbol, IPersistDatabase } from '../database/persist';
+import { createPersistDatabase, PersistDatabaseSymbol, IPersistDatabase } from '../database';
 import { LandController } from './controller/land-controller';
 
 import { Container } from 'inversify';
-import { bindToContainer } from '../shared/ioc';
-import { Manager } from './shared/manager';
-import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../database/memory';
+import { bindToContainer } from '../framework/ioc';
+import { Manager } from '../framework/server-manager';
+import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../framework/memory-database';
 import { Land } from './entity/land';
 import { InventoryEntities } from './entity/inventory';
 import { Brick } from './entity/brick';
-import { ServerController } from './shared/controller';
+import { ServerController } from '../framework/server-controller';
 import { BowManager } from './manager/bow-manager';
 import { InventoryManager } from './manager/inventory-manager';
 import { InventoryController } from './controller/inventory-controller';

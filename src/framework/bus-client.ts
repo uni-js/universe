@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { io } from 'socket.io-client';
-import { ExternalEvent, GameEventEmitter } from './spec';
+import { ExternalEvent, GameEventEmitter } from './event';
 
 /**
  * 这是将对象转换成二进制序列的Socket.IO解析器,极大降低了传输大小

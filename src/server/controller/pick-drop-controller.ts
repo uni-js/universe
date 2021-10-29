@@ -1,11 +1,11 @@
 import { inject, injectable } from 'inversify';
-import { EventBus, EventBusSymbol } from '../../event/bus-server';
+import { EventBus, EventBusSymbol } from '../../framework/bus-server';
 import { InventoryManager } from '../manager/inventory-manager';
 import { PlayerManager } from '../manager/player-manager';
-import { ServerController } from '../shared/controller';
+import { ServerController } from '../../framework/server-controller';
 import { Vector2 } from '../shared/math';
 import * as ClientEvents from '../../client/event/external';
-import { HandleExternalEvent } from '../../event/spec';
+import { HandleExternalEvent } from '../../framework/event';
 
 @injectable()
 export class PickDropController extends ServerController {

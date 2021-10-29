@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { EventBusClient } from '../../event/bus-client';
+import { EventBusClient } from '../../framework/bus-client';
 import { LoginEvent } from '../event/external';
 
 @injectable()

@@ -1,14 +1,14 @@
 import { inject, injectable } from 'inversify';
-import { EventBusClient } from '../../event/bus-client';
+import { EventBusClient } from '../../framework/bus-client';
 import { ContainerType } from '../../server/inventory';
 import { ShortcutManager } from '../manager/shortcut-manager';
-import { GameController } from '../system/controller';
+import { GameController } from '../../framework/client-controller';
 
 import * as ServerEvents from '../../server/event/external';
 
 import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
-import { HandleExternalEvent } from '../../event/spec';
+import { HandleExternalEvent } from '../../framework/event';
 
 @injectable()
 export class ShortcutController extends GameController {

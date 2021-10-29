@@ -1,5 +1,5 @@
 import { Player } from '../entity/player';
-import { ExtendedEntityManager } from '../shared/manager';
+import { ExtendedEntityManager } from '../../framework/server-manager';
 import { Actor } from '../actor/spec';
 import { GetRadiusLands } from '../entity/land';
 import { inject, injectable } from 'inversify';
@@ -11,7 +11,7 @@ import { GetConstructOptions } from '../shared/entity';
 
 import * as Events from '../event/internal';
 import { LandManager } from './land-manager';
-import { HandleInternalEvent } from '../../event/spec';
+import { HandleInternalEvent } from '../../framework/event';
 
 @injectable()
 export class PlayerManager extends ExtendedEntityManager<Actor, Player> {

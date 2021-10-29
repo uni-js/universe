@@ -1,4 +1,4 @@
-import { doTickable } from '../../shared/update';
+import { doTickable } from '../../framework/update';
 import Keyboard from 'keyboardjs';
 import { Vector2 } from '../../server/shared/math';
 

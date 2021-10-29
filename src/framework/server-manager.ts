@@ -1,6 +1,6 @@
-import { Entity, NotLimitCollection } from '../../database/memory';
-import { GameEventEmitter } from '../../event/spec';
-import * as Events from '../event/internal';
+import { Entity, NotLimitCollection } from './memory-database';
+import { GameEventEmitter } from './event';
+import * as Events from '../server/event/internal';
 
 export type ClassOf<T> = { new (...args: any[]): T };
 export type ObjectQueryCondition<T> = Partial<T & LokiObj> & Record<string, any>;

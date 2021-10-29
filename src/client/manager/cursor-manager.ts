@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { HTMLInputProvider } from '../input';
-import { GameManager } from '../system/manager';
+import { GameManager } from '../../framework/client-manager';
 import { Viewport } from '../viewport';
 import { LandManager } from './land-manager';
 import { PlayerManager } from './player-manager';

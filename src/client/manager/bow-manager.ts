@@ -3,14 +3,14 @@ import { ActorType } from '../../server/actor/spec';
 import { ItemType } from '../../server/item';
 import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../../server/manager/bow-manager';
 import { SERVER_TICKS_MULTIPLE } from '../../server/shared/server';
-import { injectCollection, NotLimitCollection } from '../../database/memory';
-import { GameManager } from '../system/manager';
+import { injectCollection, NotLimitCollection } from '../../framework/memory-database';
+import { GameManager } from '../../framework/client-manager';
 import { BowUsingInfo } from '../store';
 import { ActorManager } from './actor-manager';
 import { PlayerManager } from './player-manager';
 import { ShortcutManager } from './shortcut-manager';
 import * as Events from '../event/internal';
-import { HandleInternalEvent } from '../../event/spec';
+import { HandleInternalEvent } from '../../framework/event';
 
 @injectable()
 export class BowManager extends GameManager {

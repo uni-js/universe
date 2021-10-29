@@ -1,4 +1,4 @@
-import { Entity } from '../../database/memory';
+import { Entity } from '../../framework/memory-database';
 import { ActorType } from '../actor/spec';
 
 export enum ItemType {

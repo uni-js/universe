@@ -1,13 +1,13 @@
 import { inject, injectable } from 'inversify';
-import { EventBusClient } from '../../event/bus-client';
+import { EventBusClient } from '../../framework/bus-client';
 import { Vector2 } from '../../server/shared/math';
 import { LandManager } from '../manager/land-manager';
 import { LandObject } from '../object/land';
 import { TextureProvider } from '../texture';
 
 import * as ServerEvents from '../../server/event/external';
-import { HandleExternalEvent } from '../../event/spec';
-import { GameController } from '../system/controller';
+import { HandleExternalEvent } from '../../framework/event';
+import { GameController } from '../../framework/client-controller';
 
 @injectable()
 export class LandController extends GameController {

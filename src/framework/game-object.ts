@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js';
 
-import { Vector2 } from '../../server/shared/math';
+import { Vector2 } from '../server/shared/math';
 
-import { doTickable } from '../../shared/update';
-import { TextureProvider } from '../texture';
+import { doTickable } from './update';
+import { TextureProvider } from '../client/texture';
 
 export type ClassOf<T> = { new (...args: any[]): T };
 

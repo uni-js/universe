@@ -1,10 +1,10 @@
-import { EventBus, EventBusSymbol } from '../../event/bus-server';
+import { EventBus, EventBusSymbol } from '../../framework/bus-server';
 import { PlayerManager } from '../manager/player-manager';
 import { Vector2 } from '../shared/math';
-import { ServerController } from '../shared/controller';
+import { ServerController } from '../../framework/server-controller';
 import { inject, injectable } from 'inversify';
 import { ActorManager } from '../manager/actor-manager';
-import { HandleExternalEvent } from '../../event/spec';
+import { HandleExternalEvent } from '../../framework/event';
 
 import * as ClientEvents from '../../client/event/external';
 

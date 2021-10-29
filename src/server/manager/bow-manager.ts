@@ -1,11 +1,11 @@
 import { inject, injectable } from 'inversify';
 import { ActorType, Actor } from '../actor/spec';
 import { Arrow, Bow } from '../entity/bow';
-import { ExtendedEntityManager } from '../shared/manager';
+import { ExtendedEntityManager } from '../../framework/server-manager';
 import { ActorManager } from './actor-manager';
 
 import * as Events from '../event/internal';
-import { HandleInternalEvent } from '../../event/spec';
+import { HandleInternalEvent } from '../../framework/event';
 import { Vector2 } from '../shared/math';
 
 export const ARROW_DROP_TICKS = 10;

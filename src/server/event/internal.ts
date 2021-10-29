@@ -1,4 +1,4 @@
-import { InternalEvent } from '../../event/spec';
+import { InternalEvent } from '../../framework/event';
 import { ActorType, Direction, RunningState } from '../actor/spec';
 import { ContainerType, ContainerUpdateData } from '../inventory';
 import { LandData } from '../land/types';

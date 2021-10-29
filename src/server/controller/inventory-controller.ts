@@ -1,9 +1,9 @@
-import { EventBus, EventBusSymbol } from '../../event/bus-server';
-import { ServerController } from '../shared/controller';
+import { EventBus, EventBusSymbol } from '../../framework/bus-server';
+import { ServerController } from '../../framework/server-controller';
 import { inject, injectable } from 'inversify';
 import { InventoryManager } from '../manager/inventory-manager';
 import { PlayerManager } from '../manager/player-manager';
-import { HandleExternalEvent } from '../../event/spec';
+import { HandleExternalEvent } from '../../framework/event';
 import * as ClientEvents from '../../client/event/external';
 
 import * as Events from '../event/internal';

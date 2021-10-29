@@ -1,14 +1,14 @@
 import { inject, injectable } from 'inversify';
 import { Actor } from '../actor/spec';
 import { PosToLandPos } from '../land/helper';
-import { Manager } from '../shared/manager';
+import { Manager } from '../../framework/server-manager';
 import { Vector2 } from '../shared/math';
 import { ActorManager } from './actor-manager';
 import { LandManager } from './land-manager';
 import { PlayerManager } from './player-manager';
 
 import * as Events from '../event/internal';
-import { HandleInternalEvent } from '../../event/spec';
+import { HandleInternalEvent } from '../../framework/event';
 
 /**
  * 该管理器维护与Land跨越、加载有关的状态：

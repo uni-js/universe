@@ -1,21 +1,18 @@
-import { EventBusClient } from '../../event/bus-client';
+import { IEventBus } from './bus-server';
 import {
+	ClassOf,
 	ConvertInternalToExternalEvent,
 	ExternalEvent,
+	EXTERNAL_EVENT_HANDLER,
 	GameEventEmitter,
 	GetHandledEventBounds,
 	InternalEvent,
-	EXTERNAL_EVENT_HANDLER,
-} from '../../event/spec';
+} from './event';
 
-export type ClassOf<T> = { new (...args: any[]): T };
+export type TargetConnIdsProvider<T> = (param: T) => string[] | string;
 
-export class GameController extends GameEventEmitter {
-	/**
-	 *
-	 * @param eventBus 网络事件总线
-	 */
-	constructor(protected eventBus: EventBusClient) {
+export class ServerController extends GameEventEmitter {
+	constructor(protected eventBus: IEventBus) {
 		super();
 
 		this.initExternalHandledEvents();
@@ -35,10 +32,15 @@ export class GameController extends GameEventEmitter {
 		from: GameEventEmitter,
 		internalEvent: ClassOf<I>,
 		externalEvent: ClassOf<E>,
+		targetConnIdsProvider: TargetConnIdsProvider<I>,
 	) {
 		from.onEvent(internalEvent, (event: I) => {
 			const remoteEvent = ConvertInternalToExternalEvent(event, internalEvent, externalEvent);
-			this.eventBus.emitBusEvent(remoteEvent);
+			const connIdsRet = targetConnIdsProvider(event);
+			const connIds = typeof connIdsRet == 'string' ? [connIdsRet] : connIdsRet;
+			this.eventBus.emitTo(connIds, remoteEvent);
 		});
 	}
+
+	doTick(tick: number) {}
 }
