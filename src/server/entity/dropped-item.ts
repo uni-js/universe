@@ -1,16 +1,16 @@
 import { Actor, ActorType } from '../actor/spec';
 import { ItemType } from '../item';
-import { CtorOption } from '../shared/entity';
+import { ConstructOption } from '../shared/entity';
 
 export class DroppedItemActor extends Actor {
 	type = ActorType.DROPPED_ITEM;
 
-	@CtorOption()
+	@ConstructOption()
 	itemType: ItemType;
 
-	@CtorOption()
+	@ConstructOption()
 	sizeX = 0.5;
 
-	@CtorOption()
+	@ConstructOption()
 	sizeY = 0.5;
 }

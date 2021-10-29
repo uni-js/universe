@@ -1,13 +1,13 @@
 import { ActorType } from '../../server/actor/spec';
 import { ItemType } from '../../server/item';
 import { Vector2 } from '../../server/shared/math';
-import { ActorCtorOption, ActorObject } from './actor';
+import { ActorConstructOption, ActorObject } from './actor';
 import { TextureProvider } from '../texture';
 
 export class DroppedItemActor extends ActorObject {
 	public itemType: ItemType;
 
-	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
+	constructor(serverId: number, option: ActorConstructOption, texture: TextureProvider) {
 		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.DROPPED_ITEM, texture);
 
 		this.itemType = option.itemType;

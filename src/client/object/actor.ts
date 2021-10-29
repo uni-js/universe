@@ -100,7 +100,7 @@ export class ActorObject extends GameObject {
 
 	private moveInterpolator;
 
-	constructor(serverId: number, option: ActorCtorOption, size: Vector2, actorType: ActorType, texture: TextureProvider) {
+	constructor(serverId: number, option: ActorConstructOption, size: Vector2, actorType: ActorType, texture: TextureProvider) {
 		super(texture, serverId);
 		this.size = size;
 		this.actorType = actorType;
@@ -434,7 +434,7 @@ export class ActorObject extends GameObject {
 	}
 }
 
-export interface ActorCtorOption {
+export interface ActorConstructOption {
 	posX: number;
 	posY: number;
 	width: number;
@@ -444,7 +444,7 @@ export interface ActorCtorOption {
 	[key: string]: any;
 }
 
-export type ActorCtor = [number, ActorCtorOption, TextureProvider, ...any];
-export class ActorFactory extends Factory<ActorType, ActorObject, ActorCtor> {}
-
+export type ActorCtor = [number, ActorConstructOption, TextureProvider, ...any];
 export type ActorFactoryMapper = FactoryMapper<ActorType, ActorObject, ActorCtor>;
+
+export class ActorFactory extends Factory<ActorType, ActorObject, ActorCtor> {}

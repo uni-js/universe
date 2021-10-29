@@ -1,5 +1,5 @@
 import { ActorType, AttachMapping, Actor } from '../actor/spec';
-import { CtorOption } from '../shared/entity';
+import { ConstructOption } from '../shared/entity';
 import { RecordSet } from '../utils';
 
 export class Player extends Actor {
@@ -7,24 +7,24 @@ export class Player extends Actor {
 
 	connId: string;
 
-	@CtorOption()
+	@ConstructOption()
 	sizeX = 1;
 
-	@CtorOption()
+	@ConstructOption()
 	sizeY = 1.5;
 
 	bounding = [-0.5, -1.5, 0.5, 0];
 
-	@CtorOption()
+	@ConstructOption()
 	anchorX = 0.5;
 
-	@CtorOption()
+	@ConstructOption()
 	anchorY = 1;
 
-	@CtorOption()
+	@ConstructOption()
 	playerName = 'Player';
 
-	@CtorOption()
+	@ConstructOption()
 	attachMapping: AttachMapping = {
 		right_hand: {
 			left: [-0.4, -0.5],

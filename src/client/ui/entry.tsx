@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Entity, EntityQuery, IMemoryDatabase } from '../../database/memory';
-import { UIEventBus } from '../shared/store';
+import { UIEventBus } from '../store';
 import { TextureProvider } from '../texture';
 
 export type DataSource = IMemoryDatabase;

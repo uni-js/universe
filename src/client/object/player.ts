@@ -1,7 +1,7 @@
 import { BILLION_VALUE, Vector2 } from '../../server/shared/math';
 import { TextureProvider } from '../texture';
 import { ActorType, Direction, RunningState } from '../../server/actor/spec';
-import { ActorCtorOption, ActorObject } from './actor';
+import { ActorConstructOption, ActorObject } from './actor';
 import * as Events from '../event/internal';
 
 export interface ControlMoved {
@@ -19,7 +19,7 @@ export class Player extends ActorObject {
 
 	private controlMoved: Vector2 | false = false;
 
-	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
+	constructor(serverId: number, option: ActorConstructOption, texture: TextureProvider) {
 		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.PLAYER, texture);
 
 		this.canWalk = true;

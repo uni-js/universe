@@ -3,7 +3,7 @@ import { LandLocToLoc, PosToLandPos } from '../../server/land/helper';
 import { Vector2 } from '../../server/shared/math';
 import { GameObjectManager } from '../system/manager';
 import { LandObject } from '../object/land';
-import { LandStore } from '../shared/store';
+import { LandStore } from '../store';
 
 @injectable()
 export class LandManager extends GameObjectManager<LandObject> {

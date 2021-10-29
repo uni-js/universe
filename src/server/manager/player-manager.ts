@@ -7,7 +7,7 @@ import { ActorManager } from './actor-manager';
 import { Vector2 } from '../shared/math';
 import { GetArrayDiff } from '../utils';
 import { GetPosByHash, GetPosHash } from '../../shared/land';
-import { GetCtorOptions } from '../shared/entity';
+import { GetConstructOptions } from '../shared/entity';
 
 import * as Events from '../event/internal';
 import { LandManager } from './land-manager';
@@ -78,7 +78,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		const actor = this.actorManager.getEntityById(actorId);
 
 		this.addAtRecord(player, 'spawnedActors', actorId);
-		const ctorOption = GetCtorOptions(actor);
+		const ctorOption = GetConstructOptions(actor);
 
 		this.emitEvent(Events.SpawnActorEvent, { actorId, actorType: actor.type, fromPlayerId: player.$loki, ctorOption });
 	}

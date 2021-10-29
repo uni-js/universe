@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import { Entity } from '../../database/memory';
 import { Factory } from '../../shared/factory';
-import { Attachment, CtorOption } from '../shared/entity';
+import { Attachment, ConstructOption } from '../shared/entity';
 import { RecordMap } from '../utils';
 
 export enum ActorType {
@@ -42,59 +42,59 @@ export interface AttachMapping {
 }
 
 export class Actor extends Entity {
-	@CtorOption()
+	@ConstructOption()
 	health = 100;
 
-	@CtorOption()
+	@ConstructOption()
 	sizeX = 1;
 
-	@CtorOption()
+	@ConstructOption()
 	sizeY = 1;
 
-	@CtorOption()
+	@ConstructOption()
 	anchorX = 0;
 
-	@CtorOption()
+	@ConstructOption()
 	anchorY = 0;
 
 	bounding = [0, 0, this.sizeX, this.sizeY];
 
-	@CtorOption()
+	@ConstructOption()
 	rotation = 0;
 
-	@CtorOption()
+	@ConstructOption()
 	posX = 0;
 
-	@CtorOption()
+	@ConstructOption()
 	posY = 0;
 
 	lastPosX = 0;
 
 	lastPosY = 0;
 
-	@CtorOption()
+	@ConstructOption()
 	motionX = 0;
 
-	@CtorOption()
+	@ConstructOption()
 	motionY = 0;
 
 	motionDecreaseRate = 0.9;
 
-	@CtorOption()
+	@ConstructOption()
 	isUsing = false;
 
-	@CtorOption()
+	@ConstructOption()
 	useTick = 0;
 
-	@CtorOption()
+	@ConstructOption()
 	attachments: RecordMap<Attachment> = new RecordMap();
 
-	@CtorOption()
+	@ConstructOption()
 	attaching: Attachment;
 
 	type: ActorType;
 
-	@CtorOption()
+	@ConstructOption()
 	attachMapping: AttachMapping;
 
 	canDamage = false;

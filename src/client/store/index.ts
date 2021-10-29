@@ -1,8 +1,7 @@
 import { HashedStore } from '../../shared/store';
 import { LandObject } from '../object/land';
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 
-import * as PIXI from 'pixi.js';
 import { Entity, MemoryDatabase } from '../../database/memory';
 import { EventEmitter } from '../../server/shared/event';
 import { ActorObject } from '../object/actor';
@@ -10,16 +9,7 @@ import { ContainerType } from '../../server/inventory';
 import { ItemType } from '../../server/item';
 
 @injectable()
-export class ActorContainer extends PIXI.Container {}
-
-@injectable()
-export class LandContainer extends PIXI.Container {}
-
-@injectable()
 export class ActorStore extends HashedStore<ActorObject> {
-	constructor(@inject(ActorContainer) actorContainer: ActorContainer) {
-		super(actorContainer);
-	}
 	hash(item: ActorObject) {
 		return [item.getServerId()];
 	}
@@ -27,9 +17,6 @@ export class ActorStore extends HashedStore<ActorObject> {
 
 @injectable()
 export class LandStore extends HashedStore<LandObject> {
-	constructor(@inject(LandContainer) landContainer: LandContainer) {
-		super(landContainer);
-	}
 	hash(item: LandObject) {
 		return [[item.getServerId()], [item.x, item.y]];
 	}

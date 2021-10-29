@@ -1,12 +1,12 @@
 import { Vector2 } from '../../server/shared/math';
 import { ActorType } from '../../server/actor/spec';
-import { ActorCtorOption, ActorObject } from './actor';
+import { ActorConstructOption, ActorObject } from './actor';
 import { TextureProvider } from '../texture';
 
 export class Arrow extends ActorObject {
 	private shootingDirection: number;
 
-	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
+	constructor(serverId: number, option: ActorConstructOption, texture: TextureProvider) {
 		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.ARROW, texture);
 
 		this.shootingDirection = option.rotation;
@@ -23,7 +23,7 @@ export class Arrow extends ActorObject {
 export class Bow extends ActorObject {
 	private dragging = false;
 
-	constructor(serverId: number, option: ActorCtorOption, texture: TextureProvider) {
+	constructor(serverId: number, option: ActorConstructOption, texture: TextureProvider) {
 		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.BOW, texture);
 
 		this.canWalk = false;

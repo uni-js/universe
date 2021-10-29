@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { BowUsingInfo } from '../shared/store';
+import { BowUsingInfo } from '../store';
 import { useData } from './entry';
 
 import './bow.css';

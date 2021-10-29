@@ -8,14 +8,14 @@ export const CTOR_OPTION_PROPERTY_SYMBOL = Symbol('ctor-option');
  * 在向客户端要求构造该实体的时候
  * 会传入被所有被该装饰器标注的属性
  */
-export function CtorOption() {
+export function ConstructOption() {
 	return Reflect.metadata(CTOR_OPTION_PROPERTY_SYMBOL, true);
 }
 
 /**
  * 获取所有被标注构造器选项的实体属性
  */
-export function GetCtorOptions(target: any) {
+export function GetConstructOptions(target: any) {
 	const options: any = {};
 	for (const propertyName of Object.getOwnPropertyNames(target)) {
 		const metadataValue = Reflect.getMetadata(CTOR_OPTION_PROPERTY_SYMBOL, target, propertyName);

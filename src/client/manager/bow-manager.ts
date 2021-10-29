@@ -5,7 +5,7 @@ import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../../server/ma
 import { SERVER_TICKS_MULTIPLE } from '../../server/shared/server';
 import { injectCollection, NotLimitCollection } from '../../database/memory';
 import { GameManager } from '../system/manager';
-import { BowUsingInfo } from '../shared/store';
+import { BowUsingInfo } from '../store';
 import { ActorManager } from './actor-manager';
 import { PlayerManager } from './player-manager';
 import { ShortcutManager } from './shortcut-manager';

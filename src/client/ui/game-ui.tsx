@@ -1,4 +1,4 @@
-import { PlayerInfo } from '../shared/store';
+import { PlayerInfo } from '../store';
 import { useData, useEventBus } from './entry';
 import React from 'react';
 import { Shortcut } from './shortcut';

@@ -1,29 +1,29 @@
 import { Actor, ActorType } from '../actor/spec';
-import { CtorOption } from '../shared/entity';
+import { ConstructOption } from '../shared/entity';
 
 export class Bow extends Actor {
 	type = ActorType.BOW;
 
-	@CtorOption()
+	@ConstructOption()
 	sizeX = 0.65;
 
-	@CtorOption()
+	@ConstructOption()
 	sizeY = 0.65;
 }
 
 export class Arrow extends Actor {
 	type = ActorType.ARROW;
 
-	@CtorOption()
+	@ConstructOption()
 	sizeX = 2;
 
-	@CtorOption()
+	@ConstructOption()
 	sizeY = 0.2;
 
-	@CtorOption()
+	@ConstructOption()
 	anchorX = 0;
 
-	@CtorOption()
+	@ConstructOption()
 	anchorY = 0.5;
 
 	bounding = [1.9, -0.1, 2.1, 0.1];
@@ -31,7 +31,7 @@ export class Arrow extends Actor {
 	/**
 	 * 力度
 	 */
-	@CtorOption()
+	@ConstructOption()
 	power = 0.5;
 
 	/**

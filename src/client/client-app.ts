@@ -22,13 +22,14 @@ import { UIEntry } from './ui/entry';
 import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase } from '../database/memory';
 import { GameUI } from './ui/game-ui';
 
-import { LandContainer, ActorStore, DataStore, DataStoreEntities, LandStore, UIEventBus, ActorContainer } from './shared/store';
+import { ActorStore, DataStore, DataStoreEntities, LandStore, UIEventBus } from './store';
 import { ActorFactory } from './object/actor';
 import { ActorMapper } from './object';
 import { ShortcutController } from './controller/shortcut-controller';
 import { BowManager } from './manager/bow-manager';
 import { PickDropManager } from './manager/pick-drop-manager';
 import { PickDropController } from './controller/pick-drop-controller';
+import { HashedStore } from '../shared/store';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -43,6 +44,7 @@ export class ClientApp {
 
 	private app: PIXI.Application;
 
+	private stores: any[] = [];
 	private managers: any[] = [];
 	private controllers: any[] = [];
 
@@ -72,6 +74,8 @@ export class ClientApp {
 			width: this.worldWidth,
 			height: this.worldHeight,
 		});
+
+		this.stores = [LandStore, ActorStore];
 		this.managers = [ActorManager, LandManager, CursorManager, PlayerManager, ShortcutManager, BowManager, PickDropManager];
 		this.controllers = [ActorController, BootController, LandController, PlayerController, ShortcutController, PickDropController];
 
@@ -136,12 +140,13 @@ export class ClientApp {
 
 		bindCollectionsTo(ioc, DataStoreEntities, this.dataStore);
 
-		bindToContainer(ioc, [ActorContainer, LandContainer, ActorStore, LandStore, ...this.managers, ...this.controllers]);
+		bindToContainer(ioc, [...this.stores, ...this.managers, ...this.controllers]);
 
 		const viewport = ioc.get(Viewport);
 
-		viewport.addChild(ioc.get(LandContainer));
-		viewport.addChild(ioc.get(ActorContainer));
+		for (const store of this.stores) {
+			viewport.addChild(ioc.get<HashedStore<any>>(store).container);
+		}
 
 		this.app.stage.addChild(viewport);
 
