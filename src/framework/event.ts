@@ -1,5 +1,4 @@
 import { EventEmitter2 } from 'eventemitter2';
-import { GetAllMethodsOfObject } from '../utils';
 
 export type ClassOf<T> = { new (...args: any[]): T };
 
@@ -100,4 +99,21 @@ export class GameEventEmitter extends EventEmitter2 {
 			this.emitEvent(eventClazz, event);
 		});
 	}
+}
+
+export class AddEntityEvent extends InternalEvent {
+	entityId: number;
+	entity: unknown;
+}
+
+export class RemoveEntityEvent extends InternalEvent {
+	entityId: number;
+	entity: unknown;
+}
+
+function GetAllMethodsOfObject(object: any) {
+	const prototype = Object.getPrototypeOf(object);
+	return Object.getOwnPropertyNames(prototype).filter(function (property) {
+		return typeof object[property] == 'function';
+	});
 }

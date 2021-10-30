@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { GetServerDebugDelay } from '../debug';
+import { GetServerDebugDelay } from './debug';
 
 import { ExternalEvent, GameEventEmitter } from './event';
 

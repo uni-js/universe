@@ -17,7 +17,7 @@ import { DroppedItemActor } from '../entity/dropped-item';
 import { Vector2 } from '../shared/math';
 
 import * as Events from '../event/internal';
-import { HandleInternalEvent } from '../../framework/event';
+import { AddEntityEvent, HandleInternalEvent, RemoveEntityEvent } from '../../framework/event';
 
 @injectable()
 export class InventoryManager extends EntityManager<Inventory> {
@@ -110,8 +110,8 @@ export class InventoryManager extends EntityManager<Inventory> {
 		return this.addNewEntity(inventory);
 	}
 
-	@HandleInternalEvent('playerManager', Events.AddEntityEvent)
-	private onPlayerAdded(event: Events.AddEntityEvent) {
+	@HandleInternalEvent('playerManager', AddEntityEvent)
+	private onPlayerAdded(event: AddEntityEvent) {
 		const player = event.entity as Player;
 		const inventory = this.addNewPlayerInventory(player.$loki);
 
@@ -121,8 +121,8 @@ export class InventoryManager extends EntityManager<Inventory> {
 		this.sendInventoryUpdateData(player, inventory.$loki);
 	}
 
-	@HandleInternalEvent('playerManager', Events.RemoveEntityEvent)
-	private onPlayerRemoved(event: Events.RemoveEntityEvent) {
+	@HandleInternalEvent('playerManager', RemoveEntityEvent)
+	private onPlayerRemoved(event: RemoveEntityEvent) {
 		const invetory = this.playerInventoryList.findOne({ playerId: event.entityId });
 		this.removeInventory(invetory.$loki);
 	}

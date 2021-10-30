@@ -1,5 +1,5 @@
 import { PlayerInfo } from '../store';
-import { useData, useEventBus } from './entry';
+import { useData, useEventBus } from '../../framework/user-interface';
 import React from 'react';
 import { Shortcut } from './shortcut';
 

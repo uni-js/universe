@@ -8,7 +8,7 @@ import { LandManager } from './land-manager';
 import { PlayerManager } from './player-manager';
 
 import * as Events from '../event/internal';
-import { HandleInternalEvent } from '../../framework/event';
+import { AddEntityEvent, HandleInternalEvent, RemoveEntityEvent } from '../../framework/event';
 
 /**
  * 该管理器维护与Land跨越、加载有关的状态：
@@ -38,16 +38,16 @@ export class LandMoveManager extends Manager {
 		this.landManager.removeAtRecord(land, 'actors', actorId);
 	}
 
-	@HandleInternalEvent('actorManager', Events.AddEntityEvent)
-	private onActorAdded(event: Events.AddEntityEvent) {
+	@HandleInternalEvent('actorManager', AddEntityEvent)
+	private onActorAdded(event: AddEntityEvent) {
 		const actor = event.entity as Actor;
 		const pos = new Vector2(actor.posX, actor.posY);
 		const landPos = PosToLandPos(pos);
 		this.addLandActor(landPos, event.entityId);
 	}
 
-	@HandleInternalEvent('actorManager', Events.RemoveEntityEvent)
-	private onActorRemoved(event: Events.RemoveEntityEvent) {
+	@HandleInternalEvent('actorManager', RemoveEntityEvent)
+	private onActorRemoved(event: RemoveEntityEvent) {
 		const actor = event.entity as Actor;
 		const pos = new Vector2(actor.posX, actor.posY);
 		const landPos = PosToLandPos(pos);

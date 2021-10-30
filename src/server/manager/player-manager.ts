@@ -11,7 +11,7 @@ import { GetConstructOptions } from '../shared/entity';
 
 import * as Events from '../event/internal';
 import { LandManager } from './land-manager';
-import { HandleInternalEvent } from '../../framework/event';
+import { AddEntityEvent, HandleInternalEvent, RemoveEntityEvent } from '../../framework/event';
 
 @injectable()
 export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
@@ -19,15 +19,15 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		super(actorManager, Player);
 	}
 
-	@HandleInternalEvent('actorManager', Events.AddEntityEvent)
-	private onActorAdded(event: Events.AddEntityEvent) {
+	@HandleInternalEvent('actorManager', AddEntityEvent)
+	private onActorAdded(event: AddEntityEvent) {
 		for (const player of this.getAllEntities()) {
 			this.spawnActor(player, event.entityId);
 		}
 	}
 
-	@HandleInternalEvent('actorManager', Events.RemoveEntityEvent)
-	private onActorRemoved(event: Events.RemoveEntityEvent) {
+	@HandleInternalEvent('actorManager', RemoveEntityEvent)
+	private onActorRemoved(event: RemoveEntityEvent) {
 		for (const player of this.getAllEntities()) {
 			this.despawnActor(player, event.entityId);
 		}

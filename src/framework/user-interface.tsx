@@ -1,7 +1,11 @@
 import React, { useContext } from 'react';
-import { Entity, EntityQuery, IMemoryDatabase } from '../../framework/memory-database';
-import { UIEventBus } from '../store';
-import { TextureProvider } from '../texture';
+import { Entity, EntityQuery, IMemoryDatabase } from './memory-database';
+import { TextureProvider } from './texture';
+import { injectable } from "inversify";
+import { EventEmitter2 } from "eventemitter2"
+
+@injectable()
+export class UIEventBus extends EventEmitter2 {}
 
 export type DataSource = IMemoryDatabase;
 

@@ -5,10 +5,11 @@ import { Viewport } from '../viewport';
 import { AttachType } from '../../server/actor/spec';
 import { inject, injectable } from 'inversify';
 import { injectCollection, NotLimitCollection } from '../../framework/memory-database';
-import { PlayerInfo, UIEventBus } from '../store';
+import { PlayerInfo } from '../store';
 import { Player } from '../object/player';
 import { ActorManager } from './actor-manager';
 import * as Events from '../event/internal';
+import { UIEventBus } from '../../framework/user-interface';
 
 @injectable()
 export class PlayerManager extends GameManager {

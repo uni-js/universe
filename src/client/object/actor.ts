@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 
 import { ActorType, AttachMapping, Direction, RunningState } from '../../server/actor/spec';
 import { GameObject } from '../../framework/game-object';
-import { GetEmptyTexture, TextureProvider } from '../texture';
+import { GetEmptyTexture, TextureProvider } from '../../framework/texture';
 import { Interpolate2d, Vector2 } from '../../server/shared/math';
 import { EventEmitter2 } from 'eventemitter2';
 import { Factory, FactoryMapper } from '../../shared/factory';

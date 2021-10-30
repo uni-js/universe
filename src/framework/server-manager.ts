@@ -1,6 +1,5 @@
 import { Entity, NotLimitCollection } from './memory-database';
-import { GameEventEmitter } from './event';
-import * as Events from '../server/event/internal';
+import { GameEventEmitter, AddEntityEvent, RemoveEntityEvent } from './event';
 
 export type ClassOf<T> = { new (...args: any[]): T };
 export type ObjectQueryCondition<T> = Partial<T & LokiObj> & Record<string, any>;
@@ -121,14 +120,14 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 
 	addNewEntity(newEntity: T): Readonly<T> {
 		const insertedEntity = this.entityList.insertOne(newEntity);
-		this.emitEvent(Events.AddEntityEvent, { entityId: insertedEntity.$loki, entity: insertedEntity });
+		this.emitEvent(AddEntityEvent, { entityId: insertedEntity.$loki, entity: insertedEntity });
 		return insertedEntity;
 	}
 
 	removeEntity(entity: T) {
 		const entityId = entity.$loki;
 		this.entityList.remove(entity);
-		this.emitEvent(Events.RemoveEntityEvent, { entityId: entityId, entity });
+		this.emitEvent(RemoveEntityEvent, { entityId: entityId, entity });
 	}
 
 	addAtRecord<R>(entity: T, propertyName: string, record: R, key?: string) {
@@ -195,7 +194,7 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Manage
 		const inserted = this.manager.addNewEntity(newEntity) as K;
 
 		if (inserted instanceof this.clazz) {
-			this.emitEvent(Events.AddEntityEvent, { entityId: newEntity.$loki, entity: newEntity });
+			this.emitEvent(AddEntityEvent, { entityId: newEntity.$loki, entity: newEntity });
 		}
 		return inserted;
 	}
@@ -204,7 +203,7 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Manage
 		this.manager.removeEntity(entity);
 
 		if (entity instanceof this.clazz) {
-			this.emitEvent(Events.RemoveEntityEvent, { entityId, entity });
+			this.emitEvent(RemoveEntityEvent, { entityId, entity });
 		}
 	}
 

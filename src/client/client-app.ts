@@ -5,12 +5,12 @@ import ReactDOM from 'react-dom';
 
 import { HTMLInputProvider } from './input';
 import { ActorManager } from './manager/actor-manager';
-import { ParseTexturePath, TextureProvider, TextureType } from './texture';
+import { ParseTexturePath, TextureProvider, TextureType } from '../framework/texture';
 import { EventBusClient } from '../framework/bus-client';
 import { Viewport } from './viewport';
 import { LandManager } from './manager/land-manager';
 import { Container } from 'inversify';
-import { bindToContainer } from '../framework/ioc';
+import { bindToContainer } from '../framework/inversify';
 import { CursorManager } from './manager/cursor-manager';
 import { PlayerManager } from './manager/player-manager';
 import { ShortcutManager } from './manager/shortcut-manager';
@@ -18,18 +18,18 @@ import { ActorController } from './controller/actor-controller';
 import { BootController } from './controller/boot-controller';
 import { LandController } from './controller/land-controller';
 import { PlayerController } from './controller/player-controller';
-import { UIEntry } from './ui/entry';
+import { UIEntry, UIEventBus } from '../framework/user-interface';
 import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase } from '../framework/memory-database';
 import { GameUI } from './ui/game-ui';
 
-import { ActorStore, DataStore, DataStoreEntities, LandStore, UIEventBus } from './store';
+import { ActorStore, DataStore, DataStoreEntities, LandStore } from './store';
 import { ActorFactory } from './object/actor';
 import { ActorMapper } from './object';
 import { ShortcutController } from './controller/shortcut-controller';
 import { BowManager } from './manager/bow-manager';
 import { PickDropManager } from './manager/pick-drop-manager';
 import { PickDropController } from './controller/pick-drop-controller';
-import { ObjectStore } from '../framework/store';
+import { ObjectStore } from '../framework/object-store';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;

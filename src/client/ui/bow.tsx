@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { BowUsingInfo } from '../store';
-import { useData } from './entry';
+import { useData } from '../../framework/user-interface';
 
 import './bow.css';
 import classNames from 'classnames';

@@ -2,7 +2,7 @@ import { EventBusClient } from '../../framework/bus-client';
 import { Vector2 } from '../../server/shared/math';
 import { ActorManager } from '../manager/actor-manager';
 import { Player } from '../object/player';
-import { TextureProvider } from '../texture';
+import { TextureProvider } from '../../framework/texture';
 import { inject, injectable } from 'inversify';
 import { PlayerManager } from '../manager/player-manager';
 import { ActorFactory, ActorObject } from '../object/actor';

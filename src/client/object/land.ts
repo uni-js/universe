@@ -1,10 +1,10 @@
 import { LAND_WIDTH } from '../../server/land/const';
 import { LandData } from '../../server/land/types';
 import { Vector2 } from '../../server/shared/math';
-import { StaticObject } from '../../framework/game-object';
-import { TextureProvider } from '../texture';
+import { TextureProvider } from '../../framework/texture';
 import { BRICK_WIDTH } from './brick';
 import { CompositeRectTileLayer } from '@pixi/tilemap';
+import { StaticObject } from './static';
 
 export class LandObject extends StaticObject {
 	private tileLayer: CompositeRectTileLayer;

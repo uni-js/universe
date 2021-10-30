@@ -12,7 +12,7 @@ import { createPersistDatabase, PersistDatabaseSymbol, IPersistDatabase } from '
 import { LandController } from './controller/land-controller';
 
 import { Container } from 'inversify';
-import { bindToContainer } from '../framework/ioc';
+import { bindToContainer } from '../framework/inversify';
 import { Manager } from '../framework/server-manager';
 import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../framework/memory-database';
 import { Land } from './entity/land';
@@ -26,7 +26,7 @@ import { Actor, ActorFactory } from './actor/spec';
 import { ItemDef } from './item';
 import { ActorMapper } from './actor/mapper';
 import { PickDropController } from './controller/pick-drop-controller';
-import { GetIsServerUseDelay } from '../debug';
+import { GetIsServerUseDelay } from '../framework/debug';
 import { LandLoadManager } from './manager/land-load-manager';
 
 export interface AppConfig {

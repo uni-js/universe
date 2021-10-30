@@ -3,7 +3,7 @@ import { EventBusClient } from '../../framework/bus-client';
 import { Vector2 } from '../../server/shared/math';
 import { LandManager } from '../manager/land-manager';
 import { LandObject } from '../object/land';
-import { TextureProvider } from '../texture';
+import { TextureProvider } from '../../framework/texture';
 
 import * as ServerEvents from '../../server/event/external';
 import { HandleExternalEvent } from '../../framework/event';

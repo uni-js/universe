@@ -1,7 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 import { InventoryBlockInfo, ShortcutContainerInfo } from '../store';
-import { useData, useDatas, useTexturePath, useTextureProvider } from './entry';
+import { useData, useDatas, useTexturePath, useTextureProvider } from '../../framework/user-interface';
 import { ContainerType } from '../../server/inventory';
 import './shortcut.css';
 

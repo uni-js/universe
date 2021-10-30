@@ -1,9 +1,8 @@
-import { ObjectStore } from '../../framework/store';
+import { ObjectStore } from '../../framework/object-store';
 import { LandObject } from '../object/land';
 import { injectable } from 'inversify';
 
 import { Entity, MemoryDatabase } from '../../framework/memory-database';
-import { EventEmitter } from '../../server/shared/event';
 import { ActorObject } from '../object/actor';
 import { ContainerType } from '../../server/inventory';
 import { ItemType } from '../../server/item';
@@ -24,9 +23,6 @@ export class LandStore extends ObjectStore<LandObject> {
 
 @injectable()
 export class DataStore extends MemoryDatabase {}
-
-@injectable()
-export class UIEventBus extends EventEmitter {}
 
 export class PlayerInfo extends Entity {
 	/**

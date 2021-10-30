@@ -1,7 +1,7 @@
 import { Vector2 } from '../../server/shared/math';
 import { ActorType } from '../../server/actor/spec';
 import { ActorConstructOption, ActorObject } from './actor';
-import { TextureProvider } from '../texture';
+import { TextureProvider } from '../../framework/texture';
 
 export class Arrow extends ActorObject {
 	private shootingDirection: number;

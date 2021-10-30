@@ -107,13 +107,3 @@ export class DespawnActorEvent extends InternalEvent {
 	fromPlayerId: number;
 	actorId: number;
 }
-
-export class AddEntityEvent extends InternalEvent {
-	entityId: number;
-	entity: unknown;
-}
-
-export class RemoveEntityEvent extends InternalEvent {
-	entityId: number;
-	entity: unknown;
-}

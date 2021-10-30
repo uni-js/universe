@@ -1,5 +1,5 @@
-import { ObjectStore, HashItem } from './store';
-import { doTickable } from './update';
+import { ObjectStore, HashItem } from './object-store';
+import { doTickable } from './tickable';
 import { GameEventEmitter, InternalEvent, ClassOf } from './event';
 import { IGameObject } from './game-object';
 
