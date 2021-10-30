@@ -1,0 +1,14 @@
+{
+    "codegen": {
+        "sourcePath": "src",
+        "eventsSpecPath": "framework/event",
+        "clientManagerSpecPath": "framework/client-manager",
+        "serverManagerSpecPath": "framework/server-manager",
+
+        "clientManagersPath": "client/manager",
+        "clientInternalEventsModulePath": "client/event/internal",
+        "clientExternalEventsModulePath": "client/event/external",
+        "serverInternalEventsModulePath": "server/event/internal",
+        "serverExternalEventsModulePath": "server/event/external"
+    }
+}

@@ -114,7 +114,7 @@ export class PlayerManager extends GameManager {
 
 		if (tick % 5 === 0) {
 			if (this.lastAttachmentRotateRad === rad) return;
-			this.emitEvent(Events.RotateAttachment, {
+			this.emitEvent(Events.RotateAttachmentEvent, {
 				rotation: rad,
 			});
 			this.lastAttachmentRotateRad = rad;

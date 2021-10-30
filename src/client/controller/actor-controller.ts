@@ -27,7 +27,7 @@ export class ActorController extends GameController {
 
 		this.redirectToBusEvent(this.actorManager, Events.ActorToggleUsingEvent, ExternalEvents.ActorToggleUsingEvent);
 		this.redirectToBusEvent(this.actorManager, Events.ActorToggleWalkEvent, ExternalEvents.ActorToggleWalkEvent);
-		this.redirectToBusEvent(this.playerManager, Events.RotateAttachment, ExternalEvents.RotateAttachmentEvent);
+		this.redirectToBusEvent(this.playerManager, Events.RotateAttachmentEvent, ExternalEvents.RotateAttachmentEvent);
 	}
 
 	@HandleExternalEvent(ServerEvents.ActorToggleUsing)

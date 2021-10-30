@@ -4,9 +4,7 @@ export type ClassOf<T> = { new (...args: any[]): T };
 
 export class InternalEvent {}
 
-export class ExternalEvent extends InternalEvent {
-	isExternal = true;
-}
+export class ExternalEvent extends InternalEvent {}
 
 export interface EventBound {
 	bindToMethod: (...args: any[]) => void;
@@ -53,7 +51,6 @@ export function ConvertInternalToExternalEvent<I extends InternalEvent, E extend
 	externalEventClazz: ClassOf<E>,
 ) {
 	const exEvent = new externalEventClazz();
-	exEvent.isExternal = true;
 	CopyOwnPropertiesTo(internalEvent, exEvent);
 	return exEvent;
 }
