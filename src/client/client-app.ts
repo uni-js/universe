@@ -18,11 +18,10 @@ import { ActorController } from './controller/actor-controller';
 import { BootController } from './controller/boot-controller';
 import { LandController } from './controller/land-controller';
 import { PlayerController } from './controller/player-controller';
-import { UIEntry, UIEventBus } from '../framework/user-interface';
-import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase } from '../framework/memory-database';
-import { GameUI } from './ui/game-ui';
+import { UIEntry, UIEventBus } from '../framework/user-interface/hooks';
+import { GameUI } from './ui/component/game-ui';
 
-import { ActorStore, DataStore, DataStoreEntities, LandStore } from './store';
+import { ActorStore, LandStore } from './store';
 import { ActorFactory } from './object/actor';
 import { ActorMapper } from './object';
 import { ShortcutController } from './controller/shortcut-controller';
@@ -30,6 +29,8 @@ import { BowManager } from './manager/bow-manager';
 import { PickDropManager } from './manager/pick-drop-manager';
 import { PickDropController } from './controller/pick-drop-controller';
 import { ObjectStore } from '../framework/object-store';
+import { UIStates } from './ui/state';
+import { UIStateContainer } from '../framework/user-interface/state';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -44,16 +45,17 @@ export class ClientApp {
 
 	private app: PIXI.Application;
 
+	private uiStates: any[] = [];
 	private stores: any[] = [];
 	private managers: any[] = [];
 	private controllers: any[] = [];
 
+	private uiStatesContainer: UIStateContainer;
 	private textureProvider = new TextureProvider();
 
 	private viewport: Viewport;
 	private busClient: EventBusClient;
 	private inputProvider: HTMLInputProvider;
-	private dataStore: IMemoryDatabase;
 	private uiEventBus: UIEventBus;
 
 	private actorFactory: ActorFactory;
@@ -75,6 +77,9 @@ export class ClientApp {
 			height: this.worldHeight,
 		});
 
+		this.iocContainer = new Container({ skipBaseClassChecks: true });
+		this.uiStatesContainer = new UIStateContainer(UIStates);
+
 		this.stores = [LandStore, ActorStore];
 		this.managers = [ActorManager, LandManager, CursorManager, PlayerManager, ShortcutManager, BowManager, PickDropManager];
 		this.controllers = [ActorController, BootController, LandController, PlayerController, ShortcutController, PickDropController];
@@ -88,8 +93,6 @@ export class ClientApp {
 		this.busClient = new EventBusClient(this.serverUrl);
 		this.inputProvider = new HTMLInputProvider(this.app.view);
 		this.uiEventBus = new UIEventBus();
-
-		this.dataStore = createMemoryDatabase(DataStoreEntities);
 
 		this.initActorFactory();
 		this.initWrapper();
@@ -126,19 +129,16 @@ export class ClientApp {
 		this.wrapper.appendChild(this.app.view);
 		this.uiContainer = container;
 	}
-	initIocContainer() {
-		const ioc = new Container({ skipBaseClassChecks: true });
+	initBaseBindings() {
+		const ioc = this.iocContainer;
 
 		ioc.bind(HTMLInputProvider).toConstantValue(this.inputProvider);
 		ioc.bind(EventBusClient).toConstantValue(this.busClient);
 		ioc.bind(Viewport).toConstantValue(this.viewport);
 		ioc.bind(TextureProvider).toConstantValue(this.textureProvider);
-		ioc.bind(DataStore).toConstantValue(this.dataStore);
 		ioc.bind(UIEventBus).toConstantValue(this.uiEventBus);
 
 		ioc.bind(ActorFactory).toConstantValue(this.actorFactory);
-
-		bindCollectionsTo(ioc, DataStoreEntities, this.dataStore);
 
 		bindToContainer(ioc, [...this.stores, ...this.managers, ...this.controllers]);
 
@@ -149,22 +149,33 @@ export class ClientApp {
 		}
 
 		this.app.stage.addChild(viewport);
-
-		this.iocContainer = ioc;
 	}
 	getCanvas() {
 		return this.app.view;
 	}
 	async start() {
 		await this.initTextures();
-		this.initIocContainer();
+
+		this.initUIBindings();
+		this.initBaseBindings();
 
 		this.app.start();
+
 		this.renderUI();
 		this.startLoop();
 	}
+
+	private initUIBindings() {
+		this.iocContainer.bind(UIStateContainer).toConstantValue(this.uiStatesContainer);
+
+		for (const [stateClass, state] of this.uiStatesContainer.getEntries()) {
+			this.iocContainer.bind(stateClass).toConstantValue(state);
+		}
+	}
+
 	private renderUI() {
-		const dataSource = this.iocContainer.get(DataStore);
+		const dataSource = this.iocContainer.get(UIStateContainer);
+
 		const ticker = this.app.ticker;
 		const eventBus = this.uiEventBus;
 		const textureProvider = this.textureProvider;

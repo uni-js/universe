@@ -4,24 +4,22 @@ import { GameManager } from '../../framework/client-manager';
 import { Viewport } from '../viewport';
 import { AttachType } from '../../server/actor/spec';
 import { inject, injectable } from 'inversify';
-import { injectCollection, NotLimitCollection } from '../../framework/memory-database';
-import { PlayerInfo } from '../store';
 import { Player } from '../object/player';
 import { ActorManager } from './actor-manager';
 import * as Events from '../event/internal';
-import { UIEventBus } from '../../framework/user-interface';
+import { UIEventBus } from '../../framework/user-interface/hooks';
+import { PlayerState } from '../ui/state';
 
 @injectable()
 export class PlayerManager extends GameManager {
 	public canRotateAttachment = true;
 
 	private currentPlayer: Player;
-	private playerInfo: PlayerInfo;
 
 	private lastAttachmentRotateRad: number;
 
 	constructor(
-		@injectCollection(PlayerInfo) private gameInfoList: NotLimitCollection<PlayerInfo>,
+		@inject(PlayerState) private playerState: PlayerState,
 		@inject(HTMLInputProvider) private inputProvider: HTMLInputProvider,
 		@inject(Viewport) private stage: Viewport,
 		@inject(UIEventBus) private uiEvent: UIEventBus,
@@ -30,16 +28,10 @@ export class PlayerManager extends GameManager {
 		super();
 
 		this.uiEvent.on('PlayerNameClicked', () => console.log('yes!'));
-
-		const playerInfo = new PlayerInfo();
-
-		this.playerInfo = playerInfo;
-		this.gameInfoList.insertOne(playerInfo);
 	}
 	setCurrentPlayer(player: Player) {
-		this.playerInfo.actorId = player.getServerId();
-		this.playerInfo.playerName = 'Player';
-		this.gameInfoList.update(this.playerInfo);
+		this.playerState.actorId = player.getServerId();
+		this.playerState.playerName = 'Player';
 
 		player.onEvent(Events.ControlMovedEvent, this.onPlayerControlMoved);
 		player.takeControl = true;

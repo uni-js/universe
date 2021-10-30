@@ -1,13 +1,14 @@
 import React, { useContext } from 'react';
-import { Entity, EntityQuery, IMemoryDatabase } from './memory-database';
-import { TextureProvider } from './texture';
-import { injectable } from "inversify";
-import { EventEmitter2 } from "eventemitter2"
+
+import { TextureProvider } from '../texture';
+import { injectable } from 'inversify';
+import { EventEmitter2 } from 'eventemitter2';
+import { UIStateContainer } from './state';
 
 @injectable()
 export class UIEventBus extends EventEmitter2 {}
 
-export type DataSource = IMemoryDatabase;
+export type DataSource = UIStateContainer;
 
 export type TickingFunction = (...args: any[]) => void;
 export interface UITicker {
@@ -60,11 +61,6 @@ export function useTextureProvider() {
 	return useContext(UIContext).textureProvider;
 }
 
-export function useCollection<E extends Entity>(cls: new () => E): Collection<E> {
-	const source = useDataSource();
-	return source.getCollection(cls.name);
-}
-
 export function useTicker(fn: TickingFunction, deps: any[] = []) {
 	const { ticker } = useContext(UIContext);
 	React.useEffect(() => {
@@ -75,48 +71,16 @@ export function useTicker(fn: TickingFunction, deps: any[] = []) {
 	}, deps);
 }
 
-export function useData<E extends Entity>(cls: new () => E, query: EntityQuery<E> = {}) {
+export function useUIState<E>(cls: new () => E) {
 	const [state, setState] = React.useState<E>();
 	const versionRef = React.useRef(null);
 
-	const source = useCollection(cls);
+	const uiState = useDataSource().getState(cls);
 
 	useTicker(() => {
-		const found = source.findOne(query);
-		if (found && found.meta.revision !== versionRef.current) {
-			versionRef.current = found.meta.revision;
-			setState({ ...found });
-		}
-	});
-
-	return state;
-}
-
-export function useDatas<E extends Entity>(cls: new () => E, query: EntityQuery<E> = {}) {
-	const [state, setState] = React.useState<E[]>([]);
-	const beforesRef = React.useRef([]);
-
-	const source = useCollection(cls);
-
-	function checkIfChanged(list: any[]): boolean {
-		if (beforesRef.current.length !== list.length) return true;
-		for (let i = 0; i < list.length; i++) {
-			if (beforesRef.current[i] !== list[i]) {
-				return true;
-			}
-			if (beforesRef.current[i].meta.revision !== list[i].meta.revision) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	useTicker(() => {
-		const foundList = source.find(query);
-
-		if (checkIfChanged(foundList)) {
-			beforesRef.current = foundList;
-			setState([...foundList]);
+		if (uiState && uiState.meta.revision !== versionRef.current) {
+			versionRef.current = uiState.meta.revision;
+			setState({ ...uiState });
 		}
 	});
 

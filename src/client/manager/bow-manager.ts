@@ -3,29 +3,26 @@ import { ActorType } from '../../server/actor/spec';
 import { ItemType } from '../../server/item';
 import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../../server/manager/bow-manager';
 import { SERVER_TICKS_MULTIPLE } from '../../server/shared/server';
-import { injectCollection, NotLimitCollection } from '../../framework/memory-database';
 import { GameManager } from '../../framework/client-manager';
-import { BowUsingInfo } from '../store';
 import { ActorManager } from './actor-manager';
 import { PlayerManager } from './player-manager';
 import { ShortcutManager } from './shortcut-manager';
-import * as Events from '../event/internal';
 import { HandleInternalEvent } from '../../framework/event';
+import { BowUsingState } from '../ui/state';
+
+import * as Events from '../event/internal';
 
 @injectable()
 export class BowManager extends GameManager {
-	private bowUsingInfo: BowUsingInfo;
 	private useTicks = 0;
 	constructor(
 		@inject(ActorManager) private actorManager: ActorManager,
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(ShortcutManager) private shortcutManager: ShortcutManager,
 
-		@injectCollection(BowUsingInfo) private bowInfoStore: NotLimitCollection<BowUsingInfo>,
+		@inject(BowUsingState) private bowUsingState: BowUsingState,
 	) {
 		super();
-		this.bowUsingInfo = new BowUsingInfo();
-		this.bowInfoStore.insertOne(this.bowUsingInfo);
 	}
 
 	@HandleInternalEvent('actorManager', Events.ActorToggleUsingEvent)
@@ -35,21 +32,18 @@ export class BowManager extends GameManager {
 		if (actor.attaching.actorId !== this.playerManager.getCurrentPlayer().getServerId()) return;
 
 		if (event.startOrEnd) {
-			this.bowUsingInfo.isUsing = true;
+			this.bowUsingState.isUsing = true;
 		} else {
-			this.bowUsingInfo.isUsing = false;
-			this.bowUsingInfo.power = 0;
+			this.bowUsingState.isUsing = false;
+			this.bowUsingState.power = 0;
 			this.useTicks = 0;
 		}
-
-		this.bowInfoStore.update(this.bowUsingInfo);
 	}
 
 	@HandleInternalEvent('shortcutManager', Events.ActorToggleUsingEvent)
 	private onShortcutSetIndex(event: Events.SetShortcutIndexEvent) {
 		if (event.itemType !== ItemType.BOW) {
-			this.bowUsingInfo.isUsing = false;
-			this.bowInfoStore.update(this.bowUsingInfo);
+			this.bowUsingState.isUsing = false;
 			this.playerManager.canRotateAttachment = false;
 		} else {
 			this.playerManager.canRotateAttachment = true;
@@ -57,11 +51,10 @@ export class BowManager extends GameManager {
 	}
 
 	async doTick() {
-		if (this.bowUsingInfo.isUsing) {
+		if (this.bowUsingState.isUsing) {
 			this.useTicks++;
-			this.bowUsingInfo.canRelease = this.useTicks > BOW_RELEASING_MIN_TICKS * SERVER_TICKS_MULTIPLE;
-			this.bowUsingInfo.power = Math.min(1, this.useTicks / (BOW_DRAGGING_MAX_TICKS * SERVER_TICKS_MULTIPLE));
-			this.bowInfoStore.update(this.bowUsingInfo);
+			this.bowUsingState.canRelease = this.useTicks > BOW_RELEASING_MIN_TICKS * SERVER_TICKS_MULTIPLE;
+			this.bowUsingState.power = Math.min(1, this.useTicks / (BOW_DRAGGING_MAX_TICKS * SERVER_TICKS_MULTIPLE));
 		}
 	}
 }

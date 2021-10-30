@@ -1,7 +1,7 @@
-import * as PIXI from "pixi.js";
-import { GameObject } from "../../framework/game-object";
-import { TextureProvider } from "../../framework/texture";
-import { Vector2 } from "../../server/shared/math";
+import * as PIXI from 'pixi.js';
+import { GameObject } from '../../framework/game-object';
+import { TextureProvider } from '../../framework/texture';
+import { Vector2 } from '../../server/shared/math';
 
 /**
  * 游戏世界里一类长期处于静态的事物

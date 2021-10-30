@@ -1,57 +1,49 @@
 import { inject, injectable } from 'inversify';
-import { injectCollection, NotLimitCollection } from '../../framework/memory-database';
 import { ContainerUpdateData, ContainerUpdateDataUnit, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from '../../server/inventory';
 import { HTMLInputProvider, InputKey } from '../input';
 import { GameManager } from '../../framework/client-manager';
-import { ShortcutContainerInfo, InventoryBlockInfo } from '../store';
 import { ItemType } from '../../server/item';
 import * as Events from '../event/internal';
+import { InventoryBlockState, ShortcutContainerState } from '../ui/state';
 
 @injectable()
 export class ShortcutManager extends GameManager {
-	private shortcut: ShortcutContainerInfo;
 	constructor(
 		@inject(HTMLInputProvider) private input: HTMLInputProvider,
-		@injectCollection(ShortcutContainerInfo) private shortcutStore: NotLimitCollection<ShortcutContainerInfo>,
-		@injectCollection(InventoryBlockInfo) private blocksList: NotLimitCollection<InventoryBlockInfo>,
+		@inject(ShortcutContainerState) private shortcut: ShortcutContainerState,
 	) {
 		super();
-
-		this.shortcut = new ShortcutContainerInfo();
-		this.shortcutStore.insertOne(this.shortcut);
 
 		this.initBlocks();
 	}
 
 	private initBlocks() {
-		const blocks: InventoryBlockInfo[] = [];
+		const blocks: InventoryBlockState[] = [];
 		for (let i = 0; i < BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER; i++) {
-			const block = new InventoryBlockInfo();
+			const block = new InventoryBlockState();
 			block.containerType = ContainerType.SHORTCUT_CONTAINER;
 			block.itemType = ItemType.EMPTY;
 			block.index = i;
 			blocks.push(block);
 		}
-		this.blocksList.insert(blocks);
+		this.shortcut.blocks = blocks;
 	}
 
 	/**
 	 * 获取快捷栏当前选中的格子
 	 */
 	getCurrent() {
-		return this.blocksList.findOne({ containerType: ContainerType.SHORTCUT_CONTAINER, index: this.shortcut.currentIndexAt });
+		return this.shortcut.blocks[this.shortcut.currentIndexAt];
 	}
 
 	/**
 	 * 设置单个格子的数据
 	 */
 	updateBlock(updateDataUnit: ContainerUpdateDataUnit) {
-		const found = this.blocksList.findOne({ index: updateDataUnit.index });
-		if (!found) return;
-		found.itemType = updateDataUnit.itemType;
-		found.itemCount = updateDataUnit.count;
-
-		this.blocksList.update(found);
+		const block = this.shortcut.blocks[this.shortcut.currentIndexAt];
+		if (!block) return;
+		block.itemType = updateDataUnit.itemType;
+		block.itemCount = updateDataUnit.count;
 	}
 
 	/**
@@ -61,9 +53,9 @@ export class ShortcutManager extends GameManager {
 		this.shortcut.containerId = containerId;
 		this.shortcut.firstUpdated = true;
 
-		const blocks: InventoryBlockInfo[] = [];
+		const blocks: InventoryBlockState[] = [];
 		for (const unit of updateData.units) {
-			const block = new InventoryBlockInfo();
+			const block = new InventoryBlockState();
 			block.containerType = ContainerType.SHORTCUT_CONTAINER;
 			block.itemType = unit.itemType;
 			block.index = unit.index;
@@ -72,22 +64,16 @@ export class ShortcutManager extends GameManager {
 			blocks[unit.index] = block;
 		}
 
-		this.shortcutStore.update(this.shortcut);
 		if (isFullUpdate) {
-			this.blocksList.removeWhere({ containerType: ContainerType.SHORTCUT_CONTAINER });
-			this.blocksList.insert(blocks);
+			this.shortcut.blocks = blocks;
 		} else {
 			blocks.forEach((block) => {
-				this.blocksList.findAndUpdate(
-					{
-						containerType: ContainerType.SHORTCUT_CONTAINER,
-						index: block.index,
-					},
-					(target) => {
-						target.itemType = block.itemType;
-						target.itemCount = block.itemCount;
-					},
-				);
+				const source = this.shortcut.blocks[block.index];
+
+				source.itemType = block.itemType;
+				source.itemCount = block.itemCount;
+
+				this.shortcut.blocks[block.index] = source;
 			});
 		}
 	}
@@ -96,9 +82,7 @@ export class ShortcutManager extends GameManager {
 		if (!this.shortcut.firstUpdated) return;
 
 		this.shortcut.currentIndexAt = indexAt;
-		this.shortcutStore.update(this.shortcut);
-
-		const block = this.blocksList.findOne({ containerType: ContainerType.SHORTCUT_CONTAINER, index: indexAt });
+		const block = this.shortcut.blocks[indexAt];
 
 		if (dirty) {
 			this.emitEvent(Events.SetShortcutIndexEvent, {

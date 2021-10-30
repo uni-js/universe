@@ -1,8 +1,8 @@
 import React from 'react';
 import classnames from 'classnames';
-import { InventoryBlockInfo, ShortcutContainerInfo } from '../store';
-import { useData, useDatas, useTexturePath, useTextureProvider } from '../../framework/user-interface';
-import { ContainerType } from '../../server/inventory';
+import { ShortcutContainerState } from '../state';
+import { useTexturePath, useTextureProvider, useUIState } from '../../../framework/user-interface/hooks';
+
 import './shortcut.css';
 
 export const SHORTCUT_SIZE = 5;
@@ -19,16 +19,15 @@ export interface ShortcutProps {}
  * 快捷栏
  */
 export function Shortcut(props: any) {
-	const shortcutInfo = useData(ShortcutContainerInfo);
-	const blocks = useDatas(InventoryBlockInfo, { containerType: ContainerType.SHORTCUT_CONTAINER });
+	const shortcut = useUIState(ShortcutContainerState);
 	const provider = useTextureProvider();
 
 	const blockElems = [];
 
-	if (shortcutInfo && blocks.length > 0) {
+	if (shortcut && shortcut.blocks.length > 0) {
 		for (let i = 0; i < SHORTCUT_SIZE; i++) {
-			const texturePath = useTexturePath(provider, `item.${blocks[i].itemType}.normal`);
-			const isCurrent = i == shortcutInfo.currentIndexAt;
+			const texturePath = useTexturePath(provider, `item.${shortcut.blocks[i].itemType}.normal`);
+			const isCurrent = i == shortcut.currentIndexAt;
 			const clsName = classnames({ 'shortcut-block': true, 'shortcut-block-highlight': isCurrent });
 			blockElems[i] = (
 				<div className={clsName} key={i}>

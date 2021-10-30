@@ -1,10 +1,11 @@
-import { PlayerInfo } from '../store';
-import { useData, useEventBus } from '../../framework/user-interface';
 import React from 'react';
+
 import { Shortcut } from './shortcut';
+import { useEventBus, useUIState } from '../../../framework/user-interface/hooks';
+import { PlayerState } from '../state';
+import { BowUI } from './bow';
 
 import './game-ui.css';
-import { BowUI } from './bow';
 
 export function GameUI(props: any) {
 	function onClicked() {
@@ -12,11 +13,11 @@ export function GameUI(props: any) {
 	}
 
 	const eventBus = useEventBus();
-	const playerInfo = useData(PlayerInfo);
+	const player = useUIState(PlayerState);
 	return (
 		<div onClick={onClicked}>
 			<div id="player-name" style={{ pointerEvents: 'auto', fontSize: '24px', color: 'white' }}>
-				{playerInfo?.playerName}
+				{player?.playerName}
 			</div>
 			<div id="bottom-area">
 				<BowUI></BowUI>

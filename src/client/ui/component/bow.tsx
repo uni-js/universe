@@ -1,13 +1,13 @@
 import React from 'react';
-
-import { BowUsingInfo } from '../store';
-import { useData } from '../../framework/user-interface';
-
-import './bow.css';
 import classNames from 'classnames';
 
+import { useUIState } from '../../../framework/user-interface/hooks';
+import { BowUsingState } from '../state';
+
+import './bow.css';
+
 export function BowUI() {
-	const usingInfo = useData(BowUsingInfo);
+	const usingInfo = useUIState(BowUsingState);
 	if (!usingInfo) return <></>;
 
 	return (
