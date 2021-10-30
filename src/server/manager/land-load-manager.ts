@@ -18,8 +18,8 @@ export class LandLoadManager extends Manager {
 		this.loadWorker = new TaskWorker(this.onLoadTask.bind(this));
 	}
 
-	@HandleInternalEvent('landManager', Events.LandLoaded)
-	private onLandLoaded(event: Events.LandLoaded) {
+	@HandleInternalEvent('landManager', Events.LandLoadedEvent)
+	private onLandLoaded(event: Events.LandLoadedEvent) {
 		const players = this.playerManager.getAllEntities();
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 

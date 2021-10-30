@@ -19,13 +19,13 @@ export class LandController extends ServerController {
 		this.redirectToBusEvent(
 			this.landManager,
 			Events.LandDataToPlayerEvent,
-			ExternalEvents.AddLandEvent,
+			ExternalEvents.LandDataToPlayerEvent,
 			(ev) => this.playerManager.getEntityById(ev.playerId).connId,
 		);
 		this.redirectToBusEvent(
 			this.playerManager,
 			Events.LandNeverUsedEvent,
-			ExternalEvents.RemoveLandEvent,
+			ExternalEvents.LandNeverUsedEvent,
 			(ev) => this.playerManager.getEntityById(ev.playerId).connId,
 		);
 	}

@@ -18,8 +18,8 @@ export class ShortcutController extends GameController {
 		this.redirectToBusEvent(this.shortcutManager, Events.SetShortcutIndexEvent, ExternalEvents.SetShortcutIndexEvent);
 	}
 
-	@HandleExternalEvent(ServerEvents.UpdateContainer)
-	private handleUpdateContainer(event: ServerEvents.UpdateContainer) {
+	@HandleExternalEvent(ServerEvents.UpdateContainerEvent)
+	private handleUpdateContainer(event: ServerEvents.UpdateContainerEvent) {
 		if (event.containerType == ContainerType.SHORTCUT_CONTAINER) {
 			this.shortcutManager.updateBlocks(event.containerId, event.updateData, event.isFullUpdate);
 		}

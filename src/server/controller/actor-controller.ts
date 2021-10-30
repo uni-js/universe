@@ -25,23 +25,23 @@ export class ActorController extends ServerController {
 			this.getSpawnedActorConnIds(ev.actorId),
 		);
 
-		this.redirectToBusEvent(this.actorManager, Events.ActorToggleUsingEvent, ExternalEvents.ActorToggleUsing, (ev) =>
+		this.redirectToBusEvent(this.actorManager, Events.ActorToggleUsingEvent, ExternalEvents.ActorToggleUsingEvent, (ev) =>
 			this.getSpawnedActorConnIds(ev.actorId),
 		);
 
-		this.redirectToBusEvent(this.actorManager, Events.ActorSetAttachment, ExternalEvents.ActorSetAttachment, (ev) =>
+		this.redirectToBusEvent(this.actorManager, Events.ActorSetAttachmentEvent, ExternalEvents.ActorSetAttachmentEvent, (ev) =>
 			this.getSpawnedActorConnIds(ev.targetActorId),
 		);
 
-		this.redirectToBusEvent(this.actorManager, Events.ActorRemoveAttachment, ExternalEvents.ActorRemoveAttachment, (ev) =>
+		this.redirectToBusEvent(this.actorManager, Events.ActorRemoveAttachmentEvent, ExternalEvents.ActorRemoveAttachmentEvent, (ev) =>
 			this.getSpawnedActorConnIds(ev.targetActorId),
 		);
 
-		this.redirectToBusEvent(this.actorManager, Events.NewWalkStateEvent, ExternalEvents.ActorSetWalkEvent, (ev) =>
+		this.redirectToBusEvent(this.actorManager, Events.NewWalkStateEvent, ExternalEvents.NewWalkStateEvent, (ev) =>
 			this.getSpawnedActorConnIds(ev.actorId),
 		);
 
-		this.redirectToBusEvent(this.actorManager, Events.NewPosEvent, ExternalEvents.ActorNewPosEvent, (ev) =>
+		this.redirectToBusEvent(this.actorManager, Events.NewPosEvent, ExternalEvents.NewPosEvent, (ev) =>
 			this.getSpawnedActorConnIds(ev.actorId),
 		);
 

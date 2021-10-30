@@ -93,7 +93,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	useLand(player: Player, landHash: string) {
 		const landPos = GetPosByHash(landHash);
 		this.addAtRecord(player, 'usedLands', landHash);
-		this.emitEvent(Events.LandUsedEvent, { playerId: player.$loki, landPosX: landPos.x, landPosY: landPos.y });
+		this.emitEvent(Events.LandUsedEvent, { playerId: player.$loki, landPosX: landPos.x, landPosY: landPos.y, landId: undefined });
 	}
 
 	unuseLand(player: Player, landHash: string) {

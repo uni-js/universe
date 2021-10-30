@@ -166,7 +166,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 			});
 		}
 
-		this.emitEvent(Events.UpdateContainer, {
+		this.emitEvent(Events.UpdateContainerEvent, {
 			playerId: player.$loki,
 			containerType: container.containerType,
 			updateData,
@@ -187,7 +187,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 			count: block.itemCount,
 		});
 
-		this.emitEvent(Events.UpdateContainer, {
+		this.emitEvent(Events.UpdateContainerEvent, {
 			playerId: player.$loki,
 			containerType: container.containerType,
 			updateData,

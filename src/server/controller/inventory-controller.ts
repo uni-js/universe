@@ -20,8 +20,8 @@ export class InventoryController extends ServerController {
 
 		this.redirectToBusEvent(
 			this.inventoryManager,
-			Events.UpdateContainer,
-			ExternalEvents.UpdateContainer,
+			Events.UpdateContainerEvent,
+			ExternalEvents.UpdateContainerEvent,
 			(ev) => this.playerManager.getEntityById(ev.playerId).connId,
 		);
 	}

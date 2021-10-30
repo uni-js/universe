@@ -23,13 +23,13 @@ export class PlayerController extends ServerController {
 		this.redirectToBusEvent(
 			this.playerManager,
 			Events.SpawnActorEvent,
-			ExternalEvents.AddActorEvent,
+			ExternalEvents.SpawnActorEvent,
 			(ev) => this.playerManager.getEntityById(ev.fromPlayerId).connId,
 		);
 		this.redirectToBusEvent(
 			this.playerManager,
 			Events.DespawnActorEvent,
-			ExternalEvents.RemoveActorEvent,
+			ExternalEvents.DespawnActorEvent,
 			(ev) => this.playerManager.getEntityById(ev.fromPlayerId).connId,
 		);
 	}

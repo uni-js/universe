@@ -116,7 +116,7 @@ export class LandManager extends EntityManager<Land> {
 		land.isLoading = false;
 		this.landList.update(land);
 
-		this.emitEvent(Events.LandLoaded, {
+		this.emitEvent(Events.LandLoadedEvent, {
 			landPosX: landPos.x,
 			landPosY: landPos.y,
 		});
@@ -130,7 +130,7 @@ export class LandManager extends EntityManager<Land> {
 
 		this.removeLandBricks(landPos.x, landPos.y);
 
-		this.emitEvent(Events.LandUnloaded, {
+		this.emitEvent(Events.LandUnloadedEvent, {
 			landId: land.$loki,
 		});
 	}
