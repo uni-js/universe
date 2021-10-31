@@ -1,4 +1,4 @@
-import { DelayedEventBus, EventBus, EventBusSymbol, IEventBus } from '../framework/bus-server';
+import { DelayedEventBus, EventBusServer, EventBusServerSymbol, IEventBus } from '../framework/bus-server';
 import { ActorManager } from './manager/actor-manager';
 import { PlayerManager } from './manager/player-manager';
 import { LandMoveManager } from './manager/land-move-manager';
@@ -82,7 +82,7 @@ export class ServerApp {
 		this.mdb = createMemoryDatabase(this.entities);
 	}
 	private initEventBus() {
-		this.eventBus = GetIsServerUseDelay() ? new DelayedEventBus() : new EventBus();
+		this.eventBus = GetIsServerUseDelay() ? new DelayedEventBus() : new EventBusServer();
 		this.eventBus.listen(this.config.port);
 	}
 
@@ -92,7 +92,7 @@ export class ServerApp {
 		ioc.bind(PersistDatabaseSymbol).toConstantValue(this.pdb);
 		ioc.bind(MemoryDatabaseSymbol).toConstantValue(this.mdb);
 
-		ioc.bind(EventBusSymbol).toConstantValue(this.eventBus);
+		ioc.bind(EventBusServerSymbol).toConstantValue(this.eventBus);
 		ioc.bind(ActorFactory).toConstantValue(this.actorFactory);
 
 		bindCollectionsTo(ioc, this.entities, this.mdb);

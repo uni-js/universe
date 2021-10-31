@@ -1,4 +1,4 @@
-import { EventBus, EventBusSymbol } from '../../framework/bus-server';
+import { EventBusServer, EventBusServerSymbol } from '../../framework/bus-server';
 import { ActorManager } from '../manager/actor-manager';
 import { PlayerManager } from '../manager/player-manager';
 import { LandManager } from '../manager/land-manager';
@@ -13,7 +13,7 @@ import { ServerSideController } from '../../framework/server-controller';
 @injectable()
 export class ActorController extends ServerSideController {
 	constructor(
-		@inject(EventBusSymbol) eventBus: EventBus,
+		@inject(EventBusServerSymbol) eventBus: EventBusServer,
 
 		@inject(ActorManager) private actorManager: ActorManager,
 		@inject(PlayerManager) private playerManager: PlayerManager,

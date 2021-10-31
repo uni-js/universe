@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { EventBus, EventBusSymbol } from '../../framework/bus-server';
+import { EventBusServer, EventBusServerSymbol } from '../../framework/bus-server';
 import { InventoryManager } from '../manager/inventory-manager';
 import { PlayerManager } from '../manager/player-manager';
 import { ServerSideController } from '../../framework/server-controller';
@@ -10,7 +10,7 @@ import { HandleExternalEvent } from '../../framework/event';
 @injectable()
 export class PickDropController extends ServerSideController {
 	constructor(
-		@inject(EventBusSymbol) eventBus: EventBus,
+		@inject(EventBusServerSymbol) eventBus: EventBusServer,
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(InventoryManager) private inventoryManager: InventoryManager,
 	) {

@@ -7,7 +7,7 @@ const wait = (time: number) => new Promise((resolve) => setTimeout(resolve, time
 
 const MsgPackParser = require('socket.io-msgpack-parser');
 
-export const EventBusSymbol = Symbol();
+export const EventBusServerSymbol = Symbol();
 
 export const enum BusEvent {
 	ClientDisconnectEvent = 'ClientDisconnectEvent',
@@ -20,7 +20,7 @@ export interface IEventBus extends GameEventEmitter {
 	listen(port: number): void;
 }
 
-export class EventBus extends GameEventEmitter implements IEventBus {
+export class EventBusServer extends GameEventEmitter implements IEventBus {
 	private server: Server;
 	private map = new Map<string, Socket>();
 	constructor() {
@@ -72,12 +72,12 @@ export interface DelayedRequest {
 }
 
 export class DelayedEventBus extends GameEventEmitter implements IEventBus {
-	private eventBus: EventBus;
+	private eventBus: EventBusServer;
 	private requestQueue: DelayedRequest[] = [];
 	private consuming = false;
 	constructor() {
 		super();
-		this.eventBus = new EventBus();
+		this.eventBus = new EventBusServer();
 		this.eventBus.onAny((eventName, ...args) => {
 			this.emit(eventName, ...args);
 		});

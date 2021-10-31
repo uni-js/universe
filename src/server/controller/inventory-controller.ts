@@ -1,4 +1,4 @@
-import { EventBus, EventBusSymbol } from '../../framework/bus-server';
+import { EventBusServer, EventBusServerSymbol } from '../../framework/bus-server';
 import { ServerSideController } from '../../framework/server-controller';
 import { inject, injectable } from 'inversify';
 import { InventoryManager } from '../manager/inventory-manager';
@@ -12,7 +12,7 @@ import * as ExternalEvents from '../event/external';
 @injectable()
 export class InventoryController extends ServerSideController {
 	constructor(
-		@inject(EventBusSymbol) eventBus: EventBus,
+		@inject(EventBusServerSymbol) eventBus: EventBusServer,
 		@inject(InventoryManager) private inventoryManager: InventoryManager,
 		@inject(PlayerManager) private playerManager: PlayerManager,
 	) {
