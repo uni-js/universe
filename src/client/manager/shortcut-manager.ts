@@ -1,13 +1,13 @@
 import { inject, injectable } from 'inversify';
 import { ContainerUpdateData, ContainerUpdateDataUnit, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from '../../server/inventory';
 import { HTMLInputProvider, InputKey } from '../input';
-import { GameManager } from '../../framework/client-manager';
+import { ClientSideManager } from '../../framework/client-manager';
 import { ItemType } from '../../server/item';
 import * as Events from '../event/internal';
 import { InventoryBlockState, ShortcutContainerState } from '../ui/state';
 
 @injectable()
-export class ShortcutManager extends GameManager {
+export class ShortcutManager extends ClientSideManager {
 	constructor(
 		@inject(HTMLInputProvider) private input: HTMLInputProvider,
 		@inject(ShortcutContainerState) private shortcut: ShortcutContainerState,

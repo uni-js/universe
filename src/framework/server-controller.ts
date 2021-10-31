@@ -11,7 +11,7 @@ import {
 
 export type TargetConnIdsProvider<T> = (param: T) => string[] | string;
 
-export class ServerController extends GameEventEmitter {
+export class ServerSideController extends GameEventEmitter {
 	constructor(protected eventBus: IEventBus) {
 		super();
 

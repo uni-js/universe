@@ -4,11 +4,7 @@ import { GameEventEmitter, AddEntityEvent, RemoveEntityEvent } from './event';
 export type ClassOf<T> = { new (...args: any[]): T };
 export type ObjectQueryCondition<T> = Partial<T & LokiObj> & Record<string, any>;
 
-export interface IManager {
-	doTick(tick: number): void;
-}
-
-export class Manager extends GameEventEmitter implements IManager {
+export class ServerSideManager extends GameEventEmitter {
 	constructor() {
 		super();
 	}
@@ -48,7 +44,7 @@ export interface UpdateOnlyCollection<T extends Record<string, any>> extends Not
 	insertOne(): any;
 }
 
-export interface IEntityManager<K> extends Manager {
+export interface IEntityManager<K> extends ServerSideManager {
 	getEntityById(entityId: number): K;
 	findEntity(query: ObjectQueryCondition<K>): K;
 	findEntities(query?: ObjectQueryCondition<K>): K[];
@@ -67,7 +63,7 @@ export interface IEntityManager<K> extends Manager {
  *
  * 所有实体管理器共同构成实体管理层
  */
-export class EntityManager<T extends Entity> extends Manager implements IEntityManager<T> {
+export class EntityManager<T extends Entity> extends ServerSideManager implements IEntityManager<T> {
 	static canInjectCollection = true;
 
 	private entityList: NotLimitCollection<T>;
@@ -153,7 +149,7 @@ export class EntityManager<T extends Entity> extends Manager implements IEntityM
 	}
 }
 
-export class ExtendedEntityManager<T extends Entity, K extends T> extends Manager implements IEntityManager<K> {
+export class ExtendedEntityManager<T extends Entity, K extends T> extends ServerSideManager implements IEntityManager<K> {
 	constructor(private manager: EntityManager<T>, private clazz: ClassOf<K>) {
 		super();
 	}

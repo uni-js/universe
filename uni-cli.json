@@ -2,13 +2,27 @@
     "codegen": {
         "sourcePath": "src",
         "eventsSpecPath": "framework/event",
+
         "clientManagerSpecPath": "framework/client-manager",
         "serverManagerSpecPath": "framework/server-manager",
 
+        "clientControllerSpecPath": "framework/client-controller",
+        "serverControllerSpecPath": "framework/server-controller",
+
+        "eventBusClientSpecPath": "framework/bus-client",
+        "eventBusServerSpecPath": "framework/bus-server",
+
         "clientManagersPath": "client/manager",
+        "serverManagersPath": "server/manager",
+
         "clientInternalEventsModulePath": "client/event/internal",
         "clientExternalEventsModulePath": "client/event/external",
+
         "serverInternalEventsModulePath": "server/event/internal",
-        "serverExternalEventsModulePath": "server/event/external"
+        "serverExternalEventsModulePath": "server/event/external",
+
+        "clientControllersPath": "client/controller",
+        "serverControllersPath": "server/controller"
+        
     }
 }

@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { EventBusClient } from '../../framework/bus-client';
 import { ContainerType } from '../../server/inventory';
 import { ShortcutManager } from '../manager/shortcut-manager';
-import { GameController } from '../../framework/client-controller';
+import { ClientSideController } from '../../framework/client-controller';
 
 import * as ServerEvents from '../../server/event/external';
 
@@ -11,7 +11,7 @@ import * as ExternalEvents from '../event/external';
 import { HandleExternalEvent } from '../../framework/event';
 
 @injectable()
-export class ShortcutController extends GameController {
+export class ShortcutController extends ClientSideController {
 	constructor(@inject(EventBusClient) eventBus: EventBusClient, @inject(ShortcutManager) private shortcutManager: ShortcutManager) {
 		super(eventBus);
 

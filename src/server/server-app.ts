@@ -13,12 +13,12 @@ import { LandController } from './controller/land-controller';
 
 import { Container } from 'inversify';
 import { bindToContainer } from '../framework/inversify';
-import { Manager } from '../framework/server-manager';
+import { ServerSideManager } from '../framework/server-manager';
 import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../framework/memory-database';
 import { Land } from './entity/land';
 import { InventoryEntities } from './entity/inventory';
 import { Brick } from './entity/brick';
-import { ServerController } from '../framework/server-controller';
+import { ServerSideController } from '../framework/server-controller';
 import { BowManager } from './manager/bow-manager';
 import { InventoryManager } from './manager/inventory-manager';
 import { InventoryController } from './controller/inventory-controller';
@@ -107,11 +107,11 @@ export class ServerApp {
 		while (true) {
 			const startTime = new Date().getTime();
 			for (const manager of this.managers) {
-				const singleton: Manager = this.iocContainer.get(manager);
+				const singleton: ServerSideManager = this.iocContainer.get(manager);
 				singleton.doTick(this.tick);
 			}
 			for (const controller of this.controllers) {
-				const singleton: ServerController = this.iocContainer.get(controller);
+				const singleton: ServerSideController = this.iocContainer.get(controller);
 				singleton.doTick(this.tick);
 			}
 			const endTime = new Date().getTime();

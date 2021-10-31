@@ -1,7 +1,7 @@
 import { EventBus, EventBusSymbol } from '../../framework/bus-server';
 import { PlayerManager } from '../manager/player-manager';
 import { Vector2 } from '../shared/math';
-import { ServerController } from '../../framework/server-controller';
+import { ServerSideController } from '../../framework/server-controller';
 import { inject, injectable } from 'inversify';
 import { ActorManager } from '../manager/actor-manager';
 import { HandleExternalEvent } from '../../framework/event';
@@ -12,7 +12,7 @@ import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
 
 @injectable()
-export class PlayerController extends ServerController {
+export class PlayerController extends ServerSideController {
 	constructor(
 		@inject(EventBusSymbol) eventBus: EventBus,
 		@inject(PlayerManager) private playerManager: PlayerManager,

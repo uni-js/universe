@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { Actor } from '../actor/spec';
 import { PosToLandPos } from '../land/helper';
-import { Manager } from '../../framework/server-manager';
+import { ServerSideManager } from '../../framework/server-manager';
 import { Vector2 } from '../shared/math';
 import { ActorManager } from './actor-manager';
 import { LandManager } from './land-manager';
@@ -17,7 +17,7 @@ import { AddEntityEvent, HandleInternalEvent, RemoveEntityEvent } from '../../fr
  *
  */
 @injectable()
-export class LandMoveManager extends Manager {
+export class LandMoveManager extends ServerSideManager {
 	constructor(
 		@inject(PlayerManager) private playerManager: PlayerManager,
 		@inject(ActorManager) private actorManager: ActorManager,

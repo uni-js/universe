@@ -1,10 +1,10 @@
 import { BusEvent, EventBus, EventBusSymbol } from '../../framework/bus-server';
-import { ServerController } from '../../framework/server-controller';
+import { ServerSideController } from '../../framework/server-controller';
 import { PlayerManager } from '../manager/player-manager';
 import { inject, injectable } from 'inversify';
 
 @injectable()
-export class ConnectionController extends ServerController {
+export class ConnectionController extends ServerSideController {
 	constructor(@inject(EventBusSymbol) eventBus: EventBus, @inject(PlayerManager) private playerManager: PlayerManager) {
 		super(eventBus);
 		this.eventBus.on(BusEvent.ClientDisconnectEvent, this.onDisconnected.bind(this));

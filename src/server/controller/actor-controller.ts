@@ -8,10 +8,10 @@ import * as ClientEvents from '../../client/event/external';
 import * as Events from '../event/internal';
 import * as ExternalEvents from '../event/external';
 import { HandleExternalEvent } from '../../framework/event';
-import { ServerController } from '../../framework/server-controller';
+import { ServerSideController } from '../../framework/server-controller';
 
 @injectable()
-export class ActorController extends ServerController {
+export class ActorController extends ServerSideController {
 	constructor(
 		@inject(EventBusSymbol) eventBus: EventBus,
 

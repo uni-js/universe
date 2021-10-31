@@ -3,7 +3,7 @@ import { ActorType } from '../../server/actor/spec';
 import { ItemType } from '../../server/item';
 import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../../server/manager/bow-manager';
 import { SERVER_TICKS_MULTIPLE } from '../../server/shared/server';
-import { GameManager } from '../../framework/client-manager';
+import { ClientSideManager } from '../../framework/client-manager';
 import { ActorManager } from './actor-manager';
 import { PlayerManager } from './player-manager';
 import { ShortcutManager } from './shortcut-manager';
@@ -13,7 +13,7 @@ import { BowUsingState } from '../ui/state';
 import * as Events from '../event/internal';
 
 @injectable()
-export class BowManager extends GameManager {
+export class BowManager extends ClientSideManager {
 	private useTicks = 0;
 	constructor(
 		@inject(ActorManager) private actorManager: ActorManager,

@@ -1,6 +1,6 @@
 import { Vector2 } from '../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '../input';
-import { GameManager } from '../../framework/client-manager';
+import { ClientSideManager } from '../../framework/client-manager';
 import { Viewport } from '../viewport';
 import { AttachType } from '../../server/actor/spec';
 import { inject, injectable } from 'inversify';
@@ -11,7 +11,7 @@ import { UIEventBus } from '../../framework/user-interface/hooks';
 import { PlayerState } from '../ui/state';
 
 @injectable()
-export class PlayerManager extends GameManager {
+export class PlayerManager extends ClientSideManager {
 	public canRotateAttachment = true;
 
 	private currentPlayer: Player;

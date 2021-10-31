@@ -10,7 +10,7 @@ import {
 
 export type ClassOf<T> = { new (...args: any[]): T };
 
-export class GameController extends GameEventEmitter {
+export class ClientSideController extends GameEventEmitter {
 	/**
 	 *
 	 * @param eventBus 网络事件总线

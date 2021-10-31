@@ -6,7 +6,7 @@ import { TextureProvider } from '../../framework/texture';
 import { inject, injectable } from 'inversify';
 import { PlayerManager } from '../manager/player-manager';
 import { ActorFactory, ActorObject } from '../object/actor';
-import { GameController } from '../../framework/client-controller';
+import { ClientSideController } from '../../framework/client-controller';
 
 import * as ServerEvents from '../../server/event/external';
 
@@ -15,7 +15,7 @@ import * as ExternalEvents from '../event/external';
 import { HandleExternalEvent } from '../../framework/event';
 
 @injectable()
-export class ActorController extends GameController {
+export class ActorController extends ClientSideController {
 	constructor(
 		@inject(EventBusClient) eventBus: EventBusClient,
 		@inject(ActorManager) private actorManager: ActorManager,

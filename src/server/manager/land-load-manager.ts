@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { HandleInternalEvent } from '../../framework/event';
-import { Manager } from '../../framework/server-manager';
+import { ServerSideManager } from '../../framework/server-manager';
 import { LandManager } from './land-manager';
 import { PlayerManager } from './player-manager';
 
@@ -9,7 +9,7 @@ import { Vector2 } from '../shared/math';
 import { TaskWorker } from '../utils';
 
 @injectable()
-export class LandLoadManager extends Manager {
+export class LandLoadManager extends ServerSideManager {
 	private loadWorker: TaskWorker<Vector2>;
 
 	constructor(@inject(PlayerManager) private playerManager: PlayerManager, @inject(LandManager) private landManager: LandManager) {

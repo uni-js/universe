@@ -1,11 +1,8 @@
 import { ObjectStore, HashItem } from './object-store';
-import { doTickable } from './tickable';
 import { GameEventEmitter, InternalEvent, ClassOf } from './event';
 import { IGameObject } from './game-object';
 
-export interface IGameManager extends doTickable, GameEventEmitter {}
-
-export abstract class GameManager extends GameEventEmitter implements IGameManager {
+export abstract class ClientSideManager extends GameEventEmitter {
 	static canInjectCollection = true;
 	constructor() {
 		super();
@@ -17,7 +14,7 @@ export abstract class GameManager extends GameEventEmitter implements IGameManag
 /**
  * 用于管理某种游戏对象的管理器
  */
-export class GameObjectManager<T extends IGameObject> extends GameManager {
+export class GameObjectManager<T extends IGameObject> extends ClientSideManager {
 	private redirectedObjectEvents: ClassOf<InternalEvent>[] = [];
 
 	constructor(private objectStore: ObjectStore<T>) {

@@ -1,12 +1,12 @@
 import { inject, injectable } from 'inversify';
 import { HTMLInputProvider } from '../input';
-import { GameManager } from '../../framework/client-manager';
+import { ClientSideManager } from '../../framework/client-manager';
 import { Viewport } from '../viewport';
 import { LandManager } from './land-manager';
 import { PlayerManager } from './player-manager';
 
 @injectable()
-export class CursorManager extends GameManager {
+export class CursorManager extends ClientSideManager {
 	constructor(
 		@inject(HTMLInputProvider) private input: HTMLInputProvider,
 		@inject(Viewport) private viewport: Viewport,

@@ -7,10 +7,10 @@ import { TextureProvider } from '../../framework/texture';
 
 import * as ServerEvents from '../../server/event/external';
 import { HandleExternalEvent } from '../../framework/event';
-import { GameController } from '../../framework/client-controller';
+import { ClientSideController } from '../../framework/client-controller';
 
 @injectable()
-export class LandController extends GameController {
+export class LandController extends ClientSideController {
 	constructor(
 		@inject(EventBusClient) eventBus: EventBusClient,
 		@inject(LandManager) private landManager: LandManager,
