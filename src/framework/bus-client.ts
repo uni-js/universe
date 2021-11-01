@@ -21,6 +21,7 @@ export class EventBusClient extends GameEventEmitter {
 			this.emit(event, ...args);
 		});
 	}
+
 	emitBusEvent(event: ExternalEvent) {
 		this.client.emit(event.constructor.name, event);
 	}

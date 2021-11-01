@@ -52,6 +52,7 @@ export class BiomePicker {
 		this.temperNoise = new SimplexNoise(`temperature:${seed}`);
 		this.wetNoise = new SimplexNoise(`wet:${seed}`);
 	}
+
 	/**
 	 * 获取指定地点的气候平均温度
 	 */
@@ -60,6 +61,7 @@ export class BiomePicker {
 		const b = y / BiomePicker.SCALE_RATIO;
 		return (this.temperNoise.noise2D(a, b) + 1) / 2;
 	}
+
 	/**
 	 * 获取指定地点的气候平均湿度
 	 */

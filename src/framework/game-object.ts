@@ -27,6 +27,7 @@ export class GameObject extends PIXI.Container implements IGameObject {
 	onEvent<T>(eventClazz: ClassOf<T>, listener: (event: T) => void) {
 		this.on(eventClazz.name, listener);
 	}
+
 	offEvent<T>(eventClazz: ClassOf<T>, listener: (event: T) => void) {
 		this.off(eventClazz.name, listener);
 	}
@@ -34,6 +35,7 @@ export class GameObject extends PIXI.Container implements IGameObject {
 	emitEvent<T>(eventClazz: ClassOf<T>, event: T) {
 		this.emit(eventClazz.name, event);
 	}
+
 	/**
 	 * 游戏对象的本地id
 	 *
@@ -42,6 +44,7 @@ export class GameObject extends PIXI.Container implements IGameObject {
 	getLocalId() {
 		return this.localId;
 	}
+
 	/**
 	 * 游戏对象的id,
 	 * 这个id值与服务端是统一且唯一的
@@ -52,5 +55,6 @@ export class GameObject extends PIXI.Container implements IGameObject {
 	getServerId(): number {
 		return this.serverId;
 	}
+
 	async doTick(tick: number): Promise<void> {}
 }

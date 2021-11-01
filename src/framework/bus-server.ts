@@ -33,6 +33,7 @@ export class EventBusServer extends GameEventEmitter implements IEventBus {
 		this.server = new Server(option);
 		this.server.on('connect', this.handleConnection.bind(this));
 	}
+
 	private handleConnection(conn: Socket) {
 		this.map.set(conn.id, conn);
 
@@ -47,9 +48,11 @@ export class EventBusServer extends GameEventEmitter implements IEventBus {
 
 		this.emit(BusEvent.ClientConnectEvent, conn.id);
 	}
+
 	private getConnection(connId: string) {
 		return this.map.get(connId);
 	}
+
 	emitTo(connIds: string[], event: ExternalEvent) {
 		for (const id of connIds) {
 			const conn = this.getConnection(id);
@@ -57,9 +60,11 @@ export class EventBusServer extends GameEventEmitter implements IEventBus {
 			conn.emit(event.constructor.name, event);
 		}
 	}
+
 	emitToAll(event: ExternalEvent) {
 		this.emitTo(Array.from(this.map.keys()), event);
 	}
+
 	listen(port: number) {
 		this.server.listen(port);
 	}
@@ -83,6 +88,7 @@ export class DelayedEventBus extends GameEventEmitter implements IEventBus {
 		});
 		this.startConsuming();
 	}
+
 	private async startConsuming() {
 		this.consuming = true;
 		while (this.consuming) {
@@ -105,6 +111,7 @@ export class DelayedEventBus extends GameEventEmitter implements IEventBus {
 			event,
 		});
 	}
+
 	emitToAll(event: ExternalEvent): void {
 		this.requestQueue.push({
 			emitToAll: true,
@@ -112,6 +119,7 @@ export class DelayedEventBus extends GameEventEmitter implements IEventBus {
 			event,
 		});
 	}
+
 	listen(port: number): void {
 		this.eventBus.listen(port);
 	}

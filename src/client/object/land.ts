@@ -20,6 +20,7 @@ export class LandObject extends StaticObject {
 
 		this.setLandData(initLandData);
 	}
+
 	getLandLoc() {
 		return this.landPos;
 	}

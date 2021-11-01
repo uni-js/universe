@@ -76,12 +76,15 @@ export class HTMLInputProvider implements InputProvider {
 		this.elem.addEventListener('mousedown', this.onCursorDown.bind(this));
 		this.elem.addEventListener('mouseup', this.onCursorUp.bind(this));
 	}
+
 	private onCursorMove(event: MouseEvent) {
 		this.cursorAt = new Vector2(event.offsetX, event.offsetY);
 	}
+
 	private onCursorDown() {
 		this.cursorPressed = true;
 	}
+
 	private onCursorUp() {
 		this.cursorPressed = false;
 	}
@@ -109,18 +112,23 @@ export class HTMLInputProvider implements InputProvider {
 			() => {},
 		);
 	}
+
 	keyPress(key: InputKey): boolean {
 		return Boolean(this.keysPressed.get(key));
 	}
+
 	keyDown(key: InputKey): boolean {
 		return Boolean(this.keysDown.get(key));
 	}
+
 	cursorPress(): boolean {
 		return this.cursorPressed;
 	}
+
 	getCursorAt() {
 		return this.cursorAt;
 	}
+
 	private consumeActions() {
 		const newActions = [];
 		for (const action of this.actions) {

@@ -30,6 +30,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 			this.endDragging(actor, event.useTick);
 		}
 	}
+
 	private startDragging(actor: Actor) {}
 
 	private endDragging(actor: Actor, useTick: number) {
@@ -100,12 +101,14 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 			}
 		}
 	}
+
 	private arrowDamageActor(arrow: Arrow, actor: Actor) {
 		this.actorManager.damageActor(actor, 10, arrow.rotation, arrow.power);
 
 		arrow.aliveTick = ARROW_DEAD_TICKS;
 		this.updateEntity(arrow);
 	}
+
 	doTick() {
 		this.doAliveTick();
 		this.doCollisionTick();

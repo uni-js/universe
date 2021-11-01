@@ -161,31 +161,40 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Server
 	addAtRecord<R>(entity: T, propertyName: string, record: R): void {
 		this.manager.addAtRecord(entity, propertyName, record);
 	}
+
 	removeAtRecord<R>(entity: T, propertyName: string, record: R): void {
 		this.manager.removeAtRecord(entity, propertyName, record);
 	}
+
 	hasAtRecord<R>(entity: T, propertyName: string, record: R): boolean {
 		return this.manager.hasAtRecord(entity, propertyName, record);
 	}
+
 	getEntityById(entityId: number): Readonly<K> {
 		return this.manager.getEntityById(entityId) as K;
 	}
+
 	protected updateEntity<M extends K | T>(entity: M): Readonly<M> {
 		const list = this.manager.getEntityList();
 		return list.update(entity) as M;
 	}
+
 	findEntity(query: ObjectQueryCondition<K>): Readonly<K> {
 		return this.manager.findEntity(query) as K;
 	}
+
 	findEntities(query?: ObjectQueryCondition<K>): Readonly<K>[] {
 		return this.manager.findEntities(query) as K[];
 	}
+
 	getAllEntities(): Readonly<K>[] {
 		return this.manager.getAllEntities() as K[];
 	}
+
 	hasEntity(query?: ObjectQueryCondition<K>): boolean {
 		return this.manager.hasEntity(query);
 	}
+
 	addNewEntity(newEntity: K): Readonly<K> {
 		const inserted = this.manager.addNewEntity(newEntity) as K;
 
@@ -194,6 +203,7 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Server
 		}
 		return inserted;
 	}
+
 	removeEntity(entity: K): void {
 		const entityId = entity.$loki;
 		this.manager.removeEntity(entity);

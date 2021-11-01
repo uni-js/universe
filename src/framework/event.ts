@@ -80,6 +80,7 @@ export class GameEventEmitter extends EventEmitter2 {
 	onEvent<T extends InternalEvent>(eventClazz: ClassOf<T>, listener: (event: T) => void) {
 		this.on(eventClazz.name, listener);
 	}
+
 	offEvent<T extends InternalEvent>(eventClazz: ClassOf<T>, listener: (event: T) => void) {
 		this.off(eventClazz.name, listener);
 	}

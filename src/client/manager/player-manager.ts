@@ -29,6 +29,7 @@ export class PlayerManager extends ClientSideManager {
 
 		this.uiEvent.on('PlayerNameClicked', () => console.log('yes!'));
 	}
+
 	setCurrentPlayer(player: Player) {
 		this.playerState.actorId = player.getServerId();
 		this.playerState.playerName = 'Player';
@@ -38,6 +39,7 @@ export class PlayerManager extends ClientSideManager {
 
 		this.currentPlayer = player;
 	}
+
 	private onPlayerControlMoved = (event: Events.ControlMovedEvent) => {
 		this.emitEvent(Events.ControlMovedEvent, event);
 	};

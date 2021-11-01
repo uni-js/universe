@@ -32,6 +32,7 @@ export class TaskWorker<T> {
 		await this.callback(data);
 		this.isWorking = false;
 	}
+
 	addTask(data: T) {
 		this.queue.push(data);
 	}
@@ -43,15 +44,19 @@ export class RecordSet<T> {
 	add(record: T) {
 		this.set.add(record);
 	}
+
 	has(record: T) {
 		return this.set.has(record);
 	}
+
 	remove(record: T) {
 		this.set.delete(record);
 	}
+
 	getSize() {
 		return this.set.size;
 	}
+
 	getAll() {
 		return Array.from(this.set.values());
 	}
@@ -63,18 +68,23 @@ export class RecordMap<T> {
 	add(key: string, record: T) {
 		this.map.set(key, record);
 	}
+
 	has(key: string) {
 		return this.map.has(key);
 	}
+
 	get(key: string) {
 		return this.map.get(key);
 	}
+
 	remove(key: string) {
 		this.map.delete(key);
 	}
+
 	getSize() {
 		return this.map.size;
 	}
+
 	getAll() {
 		return Array.from(this.map.values());
 	}

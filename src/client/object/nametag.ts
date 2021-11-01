@@ -12,6 +12,7 @@ export class NameTag extends PIXI.Text {
 			fill: 'white',
 		});
 	}
+
 	doTick() {
 		if (this.hiddenTicks > 0) {
 			this.visible = false;

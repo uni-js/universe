@@ -16,9 +16,11 @@ export class Viewport extends PIXI.Container implements IViewport {
 
 		this.moveCenter(0, 0);
 	}
+
 	moveCenter(x: number, y: number) {
 		this.position.set(this.worldWidth / 2 - x, this.worldHeight / 2 - y);
 	}
+
 	getWorldPointAt(screenPoint: Vector2): Vector2 {
 		const ratioW = this.worldWidth / this.screenWidth;
 		const ratioH = this.worldHeight / this.screenHeight;
@@ -28,9 +30,11 @@ export class Viewport extends PIXI.Container implements IViewport {
 
 		return new Vector2(screenX * ratioW - this.position.x, screenY * ratioH - this.position.y);
 	}
+
 	getWorldWidth() {
 		return this.worldWidth;
 	}
+
 	getWorldHeight() {
 		return this.worldHeight;
 	}

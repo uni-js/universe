@@ -7,6 +7,7 @@ export class BootController {
 	constructor(@inject(EventBusClient) private eventBus: EventBusClient) {
 		this.startGame();
 	}
+
 	startGame() {
 		this.eventBus.emitBusEvent(new LoginEvent());
 	}

@@ -30,6 +30,7 @@ export class LandManager extends EntityManager<Land> {
 	private removeLandBricks(x: number, y: number) {
 		this.brickList.removeWhere({ landLocX: x, landLocY: y });
 	}
+
 	private setBricksByLandData(x: number, y: number, landData: LandData) {
 		this.brickList.findAndRemove({ landLocX: x, landLocY: y });
 		const bricks = [];
@@ -123,6 +124,7 @@ export class LandManager extends EntityManager<Land> {
 
 		console.debug(`加载 Land :(${landPos.x}:${landPos.y})`);
 	}
+
 	async unloadLand(landPos: Vector2) {
 		const land = await this.getLand(landPos);
 

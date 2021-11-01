@@ -60,17 +60,20 @@ export class TextureProvider {
 		}
 		return group;
 	}
+
 	get(name: string): PIXI.Texture[] | undefined {
 		if (!this.textures.has(name)) return;
 
 		return this.textures.get(name)?.textures;
 	}
+
 	getOne(name: string): PIXI.Texture | undefined {
 		const textures = this.get(name);
 		if (!textures || !textures[0]) return;
 
 		return textures[0];
 	}
+
 	getItem(name: string) {
 		return this.textures.get(name);
 	}

@@ -38,6 +38,7 @@ export class MoveInterpolator extends EventEmitter2 {
 			this.emit('position', this.movePoints[0]);
 		}
 	}
+
 	doTick() {
 		if (this.movePoints.length >= 2) {
 			const curr = this.movePoints[0];
@@ -327,6 +328,7 @@ export class ActorObject extends GameObject {
 	getAttachment(key: string) {
 		return this.attachments.get(key);
 	}
+
 	/**
 	 * 设置附着物
 	 */

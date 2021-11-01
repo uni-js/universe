@@ -48,6 +48,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	getCanSeeLands(player: Player) {
 		return GetRadiusLands(new Vector2(player.posX, player.posY), 1);
 	}
+
 	isPlayerCansee(player: Player, landPos: Vector2) {
 		const lands = this.getCanSeeLands(player);
 		const result = lands.find((vec2) => {

@@ -8,6 +8,7 @@ export class PickDropManager extends ClientSideManager {
 	constructor(@inject(HTMLInputProvider) private input: InputProvider) {
 		super();
 	}
+
 	async doTick() {
 		if (this.input.keyDown(InputKey.Q)) {
 			this.emitEvent(Events.DropItemEvent, {});

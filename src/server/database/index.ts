@@ -23,6 +23,7 @@ export class LevelDatabase implements IPersistDatabase {
 	async set(key: string, value: any): Promise<void> {
 		return await this.db.put(key, JSON.stringify(value));
 	}
+
 	async get(key: string): Promise<any> {
 		try {
 			const result = await this.db.get(key);
