@@ -28,7 +28,7 @@ export class LandController extends ClientSideController {
 	}
 
 	@HandleExternalEvent(ServerEvents.LandNeverUsedEvent)
-	private handleLandRemoved = (event: ServerEvents.LandNeverUsedEvent) => {
+	private handleLandRemoved(event: ServerEvents.LandNeverUsedEvent) {
 		const land = this.landManager.getObjectById(event.landId);
 		this.landManager.removeGameObject(land);
 		console.log(`remove land:(${event.landPosX},${event.landPosY})`, event);
