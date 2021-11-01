@@ -32,5 +32,5 @@ export class LandController extends ClientSideController {
 		const land = this.landManager.getObjectById(event.landId);
 		this.landManager.removeGameObject(land);
 		console.log(`remove land:(${event.landPosX},${event.landPosY})`, event);
-	};
+	}
 }
