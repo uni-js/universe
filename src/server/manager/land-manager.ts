@@ -1,7 +1,7 @@
 import { Land } from '../entity/land';
 import { EntityManager, UpdateOnlyCollection } from '../../framework/server-manager';
 import { Vector2 } from '../shared/math';
-import { PersistDatabaseSymbol, IPersistDatabase } from '../../database';
+import { PersistDatabaseSymbol, IPersistDatabase } from '../database';
 import { spawn } from 'threads';
 
 import { BrickData, LandData } from '../land/types';

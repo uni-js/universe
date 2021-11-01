@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { HTMLInputProvider } from '../input';
 import { ClientSideManager } from '../../framework/client-manager';
-import { Viewport } from '../viewport';
+import { Viewport } from '../../framework/viewport';
 import { LandManager } from './land-manager';
 import { PlayerManager } from './player-manager';
 

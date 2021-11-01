@@ -1,36 +1,18 @@
+import 'reflect-metadata';
 import * as PIXI from 'pixi.js';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { HTMLInputProvider } from './input';
-import { ActorManager } from './manager/actor-manager';
-import { ParseTexturePath, TextureProvider, TextureType } from '../framework/texture';
-import { EventBusClient } from '../framework/bus-client';
+import { ParseTexturePath, TextureProvider, TextureType } from './texture';
+import { EventBusClient } from './bus-client';
 import { Viewport } from './viewport';
-import { LandManager } from './manager/land-manager';
-import { Container } from 'inversify';
-import { bindToContainer } from '../framework/inversify';
-import { CursorManager } from './manager/cursor-manager';
-import { PlayerManager } from './manager/player-manager';
-import { ShortcutManager } from './manager/shortcut-manager';
-import { ActorController } from './controller/actor-controller';
-import { BootController } from './controller/boot-controller';
-import { LandController } from './controller/land-controller';
-import { PlayerController } from './controller/player-controller';
-import { UIEntry, UIEventBus } from '../framework/user-interface/hooks';
-import { GameUI } from './ui/component/game-ui';
+import { Container, interfaces } from 'inversify';
+import { bindToContainer, resolveAllBindings } from './inversify';
+import { UIEntry, UIEventBus } from './user-interface/hooks';
 
-import { ActorStore, LandStore } from './store';
-import { ActorFactory } from './object/actor';
-import { ActorMapper } from './object';
-import { ShortcutController } from './controller/shortcut-controller';
-import { BowManager } from './manager/bow-manager';
-import { PickDropManager } from './manager/pick-drop-manager';
-import { PickDropController } from './controller/pick-drop-controller';
-import { ObjectStore } from '../framework/object-store';
-import { UIStates } from './ui/state';
-import { UIStateContainer } from '../framework/user-interface/state';
+import { ObjectStore } from './object-store';
+import { UIStateContainer } from './user-interface/state';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -40,12 +22,22 @@ export interface TextureDef {
 	url: string;
 }
 
+export interface ClientApplicationOption {
+	serverUrl: string;
+	playground: HTMLDivElement;
+	texturePaths: string[];
+	uiEntry: any;
+	uiStates: any[];
+	stores: any[];
+	managers: any[];
+	controllers: any[];
+}
+
 export class ClientApp {
 	private tick = 0;
 
 	private app: PIXI.Application;
 
-	private uiStates: any[] = [];
 	private stores: any[] = [];
 	private managers: any[] = [];
 	private controllers: any[] = [];
@@ -55,10 +47,7 @@ export class ClientApp {
 
 	private viewport: Viewport;
 	private busClient: EventBusClient;
-	private inputProvider: HTMLInputProvider;
 	private uiEventBus: UIEventBus;
-
-	private actorFactory: ActorFactory;
 
 	private iocContainer!: Container;
 	private resolution = 32;
@@ -70,19 +59,23 @@ export class ClientApp {
 	private wrapper: HTMLDivElement;
 	private uiContainer: HTMLDivElement;
 
-	constructor(private serverUrl: string, private playGround: HTMLDivElement, private texturePaths: string[]) {
+	private playground: HTMLElement;
+
+	constructor(private option: ClientApplicationOption) {
 		this.app = new PIXI.Application({
 			resolution: this.resolution,
 			width: this.worldWidth,
 			height: this.worldHeight,
 		});
 
-		this.iocContainer = new Container({ skipBaseClassChecks: true });
-		this.uiStatesContainer = new UIStateContainer(UIStates);
+		this.playground = option.playground;
 
-		this.stores = [LandStore, ActorStore];
-		this.managers = [ActorManager, LandManager, CursorManager, PlayerManager, ShortcutManager, BowManager, PickDropManager];
-		this.controllers = [ActorController, BootController, LandController, PlayerController, ShortcutController, PickDropController];
+		this.iocContainer = new Container({ skipBaseClassChecks: true });
+		this.uiStatesContainer = new UIStateContainer(option.uiStates);
+
+		this.stores = option.stores;
+		this.managers = option.managers;
+		this.controllers = option.controllers;
 
 		this.viewport = new Viewport(
 			this.worldWidth * this.resolution,
@@ -90,20 +83,48 @@ export class ClientApp {
 			this.worldWidth,
 			this.worldHeight,
 		);
-		this.busClient = new EventBusClient(this.serverUrl);
-		this.inputProvider = new HTMLInputProvider(this.app.view);
+		this.busClient = new EventBusClient(this.option.serverUrl);
 		this.uiEventBus = new UIEventBus();
 
-		this.initActorFactory();
 		this.initWrapper();
 		this.initUiContainer();
 	}
 
-	private initActorFactory() {
-		this.actorFactory = new ActorFactory();
-
-		this.actorFactory.addImpls(ActorMapper);
+	getCanvasElement() {
+		return this.app.view;
 	}
+
+	bindToValue<T>(identifier: interfaces.ServiceIdentifier<T>, value: T) {
+		this.iocContainer.bind(identifier).toConstantValue(value);
+	}
+
+	getCanvas() {
+		return this.app.view;
+	}
+
+	addTicker(fn: any) {
+		this.app.ticker.add(fn);
+	}
+
+	removeTicker(fn: any) {
+		this.app.ticker.remove(fn);
+	}
+
+	async start() {
+		await this.initTextures();
+
+		this.initUIBindings();
+		this.initBaseBindings();
+
+		resolveAllBindings(this.iocContainer, this.managers);
+		resolveAllBindings(this.iocContainer, this.controllers);
+
+		this.app.start();
+
+		this.renderUI();
+		this.startLoop();
+	}
+
 	private initWrapper() {
 		const wrapper = document.createElement('div');
 		wrapper.classList.add('uni-wrapper');
@@ -111,9 +132,10 @@ export class ClientApp {
 		wrapper.style.height = `${this.app.view.height}px`;
 		wrapper.style.position = 'relative';
 
-		this.playGround.appendChild(wrapper);
+		this.playground.appendChild(wrapper);
 		this.wrapper = wrapper;
 	}
+
 	private initUiContainer() {
 		const container = document.createElement('div');
 		container.classList.add('uni-ui-container');
@@ -129,16 +151,14 @@ export class ClientApp {
 		this.wrapper.appendChild(this.app.view);
 		this.uiContainer = container;
 	}
-	initBaseBindings() {
+
+	private initBaseBindings() {
 		const ioc = this.iocContainer;
 
-		ioc.bind(HTMLInputProvider).toConstantValue(this.inputProvider);
 		ioc.bind(EventBusClient).toConstantValue(this.busClient);
 		ioc.bind(Viewport).toConstantValue(this.viewport);
 		ioc.bind(TextureProvider).toConstantValue(this.textureProvider);
 		ioc.bind(UIEventBus).toConstantValue(this.uiEventBus);
-
-		ioc.bind(ActorFactory).toConstantValue(this.actorFactory);
 
 		bindToContainer(ioc, [...this.stores, ...this.managers, ...this.controllers]);
 
@@ -149,20 +169,6 @@ export class ClientApp {
 		}
 
 		this.app.stage.addChild(viewport);
-	}
-	getCanvas() {
-		return this.app.view;
-	}
-	async start() {
-		await this.initTextures();
-
-		this.initUIBindings();
-		this.initBaseBindings();
-
-		this.app.start();
-
-		this.renderUI();
-		this.startLoop();
 	}
 
 	private initUIBindings() {
@@ -181,23 +187,25 @@ export class ClientApp {
 		const textureProvider = this.textureProvider;
 
 		ReactDOM.render(
-			React.createElement(UIEntry, { dataSource, ticker, eventBus, textureProvider }, React.createElement(GameUI)),
+			React.createElement(UIEntry, { dataSource, ticker, eventBus, textureProvider }, React.createElement(this.option.uiEntry)),
 			this.uiContainer,
 		);
 	}
+
 	private doTick() {
-		this.iocContainer.get<HTMLInputProvider>(HTMLInputProvider).doTick();
 		for (const manager of this.managers) {
 			this.iocContainer.get<any>(manager).doTick(this.tick);
 		}
 
 		this.tick += 1;
 	}
+
 	private startLoop() {
 		this.app.ticker.add(this.doTick.bind(this));
 	}
+
 	private async initTextures() {
-		for (const path of this.texturePaths) {
+		for (const path of this.option.texturePaths) {
 			const parsed = ParseTexturePath(path);
 			if (Boolean(parsed) === false) continue;
 			const [key, relPath, type] = parsed;

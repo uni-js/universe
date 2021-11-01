@@ -19,7 +19,7 @@ const path = {
 	serverDest: 'lib',
 	sourceClient: ['src/**/*{.ts,.tsx,.css}'],
 	sourceServer: ['src/**/*.ts'],
-	entry: 'src/client/index.ts',
+	entry: 'src/client/bootstrap.ts',
 	publicDir: 'public',
 	public: 'public/**/*',
 	texture: 'public/texture/**/*',
