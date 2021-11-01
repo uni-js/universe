@@ -11,7 +11,6 @@ import { Container, interfaces } from 'inversify';
 import { bindToContainer, resolveAllBindings } from './inversify';
 import { UIEntry, UIEventBus } from './user-interface/hooks';
 
-import { ObjectStore } from './object-store';
 import { UIStateContainer } from './user-interface/state';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
@@ -38,7 +37,6 @@ export class ClientApp {
 
 	private app: PIXI.Application;
 
-	private stores: any[] = [];
 	private managers: any[] = [];
 	private controllers: any[] = [];
 
@@ -73,7 +71,6 @@ export class ClientApp {
 		this.iocContainer = new Container({ skipBaseClassChecks: true });
 		this.uiStatesContainer = new UIStateContainer(option.uiStates);
 
-		this.stores = option.stores;
 		this.managers = option.managers;
 		this.controllers = option.controllers;
 
@@ -98,12 +95,24 @@ export class ClientApp {
 		this.iocContainer.bind(identifier).toConstantValue(value);
 	}
 
+	get<T>(identifier: interfaces.ServiceIdentifier<T>) {
+		return this.iocContainer.get(identifier);
+	}
+
 	getCanvas() {
 		return this.app.view;
 	}
 
 	addTicker(fn: any) {
 		this.app.ticker.add(fn);
+	}
+
+	addDisplayObject(displayObject: PIXI.DisplayObject) {
+		this.viewport.addChild(displayObject);
+	}
+
+	removeDisplayObject(displayObject: PIXI.DisplayObject) {
+		this.viewport.removeChild(displayObject);
 	}
 
 	removeTicker(fn: any) {
@@ -160,14 +169,9 @@ export class ClientApp {
 		ioc.bind(TextureProvider).toConstantValue(this.textureProvider);
 		ioc.bind(UIEventBus).toConstantValue(this.uiEventBus);
 
-		bindToContainer(ioc, [...this.stores, ...this.managers, ...this.controllers]);
+		bindToContainer(ioc, [...this.managers, ...this.controllers]);
 
 		const viewport = ioc.get(Viewport);
-
-		for (const store of this.stores) {
-			viewport.addChild(ioc.get<ObjectStore<any>>(store).container);
-		}
-
 		this.app.stage.addChild(viewport);
 	}
 

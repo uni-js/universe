@@ -34,7 +34,12 @@ export function bootstrap() {
 	const managers = [ActorManager, LandManager, CursorManager, PlayerManager, ShortcutManager, BowManager, PickDropManager];
 	const controllers = [ActorController, BootController, LandController, PlayerController, ShortcutController, PickDropController];
 
-	const app = new ClientApp({ serverUrl, playground, texturePaths, stores, managers, controllers, uiEntry: GameUI, uiStates: UIStates });
+	const app = new ClientApp({ serverUrl, playground, texturePaths, managers, stores, controllers, uiEntry: GameUI, uiStates: UIStates });
+
+	for (const store of stores) {
+		app.bindToValue(store, new store());
+		app.addDisplayObject(app.get<any>(store).container);
+	}
 
 	const actorFactory = new ActorFactory();
 	actorFactory.addImpls(ActorMapper);
