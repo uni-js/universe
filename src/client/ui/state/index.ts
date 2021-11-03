@@ -1,6 +1,6 @@
 import { UIState } from '../../../framework/user-interface/state';
 import { ContainerType } from '../../../server/inventory';
-import { ItemType } from '../../../server/item';
+import { ItemType } from '../../../server/module/inventory-module/item';
 
 @UIState()
 export class PlayerState {

@@ -1,4 +1,4 @@
-import { ActorType } from '../../server/actor/spec';
+import { ActorType } from '../../server/module/actor-module/spec';
 import { ActorFactoryMapper } from './actor';
 import { Arrow, Bow } from './bow';
 import { DroppedItemActor } from './dropped-item';

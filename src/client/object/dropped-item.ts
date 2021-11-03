@@ -1,5 +1,5 @@
-import { ActorType } from '../../server/actor/spec';
-import { ItemType } from '../../server/item';
+import { ActorType } from '../../server/module/actor-module/spec';
+import { ItemType } from '../../server/module/inventory-module/item';
 import { Vector2 } from '../../server/shared/math';
 import { ActorConstructOption, ActorObject } from './actor';
 import { TextureProvider } from '../../framework/texture';

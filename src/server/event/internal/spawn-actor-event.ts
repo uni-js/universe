@@ -1,5 +1,5 @@
 import { InternalEvent } from '../../../framework/event';
-import { ActorType } from '../../actor/spec';
+import { ActorType } from '../../module/actor-module/spec';
 
 export class SpawnActorEvent extends InternalEvent {
 	fromPlayerId: number;

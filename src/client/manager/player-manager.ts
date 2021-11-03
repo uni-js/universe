@@ -2,7 +2,7 @@ import { Vector2 } from '../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '../input';
 import { ClientSideManager } from '../../framework/client-manager';
 import { Viewport } from '../../framework/viewport';
-import { AttachType } from '../../server/actor/spec';
+import { AttachType } from '../../server/module/actor-module/spec';
 import { inject, injectable } from 'inversify';
 import { Player } from '../object/player';
 import { ActorManager } from './actor-manager';

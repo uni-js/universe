@@ -1,11 +1,12 @@
 import { DelayedEventBus, EventBusServer, EventBusServerSymbol, IEventBus } from '../framework/bus-server';
 
-import { Container, interfaces } from 'inversify';
+import { Container } from 'inversify';
 import { bindToContainer, resolveAllBindings } from '../framework/inversify';
 import { ServerSideManager } from '../framework/server-manager';
 import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../framework/memory-database';
 import { ServerSideController } from '../framework/server-controller';
 import { GetIsServerUseDelay } from '../framework/debug';
+import { EntityClass, Provider, resolveServerSideModule, ServerControllerClass, ServerManagerClass, ServerSideModule } from './module';
 
 function wait(time: number) {
 	return new Promise((resolve) => setTimeout(resolve, time));
@@ -13,17 +14,16 @@ function wait(time: number) {
 
 export interface ServerApplicationOption {
 	port: number;
-	entities: any[];
-	managers: any[];
-	controllers: any[];
+	module: ServerSideModule;
 }
 
 export class ServerApp {
 	private mdb: IMemoryDatabase;
 
-	private entities: any[] = [];
-	private managers: any[] = [];
-	private controllers: any[] = [];
+	private entities: EntityClass[] = [];
+	private managers: ServerManagerClass[] = [];
+	private controllers: ServerControllerClass[] = [];
+	private providers: Provider[] = [];
 
 	private eventBus: IEventBus;
 	private iocContainer: Container;
@@ -31,18 +31,17 @@ export class ServerApp {
 	private tick = 0;
 
 	constructor(private option: ServerApplicationOption) {
-		this.entities = option.entities;
-		this.managers = option.managers;
-		this.controllers = option.controllers;
+		const moduleResolved = resolveServerSideModule(option.module);
+
+		this.entities = moduleResolved.entities;
+		this.managers = moduleResolved.managers;
+		this.controllers = moduleResolved.controllers;
+		this.providers = moduleResolved.providers;
 
 		this.eventBus = GetIsServerUseDelay() ? new DelayedEventBus() : new EventBusServer();
 		this.mdb = createMemoryDatabase(this.entities);
 
-		this.initIocContainer();
-	}
-
-	bindToValue<T>(identifier: interfaces.ServiceIdentifier<T>, value: T) {
-		this.iocContainer.bind(identifier).toConstantValue(value);
+		this.initInversifyContainer();
 	}
 
 	start() {
@@ -53,7 +52,7 @@ export class ServerApp {
 		this.startLoop();
 	}
 
-	private initIocContainer() {
+	private initInversifyContainer() {
 		const ioc = new Container({ skipBaseClassChecks: true });
 
 		ioc.bind(MemoryDatabaseSymbol).toConstantValue(this.mdb);
@@ -61,6 +60,10 @@ export class ServerApp {
 
 		bindCollectionsTo(ioc, this.entities, this.mdb);
 		bindToContainer(ioc, [...this.managers, ...this.controllers]);
+
+		for (const provider of this.providers) {
+			ioc.bind(provider.key).toConstantValue(provider.value);
+		}
 
 		this.iocContainer = ioc;
 	}

@@ -1,29 +1,19 @@
 import 'reflect-metadata';
 import 'threads/register';
 
-import { ActorManager } from './manager/actor-manager';
-import { PlayerManager } from './manager/player-manager';
-import { LandMoveManager } from './manager/land-move-manager';
-import { LandManager } from './manager/land-manager';
-import { BowManager } from './manager/bow-manager';
-import { InventoryManager } from './manager/inventory-manager';
-import { LandLoadManager } from './manager/land-load-manager';
-
-import { ActorController } from './controller/actor-controller';
-import { PlayerController } from './controller/player-controller';
 import { ConnectionController } from './controller/connection-controller';
-import { LandController } from './controller/land-controller';
-import { InventoryController } from './controller/inventory-controller';
-import { PickDropController } from './controller/pick-drop-controller';
-
-import { Land } from './entity/land';
-import { InventoryEntities } from './entity/inventory';
-import { Brick } from './entity/brick';
-import { Actor, ActorFactory } from './actor/spec';
-import { ActorMapper } from './actor/mapper';
-import { ItemDef } from './item';
+import { ActorFactory } from './module/actor-module/spec';
+import { ActorMapper } from './module/actor-module/mapper';
 import { ServerApp } from '../framework/server-app';
 import { createPersistDatabase, PersistDatabaseSymbol } from './database';
+
+import { ServerSideModule } from '../framework/module';
+import { LandModule } from './module/land-module';
+import { ActorModule } from './module/actor-module';
+import { PlayerModule } from './module/player-module';
+import { BowModule } from './module/bow-module';
+import { InventoryModule } from './module/inventory-module';
+import { PickDropModule } from './module/pick-drop-module';
 
 import DotEnv from 'dotenv';
 
@@ -44,24 +34,26 @@ function bootstrap() {
 	const dbLocation = process.env.DB_LOCATION;
 	if (Boolean(dbLocation) === false) throw new Error(`please provide env: DB_LOCATION`);
 
-	const entities = [Land, Actor, Brick, ItemDef, ...InventoryEntities];
-	const managers = [LandManager, ActorManager, PlayerManager, LandMoveManager, LandLoadManager, BowManager, InventoryManager];
-	const controllers = [ActorController, PlayerController, ConnectionController, LandController, InventoryController, PickDropController];
-
-	const app = new ServerApp({
-		port: 6100,
-		entities,
-		managers,
-		controllers,
-	});
+	const pdb = createPersistDatabase(dbLocation);
 
 	const actorFactory = new ActorFactory();
 	actorFactory.addImpls(ActorMapper);
 
-	app.bindToValue(ActorFactory, actorFactory);
+	const appModule: ServerSideModule = {
+		imports: [LandModule, ActorModule, PlayerModule, BowModule, InventoryModule, PickDropModule],
+		entities: [],
+		managers: [],
+		controllers: [ConnectionController],
+		providers: [
+			{ key: ActorFactory, value: actorFactory },
+			{ key: PersistDatabaseSymbol, value: pdb },
+		],
+	};
 
-	const pdb = createPersistDatabase(dbLocation);
-	app.bindToValue(PersistDatabaseSymbol, pdb);
+	const app = new ServerApp({
+		port: 6100,
+		module: appModule,
+	});
 
 	app.start();
 }

@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { ContainerUpdateData, ContainerUpdateDataUnit, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from '../../server/inventory';
 import { HTMLInputProvider, InputKey } from '../input';
 import { ClientSideManager } from '../../framework/client-manager';
-import { ItemType } from '../../server/item';
+import { ItemType } from '../../server/module/inventory-module/item';
 import * as Events from '../event/internal';
 import { InventoryBlockState, ShortcutContainerState } from '../ui/state';
 

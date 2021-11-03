@@ -1,5 +1,5 @@
-import { LAND_WIDTH } from '../../server/land/const';
-import { LandData } from '../../server/land/types';
+import { LAND_WIDTH } from '../../server/module/land-module/const';
+import { LandData } from '../../server/module/land-module/types';
 import { Vector2 } from '../../server/shared/math';
 import { TextureProvider } from '../../framework/texture';
 import { BRICK_WIDTH } from './brick';

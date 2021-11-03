@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { LandLocToLoc, PosToLandPos } from '../../server/land/helper';
+import { LandLocToLoc, PosToLandPos } from '../../server/module/land-module/helper';
 import { Vector2 } from '../../server/shared/math';
 import { GameObjectManager } from '../../framework/client-manager';
 import { LandObject } from '../object/land';
