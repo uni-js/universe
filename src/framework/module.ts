@@ -26,6 +26,7 @@ export interface ClientSideModule {
 	controllers: ClientControllerClass[];
 	managers: ClientManagerClass[];
 	providers: Provider[];
+	uiStates: ClassOf<any>[];
 }
 
 export interface ServerSideModule {
@@ -60,18 +61,22 @@ export function resolveServerSideModule(module: ServerSideModule): ServerModuleR
 	return { entities, controllers, managers, providers };
 }
 
-export function createServerSideModule(
-	imports: ServerSideModule[],
-	controllers: ServerControllerClass[],
-	managers: ServerManagerClass[],
-	entities: EntityClass[],
-	providers: Provider[] = [],
-): ServerSideModule {
+export function createServerSideModule(option: Partial<ServerSideModule>): ServerSideModule {
 	return {
-		imports,
-		entities,
-		controllers,
-		managers,
-		providers,
+		imports: option.imports || [],
+		entities: option.entities || [],
+		controllers: option.controllers || [],
+		managers: option.managers || [],
+		providers: option.providers || [],
+	};
+}
+
+export function createClientSideModule(option: Partial<ClientSideModule>): ClientSideModule {
+	return {
+		imports: option.imports || [],
+		controllers: option.controllers || [],
+		managers: option.managers || [],
+		providers: option.providers || [],
+		uiStates: option.uiStates || [],
 	};
 }

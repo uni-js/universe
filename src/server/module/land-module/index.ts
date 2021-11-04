@@ -6,4 +6,8 @@ import { LandLoadManager } from './land-load-manager';
 import { LandManager } from './land-manager';
 import { LandMoveManager } from './land-move-manager';
 
-export const LandModule = createServerSideModule([], [LandController], [LandLoadManager, LandManager, LandMoveManager], [Land, Brick]);
+export const LandModule = createServerSideModule({
+	controllers: [LandController],
+	managers: [LandLoadManager, LandManager, LandMoveManager],
+	entities: [Land, Brick],
+});
