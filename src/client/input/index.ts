@@ -46,7 +46,7 @@ export class HTMLInputProvider implements InputProvider {
 	private tick = 0;
 	private cursorAt = new Vector2(0, 0);
 
-	constructor(private elem: HTMLCanvasElement) {
+	constructor(private elem: HTMLElement) {
 		this.bindKey('up', InputKey.UP);
 		this.bindKey('down', InputKey.DOWN);
 		this.bindKey('left', InputKey.LEFT);

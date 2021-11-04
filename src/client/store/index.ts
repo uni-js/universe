@@ -1,8 +1,8 @@
 import { ObjectStore } from '../../framework/object-store';
-import { LandObject } from '../object/land';
+import { LandObject } from '../module/land-module/land';
 import { injectable } from 'inversify';
 
-import { ActorObject } from '../object/actor';
+import { ActorObject } from '../module/actor-module/actor';
 
 @injectable()
 export class ActorStore extends ObjectStore<ActorObject> {

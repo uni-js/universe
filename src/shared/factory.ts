@@ -10,10 +10,12 @@ export class Factory<K extends string | number | symbol, T, C extends any[]> {
 		for (const key in mapper) {
 			this.addImpl(key, mapper[key]);
 		}
+		return this;
 	}
 
 	addImpl(key: K, impl: Impl<T, C>) {
 		this.impls.set(key, impl);
+		return this;
 	}
 
 	private getImpl(key: K) {

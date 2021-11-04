@@ -1,54 +1,43 @@
 import 'reflect-metadata';
 
 import { ClientApp } from '../framework/client-app';
-import { ActorManager } from './manager/actor-manager';
-import { LandManager } from './manager/land-manager';
-import { CursorManager } from './manager/cursor-manager';
-import { PlayerManager } from './manager/player-manager';
-import { ShortcutManager } from './manager/shortcut-manager';
-import { BowManager } from './manager/bow-manager';
-import { PickDropManager } from './manager/pick-drop-manager';
-
-import { ActorController } from './controller/actor-controller';
 import { BootController } from './controller/boot-controller';
-import { LandController } from './controller/land-controller';
-import { PlayerController } from './controller/player-controller';
-import { ShortcutController } from './controller/shortcut-controller';
-import { PickDropController } from './controller/pick-drop-controller';
 
 import { ActorStore, LandStore } from './store';
 
-import { GameUI } from './ui/component/game-ui';
-import { ActorFactory } from './object/actor';
-import { ActorMapper } from './object';
+import { GameUI } from './ui/game-ui';
+import { ActorFactory } from './module/actor-module/actor';
+import { ActorMapper } from './module/actor-module/spec';
 import { HTMLInputProvider } from './input';
 
-import { UIStates } from './ui/state';
+import { createClientSideModule } from '../framework/module';
+import { LandModule } from './module/land-module';
+import { ActorModule } from './module/actor-module';
+import { PlayerModule } from './module/player-module';
+import { InventoryModule } from './module/inventory-module';
+import { BowModule } from './module/bow-module';
 
 export function bootstrap() {
 	const playground = document.getElementById('playground') as HTMLDivElement;
 	const texturePaths = JSON.parse(process.env.TEXTURE_LOADED);
 	const serverUrl = process.env.UNIVERSE_SERVER_URL;
+	const inputProvider = new HTMLInputProvider(playground);
 
-	const stores = [LandStore, ActorStore];
-	const managers = [ActorManager, LandManager, CursorManager, PlayerManager, ShortcutManager, BowManager, PickDropManager];
-	const controllers = [ActorController, BootController, LandController, PlayerController, ShortcutController, PickDropController];
+	const appModule = createClientSideModule({
+		imports: [LandModule, ActorModule, PlayerModule, InventoryModule, BowModule],
+		controllers: [BootController],
+		providers: [
+			{ key: LandStore, value: new LandStore() },
+			{ key: ActorStore, value: new ActorStore() },
+			{ key: HTMLInputProvider, value: inputProvider },
+		],
+	});
 
-	const app = new ClientApp({ serverUrl, playground, texturePaths, managers, stores, controllers, uiEntry: GameUI, uiStates: UIStates });
-
-	for (const store of stores) {
-		app.bindToValue(store, new store());
-		app.addDisplayObject(app.get<any>(store).container);
-	}
-
-	const actorFactory = new ActorFactory();
-	actorFactory.addImpls(ActorMapper);
-	app.bindToValue(ActorFactory, actorFactory);
-
-	const inputProvider = new HTMLInputProvider(app.getCanvasElement());
-	app.bindToValue(HTMLInputProvider, inputProvider);
+	const app = new ClientApp({ serverUrl, playground, texturePaths, uiEntry: GameUI, module: appModule });
 
 	app.addTicker(() => inputProvider.doTick());
+	app.addDisplayObject(app.get<any>(LandStore).container);
+	app.addDisplayObject(app.get<any>(ActorStore).container);
 
 	console.log('Server URL is: ', serverUrl);
 

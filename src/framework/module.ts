@@ -29,6 +29,13 @@ export interface ClientSideModule {
 	uiStates: ClassOf<any>[];
 }
 
+export interface ClientModuleResolvedResult {
+	controllers: ClientControllerClass[];
+	managers: ClientManagerClass[];
+	providers: Provider[];
+	uiStates: ClassOf<any>[];
+}
+
 export interface ServerSideModule {
 	imports: ServerSideModule[];
 	entities: EntityClass[];
@@ -60,7 +67,22 @@ export function resolveServerSideModule(module: ServerSideModule): ServerModuleR
 
 	return { entities, controllers, managers, providers };
 }
+export function resolveClientSideModule(module: ClientSideModule): ClientModuleResolvedResult {
+	const controllers: ClassOf<ClientSideController>[] = [...module.controllers];
+	const managers: ClassOf<ClientSideManager>[] = [...module.managers];
+	const providers: Provider[] = [...module.providers];
+	const uiStates: ClassOf<Entity>[] = [...module.uiStates];
 
+	for (const subModule of module.imports) {
+		const resolved = resolveClientSideModule(subModule);
+		controllers.push(...resolved.controllers);
+		managers.push(...resolved.managers);
+		providers.push(...resolved.providers);
+		uiStates.push(...resolved.uiStates);
+	}
+
+	return { controllers, managers, providers, uiStates };
+}
 export function createServerSideModule(option: Partial<ServerSideModule>): ServerSideModule {
 	return {
 		imports: option.imports || [],

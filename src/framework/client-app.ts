@@ -12,6 +12,7 @@ import { bindToContainer, resolveAllBindings } from './inversify';
 import { UIEntry, UIEventBus } from './user-interface/hooks';
 
 import { UIStateContainer } from './user-interface/state';
+import { ClientModuleResolvedResult, ClientSideModule, resolveClientSideModule } from './module';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -26,10 +27,7 @@ export interface ClientApplicationOption {
 	playground: HTMLDivElement;
 	texturePaths: string[];
 	uiEntry: any;
-	uiStates: any[];
-	stores: any[];
-	managers: any[];
-	controllers: any[];
+	module: ClientSideModule;
 }
 
 export class ClientApp {
@@ -47,7 +45,7 @@ export class ClientApp {
 	private busClient: EventBusClient;
 	private uiEventBus: UIEventBus;
 
-	private iocContainer!: Container;
+	private iocContainer: Container;
 	private resolution = 32;
 
 	//比例4:3
@@ -59,7 +57,11 @@ export class ClientApp {
 
 	private playground: HTMLElement;
 
+	private moduleResolved: ClientModuleResolvedResult;
+
 	constructor(private option: ClientApplicationOption) {
+		this.moduleResolved = resolveClientSideModule(option.module);
+
 		this.app = new PIXI.Application({
 			resolution: this.resolution,
 			width: this.worldWidth,
@@ -69,10 +71,10 @@ export class ClientApp {
 		this.playground = option.playground;
 
 		this.iocContainer = new Container({ skipBaseClassChecks: true });
-		this.uiStatesContainer = new UIStateContainer(option.uiStates);
+		this.uiStatesContainer = new UIStateContainer(this.moduleResolved.uiStates);
 
-		this.managers = option.managers;
-		this.controllers = option.controllers;
+		this.managers = this.moduleResolved.managers;
+		this.controllers = this.moduleResolved.controllers;
 
 		this.viewport = new Viewport(
 			this.worldWidth * this.resolution,
@@ -83,16 +85,13 @@ export class ClientApp {
 		this.busClient = new EventBusClient(this.option.serverUrl);
 		this.uiEventBus = new UIEventBus();
 
+		this.initProviderBindings();
 		this.initWrapper();
 		this.initUiContainer();
 	}
 
 	getCanvasElement() {
 		return this.app.view;
-	}
-
-	bindToValue<T>(identifier: interfaces.ServiceIdentifier<T>, value: T) {
-		this.iocContainer.bind(identifier).toConstantValue(value);
 	}
 
 	get<T>(identifier: interfaces.ServiceIdentifier<T>) {
@@ -159,6 +158,12 @@ export class ClientApp {
 		this.wrapper.appendChild(container);
 		this.wrapper.appendChild(this.app.view);
 		this.uiContainer = container;
+	}
+
+	private initProviderBindings() {
+		for (const provider of this.moduleResolved.providers) {
+			this.iocContainer.bind(provider.key).toConstantValue(provider.value);
+		}
 	}
 
 	private initBaseBindings() {
