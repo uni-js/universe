@@ -3,6 +3,9 @@
         "sourcePath": "src",
         "eventsSpecPath": "framework/event",
 
+        "clientModulePath": "client/module",
+        "serverModulePath": "server/module",
+
         "clientManagerSpecPath": "framework/client-manager",
         "serverManagerSpecPath": "framework/server-manager",
 
@@ -12,17 +15,10 @@
         "eventBusClientSpecPath": "framework/bus-client",
         "eventBusServerSpecPath": "framework/bus-server",
 
-        "clientManagersPath": "client/manager",
-        "serverManagersPath": "server/manager",
-
         "clientInternalEventsModulePath": "client/event/internal",
         "clientExternalEventsModulePath": "client/event/external",
 
         "serverInternalEventsModulePath": "server/event/internal",
-        "serverExternalEventsModulePath": "server/event/external",
-
-        "clientControllersPath": "client/controller",
-        "serverControllersPath": "server/controller"
-        
+        "serverExternalEventsModulePath": "server/event/external"
     }
 }
