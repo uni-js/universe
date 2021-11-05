@@ -5,7 +5,7 @@ import {
 	BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER,
 	ContainerType,
 	ContainerUpdateData,
-} from '../../inventory';
+} from './spec';
 import { PlayerManager } from '../player-module/player-manager';
 import { injectCollection, NotLimitCollection } from '../../../framework/memory-database';
 import { inject, injectable } from 'inversify';

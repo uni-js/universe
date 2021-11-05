@@ -1,4 +1,4 @@
-import { ItemType } from '../module/inventory-module/item';
+import { ItemType } from './item';
 
 export const BLOCKS_PER_PLAYER_INVENTORY_CONTAINER = 20;
 export const BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER = 5;

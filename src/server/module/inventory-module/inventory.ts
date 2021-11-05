@@ -1,5 +1,5 @@
 import { Entity } from '../../../framework/memory-database';
-import { BLOCKS_PER_PLAYER_INVENTORY_CONTAINER, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from '../../inventory';
+import { BLOCKS_PER_PLAYER_INVENTORY_CONTAINER, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from './spec';
 import { ItemType } from './item';
 
 /**

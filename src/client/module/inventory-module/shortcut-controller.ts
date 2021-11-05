@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '../../../framework/bus-client';
-import { ContainerType } from '../../../server/inventory';
+import { ContainerType } from '../../../server/module/inventory-module/spec';
 import { ShortcutManager } from './shortcut-manager';
 import { ClientSideController } from '../../../framework/client-controller';
 

@@ -4,7 +4,7 @@ import {
 	ContainerUpdateDataUnit,
 	BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER,
 	ContainerType,
-} from '../../../server/inventory';
+} from '../../../server/module/inventory-module/spec';
 import { HTMLInputProvider, InputKey } from '../../input';
 import { ClientSideManager } from '../../../framework/client-manager';
 import { ItemType } from '../../../server/module/inventory-module/item';
