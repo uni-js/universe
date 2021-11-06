@@ -2,6 +2,7 @@
     "codegen": {
         "sourcePath": "src",
         "eventsSpecPath": "framework/event",
+        "moduleSpecPath": "framework/module",
 
         "clientModulePath": "client/module",
         "serverModulePath": "server/module",

@@ -6,16 +6,14 @@ import { BootController } from './controller/boot-controller';
 import { ActorStore, LandStore } from './store';
 
 import { GameUI } from './ui/game-ui';
-import { ActorFactory } from './module/actor-module/actor';
-import { ActorMapper } from './module/actor-module/spec';
 import { HTMLInputProvider } from './input';
 
 import { createClientSideModule } from '../framework/module';
-import { LandModule } from './module/land-module';
-import { ActorModule } from './module/actor-module';
-import { PlayerModule } from './module/player-module';
-import { InventoryModule } from './module/inventory-module';
-import { BowModule } from './module/bow-module';
+import { LandModule } from './module/land-module/module-export';
+import { ActorModule } from './module/actor-module/module-export';
+import { PlayerModule } from './module/player-module/module-export';
+import { InventoryModule } from './module/inventory-module/module-export';
+import { BowModule } from './module/bow-module/module-export';
 
 export function bootstrap() {
 	const playground = document.getElementById('playground') as HTMLDivElement;
