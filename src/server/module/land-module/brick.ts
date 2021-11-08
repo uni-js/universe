@@ -1,4 +1,4 @@
-import { Entity } from '../../../framework/memory-database';
+import { Entity } from '../../../framework/server-side/memory-database';
 
 export enum BrickType {
 	/**

@@ -7,9 +7,9 @@ import {
 	ContainerUpdateData,
 } from './spec';
 import { PlayerManager } from '../player-module/player-manager';
-import { injectCollection, NotLimitCollection } from '../../../framework/memory-database';
+import { injectCollection, NotLimitCollection } from '../../../framework/server-side/memory-database';
 import { inject, injectable } from 'inversify';
-import { EntityManager, UpdateOnlyCollection } from '../../../framework/server-manager';
+import { EntityManager, UpdateOnlyCollection } from '../../../framework/server-side/server-manager';
 import { ItemDef, ItemDefList, ItemHoldAction, ItemType } from './item';
 import { ActorManager } from '../actor-module/actor-manager';
 import { ActorFactory, AttachType } from '../actor-module/spec';

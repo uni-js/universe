@@ -1,13 +1,13 @@
 import { IEventBus } from './bus-server';
 import {
 	ClassOf,
-	ConvertInternalToExternalEvent,
 	ExternalEvent,
 	EXTERNAL_EVENT_HANDLER,
 	GameEventEmitter,
-	GetHandledEventBounds,
+	convertInternalToExternalEvent,
+	getHandledEventBounds,
 	InternalEvent,
-} from './event';
+} from '../event';
 
 export type TargetConnIdsProvider<T> = (param: T) => string[] | string;
 
@@ -19,7 +19,7 @@ export class ServerSideController extends GameEventEmitter {
 	}
 
 	private initExternalHandledEvents() {
-		const bounds = GetHandledEventBounds(this, EXTERNAL_EVENT_HANDLER);
+		const bounds = getHandledEventBounds(this, EXTERNAL_EVENT_HANDLER);
 		for (const bound of bounds) {
 			this.eventBus.onEvent(bound.eventClass, bound.bindToMethod.bind(this));
 		}
@@ -35,7 +35,7 @@ export class ServerSideController extends GameEventEmitter {
 		targetConnIdsProvider: TargetConnIdsProvider<I>,
 	) {
 		from.onEvent(internalEvent, (event: I) => {
-			const remoteEvent = ConvertInternalToExternalEvent(event, internalEvent, externalEvent);
+			const remoteEvent = convertInternalToExternalEvent(event, internalEvent, externalEvent);
 			const connIdsRet = targetConnIdsProvider(event);
 			const connIds = typeof connIdsRet == 'string' ? [connIdsRet] : connIdsRet;
 			this.eventBus.emitTo(connIds, remoteEvent);

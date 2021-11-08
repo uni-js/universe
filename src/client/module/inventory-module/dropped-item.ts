@@ -2,7 +2,7 @@ import { ActorType } from '../../../server/module/actor-module/spec';
 import { ItemType } from '../../../server/module/inventory-module/item';
 import { Vector2 } from '../../../server/shared/math';
 import { ActorConstructOption, ActorObject } from '../actor-module/actor';
-import { TextureProvider } from '../../../framework/texture';
+import { TextureProvider } from '../../../framework/client-side/texture';
 
 export class DroppedItemActor extends ActorObject {
 	public itemType: ItemType;

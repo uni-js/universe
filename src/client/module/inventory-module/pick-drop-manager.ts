@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { HTMLInputProvider, InputKey, InputProvider } from '../../input';
-import { ClientSideManager } from '../../../framework/client-manager';
+import { ClientSideManager } from '../../../framework/client-side/client-manager';
 import * as Events from '../../event/internal';
 
 @injectable()

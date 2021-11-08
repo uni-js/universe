@@ -1,5 +1,5 @@
 import { Player } from './player';
-import { ExtendedEntityManager } from '../../../framework/server-manager';
+import { ExtendedEntityManager } from '../../../framework/server-side/server-manager';
 import { Actor } from '../actor-module/spec';
 import { GetRadiusLands } from '../land-module/land';
 import { inject, injectable } from 'inversify';

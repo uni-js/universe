@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { useUIState } from '../../framework/user-interface/hooks';
+import { useUIState } from '../../framework/client-side/user-interface/hooks';
 import { BowUsingState } from '../module/bow-module/ui-state';
 
 import './bow.css';

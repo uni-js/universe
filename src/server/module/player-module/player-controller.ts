@@ -1,7 +1,7 @@
-import { EventBusServer, EventBusServerSymbol } from '../../../framework/bus-server';
+import { EventBusServer, EventBusServerSymbol } from '../../../framework/server-side/bus-server';
 import { PlayerManager } from '../player-module/player-manager';
 import { Vector2 } from '../../shared/math';
-import { ServerSideController } from '../../../framework/server-controller';
+import { ServerSideController } from '../../../framework/server-side/server-controller';
 import { inject, injectable } from 'inversify';
 import { ActorManager } from '../../module/actor-module/actor-manager';
 import { HandleExternalEvent } from '../../../framework/event';

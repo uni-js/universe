@@ -1,8 +1,8 @@
-import { ClientSideController } from './client-controller';
-import { ClientSideManager } from './client-manager';
-import { Entity } from './memory-database';
-import { ServerSideController } from './server-controller';
-import { ServerSideManager } from './server-manager';
+import { ClientSideController } from './client-side/client-controller';
+import { ClientSideManager } from './client-side/client-manager';
+import { Entity } from './server-side/memory-database';
+import { ServerSideController } from './server-side/server-controller';
+import { ServerSideManager } from './server-side/server-manager';
 
 export interface ClassOf<T> {
 	new (...args: any[]): T;

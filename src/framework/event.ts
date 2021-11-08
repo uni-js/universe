@@ -14,87 +14,88 @@ export interface EventBound {
 
 export const EXTERNAL_EVENT_HANDLER = Symbol();
 export const INTERNAL_EVENT_HANDLER = Symbol();
+export const IS_GAME_EVENT_EMITTER = Symbol();
 
 /**
- * 该装饰器用于Controller, 添加一个指定事件的监听器并绑定到被修饰的方法
- *
- * @param eventClazz 指定的事件类
+ * decorate a controller, to add a specified listener of an event and bind it to the method automatically.
+ * 
+ * @param eventClass the event class specified
  */
-export function HandleExternalEvent<T extends ExternalEvent>(eventClazz: ClassOf<T>) {
-	return Reflect.metadata(EXTERNAL_EVENT_HANDLER, { eventClazz });
+export function HandleExternalEvent<T extends ExternalEvent>(eventClass: ClassOf<T>) {
+	return Reflect.metadata(EXTERNAL_EVENT_HANDLER, { eventClass });
 }
 
-export function HandleInternalEvent<T extends InternalEvent>(emitterPropertyName: string, eventClazz: ClassOf<T>) {
-	return Reflect.metadata(INTERNAL_EVENT_HANDLER, { emitterPropertyName, eventClazz });
+export function HandleInternalEvent<T extends InternalEvent>(emitterPropertyName: string, eventClass: ClassOf<T>) {
+	return Reflect.metadata(INTERNAL_EVENT_HANDLER, { emitterPropertyName, eventClass });
 }
 
-export function GetHandledEventBounds(object: any, sign: symbol): EventBound[] {
-	const methods = GetAllMethodsOfObject(object);
+export function getHandledEventBounds(object: any, sign: symbol): EventBound[] {
+	const methods = getAllMethodsOfObject(object);
 	const bounds: EventBound[] = [];
 	for (const method of methods) {
 		const metadata = Reflect.getMetadata(sign, object, method);
-		if (metadata !== undefined) bounds.push({ bindToMethod: object[method], eventClass: metadata.eventClazz, ...metadata });
+		if (metadata !== undefined) bounds.push({ bindToMethod: object[method], eventClass: metadata.eventClass, ...metadata });
 	}
 	return bounds;
 }
 
-export function CopyOwnPropertiesTo(from: any, target: any) {
+export function copyOwnPropertiesTo(from: any, target: any) {
 	const names = Object.getOwnPropertyNames(from);
 	for (const property of names) {
 		target[property] = from[property];
 	}
 }
 
-export function ConvertInternalToExternalEvent<I extends InternalEvent, E extends ExternalEvent>(
+export function convertInternalToExternalEvent<I extends InternalEvent, E extends ExternalEvent>(
 	internalEvent: I,
-	internalEventClazz: ClassOf<I>,
-	externalEventClazz: ClassOf<E>,
+	internaleventClass: ClassOf<I>,
+	externaleventClass: ClassOf<E>,
 ) {
-	const exEvent = new externalEventClazz();
-	CopyOwnPropertiesTo(internalEvent, exEvent);
+	const exEvent = new externaleventClass();
+	copyOwnPropertiesTo(internalEvent, exEvent);
 	return exEvent;
 }
 
 export class GameEventEmitter extends EventEmitter2 {
-	isGameEventEmitter = true;
+	[IS_GAME_EVENT_EMITTER] = true;
 
 	constructor() {
 		super();
 
-		setTimeout(() => this.initInternalHandledEvents(), 0);
+		nextTick(()=>this.initInternalHandledEvents());
 	}
 
 	private initInternalHandledEvents() {
-		const bounds = GetHandledEventBounds(this, INTERNAL_EVENT_HANDLER);
+		const bounds = getHandledEventBounds(this, INTERNAL_EVENT_HANDLER);
 		for (const bound of bounds) {
 			const emitterName = bound.emitterPropertyName as string;
 			const emitter = (this as any)[emitterName] as GameEventEmitter;
 
-			if (emitter.isGameEventEmitter === false)
+			if (emitter[IS_GAME_EVENT_EMITTER] !== true)
 				throw new Error(`绑定了一个不是 GameEventEmitter 的内部事件: ${bound.eventClass.name}`);
 
 			emitter.onEvent(bound.eventClass, bound.bindToMethod.bind(this));
 		}
 	}
 
-	onEvent<T extends InternalEvent>(eventClazz: ClassOf<T>, listener: (event: T) => void) {
-		this.on(eventClazz.name, listener);
+	onEvent<T extends InternalEvent>(eventClass: ClassOf<T>, listener: (event: T) => void) {
+		this.on(eventClass.name, listener);
 	}
 
-	offEvent<T extends InternalEvent>(eventClazz: ClassOf<T>, listener: (event: T) => void) {
-		this.off(eventClazz.name, listener);
+	offEvent<T extends InternalEvent>(eventClass: ClassOf<T>, listener: (event: T) => void) {
+		this.off(eventClass.name, listener);
 	}
 
-	emitEvent<T extends InternalEvent>(eventClazz: ClassOf<T>, event: T) {
-		this.emit(eventClazz.name, event);
+	emitEvent<T extends InternalEvent>(eventClass: ClassOf<T>, event: T) {
+		this.emit(eventClass.name, event);
 	}
 
 	/**
 	 * 重定向指定事件, 每接受到该事件就发布出去
 	 */
-	redirectEvent<T extends InternalEvent>(from: GameEventEmitter, eventClazz: ClassOf<T>) {
-		from.onEvent(eventClazz, (event: T) => {
-			this.emitEvent(eventClazz, event);
+	redirectEvent<T extends InternalEvent>(from: GameEventEmitter, eventClass: ClassOf<T>) {
+		from.onEvent(eventClass, (event: T) => {
+			this.emitEvent(eventClass, event);
 		});
 	}
 }
@@ -109,9 +110,13 @@ export class RemoveEntityEvent extends InternalEvent {
 	entity: unknown;
 }
 
-function GetAllMethodsOfObject(object: any) {
+function getAllMethodsOfObject(object: any) {
 	const prototype = Object.getPrototypeOf(object);
 	return Object.getOwnPropertyNames(prototype).filter(function (property) {
 		return typeof object[property] == 'function';
 	});
+}
+
+function nextTick(fn: (...args: any[]) => any){
+	setTimeout(fn, 0);
 }

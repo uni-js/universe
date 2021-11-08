@@ -17,22 +17,22 @@ export interface UITicker {
 }
 export interface UIContext {
 	/**
-	 * UI组件的数据源
+	 * data source
 	 */
 	dataSource: DataSource;
 
 	/**
-	 * UI组件的ticker, 与主渲染循环同步
+	 * the ticker of ui component, sync to the main rendering loop
 	 */
 	ticker: UITicker;
 
 	/**
-	 * UI组件可以对外发送事件
+	 * ui component can emit out event through event bus
 	 */
 	eventBus: UIEventBus;
 
 	/**
-	 * 提供系统内材质的访问
+	 * provider ability to access texture
 	 */
 	textureProvider: TextureProvider;
 }
@@ -88,7 +88,6 @@ export function useUIState<E>(cls: new () => E) {
 }
 
 export function useTexturePath(provider: TextureProvider, key: string) {
-	//return `public/texture/${key.replace(/\./g,"/")}`;
 	const item = provider.getItem(key);
 	return item?.url;
 }

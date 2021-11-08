@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
-import { EventBusClient } from '../../framework/bus-client';
-import { ClientSideController } from '../../framework/client-controller';
+import { EventBusClient } from '../../framework/client-side/bus-client';
+import { ClientSideController } from '../../framework/client-side/client-controller';
 import { LoginEvent } from '../event/external';
 
 @injectable()

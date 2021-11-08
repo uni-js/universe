@@ -4,7 +4,7 @@ import 'threads/register';
 import { ConnectionController } from './controller/connection-controller';
 import { ActorFactory } from './module/actor-module/spec';
 import { ActorMapper } from './module/actor-module/mapper';
-import { ServerApp } from '../framework/server-app';
+import { ServerApp } from '../framework/server-side/server-app';
 import { createPersistDatabase, PersistDatabaseSymbol } from './database';
 
 import { ServerSideModule } from '../framework/module';

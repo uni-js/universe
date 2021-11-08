@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Shortcut } from './shortcut';
-import { useEventBus, useUIState } from '../../framework/user-interface/hooks';
+import { useEventBus, useUIState } from '../../framework/client-side/user-interface/hooks';
 import { PlayerState } from '../module/player-module/ui-state';
 import { BowUI } from './bow';
 

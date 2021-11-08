@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { GetServerDebugDelay } from './debug';
 
-import { ExternalEvent, GameEventEmitter } from './event';
+import { ExternalEvent, GameEventEmitter } from '../event';
 
 const wait = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 

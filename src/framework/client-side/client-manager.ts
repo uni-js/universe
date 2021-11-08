@@ -1,19 +1,18 @@
 import { ObjectStore, HashItem } from './object-store';
-import { GameEventEmitter, InternalEvent, ClassOf } from './event';
+import { GameEventEmitter, InternalEvent, ClassOf } from '../event';
 import { IGameObject } from './game-object';
+import { CAN_INJECT_COLLECTION } from '../server-side/memory-database';
+
 
 export abstract class ClientSideManager extends GameEventEmitter {
-	static canInjectCollection = true;
+	static [CAN_INJECT_COLLECTION] = true;
 	constructor() {
 		super();
 	}
 
-	async doTick(tick: number): Promise<void> {}
+	doTick(tick: number): void {}
 }
 
-/**
- * 用于管理某种游戏对象的管理器
- */
 export class GameObjectManager<T extends IGameObject> extends ClientSideManager {
 	private redirectedObjectEvents: ClassOf<InternalEvent>[] = [];
 
@@ -22,7 +21,7 @@ export class GameObjectManager<T extends IGameObject> extends ClientSideManager 
 	}
 
 	/**
-	 * 将游戏对象的指定事件进行转发
+	 * redirect the event from the specified-type game object
 	 */
 	protected redirectObjectEvent(eventClass: ClassOf<InternalEvent>) {
 		this.redirectedObjectEvents.push(eventClass);
@@ -31,9 +30,9 @@ export class GameObjectManager<T extends IGameObject> extends ClientSideManager 
 	addGameObject(gameObject: T) {
 		this.objectStore.add(gameObject);
 
-		for (const eventClazz of this.redirectedObjectEvents) {
-			gameObject.onEvent(eventClazz, (event: InternalEvent) => {
-				this.emitEvent(eventClazz, event);
+		for (const eventClass of this.redirectedObjectEvents) {
+			gameObject.onEvent(eventClass, (event: InternalEvent) => {
+				this.emitEvent(eventClass, event);
 			});
 		}
 	}

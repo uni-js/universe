@@ -1,19 +1,19 @@
 import { EventBusClient } from './bus-client';
 import {
-	ConvertInternalToExternalEvent,
 	ExternalEvent,
 	GameEventEmitter,
-	GetHandledEventBounds,
 	InternalEvent,
 	EXTERNAL_EVENT_HANDLER,
-} from './event';
+	convertInternalToExternalEvent,
+	getHandledEventBounds,
+} from '../event';
 
 export type ClassOf<T> = { new (...args: any[]): T };
 
 export class ClientSideController extends GameEventEmitter {
 	/**
 	 *
-	 * @param eventBus 网络事件总线
+	 * @param eventBus event bus on network
 	 */
 	constructor(protected eventBus: EventBusClient) {
 		super();
@@ -22,14 +22,14 @@ export class ClientSideController extends GameEventEmitter {
 	}
 
 	private initExternalHandledEvents() {
-		const bounds = GetHandledEventBounds(this, EXTERNAL_EVENT_HANDLER);
+		const bounds = getHandledEventBounds(this, EXTERNAL_EVENT_HANDLER);
 		for (const bound of bounds) {
 			this.eventBus.onEvent(bound.eventClass, bound.bindToMethod.bind(this));
 		}
 	}
 
 	/**
-	 * 重定向指定事件, 将事件发布到网络总线中
+	 * redirect the event specified, publish the event to event bus on network.
 	 */
 	protected redirectToBusEvent<I extends InternalEvent, E extends ExternalEvent & InternalEvent>(
 		from: GameEventEmitter,
@@ -37,7 +37,7 @@ export class ClientSideController extends GameEventEmitter {
 		externalEvent: ClassOf<E>,
 	) {
 		from.onEvent(internalEvent, (event: I) => {
-			const remoteEvent = ConvertInternalToExternalEvent(event, internalEvent, externalEvent);
+			const remoteEvent = convertInternalToExternalEvent(event, internalEvent, externalEvent);
 			this.eventBus.emitBusEvent(remoteEvent);
 		});
 	}

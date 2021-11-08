@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Vector2 } from '../../../server/shared/math';
-import { GameObject } from '../../../framework/game-object';
-import { TextureProvider } from '../../../framework/texture';
+import { GameObject } from '../../../framework/client-side/game-object';
+import { TextureProvider } from '../../../framework/client-side/texture';
 
 export class HealthBar extends GameObject {
 	/**

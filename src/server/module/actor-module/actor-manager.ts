@@ -1,9 +1,9 @@
 import SAT from 'sat';
 
 import { Attachment } from '../../shared/entity';
-import { EntityManager, UpdateOnlyCollection } from '../../../framework/server-manager';
+import { EntityManager, UpdateOnlyCollection } from '../../../framework/server-side/server-manager';
 import { injectable } from 'inversify';
-import { injectCollection } from '../../../framework/memory-database';
+import { injectCollection } from '../../../framework/server-side/memory-database';
 import { Vector2 } from '../../shared/math';
 import { PosToLandPos } from '../land-module/helper';
 import { Direction, RunningState, Actor, AttachType } from './spec';

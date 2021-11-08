@@ -1,12 +1,12 @@
-import { DelayedEventBus, EventBusServer, EventBusServerSymbol, IEventBus } from '../framework/bus-server';
+import { DelayedEventBus, EventBusServer, EventBusServerSymbol, IEventBus } from './bus-server';
 
 import { Container } from 'inversify';
-import { bindToContainer, resolveAllBindings } from '../framework/inversify';
-import { ServerSideManager } from '../framework/server-manager';
-import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from '../framework/memory-database';
-import { ServerSideController } from '../framework/server-controller';
-import { GetIsServerUseDelay } from '../framework/debug';
-import { EntityClass, Provider, resolveServerSideModule, ServerControllerClass, ServerManagerClass, ServerSideModule } from './module';
+import { bindToContainer, resolveAllBindings } from '../inversify';
+import { ServerSideManager } from './server-manager';
+import { bindCollectionsTo, createMemoryDatabase, IMemoryDatabase, MemoryDatabaseSymbol } from './memory-database';
+import { ServerSideController } from './server-controller';
+import { GetIsServerUseDelay } from './debug';
+import { EntityClass, Provider, resolveServerSideModule, ServerControllerClass, ServerManagerClass, ServerSideModule } from '../module';
 
 function wait(time: number) {
 	return new Promise((resolve) => setTimeout(resolve, time));

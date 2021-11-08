@@ -1,4 +1,3 @@
-import { doTickable } from '../../framework/tickable';
 import Keyboard from 'keyboardjs';
 import { Vector2 } from '../../server/shared/math';
 
@@ -29,11 +28,12 @@ export enum InputKey {
 	NUM_0 = 'NUM_0',
 }
 
-export interface InputProvider extends doTickable {
+export interface InputProvider {
 	keyPress(key: InputKey): boolean;
 	keyDown(key: InputKey): boolean;
 	cursorPress(): boolean;
 	getCursorAt(): Vector2;
+	doTick(tick: number): void;
 }
 
 export class HTMLInputProvider implements InputProvider {
@@ -141,7 +141,7 @@ export class HTMLInputProvider implements InputProvider {
 		this.actions = newActions;
 	}
 
-	async doTick(): Promise<void> {
+	doTick(): void {
 		this.consumeActions();
 		this.tick++;
 	}

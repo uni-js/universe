@@ -1,5 +1,5 @@
-import { BusEvent, EventBusServer, EventBusServerSymbol } from '../../framework/bus-server';
-import { ServerSideController } from '../../framework/server-controller';
+import { BusEvent, EventBusServer, EventBusServerSymbol } from '../../framework/server-side/bus-server';
+import { ServerSideController } from '../../framework/server-side/server-controller';
 import { PlayerManager } from '../module/player-module/player-manager';
 import { inject, injectable } from 'inversify';
 

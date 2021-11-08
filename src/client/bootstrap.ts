@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { ClientApp } from '../framework/client-app';
+import { ClientApp } from '../framework/client-side/client-app';
 import { BootController } from './controller/boot-controller';
 
 import { ActorStore, LandStore } from './store';

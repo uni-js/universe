@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { HandleInternalEvent } from '../../../framework/event';
-import { ServerSideManager } from '../../../framework/server-manager';
+import { ServerSideManager } from '../../../framework/server-side/server-manager';
 import { LandManager } from './land-manager';
 import { PlayerManager } from '../player-module/player-manager';
 

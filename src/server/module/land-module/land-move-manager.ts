@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { Actor } from '../actor-module/spec';
 import { PosToLandPos } from './helper';
-import { ServerSideManager } from '../../../framework/server-manager';
+import { ServerSideManager } from '../../../framework/server-side/server-manager';
 import { Vector2 } from '../../shared/math';
 import { ActorManager } from '../actor-module/actor-manager';
 import { LandManager } from './land-manager';

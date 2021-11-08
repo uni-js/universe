@@ -8,11 +8,11 @@ import { ParseTexturePath, TextureProvider, TextureType } from './texture';
 import { EventBusClient } from './bus-client';
 import { Viewport } from './viewport';
 import { Container, interfaces } from 'inversify';
-import { bindToContainer, resolveAllBindings } from './inversify';
+import { bindToContainer, resolveAllBindings } from '../inversify';
 import { UIEntry, UIEventBus } from './user-interface/hooks';
 
 import { UIStateContainer } from './user-interface/state';
-import { ClientModuleResolvedResult, ClientSideModule, resolveClientSideModule } from './module';
+import { ClientModuleResolvedResult, ClientSideModule, resolveClientSideModule } from '../module';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -48,7 +48,6 @@ export class ClientApp {
 	private iocContainer: Container;
 	private resolution = 32;
 
-	//比例4:3
 	private worldWidth = 4 * 7;
 	private worldHeight = 3 * 7;
 

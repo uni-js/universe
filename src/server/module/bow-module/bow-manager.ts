@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { ActorType, Actor } from '../actor-module/spec';
 import { Arrow, Bow } from './bow';
-import { ExtendedEntityManager } from '../../../framework/server-manager';
+import { ExtendedEntityManager } from '../../../framework/server-side/server-manager';
 import { ActorManager } from '../actor-module/actor-manager';
 
 import * as Events from '../../event/internal';

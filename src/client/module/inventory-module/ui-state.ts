@@ -1,4 +1,4 @@
-import { UIState } from '../../../framework/user-interface/state';
+import { UIState } from '../../../framework/client-side/user-interface/state';
 import { ContainerType } from '../../../server/module/inventory-module/spec';
 import { ItemType } from '../../../server/module/inventory-module/item';
 

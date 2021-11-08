@@ -1,4 +1,4 @@
-import { EventBusServer, EventBusServerSymbol } from '../../../framework/bus-server';
+import { EventBusServer, EventBusServerSymbol } from '../../../framework/server-side/bus-server';
 import { ActorManager } from './actor-manager';
 import { PlayerManager } from '../player-module/player-manager';
 import { LandManager } from '../land-module/land-manager';
@@ -8,7 +8,7 @@ import * as ClientEvents from '../../../client/event/external';
 import * as Events from '../../event/internal';
 import * as ExternalEvents from '../../event/external';
 import { HandleExternalEvent } from '../../../framework/event';
-import { ServerSideController } from '../../../framework/server-controller';
+import { ServerSideController } from '../../../framework/server-side/server-controller';
 
 @injectable()
 export class ActorController extends ServerSideController {

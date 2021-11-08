@@ -1,7 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 import { ShortcutContainerState } from '../module/inventory-module/ui-state';
-import { useTexturePath, useTextureProvider, useUIState } from '../../framework/user-interface/hooks';
+import { useTexturePath, useTextureProvider, useUIState } from '../../framework/client-side/user-interface/hooks';
 
 import './shortcut.css';
 

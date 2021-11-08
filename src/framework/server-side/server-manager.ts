@@ -1,5 +1,5 @@
-import { Entity, NotLimitCollection } from './memory-database';
-import { GameEventEmitter, AddEntityEvent, RemoveEntityEvent } from './event';
+import { CAN_INJECT_COLLECTION, Entity, NotLimitCollection } from './memory-database';
+import { GameEventEmitter, AddEntityEvent, RemoveEntityEvent } from '../event';
 
 export type ClassOf<T> = { new (...args: any[]): T };
 export type ObjectQueryCondition<T> = Partial<T & LokiObj> & Record<string, any>;
@@ -64,7 +64,7 @@ export interface IEntityManager<K> extends ServerSideManager {
  * 所有实体管理器共同构成实体管理层
  */
 export class EntityManager<T extends Entity> extends ServerSideManager implements IEntityManager<T> {
-	static canInjectCollection = true;
+	static [CAN_INJECT_COLLECTION] = true;
 
 	private entityList: NotLimitCollection<T>;
 

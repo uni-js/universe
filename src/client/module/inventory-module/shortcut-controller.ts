@@ -1,8 +1,8 @@
 import { inject, injectable } from 'inversify';
-import { EventBusClient } from '../../../framework/bus-client';
+import { EventBusClient } from '../../../framework/client-side/bus-client';
 import { ContainerType } from '../../../server/module/inventory-module/spec';
 import { ShortcutManager } from './shortcut-manager';
-import { ClientSideController } from '../../../framework/client-controller';
+import { ClientSideController } from '../../../framework/client-side/client-controller';
 
 import * as ServerEvents from '../../../server/event/external';
 

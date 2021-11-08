@@ -1,4 +1,4 @@
-import { ObjectStore } from '../../framework/object-store';
+import { ObjectStore } from '../../framework/client-side/object-store';
 import { LandObject } from '../module/land-module/land';
 import { injectable } from 'inversify';
 
