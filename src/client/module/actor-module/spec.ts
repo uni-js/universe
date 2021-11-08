@@ -1,8 +1,8 @@
 import { ActorType } from '../../../server/module/actor-module/spec';
-import { ActorFactoryMapper } from './actor';
-import { Arrow, Bow } from '../bow-module/bow';
-import { DroppedItemActor } from '../inventory-module/dropped-item';
-import { Player } from '../player-module/player';
+import { ActorFactoryMapper } from './actor-object';
+import { Arrow, Bow } from '../bow-module/bow-object';
+import { DroppedItemActor } from '../inventory-module/dropped-item-object';
+import { Player } from '../player-module/player-object';
 
 export const ActorMapper: ActorFactoryMapper = {
 	[ActorType.BOW]: Bow,

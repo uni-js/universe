@@ -1,11 +1,11 @@
 import { EventBusClient } from '../../../framework/client-side/bus-client';
 import { Vector2 } from '../../../server/shared/math';
 import { ActorManager } from './actor-manager';
-import { Player } from '../player-module/player';
+import { Player } from '../player-module/player-object';
 import { TextureProvider } from '../../../framework/client-side/texture';
 import { inject, injectable } from 'inversify';
 import { PlayerManager } from '../player-module/player-manager';
-import { ActorFactory, ActorObject } from './actor';
+import { ActorFactory, ActorObject } from './actor-object';
 import { ClientSideController } from '../../../framework/client-side/client-controller';
 
 import * as ServerEvents from '../../../server/event/external';

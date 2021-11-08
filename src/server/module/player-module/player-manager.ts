@@ -1,7 +1,7 @@
-import { Player } from './player';
+import { Player } from './player-entity';
 import { ExtendedEntityManager } from '../../../framework/server-side/server-manager';
 import { Actor } from '../actor-module/spec';
-import { GetRadiusLands } from '../land-module/land';
+import { GetRadiusLands } from '../land-module/land-entity';
 import { inject, injectable } from 'inversify';
 import { ActorManager } from '../actor-module/actor-manager';
 import { Vector2 } from '../../shared/math';

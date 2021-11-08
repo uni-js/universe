@@ -1,6 +1,6 @@
 import { createServerSideModule } from '../../../framework/module';
-import { Brick } from './brick';
-import { Land } from './land';
+import { Brick } from './brick-entity';
+import { Land } from './land-entity';
 import { LandController } from './land-controller';
 import { LandLoadManager } from './land-load-manager';
 import { LandManager } from './land-manager';

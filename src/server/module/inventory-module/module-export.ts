@@ -1,8 +1,8 @@
 import { createServerSideModule } from '../../../framework/module';
-import { InventoryEntities } from './inventory';
+import { InventoryEntities } from './inventory-entity';
 import { InventoryController } from './inventory-controller';
 import { InventoryManager } from './inventory-manager';
-import { ItemDef } from './item';
+import { ItemDef } from './item-entity';
 
 export const InventoryModule = createServerSideModule({
 	controllers: [InventoryController],

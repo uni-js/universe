@@ -1,6 +1,6 @@
 import { Entity } from '../../../framework/server-side/memory-database';
 import { BLOCKS_PER_PLAYER_INVENTORY_CONTAINER, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType } from './spec';
-import { ItemType } from './item';
+import { ItemType } from './item-entity';
 
 /**
  * 一个inventory拥有多个容器

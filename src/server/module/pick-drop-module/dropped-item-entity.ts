@@ -1,5 +1,5 @@
 import { Actor, ActorType } from '../actor-module/spec';
-import { ItemType } from '../inventory-module/item';
+import { ItemType } from '../inventory-module/item-entity';
 import { ConstructOption } from '../../shared/entity';
 
 export class DroppedItemActor extends Actor {

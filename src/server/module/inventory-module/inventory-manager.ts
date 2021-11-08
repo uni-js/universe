@@ -1,5 +1,5 @@
-import { Player } from '../player-module/player';
-import { BackpackMainContainer, Container, ContainerBlock, Inventory, PlayerInventory, ShortcutContainer } from './inventory';
+import { Player } from '../player-module/player-entity';
+import { BackpackMainContainer, Container, ContainerBlock, Inventory, PlayerInventory, ShortcutContainer } from './inventory-entity';
 import {
 	BLOCKS_PER_PLAYER_INVENTORY_CONTAINER,
 	BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER,
@@ -10,10 +10,10 @@ import { PlayerManager } from '../player-module/player-manager';
 import { injectCollection, NotLimitCollection } from '../../../framework/server-side/memory-database';
 import { inject, injectable } from 'inversify';
 import { EntityManager, UpdateOnlyCollection } from '../../../framework/server-side/server-manager';
-import { ItemDef, ItemDefList, ItemHoldAction, ItemType } from './item';
+import { ItemDef, ItemDefList, ItemHoldAction, ItemType } from './item-entity';
 import { ActorManager } from '../actor-module/actor-manager';
 import { ActorFactory, AttachType } from '../actor-module/spec';
-import { DroppedItemActor } from '../pick-drop-module/dropped-item';
+import { DroppedItemActor } from '../pick-drop-module/dropped-item-entity';
 import { Vector2 } from '../../shared/math';
 
 import * as Events from '../../event/internal';

@@ -1,5 +1,5 @@
 import { createClientSideModule } from '../../../framework/module';
-import { ActorFactory } from './actor';
+import { ActorFactory } from './actor-object';
 import { ActorController } from './actor-controller';
 import { ActorManager } from './actor-manager';
 import { ActorMapper } from './spec';

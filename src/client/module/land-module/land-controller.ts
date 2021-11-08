@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { EventBusClient } from '../../../framework/client-side/bus-client';
 import { Vector2 } from '../../../server/shared/math';
 import { LandManager } from './land-manager';
-import { LandObject } from './land';
+import { LandObject } from './land-object';
 import { TextureProvider } from '../../../framework/client-side/texture';
 
 import * as ServerEvents from '../../../server/event/external';

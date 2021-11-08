@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { EventBusClient } from '../../../framework/client-side/bus-client';
 import { ActorManager } from '../actor-module/actor-manager';
 import { PlayerManager } from './player-manager';
-import { Player } from './player';
+import { Player } from './player-object';
 import { ClientSideController } from '../../../framework/client-side/client-controller';
 import * as Events from '../../event/internal';
 import * as ExternalEvents from '../../event/external';

@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Direction } from '../../../server/module/actor-module/spec';
-import { ActorObject } from './actor';
+import { ActorObject } from './actor-object';
 import { GameObjectManager } from '../../../framework/client-side/client-manager';
 import { ActorStore } from '../../store';
 

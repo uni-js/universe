@@ -4,7 +4,7 @@ import { ClientSideManager } from '../../../framework/client-side/client-manager
 import { Viewport } from '../../../framework/client-side/viewport';
 import { AttachType } from '../../../server/module/actor-module/spec';
 import { inject, injectable } from 'inversify';
-import { Player } from './player';
+import { Player } from './player-object';
 import { ActorManager } from '../actor-module/actor-manager';
 import * as Events from '../../event/internal';
 import { UIEventBus } from '../../../framework/client-side/user-interface/hooks';

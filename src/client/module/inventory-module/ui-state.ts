@@ -1,6 +1,6 @@
 import { UIState } from '../../../framework/client-side/user-interface/state';
 import { ContainerType } from '../../../server/module/inventory-module/spec';
-import { ItemType } from '../../../server/module/inventory-module/item';
+import { ItemType } from '../../../server/module/inventory-module/item-entity';
 
 @UIState()
 export class ShortcutContainerState {

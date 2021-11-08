@@ -2,7 +2,7 @@ import { LAND_WIDTH } from '../../../server/module/land-module/const';
 import { LandData } from '../../../server/module/land-module/types';
 import { Vector2 } from '../../../server/shared/math';
 import { TextureProvider } from '../../../framework/client-side/texture';
-import { BRICK_WIDTH } from './brick';
+import { BRICK_WIDTH } from './brick-object';
 import { CompositeRectTileLayer } from '@pixi/tilemap';
 import { StaticObject } from '../actor-module/static';
 

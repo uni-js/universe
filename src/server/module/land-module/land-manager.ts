@@ -1,4 +1,4 @@
-import { Land } from './land';
+import { Land } from './land-entity';
 import { EntityManager, UpdateOnlyCollection } from '../../../framework/server-side/server-manager';
 import { Vector2 } from '../../shared/math';
 import { PersistDatabaseSymbol, IPersistDatabase } from '../../database';
@@ -7,7 +7,7 @@ import { spawn } from 'threads';
 import { BrickData, LandData } from './types';
 import { inject, injectable } from 'inversify';
 import { NotLimitCollection, injectCollection } from '../../../framework/server-side/memory-database';
-import { Brick } from './brick';
+import { Brick } from './brick-entity';
 
 import * as Events from '../../event/internal';
 

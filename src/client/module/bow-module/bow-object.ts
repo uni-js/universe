@@ -1,6 +1,6 @@
 import { Vector2 } from '../../../server/shared/math';
 import { ActorType } from '../../../server/module/actor-module/spec';
-import { ActorConstructOption, ActorObject } from '../actor-module/actor';
+import { ActorConstructOption, ActorObject } from '../actor-module/actor-object';
 import { TextureProvider } from '../../../framework/client-side/texture';
 
 export class Arrow extends ActorObject {

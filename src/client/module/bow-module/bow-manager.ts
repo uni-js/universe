@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { ActorType } from '../../../server/module/actor-module/spec';
-import { ItemType } from '../../../server/module/inventory-module/item';
+import { ItemType } from '../../../server/module/inventory-module/item-entity';
 import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../../../server/module/bow-module/bow-manager';
 import { SERVER_TICKS_MULTIPLE } from '../../../server/shared/server';
 import { ClientSideManager } from '../../../framework/client-side/client-manager';

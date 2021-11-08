@@ -1,4 +1,4 @@
-import { BrickType } from './brick';
+import { BrickType } from './brick-entity';
 import { Vector2 } from '../../shared/math';
 import { BiomePicker, BiomeType } from './biome';
 import { LAND_WIDTH } from './const';
