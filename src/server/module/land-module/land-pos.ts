@@ -1,4 +1,4 @@
-import { Vector2 } from '../server/shared/math';
+import { Vector2 } from '../../shared/math';
 
 export function GetPosHash(pos: Vector2) {
 	return `${pos.x},${pos.y}`;

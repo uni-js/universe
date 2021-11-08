@@ -6,7 +6,7 @@ import { inject, injectable } from 'inversify';
 import { ActorManager } from '../actor-module/actor-manager';
 import { Vector2 } from '../../shared/math';
 import { GetArrayDiff } from '../../utils';
-import { GetPosByHash, GetPosHash } from '../../../shared/land';
+import { GetPosByHash, GetPosHash } from '../land-module/land-pos';
 import { GetConstructOptions } from '../../shared/entity';
 
 import * as Events from '../../event/internal';
