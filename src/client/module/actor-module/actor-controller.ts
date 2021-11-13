@@ -88,9 +88,12 @@ export class ActorController extends ClientSideController {
 		const pos = new Vector2(event.posX, event.posY);
 
 		if (isCurrentPlayer) {
-			if (!event.isControlMoved) {
-				object.addMovePoint(pos);
-			}
+			const player = object as Player;
+			player.ackInput({
+				x: event.posX,
+				y: event.posY,
+				lastProcessedInput: event.processedInputSeq,
+			});
 		} else {
 			object.addMovePoint(pos);
 		}

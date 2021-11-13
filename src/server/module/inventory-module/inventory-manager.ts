@@ -1,11 +1,6 @@
 import { Player } from '../player-module/player-entity';
 import { BackpackMainContainer, Container, ContainerBlock, Inventory, PlayerInventory, ShortcutContainer } from './inventory-entity';
-import {
-	BLOCKS_PER_PLAYER_INVENTORY_CONTAINER,
-	BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER,
-	ContainerType,
-	ContainerUpdateData,
-} from './spec';
+import { BLOCKS_PER_PLAYER_INVENTORY_CONTAINER, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType, ContainerUpdateData } from './spec';
 import { PlayerManager } from '../player-module/player-manager';
 import { injectCollection, NotLimitCollection } from '../../../framework/server-side/memory-database';
 import { inject, injectable } from 'inversify';

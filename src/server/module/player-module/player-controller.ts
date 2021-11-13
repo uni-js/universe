@@ -55,7 +55,7 @@ export class PlayerController extends ServerSideController {
 	@HandleExternalEvent(ClientEvents.ControlMovedEvent)
 	private handleMovePlayer(connId: string, event: ClientEvents.ControlMovedEvent) {
 		const player = this.playerManager.findEntity({ connId });
-		this.actorManager.moveToPosition(player, new Vector2(event.posX, event.posY), true);
+		this.actorManager.processInput(player.$loki, event.input);
 	}
 
 	@HandleExternalEvent(ClientEvents.RotateAttachmentEvent)

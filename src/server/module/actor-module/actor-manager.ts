@@ -7,6 +7,7 @@ import { injectCollection } from '../../../framework/server-side/memory-database
 import { Vector2 } from '../../shared/math';
 import { PosToLandPos } from '../land-module/helper';
 import { Direction, RunningState, Actor, AttachType } from './spec';
+import { Input } from '../../../framework/client-side/prediction';
 
 import * as Events from '../../event/internal';
 
@@ -217,6 +218,12 @@ export class ActorManager extends EntityManager<Actor> {
 		this.setRotation(attachment.actorId, overflow ? boundValue : rotation);
 	}
 
+	processInput(actorId: number, input: Input) {
+		const actor = this.actorList.findOne({ $loki: actorId });
+		actor.lastInputSeqId = input.seqId;
+		this.moveToPosition(actor, new Vector2(actor.posX + input.moveX, actor.posY + input.moveY));
+	}
+
 	setRotation(actorId: number, rotation: number) {
 		const actor = this.actorList.findOne({ $loki: actorId });
 		actor.rotation = rotation;
@@ -233,7 +240,7 @@ export class ActorManager extends EntityManager<Actor> {
 		}
 	}
 
-	moveToPosition(actor: Actor, position: Vector2, controlMove = false) {
+	moveToPosition(actor: Actor, position: Vector2) {
 		const originPosX = actor.posX;
 		const originPosY = actor.posY;
 
@@ -241,14 +248,11 @@ export class ActorManager extends EntityManager<Actor> {
 
 		actor.posX += delta.x;
 		actor.posY += delta.y;
-		if (!controlMove) {
-			actor.isMoveDirty = true;
-		} else {
-			actor.isControlMoveDirty = true;
-		}
 
 		actor.lastPosX = originPosX;
 		actor.lastPosY = originPosY;
+
+		actor.isMoveDirty = true;
 
 		const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
 		const lastLandPos = PosToLandPos(new Vector2(originPosX, originPosY));
@@ -267,7 +271,7 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	private updateMoveDirty() {
-		const dirtyActors = this.actorList.find({ $or: [{ isMoveDirty: true }, { isControlMoveDirty: true }] });
+		const dirtyActors = this.actorList.find({ isMoveDirty: true });
 		for (const actor of dirtyActors) {
 			this.updateAttachment(actor.$loki);
 
@@ -277,19 +281,9 @@ export class ActorManager extends EntityManager<Actor> {
 
 				this.emitEvent(Events.NewPosEvent, {
 					actorId: actor.$loki,
-					isControlMoved: false,
 					posX: actor.posX,
 					posY: actor.posY,
-				});
-			} else if (actor.isControlMoveDirty) {
-				actor.isControlMoveDirty = false;
-				this.actorList.update(actor);
-
-				this.emitEvent(Events.NewPosEvent, {
-					actorId: actor.$loki,
-					isControlMoved: true,
-					posX: actor.posX,
-					posY: actor.posY,
+					processedInputSeq: actor.lastInputSeqId,
 				});
 			}
 		}

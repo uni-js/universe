@@ -1,8 +1,8 @@
+import { Input } from '../../../framework/client-side/prediction';
 import { InternalEvent } from '../../../framework/event';
 
 export class ControlMovedEvent extends InternalEvent {
-	posX: number;
-	posY: number;
+	input: Input;
 	direction: string;
 	running: string;
 }

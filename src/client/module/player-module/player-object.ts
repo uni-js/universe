@@ -2,6 +2,7 @@ import { BILLION_VALUE, Vector2 } from '../../../server/shared/math';
 import { TextureProvider } from '../../../framework/client-side/texture';
 import { ActorType, Direction, RunningState } from '../../../server/module/actor-module/spec';
 import { ActorConstructOption, ActorObject } from '../actor-module/actor-object';
+import { AckData, EntityState, PredictedInputManager } from '../../../framework/client-side/prediction';
 import * as Events from '../../event/internal';
 
 export interface ControlMoved {
@@ -18,6 +19,7 @@ export class Player extends ActorObject {
 	public playerName: string;
 
 	private controlMoved: Vector2 | false = false;
+	private predictedInputManager: PredictedInputManager;
 
 	constructor(serverId: number, option: ActorConstructOption, texture: TextureProvider) {
 		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.PLAYER, texture);
@@ -34,6 +36,11 @@ export class Player extends ActorObject {
 		this.walkTextures = this.texture.get('actor.player');
 
 		this.controlRunning(RunningState.SILENT);
+
+		this.predictedInputManager = new PredictedInputManager(this.vPos);
+		this.predictedInputManager.on('applyState', (state: EntityState) => {
+			this.vPos = new Vector2(state.x, state.y);
+		});
 	}
 
 	controlMove(delta: Vector2 | false) {
@@ -57,13 +64,22 @@ export class Player extends ActorObject {
 		}
 	}
 
+	ackInput(ackData: AckData) {
+		this.predictedInputManager.ackInput(ackData);
+	}
+
 	private doControlMoveTick(tick: number) {
 		if (this.controlMoved) {
-			const target = this.vPos.add(this.controlMoved);
-			this.vPos = target;
+			const moved = this.controlMoved;
+
+			const newInput = this.predictedInputManager.pendInput({
+				moveX: moved.x,
+				moveY: moved.y,
+			});
+
 			this.controlRunning(RunningState.WALKING);
 
-			this.emitEvent(Events.ControlMovedEvent, { posX: target.x, posY: target.y, direction: this.direction, running: this.running });
+			this.emitEvent(Events.ControlMovedEvent, { input: newInput, direction: this.direction, running: this.running });
 		}
 
 		if (!this.controlMoved && this.takeControl) {

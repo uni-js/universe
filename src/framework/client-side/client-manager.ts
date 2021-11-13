@@ -3,7 +3,6 @@ import { GameEventEmitter, InternalEvent, ClassOf } from '../event';
 import { IGameObject } from './game-object';
 import { CAN_INJECT_COLLECTION } from '../server-side/memory-database';
 
-
 export abstract class ClientSideManager extends GameEventEmitter {
 	static [CAN_INJECT_COLLECTION] = true;
 	constructor() {

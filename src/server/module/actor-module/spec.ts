@@ -97,10 +97,11 @@ export class Actor extends Entity {
 	@ConstructOption()
 	attachMapping: AttachMapping;
 
+	lastInputSeqId = -1;
+
 	canDamage = false;
 
 	isMoveDirty = false;
-	isControlMoveDirty = false;
 	isWalkDirty = false;
 
 	isActor = true;

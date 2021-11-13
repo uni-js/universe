@@ -18,7 +18,7 @@ export const IS_GAME_EVENT_EMITTER = Symbol();
 
 /**
  * decorate a controller, to add a specified listener of an event and bind it to the method automatically.
- * 
+ *
  * @param eventClass the event class specified
  */
 export function HandleExternalEvent<T extends ExternalEvent>(eventClass: ClassOf<T>) {
@@ -62,7 +62,7 @@ export class GameEventEmitter extends EventEmitter2 {
 	constructor() {
 		super();
 
-		nextTick(()=>this.initInternalHandledEvents());
+		nextTick(() => this.initInternalHandledEvents());
 	}
 
 	private initInternalHandledEvents() {
@@ -117,6 +117,6 @@ function getAllMethodsOfObject(object: any) {
 	});
 }
 
-function nextTick(fn: (...args: any[]) => any){
+function nextTick(fn: (...args: any[]) => any) {
 	setTimeout(fn, 0);
 }
