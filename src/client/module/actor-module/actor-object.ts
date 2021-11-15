@@ -39,7 +39,7 @@ export class MoveInterpolator extends EventEmitter2 {
 		}
 	}
 
-	doTick() {
+	doFixedUpdateTick() {
 		if (this.movePoints.length >= 2) {
 			const curr = this.movePoints[0];
 			const target = this.movePoints[1];
@@ -415,10 +415,10 @@ export class ActorObject extends GameObject {
 		this.isWalkDirty = true;
 	}
 
-	async doTick(tick: number) {
-		this.moveInterpolator.doTick();
-		this.nametag && this.nametag.doTick();
-		this.healthBar && this.healthBar.doTick();
+	doFixedUpdateTick(tick: number) {
+		this.moveInterpolator.doFixedUpdateTick();
+		this.nametag && this.nametag.doFixedUpdateTick();
+		this.healthBar && this.healthBar.doFixedUpdateTick();
 
 		if (this.isUsingDirty) {
 			this.emitEvent(Events.ActorToggleUsingEvent, { actorId: this.serverId, startOrEnd: this.isUsing ? true : false });

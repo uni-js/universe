@@ -92,6 +92,8 @@ export class ActorController extends ClientSideController {
 			player.ackInput({
 				x: event.posX,
 				y: event.posY,
+				motionX: event.motionX,
+				motionY: event.motionY,
 				lastProcessedInput: event.processedInputSeq,
 			});
 		} else {

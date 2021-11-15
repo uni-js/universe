@@ -45,13 +45,15 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 		actor.spriteRotation = rotation;
 	}
 
-	async doTick(tick: number) {
-		super.doTick.call(this, tick);
+	doUpdateTick(tick: number) {
+		super.doUpdateTick.call(this, tick);
+		this.actorStore.container.sortChildren();
+	}
 
+	doFixedUpdateTick(tick: number) {
+		super.doFixedUpdateTick.call(this, tick);
 		for (const actor of this.actorStore.getAll()) {
 			this.updateAttachingMovement(actor);
 		}
-
-		this.actorStore.container.sortChildren();
 	}
 }

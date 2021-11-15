@@ -9,7 +9,7 @@ export class PickDropManager extends ClientSideManager {
 		super();
 	}
 
-	async doTick() {
+	doFixedUpdateTick() {
 		if (this.input.keyDown(InputKey.Q)) {
 			this.emitEvent(Events.DropItemEvent, {});
 		}

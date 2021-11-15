@@ -33,7 +33,7 @@ export function bootstrap() {
 
 	const app = new ClientApp({ serverUrl, playground, texturePaths, uiEntry: GameUI, module: appModule });
 
-	app.addTicker(() => inputProvider.doTick());
+	app.addTicker(() => inputProvider.doFixedUpdateTick());
 	app.addDisplayObject(app.get<any>(LandStore).container);
 	app.addDisplayObject(app.get<any>(ActorStore).container);
 

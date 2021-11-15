@@ -44,7 +44,7 @@ export class Bow extends ActorObject {
 		this.stopAnimate();
 	}
 
-	async doTick(tick: number) {
-		super.doTick.call(this, tick);
+	doFixedUpdateTick(tick: number) {
+		super.doFixedUpdateTick.call(this, tick);
 	}
 }

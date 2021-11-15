@@ -1,8 +1,11 @@
 import { EventEmitter2 } from 'eventemitter2';
+import { SERVER_TICKS_MULTIPLE } from '../../../server/shared/server';
 
 export class EntityState {
 	x: number;
 	y: number;
+	motionX: number;
+	motionY: number;
 }
 
 export class Input {
@@ -14,6 +17,8 @@ export class Input {
 export class AckData {
 	x: number;
 	y: number;
+	motionX: number;
+	motionY: number;
 	lastProcessedInput: number;
 }
 
@@ -50,6 +55,8 @@ export class PredictedInputManager extends EventEmitter2 {
 		this.applyInput(bufferedInput);
 		this.pendingInputs.push(bufferedInput);
 		this.inputSequenceCount += 1;
+
+		this.emit('applyInput', bufferedInput);
 		return bufferedInput;
 	}
 
@@ -59,7 +66,7 @@ export class PredictedInputManager extends EventEmitter2 {
 	 * when received a input ack from server
 	 */
 	ackInput(ackData: AckData) {
-		this.applyState({ x: ackData.x, y: ackData.y });
+		this.applyState({ x: ackData.x, y: ackData.y, motionX: ackData.motionX, motionY: ackData.motionY });
 
 		const newPendingInputs: Input[] = [];
 		for (const input of this.pendingInputs) {
@@ -70,5 +77,9 @@ export class PredictedInputManager extends EventEmitter2 {
 		}
 
 		this.pendingInputs = newPendingInputs;
+	}
+
+	doGameTick() {
+		this.pendInput({ moveX: this.state.motionX / SERVER_TICKS_MULTIPLE, moveY: this.state.motionY / SERVER_TICKS_MULTIPLE });
 	}
 }

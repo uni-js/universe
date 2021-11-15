@@ -283,6 +283,8 @@ export class ActorManager extends EntityManager<Actor> {
 					actorId: actor.$loki,
 					posX: actor.posX,
 					posY: actor.posY,
+					motionX: actor.motionX,
+					motionY: actor.motionY,
 					processedInputSeq: actor.lastInputSeqId,
 				});
 			}
@@ -350,16 +352,20 @@ export class ActorManager extends EntityManager<Actor> {
 
 		for (const actor of motionActors) {
 			const newMotion = new Vector2(actor.motionX, actor.motionY).mul(actor.motionDecreaseRate);
-
 			this.setMotion(actor.$loki, newMotion.getSqrt() > 0.1 ? newMotion : new Vector2(0, 0));
+
+			if (actor.isPlayer) {
+				continue;
+			}
 			this.moveToPosition(actor, new Vector2(actor.posX + actor.motionX, actor.posY + actor.motionY));
 		}
 	}
 
-	private setMotion(actorId: number, motion: Vector2, motionRate?: number) {
+	setMotion(actorId: number, motion: Vector2, motionRate?: number) {
 		const actor = this.actorList.findOne({ $loki: actorId });
 		actor.motionX = motion.x;
 		actor.motionY = motion.y;
+		actor.isMoveDirty = true;
 		if (motionRate !== undefined) {
 			actor.motionDecreaseRate = motionRate;
 		}

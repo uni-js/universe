@@ -15,6 +15,8 @@ import * as Events from '../../event/internal';
 @injectable()
 export class BowManager extends ClientSideManager {
 	private useTicks = 0;
+	private useUpdateTicks = 0;
+
 	constructor(
 		@inject(ActorManager) private actorManager: ActorManager,
 		@inject(PlayerManager) private playerManager: PlayerManager,
@@ -50,11 +52,13 @@ export class BowManager extends ClientSideManager {
 		}
 	}
 
-	async doTick() {
+	doUpdateTick() {}
+
+	doFixedUpdateTick() {
 		if (this.bowUsingState.isUsing) {
 			this.useTicks++;
-			this.bowUsingState.canRelease = this.useTicks > BOW_RELEASING_MIN_TICKS * SERVER_TICKS_MULTIPLE;
 			this.bowUsingState.power = Math.min(1, this.useTicks / (BOW_DRAGGING_MAX_TICKS * SERVER_TICKS_MULTIPLE));
+			this.bowUsingState.canRelease = this.useTicks > BOW_RELEASING_MIN_TICKS * SERVER_TICKS_MULTIPLE;
 		}
 	}
 }

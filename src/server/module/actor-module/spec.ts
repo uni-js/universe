@@ -83,6 +83,8 @@ export class Actor extends Entity {
 	@ConstructOption()
 	isUsing = false;
 
+	isPlayer = false;
+
 	@ConstructOption()
 	useTick = 0;
 

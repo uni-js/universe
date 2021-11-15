@@ -62,7 +62,7 @@ export class HealthBar extends GameObject {
 		this.updateHealthDrawing();
 	}
 
-	async doTick() {
+	doFixedUpdateTick() {
 		if (this.showTicks > 0) {
 			this.visible = true;
 			this.showTicks--;

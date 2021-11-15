@@ -10,7 +10,8 @@ export interface IGameObject extends PIXI.DisplayObject {
 	onEvent<T>(eventClass: ClassOf<T>, listener: (event: T) => void): void;
 	offEvent<T>(eventClass: ClassOf<T>, listener: (event: T) => void): void;
 	emitEvent<T>(eventClass: ClassOf<T>, event: T): void;
-	doTick(tick: number): void;
+	doUpdateTick(tick: number): void;
+	doFixedUpdateTick(tick: number): void;
 }
 
 export class GameObject extends PIXI.Container implements IGameObject {
@@ -52,5 +53,6 @@ export class GameObject extends PIXI.Container implements IGameObject {
 		return this.serverId;
 	}
 
-	doTick(tick: number): void {}
+	doUpdateTick(tick: number): void {}
+	doFixedUpdateTick(tick: number): void {}
 }

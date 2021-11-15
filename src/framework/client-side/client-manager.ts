@@ -9,7 +9,8 @@ export abstract class ClientSideManager extends GameEventEmitter {
 		super();
 	}
 
-	doTick(tick: number): void {}
+	doUpdateTick(tick: number): void {}
+	doFixedUpdateTick(tick: number): void {}
 }
 
 export class GameObjectManager<T extends IGameObject> extends ClientSideManager {
@@ -52,10 +53,12 @@ export class GameObjectManager<T extends IGameObject> extends ClientSideManager 
 		return this.objectStore.getAll();
 	}
 
-	async doTick(tick: number) {
+	doUpdateTick(tick: number) {}
+
+	doFixedUpdateTick(tick: number) {
 		const objects = this.objectStore.getAll();
 		for (const object of objects) {
-			await object.doTick(tick);
+			object.doFixedUpdateTick(tick);
 		}
 	}
 }

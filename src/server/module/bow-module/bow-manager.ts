@@ -48,11 +48,11 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		const motion = arrow.power * 2;
 
 		arrow.rotation = actor.rotation;
-		arrow.motionX = motion * Math.cos(actor.rotation);
-		arrow.motionY = motion * Math.sin(actor.rotation);
+		this.addNewEntity(arrow);
+
+		this.actorManager.setMotion(arrow.$loki, new Vector2(motion * Math.cos(actor.rotation), motion * Math.sin(actor.rotation)));
 
 		this.updateArrowBoundingBox(arrow);
-		this.addNewEntity(arrow);
 	}
 
 	private doAliveTick() {

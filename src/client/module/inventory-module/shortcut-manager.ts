@@ -112,7 +112,7 @@ export class ShortcutManager extends ClientSideManager {
 		}
 	}
 
-	async doTick(tick: number) {
+	doFixedUpdateTick(tick: number) {
 		this.updateShortcutIndex();
 	}
 }

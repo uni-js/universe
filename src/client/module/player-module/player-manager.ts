@@ -35,7 +35,7 @@ export class PlayerManager extends ClientSideManager {
 		this.playerState.playerName = 'Player';
 
 		player.onEvent(Events.ControlMovedEvent, this.onPlayerControlMoved);
-		player.takeControl = true;
+		player.setTakeControl();
 
 		this.currentPlayer = player;
 	}
@@ -124,7 +124,7 @@ export class PlayerManager extends ClientSideManager {
 		}
 	}
 
-	async doTick(tick: number) {
+	doFixedUpdateTick(tick: number) {
 		this.doControlMoveTick();
 		this.doUsingRightHand();
 		this.doRotateAttachmentTick(tick);

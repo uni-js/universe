@@ -30,8 +30,14 @@ export interface ClientApplicationOption {
 	module: ClientSideModule;
 }
 
+export function wait(time: number) {
+	return new Promise((resolve) => setTimeout(resolve, time));
+}
+
 export class ClientApp {
-	private tick = 0;
+	private updateTick = 0;
+	private fixedTick = 0;
+	private lastFixedTickTime = 0;
 
 	private app: PIXI.Application;
 
@@ -200,16 +206,25 @@ export class ClientApp {
 		);
 	}
 
-	private doTick() {
+	private doUpdateTick() {
 		for (const manager of this.managers) {
-			this.iocContainer.get<any>(manager).doTick(this.tick);
+			this.iocContainer.get<any>(manager).doUpdateTick(this.updateTick);
 		}
 
-		this.tick += 1;
+		this.updateTick += 1;
 	}
 
-	private startLoop() {
-		this.app.ticker.add(this.doTick.bind(this));
+	private doFixedUpdateTick() {
+		for (const manager of this.managers) {
+			this.iocContainer.get<any>(manager).doFixedUpdateTick(this.fixedTick);
+		}
+
+		this.fixedTick += 1;
+	}
+
+	private async startLoop() {
+		this.app.ticker.add(this.doUpdateTick.bind(this));
+		this.app.ticker.add(this.doFixedUpdateTick.bind(this));
 	}
 
 	private async initTextures() {

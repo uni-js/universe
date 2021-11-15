@@ -13,7 +13,7 @@ export class NameTag extends PIXI.Text {
 		});
 	}
 
-	doTick() {
+	doFixedUpdateTick() {
 		if (this.hiddenTicks > 0) {
 			this.visible = false;
 			this.hiddenTicks--;

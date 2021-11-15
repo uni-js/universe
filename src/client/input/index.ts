@@ -33,7 +33,7 @@ export interface InputProvider {
 	keyDown(key: InputKey): boolean;
 	cursorPress(): boolean;
 	getCursorAt(): Vector2;
-	doTick(tick: number): void;
+	doFixedUpdateTick(tick: number): void;
 }
 
 export class HTMLInputProvider implements InputProvider {
@@ -141,7 +141,7 @@ export class HTMLInputProvider implements InputProvider {
 		this.actions = newActions;
 	}
 
-	doTick(): void {
+	doFixedUpdateTick(): void {
 		this.consumeActions();
 		this.tick++;
 	}

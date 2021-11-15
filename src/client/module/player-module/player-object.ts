@@ -2,7 +2,7 @@ import { BILLION_VALUE, Vector2 } from '../../../server/shared/math';
 import { TextureProvider } from '../../../framework/client-side/texture';
 import { ActorType, Direction, RunningState } from '../../../server/module/actor-module/spec';
 import { ActorConstructOption, ActorObject } from '../actor-module/actor-object';
-import { AckData, EntityState, PredictedInputManager } from '../../../framework/client-side/prediction';
+import { AckData, EntityState, Input, PredictedInputManager } from '../../../framework/client-side/prediction';
 import * as Events from '../../event/internal';
 
 export interface ControlMoved {
@@ -11,7 +11,7 @@ export interface ControlMoved {
 }
 
 export class Player extends ActorObject {
-	public takeControl = false;
+	public isTakeControl = false;
 
 	/**
 	 * @readonly
@@ -36,11 +36,7 @@ export class Player extends ActorObject {
 		this.walkTextures = this.texture.get('actor.player');
 
 		this.controlRunning(RunningState.SILENT);
-
-		this.predictedInputManager = new PredictedInputManager(this.vPos);
-		this.predictedInputManager.on('applyState', (state: EntityState) => {
-			this.vPos = new Vector2(state.x, state.y);
-		});
+		this.predictedInputManager = new PredictedInputManager({ ...this.vPos, motionX: option.motionX, motionY: option.motionY });
 	}
 
 	controlMove(delta: Vector2 | false) {
@@ -72,27 +68,41 @@ export class Player extends ActorObject {
 		if (this.controlMoved) {
 			const moved = this.controlMoved;
 
-			const newInput = this.predictedInputManager.pendInput({
+			this.predictedInputManager.pendInput({
 				moveX: moved.x,
 				moveY: moved.y,
 			});
 
 			this.controlRunning(RunningState.WALKING);
-
-			this.emitEvent(Events.ControlMovedEvent, { input: newInput, direction: this.direction, running: this.running });
 		}
 
-		if (!this.controlMoved && this.takeControl) {
+		if (!this.controlMoved && this.isTakeControl) {
 			this.controlRunning(RunningState.SILENT);
 		}
+	}
+
+	setTakeControl() {
+		this.isTakeControl = true;
+
+		this.predictedInputManager.on('applyState', (state: EntityState) => {
+			this.vPos = new Vector2(state.x, state.y);
+		});
+
+		this.predictedInputManager.on('applyInput', (input: Input) => {
+			this.emitEvent(Events.ControlMovedEvent, { input: input, direction: this.direction, running: this.running });
+		});
 	}
 
 	private doOrderTick() {
 		this.zIndex = 2 + (this.y / BILLION_VALUE + 1) / 2;
 	}
 
-	async doTick(tick: number) {
-		super.doTick.call(this, tick);
+	doFixedUpdateTick(tick: number) {
+		super.doFixedUpdateTick.call(this, tick);
+
+		if (this.isTakeControl) {
+			this.predictedInputManager.doGameTick();
+		}
 
 		this.doControlMoveTick(tick);
 		this.doOrderTick();
