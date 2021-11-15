@@ -12,4 +12,4 @@ RUN yarn build:client
 RUN yarn global add serve
 
 EXPOSE 5000
-CMD [ "serve", "-s", "web-dist" ]
+CMD [ "serve", "-s", "web-dist", "-p", "5000" ]
