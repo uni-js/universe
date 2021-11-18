@@ -73,13 +73,18 @@ export class ServerApp {
 
 		while (true) {
 			const startTime = new Date().getTime();
-			for (const manager of this.managers) {
-				const singleton: ServerSideManager = this.iocContainer.get(manager);
-				singleton.doTick(this.tick);
-			}
-			for (const controller of this.controllers) {
-				const singleton: ServerSideController = this.iocContainer.get(controller);
-				singleton.doTick(this.tick);
+
+			try{
+				for (const manager of this.managers) {
+					const singleton: ServerSideManager = this.iocContainer.get(manager);
+					singleton.doTick(this.tick);
+				}
+				for (const controller of this.controllers) {
+					const singleton: ServerSideController = this.iocContainer.get(controller);
+					singleton.doTick(this.tick);
+				}	
+			}catch(err){
+				console.error(err.stack);
 			}
 			const endTime = new Date().getTime();
 
