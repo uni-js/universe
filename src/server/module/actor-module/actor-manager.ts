@@ -353,10 +353,6 @@ export class ActorManager extends EntityManager<Actor> {
 		for (const actor of motionActors) {
 			const newMotion = new Vector2(actor.motionX, actor.motionY).mul(actor.motionDecreaseRate);
 			this.setMotion(actor.$loki, newMotion.getSqrt() > 0.1 ? newMotion : new Vector2(0, 0));
-
-			if (actor.isPlayer) {
-				continue;
-			}
 			this.moveToPosition(actor, new Vector2(actor.posX + actor.motionX, actor.posY + actor.motionY));
 		}
 	}

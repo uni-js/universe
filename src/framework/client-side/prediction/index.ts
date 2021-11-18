@@ -1,5 +1,4 @@
 import { EventEmitter2 } from 'eventemitter2';
-import { SERVER_TICKS_MULTIPLE } from '../../../server/shared/server';
 
 export class EntityState {
 	x: number;
@@ -22,22 +21,29 @@ export class AckData {
 	lastProcessedInput: number;
 }
 
+export const CORRECTION_RATIO = 10;
+
 /**
  * support client-side prediction and server reconciliation
  */
 export class PredictedInputManager extends EventEmitter2 {
 	private state: EntityState;
+	private simulatedState: EntityState;
 	private inputSequenceCount = 0;
 	private pendingInputs: Input[] = [];
 
 	constructor(initState: EntityState) {
 		super();
 		this.state = initState;
+		this.simulatedState = { ...this.state };
 	}
 
 	private applyInput(input: Input) {
 		this.state.x += input.moveX;
 		this.state.y += input.moveY;
+		this.simulatedState.x += input.moveX;
+		this.simulatedState.y += input.moveY;
+
 		this.emit('applyState', this.state);
 	}
 
@@ -66,20 +72,33 @@ export class PredictedInputManager extends EventEmitter2 {
 	 * when received a input ack from server
 	 */
 	ackInput(ackData: AckData) {
-		this.applyState({ x: ackData.x, y: ackData.y, motionX: ackData.motionX, motionY: ackData.motionY });
+		this.simulatedState.x = ackData.x;
+		this.simulatedState.y = ackData.y;
 
 		const newPendingInputs: Input[] = [];
 		for (const input of this.pendingInputs) {
 			if (input.seqId > ackData.lastProcessedInput) {
 				newPendingInputs.push(input);
-				this.applyInput(input);
+
+				this.simulatedState.x += input.moveX;
+				this.simulatedState.y += input.moveY;
 			}
 		}
 
 		this.pendingInputs = newPendingInputs;
 	}
 
+	doBlending() {
+		const offsetX = this.state.x - this.simulatedState.x;
+		const offsetY = this.state.y - this.simulatedState.y;
+
+		this.state.x += -offsetX / CORRECTION_RATIO;
+		this.state.y += -offsetY / CORRECTION_RATIO;
+
+		this.applyState(this.state);
+	}
+
 	doGameTick() {
-		this.pendInput({ moveX: this.state.motionX / SERVER_TICKS_MULTIPLE, moveY: this.state.motionY / SERVER_TICKS_MULTIPLE });
+		this.doBlending();
 	}
 }
