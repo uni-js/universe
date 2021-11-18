@@ -17,8 +17,9 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 
 	private updateAttachingMovement(actor: ActorObject) {
 		if (!actor.attaching) return;
-
 		const targetActor = this.getObjectById(actor.attaching.actorId);
+		if(!targetActor) return;
+
 		const relPos = targetActor.getAttachRelPos(actor.attaching.key);
 		const direction = targetActor.direction;
 
