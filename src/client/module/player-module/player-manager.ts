@@ -111,6 +111,8 @@ export class PlayerManager extends ClientSideManager {
 		const screenPoint = this.inputProvider.getCursorAt();
 		const cursorAt = this.stage.getWorldPointAt(screenPoint);
 		const attachment = this.currentPlayer.getAttachment(AttachType.RIGHT_HAND);
+		if(!attachment)return;
+
 		const vPos = this.actorManager.getObjectById(attachment.actorId).vPos;
 
 		const rad = cursorAt.sub(vPos).getRad();

@@ -193,27 +193,8 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	rotateAttachment(actorId: number, rotation: number) {
-		const actor = this.getEntityById(actorId);
 		const attachment = this.getAttachment(actorId, AttachType.RIGHT_HAND);
-
-		let overflow = true;
-		let boundValue = 0;
-
-		if (actor.direction === Direction.FORWARD) {
-			if (rotation > 0 && rotation < Math.PI) overflow = false;
-			boundValue = Math.PI / 2;
-		} else if (actor.direction === Direction.BACK) {
-			if (rotation > Math.PI && rotation < 2 * Math.PI) overflow = false;
-			boundValue = (3 * Math.PI) / 2;
-		} else if (actor.direction === Direction.LEFT) {
-			if (rotation > Math.PI / 2 && rotation < (3 * Math.PI) / 2) overflow = false;
-			boundValue = Math.PI;
-		} else {
-			if (rotation > (3 * Math.PI) / 2 || rotation < Math.PI / 2) overflow = false;
-			boundValue = 0;
-		}
-
-		this.setRotation(attachment.actorId, overflow ? boundValue : rotation);
+		this.setRotation(attachment.actorId, rotation);
 	}
 
 	processInput(actorId: number, input: Input) {
