@@ -6,12 +6,19 @@ This is an multi-player HTML5 game based on `pixi.js`, `socket.io` and `loki.js`
 
 ![](./docs/pic1.png)
 
-
 ## Project & Game goal
 
 The main target to generate a framework named `uni.js`.
 
 And finish the multi-player, infinity map, 2D sandbox game just like `Minecraft`.
+
+## State Synchronization
+
+The game system use client-side prediction & server reconciliation to implement synchronization of game actors.
+
+This part is completely written in TypeScript, and it performs well.
+
+reference: <https://www.gabrielgambetta.com/client-server-game-architecture.html>
 
 ## Start Developing
 
