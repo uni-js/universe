@@ -31,7 +31,7 @@ git clone https://github.com/wyattzheng/universe
 ```
 
 and create a `.env` file, in the root of project folder,
-to specified data folder of the server and some other options.
+to specify data folder of the server and some other options.
 
 ```
 DB_LOCATION=./data/
