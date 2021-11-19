@@ -7,17 +7,12 @@ import './shortcut.css';
 
 export const SHORTCUT_SIZE = 5;
 
-/**
- * 快捷栏的格子
- */
 export function ShortcutBlock(props: any) {
 	return <div className="shortcut-block"></div>;
 }
 
 export interface ShortcutProps {}
-/**
- * 快捷栏
- */
+
 export function Shortcut(props: any) {
 	const shortcut = useUIState(ShortcutContainerState);
 	const provider = useTextureProvider();

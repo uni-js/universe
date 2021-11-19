@@ -10,8 +10,8 @@ import { Vector2 } from '../../shared/math';
 
 export const ARROW_DROP_TICKS = 10;
 export const ARROW_DEAD_TICKS = 30;
-export const BOW_DRAGGING_MAX_TICKS = 25; //拉弓增加力度的最大值
-export const BOW_RELEASING_MIN_TICKS = 10; //可以释放的最小值
+export const BOW_DRAGGING_MAX_TICKS = 25;
+export const BOW_RELEASING_MIN_TICKS = 10;
 
 @injectable()
 export class BowManager extends ExtendedEntityManager<Actor, Bow> {
@@ -43,7 +43,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		arrow.posY = actor.posY;
 		arrow.shooter = attachingActor.$loki;
 
-		arrow.power = Math.min(useTick, BOW_DRAGGING_MAX_TICKS) / 20; //拉弓时间越长力度越大
+		arrow.power = Math.min(useTick, BOW_DRAGGING_MAX_TICKS) / 20;
 
 		const motion = arrow.power * 2;
 

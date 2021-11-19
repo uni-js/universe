@@ -72,7 +72,7 @@ export class GameEventEmitter extends EventEmitter2 {
 			const emitter = (this as any)[emitterName] as GameEventEmitter;
 
 			if (emitter[IS_GAME_EVENT_EMITTER] !== true)
-				throw new Error(`绑定了一个不是 GameEventEmitter 的内部事件: ${bound.eventClass.name}`);
+				throw new Error(`the target emitter is not GameEventEmitter when binding ${bound.eventClass.name}`);
 
 			emitter.onEvent(bound.eventClass, bound.bindToMethod.bind(this));
 		}
@@ -91,7 +91,8 @@ export class GameEventEmitter extends EventEmitter2 {
 	}
 
 	/**
-	 * 重定向指定事件, 每接受到该事件就发布出去
+	 * redirect the specified event,
+	 * emit out once received a event
 	 */
 	redirectEvent<T extends InternalEvent>(from: GameEventEmitter, eventClass: ClassOf<T>) {
 		from.onEvent(eventClass, (event: T) => {

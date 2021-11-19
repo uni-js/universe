@@ -1,44 +1,22 @@
 import SimplexNoise from 'simplex-noise';
 
-/**
- * 生物群落类型
- */
 export enum BiomeType {
-	/**
-	 * 雨林
-	 */
 	RAINFOREST = 'rf',
-	/**
-	 * 森林
-	 */
+
 	FOREST = 'fr',
-	/**
-	 * 湖泊
-	 */
+
 	LAKE = 'lk',
-	/**
-	 * 冰地
-	 */
+
 	ICELAND = 'ic',
-	/**
-	 * 山地
-	 */
+
 	MOUNTAIN = 'mt',
-	/**
-	 * 平原
-	 */
+
 	PLAIN = 'pl',
-	/**
-	 * 寒地
-	 */
+
 	COLD = 'co',
-	/**
-	 * 沙漠
-	 */
+
 	DESERT = 'ds',
-	/**
-	 * 旱地
-	 */
+
 	DRY = 'dr',
 }
 
@@ -54,7 +32,7 @@ export class BiomePicker {
 	}
 
 	/**
-	 * 获取指定地点的气候平均温度
+	 * get average temperature at (x,y)
 	 */
 	private getTemperature(x: number, y: number) {
 		const a = x / BiomePicker.SCALE_RATIO;
@@ -63,7 +41,7 @@ export class BiomePicker {
 	}
 
 	/**
-	 * 获取指定地点的气候平均湿度
+	 * get average wet at (x,y)
 	 */
 	private getWet(x: number, y: number) {
 		const a = x / BiomePicker.SCALE_RATIO;

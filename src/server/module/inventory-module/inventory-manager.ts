@@ -122,18 +122,10 @@ export class InventoryManager extends EntityManager<Inventory> {
 		this.removeInventory(invetory.$loki);
 	}
 
-	/**
-	 * 删除一个容器
-	 * 将删除它的所有格子
-	 */
 	private removeContainer(containerId: number) {
 		this.blocksList.findAndRemove({ containerId });
 	}
 
-	/**
-	 * 移除一个inventory
-	 * 将删除它的所有容器
-	 */
 	private removeInventory(inventoryId: number) {
 		const inventory = this.findEntity({ $loki: inventoryId });
 		for (const containerId of inventory.containers) {

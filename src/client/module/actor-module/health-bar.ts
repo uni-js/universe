@@ -5,7 +5,7 @@ import { TextureProvider } from '../../../framework/client-side/texture';
 
 export class HealthBar extends GameObject {
 	/**
-	 * 设置该属性后, 血量条会显示一段时间
+	 * if this property is set, the health bar will appear for a while
 	 */
 	public showTicks = 0;
 

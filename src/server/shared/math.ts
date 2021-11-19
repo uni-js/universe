@@ -54,9 +54,6 @@ export class Vector2 {
 		return Math.sqrt(this.x * this.x + this.y * this.y);
 	}
 
-	/**
-	 * 以 ↓→ 坐标系顺时针旋转变换坐标
-	 */
 	rotate(rad: number) {
 		return new Vector2(this.x * Math.cos(rad) - this.y * Math.sin(rad), this.x * Math.sin(rad) + this.y * Math.cos(rad));
 	}
@@ -70,9 +67,6 @@ export class Vector2 {
 	}
 }
 
-/**
- * 简单插值
- */
 export function Interpolate2d(points: Vector2[], x: number) {
 	const interpolator = new CurveInterpolator2D(points.map((point) => [point.x, point.y]));
 	const point = interpolator.getPointAt(x);

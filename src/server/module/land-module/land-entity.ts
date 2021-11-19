@@ -4,10 +4,9 @@ import { Entity } from '../../../framework/server-side/memory-database';
 import { RecordSet } from '../../utils';
 
 /**
- * 计算并获取某个坐标点
- * 附近半径的所有区块坐标
+ * calculated and get all land position of specified radius
  *
- * @returns 区块坐标数组
+ * @returns land position array
  */
 export function GetRadiusLands(pos: Vector2, radius: number): Vector2[] {
 	const landLoc = PosToLandPos(pos);

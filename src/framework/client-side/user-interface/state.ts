@@ -4,7 +4,7 @@ export function UIState() {
 
 export interface UIStateMetaInfo {
 	/**
-	 * 当前的状态版本, 每次状态变更都会递增
+	 * state revision, increased when state changed
 	 */
 	revision: number;
 

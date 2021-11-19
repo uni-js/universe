@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 
 export class NameTag extends PIXI.Text {
 	/**
-	 * 设置该属性后，命名栏将会隐藏一段时间
+	 * if this property is set, the name tag will be hidden for a while
 	 */
 	public hiddenTicks = 0;
 

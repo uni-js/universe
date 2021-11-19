@@ -4,7 +4,7 @@ import { TextureProvider } from '../../../framework/client-side/texture';
 import { Vector2 } from '../../../server/shared/math';
 
 /**
- * 游戏世界里一类长期处于静态的事物
+ * static objects in game world
  */
 export class StaticObject extends GameObject {
 	protected sprite: PIXI.Sprite;
@@ -23,15 +23,12 @@ export class StaticObject extends GameObject {
 	}
 
 	/**
-	 * 设置游戏对象的世界坐标
+	 * set world position of the game object
 	 */
 	setPosition(pos: Vector2) {
 		return this.position.set(pos.x, pos.y);
 	}
 
-	/**
-	 * 获取游戏对象的世界坐标
-	 */
 	getPosition() {
 		return this.worldPos;
 	}

@@ -35,14 +35,14 @@ export class ShortcutManager extends ClientSideManager {
 	}
 
 	/**
-	 * 获取快捷栏当前选中的格子
+	 * get current block selected on shortcut
 	 */
 	getCurrent() {
 		return this.shortcut.blocks[this.shortcut.currentIndexAt];
 	}
 
 	/**
-	 * 设置单个格子的数据
+	 * set a block data
 	 */
 	updateBlock(updateDataUnit: ContainerUpdateDataUnit) {
 		const block = this.shortcut.blocks[this.shortcut.currentIndexAt];
@@ -52,7 +52,7 @@ export class ShortcutManager extends ClientSideManager {
 	}
 
 	/**
-	 * 批量设置格子的数据
+	 * set blocks data
 	 */
 	updateBlocks(containerId: number, updateData: ContainerUpdateData, isFullUpdate: boolean) {
 		this.shortcut.containerId = containerId;

@@ -23,9 +23,9 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	/**
-	 * 伤害一个 actor
-	 * @param fromRad 伤害来自的角度, 弧度制, [0, 2*PI]
-	 * @param power 力度, 与长度同单位
+	 * damage an actor
+	 *
+	 * @param fromRad rad the damage cames from, [0, 2*PI]
 	 */
 	damageActor(actor: Actor, costHealth: number, fromRad: number, power = 1) {
 		if (actor.health - costHealth < 0) {
@@ -54,13 +54,11 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	/**
-	 * @param {Actor} targetActor 被检查的Actor
+	 * @param {Actor} targetActor the actor being checked
 	 * @param {boolean} lastMovement
-	 * 是否考虑将上次的移动到当前位置
-	 * 形成的矩形，作为碰撞盒的一部分
-	 * （可以解决速度过快跨越碰撞检查问题）
-	 * @param {Actor[]} excepts 检查过程排除的Actor
-	 * @returns {CollisionResult[]} 碰撞检查结果
+	 * consider last movement into checking
+	 * @param {Actor[]} excepts excepts entities will not be checked
+	 * @returns {CollisionResult[]} check results
 	 */
 	getActorCollisionWith(targetActor: Actor, lastMovement = false, excepts: Actor[] = []): CollisionResult[] {
 		const [fX, fY, tX, tY] = this.getActorBoundingBox(targetActor);

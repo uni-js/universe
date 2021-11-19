@@ -3,8 +3,8 @@ const meow = require('meow');
 const cli = meow();
 
 /**
- * 默认获取一个符合语义化版本规范的构建版本号
- * @param isDocker 设为true后将不使用 + 号, 这将破坏规范
+ * get a semver version string
+ * @param isDocker if true, replace '+' to '-'
  *
  * issue at: https://github.com/opencontainers/distribution-spec/issues/154
  */

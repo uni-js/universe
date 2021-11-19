@@ -3,7 +3,7 @@ import { BLOCKS_PER_PLAYER_INVENTORY_CONTAINER, BLOCKS_PER_PLAYER_SHORTCUT_CONTA
 import { ItemType } from './item-entity';
 
 /**
- * 一个inventory拥有多个容器
+ * one inventory contains multi containers
  */
 export class Inventory extends Entity {
 	containers: number[];

@@ -56,7 +56,7 @@ gulp.task('compile-as-typescript', () => {
 	return gulp
 		.src(path.sourceServer)
 		.pipe(cached('ts-compile'))
-		.pipe(debug({ title: '编译: ' }))
+		.pipe(debug({ title: 'compile: ' }))
 		.pipe(compileTypeScript())
 		.pipe(remember('ts-compile'))
 		.pipe(gulp.dest(path.serverDest));

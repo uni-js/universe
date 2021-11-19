@@ -17,9 +17,7 @@ export function createPersistDatabase(location: string): IPersistDatabase {
 export class LevelDatabase implements IPersistDatabase {
 	private store = new Map<any, any>();
 	constructor(private db: LevelDB) {}
-	/**
-	 * 写入一行到LevelDB, value必须是可序列化的对象
-	 */
+
 	async set(key: string, value: any): Promise<void> {
 		return await this.db.put(key, JSON.stringify(value));
 	}

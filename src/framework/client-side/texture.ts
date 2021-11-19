@@ -47,9 +47,6 @@ export class TextureProvider {
 		this.textures.set(name, { url: json_url, isJsonUrl: true, textures: Object.values(resource.textures) });
 	}
 
-	/**
-	 * 取出一组被编号的材质
-	 */
 	getGroup(name_pattern: string, count: number) {
 		const group = [];
 		for (let order = 0; order < count; order++) {
@@ -80,9 +77,9 @@ export class TextureProvider {
 }
 
 /**
- * 解析一个材质地址
+ * resolve a texture path
  *
- * @returns [材质的key, 材质的路径, 材质的类型]
+ * @returns [textureKey, texturePath, textureType]
  */
 export function ParseTexturePath(texturePath: string): [string, string, TextureType] | undefined {
 	const relPath = Path.join('texture', texturePath);

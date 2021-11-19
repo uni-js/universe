@@ -13,12 +13,11 @@ import { SERVER_TICKS_MULTIPLE } from '../../../server/shared/server';
 import * as Events from '../../event/internal';
 
 /**
- * 用于平滑处理移动同步包
+ * be used to interpolate the move event from server
  */
 export class MoveInterpolator extends EventEmitter2 {
 	/**
-	 * 缓存的目标点
-	 *
+	 * target points cached
 	 */
 	private movePoints: Vector2[] = [];
 	private locatedAt = 0;
@@ -329,9 +328,6 @@ export class ActorObject extends GameObject {
 		return this.attachments.get(key);
 	}
 
-	/**
-	 * 设置附着物
-	 */
 	setAttachment(key: string, actorId: number) {
 		this.attachments.set(key, {
 			key,

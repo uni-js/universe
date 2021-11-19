@@ -4,16 +4,16 @@ export const MOVEMENT_TICK_MIN_DISTANCE = 0.0001;
 export const CTOR_OPTION_PROPERTY_SYMBOL = Symbol('ctor-option');
 
 /**
- * 标注实体的一个属性是构造器选项
- * 在向客户端要求构造该实体的时候
- * 会传入被所有被该装饰器标注的属性
+ * mark a entity property as a constructor option
+ * when server request client to construct the entity,
+ * it will be provided these properties.
  */
 export function ConstructOption() {
 	return Reflect.metadata(CTOR_OPTION_PROPERTY_SYMBOL, true);
 }
 
 /**
- * 获取所有被标注构造器选项的实体属性
+ * get all properties mark as constructor option
  */
 export function GetConstructOptions(target: any) {
 	const options: any = {};

@@ -26,7 +26,8 @@ export class ServerSideController extends GameEventEmitter {
 	}
 
 	/**
-	 * 重定向指定事件, 将事件发布到网络总线中
+	 * redirect the event received,
+	 * and publish the event to network event bus.
 	 */
 	protected redirectToBusEvent<I extends InternalEvent, E extends ExternalEvent & InternalEvent>(
 		from: GameEventEmitter,

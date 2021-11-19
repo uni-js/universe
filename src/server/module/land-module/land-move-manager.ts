@@ -11,10 +11,7 @@ import * as Events from '../../event/internal';
 import { AddEntityEvent, HandleInternalEvent, RemoveEntityEvent } from '../../../framework/event';
 
 /**
- * 该管理器维护与Land跨越、加载有关的状态：
- *
- * player的usedLands、spawnedActors状态
- *
+ * maintaining land crossing and land loading
  */
 @injectable()
 export class LandMoveManager extends ServerSideManager {

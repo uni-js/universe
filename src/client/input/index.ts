@@ -97,8 +97,6 @@ export class HTMLInputProvider implements InputProvider {
 			},
 			() => {
 				this.actions.push([this.tick + 1, () => this.keysPressed.set(inputKey, false)]);
-				//下一个tick再设置该按键的状态为false
-				//保证按键时长至少有一个tick
 			},
 		);
 

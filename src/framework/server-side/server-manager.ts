@@ -14,32 +14,32 @@ export class ServerSideManager extends GameEventEmitter {
 
 export interface UpdateOnlyCollection<T extends Record<string, any>> extends NotLimitCollection<T> {
 	/**
-	 * @deprecated 请使用实体管理器的 removeEntity 方法删除实体
+	 * @deprecated use removeEntity method of a entity manager to remove an entity
 	 */
 	remove(): any;
 
 	/**
-	 * @deprecated 请使用实体管理器的 removeEntity 方法删除实体
+	 * @deprecated use removeEntity method of a entity manager to remove an entity
 	 */
 	removeWhere(): any;
 
 	/**
-	 * @deprecated 请使用实体管理器的 removeEntity 方法删除实体
+	 * @deprecated use removeEntity method of a entity manager to remove an entity
 	 */
 	findAndRemove(): any;
 
 	/**
-	 * @deprecated 请使用实体管理器的 addEntity 方法添加实体
+	 * @deprecated use addEntity method of a entity manager to add an entity
 	 */
 	add(): any;
 
 	/**
-	 * @deprecated 请使用实体管理器的 addEntity 方法添加实体
+	 * @deprecated use addEntity method of a entity manager to add an entity
 	 */
 	insert(): any;
 
 	/**
-	 * @deprecated 请使用实体管理器的 addEntity 方法添加实体
+	 * @deprecated use addEntity method of a entity manager to add an entity
 	 */
 	insertOne(): any;
 }
@@ -59,9 +59,7 @@ export interface IEntityManager<K> extends ServerSideManager {
 }
 
 /**
- * 实体管理器是专门用于管理某一种实体的管理器
- *
- * 所有实体管理器共同构成实体管理层
+ * entity manager is designed for managing one type of entity
  */
 export class EntityManager<T extends Entity> extends ServerSideManager implements IEntityManager<T> {
 	static [CAN_INJECT_COLLECTION] = true;
@@ -69,7 +67,7 @@ export class EntityManager<T extends Entity> extends ServerSideManager implement
 	private entityList: NotLimitCollection<T>;
 
 	/**
-	 * @param updateOnlyEntityList 被管理的实体的集合, 必须是一个 UpdateOnly 的集合
+	 * @param updateOnlyEntityList the entity set which is managed
 	 */
 	constructor(updateOnlyEntityList: UpdateOnlyCollection<T>) {
 		super();
@@ -77,9 +75,6 @@ export class EntityManager<T extends Entity> extends ServerSideManager implement
 		this.entityList = updateOnlyEntityList;
 	}
 
-	/**
-	 * 直接获取实体列表进行修改可能造成数据不一致
-	 */
 	getEntityList(): NotLimitCollection<T> {
 		return this.entityList;
 	}
@@ -213,9 +208,6 @@ export class ExtendedEntityManager<T extends Entity, K extends T> extends Server
 		}
 	}
 
-	/**
-	 * 直接获取实体列表进行修改可能造成数据不一致
-	 */
 	getEntityList(): NotLimitCollection<T> {
 		return this.manager.getEntityList();
 	}

@@ -28,15 +28,9 @@ export class Arrow extends Actor {
 
 	bounding = [1.9, -0.1, 2.1, 0.1];
 
-	/**
-	 * 力度
-	 */
 	@ConstructOption()
 	power = 0.5;
 
-	/**
-	 * 发射者
-	 */
 	shooter: number;
 
 	aliveTick = 0;

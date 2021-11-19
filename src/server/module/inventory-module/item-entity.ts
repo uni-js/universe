@@ -8,15 +8,15 @@ export enum ItemType {
 
 export enum ItemHoldAction {
 	/**
-	 * 什么都不做
+	 * do nothing
 	 */
 	NONE,
 	/**
-	 * 附着一个特有的Actor
+	 * attach the actor specified
 	 */
 	ATTACH_SPEC_ACTOR,
 	/**
-	 * 附着一个物品Actor
+	 * attach the item actor specified
 	 */
 	ATTACH_ITEM_ACTOR,
 }

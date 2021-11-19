@@ -3,10 +3,10 @@ function hasEnvKey(envKey: string) {
 }
 
 /**
- * 在调试模式下, 允许注入一个服务器延迟参数
- * 来模拟线上波动的网络环境
+ * in debug mode, you can inject a delay param
+ * to simulate the real network.
  *
- * @returns {number} 返回值会在给定的延迟基础上加上随机偏移值
+ * @returns {number} offset will be added to the delay number you set.
  */
 export function getServerDebugDelay(enableOffset = true): number | undefined {
 	const param = process.env.DEBUG_SERVER_DELAY;

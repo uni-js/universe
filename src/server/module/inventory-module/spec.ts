@@ -17,17 +17,17 @@ export enum ContainerType {
 	SIMPLE_CONTAINER,
 
 	/**
-	 * 玩家背包主仓
+	 * player backpack main container
 	 */
 	PLAYER_MAIN_CONTAINER,
 
 	/**
-	 * 快捷栏
+	 * player backpack shortcut
 	 */
 	SHORTCUT_CONTAINER,
 
 	/**
-	 * 当前查看的容器
+	 * current container watching
 	 */
 	CURRENT_WATCH_CONTAINER,
 }

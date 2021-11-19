@@ -4,12 +4,12 @@ import { UIState } from '../../../framework/client-side/user-interface/state';
 export class BowUsingState {
 	isUsing = false;
 	/**
-	 * 力度, 从 0 到 1
+	 * from 0 to 1
 	 */
 	power = 0;
 
 	/**
-	 * 弓是否已经可以释放了
+	 * if a bow can be released
 	 */
 	canRelease = false;
 }
