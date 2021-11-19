@@ -28,7 +28,7 @@ const path = {
 gulp.task('inject-textures-to-env', () => {
 	return gulp.src(path.texture).pipe(
 		textureToEnv((name) => {
-			console.log('加载材质', name);
+			console.log('inject texture:', name);
 		}),
 	);
 });
@@ -73,10 +73,8 @@ gulp.task(
 		let server;
 		function spawnServer() {
 			server = cp.spawn('node', ['./lib/server/bootstrap'], {
-				stdio: ['ignore', 'pipe', 'pipe'],
+				stdio: 'inherit',
 			});
-			server.stdout.pipe(process.stdout);
-			server.stderr.pipe(process.stderr);
 		}
 		function killServer() {
 			server.kill();

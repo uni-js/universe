@@ -13,6 +13,7 @@ import * as ServerEvents from '../../../server/event/external';
 import * as Events from '../../event/internal';
 import * as ExternalEvents from '../../event/external';
 import { HandleExternalEvent } from '../../../framework/event';
+import { Logger } from '../../../framework/local-logger';
 
 @injectable()
 export class ActorController extends ClientSideController {
@@ -60,13 +61,13 @@ export class ActorController extends ClientSideController {
 		const newActor = this.actorFactory.getNewObject(event.actorType, [event.actorId, event.ctorOption, this.texture]);
 		this.actorManager.addGameObject(newActor);
 
-		console.debug('Spawned', event.actorType, event.ctorOption, newActor);
+		Logger.debug('Spawned', event.actorType, event.ctorOption, newActor);
 	}
 
 	@HandleExternalEvent(ServerEvents.DespawnActorEvent)
 	private handleActorRemoved(event: ServerEvents.DespawnActorEvent) {
 		const object = this.actorManager.getObjectById(event.actorId);
-		console.debug('Despawned', event.actorId, event, object);
+		Logger.debug('Despawned', event.actorId, event, object);
 
 		if (!object) return;
 

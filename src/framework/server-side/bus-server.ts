@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { GetServerDebugDelay } from './debug';
+import { getServerDebugDelay } from './debug';
 
 import { ExternalEvent, GameEventEmitter } from '../event';
 
@@ -100,7 +100,7 @@ export class DelayedEventBus extends GameEventEmitter implements IEventBus {
 					this.eventBus.emitTo(request.connIds, request.event);
 				}
 			}
-			await wait(GetServerDebugDelay());
+			await wait(getServerDebugDelay());
 		}
 	}
 

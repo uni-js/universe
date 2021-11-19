@@ -14,6 +14,7 @@ import { ActorModule } from './module/actor-module/module-export';
 import { PlayerModule } from './module/player-module/module-export';
 import { InventoryModule } from './module/inventory-module/module-export';
 import { BowModule } from './module/bow-module/module-export';
+import { Logger } from '../framework/local-logger';
 
 export function bootstrap() {
 	const playground = document.getElementById('playground') as HTMLDivElement;
@@ -37,7 +38,7 @@ export function bootstrap() {
 	app.addDisplayObject(app.get<any>(LandStore).container);
 	app.addDisplayObject(app.get<any>(ActorStore).container);
 
-	console.log('Server URL is: ', serverUrl);
+	Logger.info('Server URL is: ', serverUrl);
 
 	app.start();
 }

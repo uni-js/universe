@@ -10,6 +10,7 @@ import * as ClientEvents from '../../../client/event/external';
 
 import * as Events from '../../event/internal';
 import * as ExternalEvents from '../../event/external';
+import { Logger } from '../../../framework/local-logger';
 
 @injectable()
 export class PlayerController extends ServerSideController {
@@ -49,7 +50,7 @@ export class PlayerController extends ServerSideController {
 		event.actorId = player.$loki;
 
 		this.eventBus.emitTo([connId], event);
-		console.log(`user logined :`, player.connId);
+		Logger.info(`user logined :`, player.playerName, player.connId);
 	}
 
 	@HandleExternalEvent(ClientEvents.ControlMovedEvent)

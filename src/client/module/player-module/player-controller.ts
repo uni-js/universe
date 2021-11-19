@@ -9,6 +9,7 @@ import * as ExternalEvents from '../../event/external';
 
 import * as ServerEvents from '../../../server/event/external';
 import { HandleExternalEvent } from '../../../framework/event';
+import { Logger } from '../../../framework/local-logger';
 
 @injectable()
 export class PlayerController extends ClientSideController {
@@ -24,7 +25,7 @@ export class PlayerController extends ClientSideController {
 
 	@HandleExternalEvent(ServerEvents.LoginedEvent)
 	private handleLogined(event: ServerEvents.LoginedEvent) {
-		console.debug('logined_event', event);
+		Logger.info('user is logined to server', event);
 		const actorId = event.actorId;
 		const player = this.actorManager.getObjectById(actorId) as Player;
 		this.playerManager.setCurrentPlayer(player);

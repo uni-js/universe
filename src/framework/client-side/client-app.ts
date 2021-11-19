@@ -13,6 +13,7 @@ import { UIEntry, UIEventBus } from './user-interface/hooks';
 
 import { UIStateContainer } from './user-interface/state';
 import { ClientModuleResolvedResult, ClientSideModule, resolveClientSideModule } from '../module';
+import { Logger } from '../local-logger';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.SORTABLE_CHILDREN = true;
@@ -37,7 +38,6 @@ export function wait(time: number) {
 export class ClientApp {
 	private updateTick = 0;
 	private fixedTick = 0;
-	private lastFixedTickTime = 0;
 
 	private app: PIXI.Application;
 
@@ -207,22 +207,30 @@ export class ClientApp {
 	}
 
 	private doUpdateTick() {
-		for (const manager of this.managers) {
-			this.iocContainer.get<any>(manager).doUpdateTick(this.updateTick);
+		try {
+			for (const manager of this.managers) {
+				this.iocContainer.get<any>(manager).doUpdateTick(this.updateTick);
+			}
+		} catch (err: any) {
+			Logger.error(err.stack);
 		}
 
 		this.updateTick += 1;
 	}
 
 	private doFixedUpdateTick() {
-		for (const manager of this.managers) {
-			this.iocContainer.get<any>(manager).doFixedUpdateTick(this.fixedTick);
+		try {
+			for (const manager of this.managers) {
+				this.iocContainer.get<any>(manager).doFixedUpdateTick(this.fixedTick);
+			}
+		} catch (err: any) {
+			Logger.error(err.stack);
 		}
 
 		this.fixedTick += 1;
 	}
 
-	private async startLoop() {
+	private startLoop() {
 		this.app.ticker.add(this.doUpdateTick.bind(this));
 		this.app.ticker.add(this.doFixedUpdateTick.bind(this));
 	}

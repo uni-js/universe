@@ -8,6 +8,7 @@ import { TextureProvider } from '../../../framework/client-side/texture';
 import * as ServerEvents from '../../../server/event/external';
 import { HandleExternalEvent } from '../../../framework/event';
 import { ClientSideController } from '../../../framework/client-side/client-controller';
+import { Logger } from '../../../framework/local-logger';
 
 @injectable()
 export class LandController extends ClientSideController {
@@ -24,13 +25,13 @@ export class LandController extends ClientSideController {
 		const pos = new Vector2(event.landPosX, event.landPosY);
 		const land = new LandObject(this.texture, event.landData, event.landId, pos);
 		this.landManager.addGameObject(land);
-		console.log(`add new land:(${event.landPosX},${event.landPosY})`, event);
+		Logger.info(`add new land:(${event.landPosX},${event.landPosY})`, event);
 	}
 
 	@HandleExternalEvent(ServerEvents.LandNeverUsedEvent)
 	private handleLandRemoved(event: ServerEvents.LandNeverUsedEvent) {
 		const land = this.landManager.getObjectById(event.landId);
 		this.landManager.removeGameObject(land);
-		console.log(`remove land:(${event.landPosX},${event.landPosY})`, event);
+		Logger.info(`remove land:(${event.landPosX},${event.landPosY})`, event);
 	}
 }

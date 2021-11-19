@@ -122,13 +122,13 @@ export class LandManager extends EntityManager<Land> {
 			landPosY: landPos.y,
 		});
 
-		console.debug(`加载 Land :(${landPos.x}:${landPos.y})`);
+		console.debug(`load land :(${landPos.x}:${landPos.y})`);
 	}
 
 	async unloadLand(landPos: Vector2) {
 		const land = await this.getLand(landPos);
 
-		if (!land || !land.isLoaded) throw new Error(`卸载Land失败 At: ${landPos.x}:${landPos.y}`);
+		if (!land || !land.isLoaded) throw new Error(`unable load land at: ${landPos.x}:${landPos.y}`);
 
 		this.removeLandBricks(landPos.x, landPos.y);
 
