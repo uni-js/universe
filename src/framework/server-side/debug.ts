@@ -8,7 +8,7 @@ function hasEnvKey(envKey: string) {
  *
  * @returns {number} 返回值会在给定的延迟基础上加上随机偏移值
  */
-export function getServerDebugDelay(enableOffset = false): number | undefined {
+export function getServerDebugDelay(enableOffset = true): number | undefined {
 	const param = process.env.DEBUG_SERVER_DELAY;
 	if (param === undefined) return;
 

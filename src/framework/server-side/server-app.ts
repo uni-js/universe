@@ -45,7 +45,7 @@ export class ServerApp {
 		}
 
 		if (getIsServerUseDelay()) {
-			Logger.warn(chalk.bold.red(`Server is running based on a ${getServerDebugDelay()}ms delayed event bus`));
+			Logger.warn(chalk.bold.red(`Server is running based on a ${getServerDebugDelay(false)}ms delayed event bus`));
 		}
 
 		this.eventBus = getIsServerUseDelay() ? new DelayedEventBus() : new EventBusServer();
