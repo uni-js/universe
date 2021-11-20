@@ -2,7 +2,7 @@ import { CAN_INJECT_COLLECTION, Entity, NotLimitCollection } from './memory-data
 import { GameEventEmitter, AddEntityEvent, RemoveEntityEvent } from '../event';
 
 export type ClassOf<T> = { new (...args: any[]): T };
-export type ObjectQueryCondition<T> = Partial<T & LokiObj> & Record<string, any>;
+export type ObjectQueryCondition<T> = LokiQuery<T & LokiObj>;
 
 export class ServerSideManager extends GameEventEmitter {
 	constructor() {

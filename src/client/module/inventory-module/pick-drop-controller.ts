@@ -11,5 +11,6 @@ export class PickDropController extends ClientSideController {
 		super(eventBus);
 
 		this.redirectToBusEvent(this.pickDropManager, Events.DropItemEvent, ExternalEvents.DropItemEvent);
+		this.redirectToBusEvent(this.pickDropManager, Events.PickItemEvent, ExternalEvents.PickItemEvent);
 	}
 }

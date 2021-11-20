@@ -1,13 +1,19 @@
 import { Player } from '../player-module/player-entity';
 import { BackpackMainContainer, Container, ContainerBlock, Inventory, PlayerInventory, ShortcutContainer } from './inventory-entity';
-import { BLOCKS_PER_PLAYER_INVENTORY_CONTAINER, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER, ContainerType, ContainerUpdateData } from './spec';
+import {
+	BLOCKS_PER_PLAYER_INVENTORY_CONTAINER,
+	BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER,
+	ContainerType,
+	ContainerUpdateData,
+	MAX_STACK_SIZE,
+} from './spec';
 import { PlayerManager } from '../player-module/player-manager';
 import { injectCollection, NotLimitCollection } from '../../../framework/server-side/memory-database';
 import { inject, injectable } from 'inversify';
 import { EntityManager, UpdateOnlyCollection } from '../../../framework/server-side/server-manager';
-import { ItemDef, ItemDefList, ItemHoldAction, ItemType } from './item-entity';
+import { ItemDef, ItemDefList, ItemHoldAction, ItemType, ToolsItemTypes } from './item-entity';
 import { ActorManager } from '../actor-module/actor-manager';
-import { ActorFactory, AttachType } from '../actor-module/spec';
+import { ActorFactory, ActorType, AttachType } from '../actor-module/spec';
 import { DroppedItemActor } from '../pick-drop-module/dropped-item-entity';
 import { Vector2 } from '../../shared/math';
 
@@ -201,6 +207,21 @@ export class InventoryManager extends EntityManager<Inventory> {
 		}
 	}
 
+	private appendItems(containerId: number, itemType: ItemType, itemCount: number): boolean {
+		const blocks = this.blocksList.find({ containerId });
+		for (const block of blocks) {
+			if (block.itemType === itemType && block.itemCount + itemCount <= MAX_STACK_SIZE && !ToolsItemTypes.includes(itemType)) {
+				this.setBlock(containerId, block.index, itemType, block.itemCount + itemCount);
+				return true;
+			}
+			if (block.itemType === ItemType.EMPTY) {
+				this.setBlock(containerId, block.index, itemType, itemCount);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	setShortcutIndex(containerId: number, indexAt: number) {
 		const container = this.shortcutContainerList.findOne({ $loki: containerId });
 		if (indexAt == container.currentIndex) return;
@@ -222,6 +243,26 @@ export class InventoryManager extends EntityManager<Inventory> {
 
 		this.actorManager.addNewEntity(actor);
 		this.setBlock(containerId, indexAt, ItemType.EMPTY, 0);
+	}
+
+	pickItemsFromPos(containerId: number, pickFromPos: Vector2) {
+		const radius = 0.5;
+		const Xmax = pickFromPos.x + radius;
+		const Xmin = pickFromPos.x - radius;
+		const Ymax = pickFromPos.y + radius;
+		const Ymin = pickFromPos.y - radius;
+
+		const entities = this.actorManager.findEntities({
+			type: ActorType.DROPPED_ITEM,
+			posX: { $between: [Xmin, Xmax] },
+			posY: { $between: [Ymin, Ymax] },
+		}) as DroppedItemActor[];
+
+		for (const entity of entities) {
+			if (this.appendItems(containerId, entity.itemType, entity.itemCount)) {
+				this.actorManager.removeEntity(entity);
+			}
+		}
 	}
 
 	getShortcut(player: Player): Readonly<ShortcutContainer> {

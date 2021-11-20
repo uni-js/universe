@@ -10,6 +10,7 @@ import { NotLimitCollection, injectCollection } from '../../../framework/server-
 import { Brick } from './brick-entity';
 
 import * as Events from '../../event/internal';
+import { Logger } from '../../../framework/local-logger';
 
 export function BuildLandHash(pos: Vector2) {
 	return `land.${pos.x}.${pos.y}`;
@@ -122,7 +123,7 @@ export class LandManager extends EntityManager<Land> {
 			landPosY: landPos.y,
 		});
 
-		console.debug(`load land :(${landPos.x}:${landPos.y})`);
+		Logger.debug(`load land :(${landPos.x}:${landPos.y})`);
 	}
 
 	async unloadLand(landPos: Vector2) {

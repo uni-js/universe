@@ -76,6 +76,7 @@ export class ActorObject extends GameObject {
 
 	protected shadow: PIXI.Sprite;
 	protected sprite: PIXI.AnimatedSprite;
+	protected spriteContainer: PIXI.Container = new PIXI.Container();
 	protected nametag: NameTag;
 	protected healthBar: HealthBar;
 
@@ -88,6 +89,7 @@ export class ActorObject extends GameObject {
 	private playing = false;
 	private _showHealth = false;
 	private _canWalk = false;
+	private _hasShadow = false;
 
 	private _attaching?: Attachment;
 	private attachments = new Map<string, Attachment>();
@@ -107,9 +109,10 @@ export class ActorObject extends GameObject {
 
 		this.nametag = new NameTag();
 		this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);
+		this.spriteContainer.addChild(this.sprite);
 
 		this.addChild(this.nametag);
-		this.addChild(this.sprite);
+		this.addChild(this.spriteContainer);
 
 		this.moveInterpolator = new MoveInterpolator(6);
 		this.moveInterpolator.on('position', this.handleInterpolated.bind(this));
@@ -301,11 +304,17 @@ export class ActorObject extends GameObject {
 		}
 	}
 
-	set canWalk(val: boolean) {
-		if (val && !this._canWalk) {
+	set hasShadow(val: boolean) {
+		if (val && !this._hasShadow) {
 			this.shadow = new PIXI.Sprite(this.texture.getOne('system.shadow'));
+			this.shadow.anchor.set(0.5, 0.5);
 			this.addChild(this.shadow);
 		}
+		this._hasShadow = val;
+		this.updateSize();
+	}
+
+	set canWalk(val: boolean) {
 		this._canWalk = val;
 	}
 

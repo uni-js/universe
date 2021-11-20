@@ -13,5 +13,8 @@ export class PickDropManager extends ClientSideManager {
 		if (this.input.keyDown(InputKey.Q)) {
 			this.emitEvent(Events.DropItemEvent, {});
 		}
+		if (this.input.keyDown(InputKey.E)) {
+			this.emitEvent(Events.PickItemEvent, {});
+		}
 	}
 }

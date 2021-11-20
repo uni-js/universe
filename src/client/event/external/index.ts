@@ -1,3 +1,4 @@
+import { PickItemEvent } from './pick-item-event';
 import { RotateAttachmentEvent } from './rotate-attachment-event';
 import { ControlMovedEvent } from './control-moved-event';
 import { LoginEvent } from './login-event';
@@ -13,4 +14,5 @@ export {
 	LoginEvent,
 	ControlMovedEvent,
 	RotateAttachmentEvent,
+	PickItemEvent,
 };

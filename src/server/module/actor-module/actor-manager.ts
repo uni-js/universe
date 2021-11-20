@@ -194,6 +194,7 @@ export class ActorManager extends EntityManager<Actor> {
 
 	rotateAttachment(actorId: number, rotation: number) {
 		const attachment = this.getAttachment(actorId, AttachType.RIGHT_HAND);
+		if (!attachment) return;
 		this.setRotation(attachment.actorId, rotation);
 	}
 

@@ -2,6 +2,7 @@ import { ItemType } from './item-entity';
 
 export const BLOCKS_PER_PLAYER_INVENTORY_CONTAINER = 20;
 export const BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER = 5;
+export const MAX_STACK_SIZE = 20;
 
 export interface ContainerUpdateDataUnit {
 	index: number;

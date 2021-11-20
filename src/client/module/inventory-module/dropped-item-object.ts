@@ -6,13 +6,28 @@ import { TextureProvider } from '../../../framework/client-side/texture';
 
 export class DroppedItemActor extends ActorObject {
 	public itemType: ItemType;
+	private scaleTick = 0;
 
 	constructor(serverId: number, option: ActorConstructOption, texture: TextureProvider) {
 		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.DROPPED_ITEM, texture);
 
 		this.itemType = option.itemType;
-		this.sprite.anchor.set(0.5, 0.5);
+		this.sprite.anchor.set(0.5, 1.3);
+		this.hasShadow = true;
 
 		this.singleTexture = this.texture.getOne(`item.${this.itemType}.normal`);
+	}
+
+	doFixedUpdateTick() {
+		const maxTicks = 180;
+		const halfTicks = maxTicks / 2;
+		const tick = this.scaleTick;
+		const ratio = tick <= halfTicks ? (tick / halfTicks) * 2 - 1 : -(((tick - halfTicks) / halfTicks) * 2 - 1);
+		this.spriteContainer.scale.x = ratio;
+
+		this.scaleTick++;
+		if (this.scaleTick > maxTicks) {
+			this.scaleTick = 0;
+		}
 	}
 }

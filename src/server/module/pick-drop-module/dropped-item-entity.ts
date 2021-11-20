@@ -9,8 +9,11 @@ export class DroppedItemActor extends Actor {
 	itemType: ItemType;
 
 	@ConstructOption()
-	sizeX = 0.5;
+	itemCount = 1;
 
 	@ConstructOption()
-	sizeY = 0.5;
+	sizeX = 0.7;
+
+	@ConstructOption()
+	sizeY = 0.7;
 }

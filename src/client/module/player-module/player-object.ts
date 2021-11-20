@@ -26,6 +26,7 @@ export class Player extends ActorObject {
 
 		this.canWalk = true;
 		this.showHealth = true;
+		this.hasShadow = true;
 
 		this.playerName = option.playerName;
 

@@ -27,6 +27,8 @@ export class Bow extends ActorObject {
 		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.BOW, texture);
 
 		this.canWalk = false;
+		this.hasShadow = false;
+
 		this.sprite.animationSpeed = 0.1;
 		this.sprite.loop = false;
 

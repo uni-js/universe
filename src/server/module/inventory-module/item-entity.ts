@@ -6,6 +6,8 @@ export enum ItemType {
 	BOW = 'bow',
 }
 
+export const ToolsItemTypes: ItemType[] = [ItemType.BOW];
+
 export enum ItemHoldAction {
 	/**
 	 * do nothing
