@@ -20,7 +20,7 @@ export enum ContainerType {
 	/**
 	 * player backpack main container
 	 */
-	PLAYER_MAIN_CONTAINER,
+	BACKPACK_CONTAINER,
 
 	/**
 	 * player backpack shortcut

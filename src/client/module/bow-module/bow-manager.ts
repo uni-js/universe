@@ -6,7 +6,7 @@ import { SERVER_TICKS_MULTIPLE } from '../../../server/shared/server';
 import { ClientSideManager } from '../../../framework/client-side/client-manager';
 import { ActorManager } from '../actor-module/actor-manager';
 import { PlayerManager } from '../player-module/player-manager';
-import { ShortcutManager } from '../inventory-module/shortcut-manager';
+import { ShortcutManager } from '../inventory-module/inventory-manager';
 import { HandleInternalEvent } from '../../../framework/event';
 import { BowUsingState } from './ui-state';
 

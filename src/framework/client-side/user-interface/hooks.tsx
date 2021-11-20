@@ -74,7 +74,6 @@ export function useTicker(fn: TickingFunction, deps: any[] = []) {
 export function useUIState<E>(cls: new () => E) {
 	const [state, setState] = React.useState<E>();
 	const versionRef = React.useRef(null);
-
 	const uiState = useDataSource().getState(cls);
 
 	useTicker(() => {
@@ -84,7 +83,7 @@ export function useUIState<E>(cls: new () => E) {
 		}
 	});
 
-	return state;
+	return state || { ...uiState };
 }
 
 export function useTexturePath(provider: TextureProvider, key: string) {

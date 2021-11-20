@@ -2,8 +2,7 @@ import { UIState } from '../../../framework/client-side/user-interface/state';
 import { ContainerType } from '../../../server/module/inventory-module/spec';
 import { ItemType } from '../../../server/module/inventory-module/item-entity';
 
-@UIState()
-export class ShortcutContainerState {
+export class ContainerState {
 	/**
 	 * already updated once
 	 */
@@ -13,9 +12,12 @@ export class ShortcutContainerState {
 	 */
 	containerId: number;
 
-	currentIndexAt = 0;
+	blocks: InventoryBlockState[] = [];
+}
 
-	blocks: InventoryBlockState[];
+@UIState()
+export class ShortcutContainerState extends ContainerState {
+	currentIndexAt = 0;
 }
 
 export class InventoryBlockState {
@@ -26,4 +28,9 @@ export class InventoryBlockState {
 	itemType: ItemType;
 
 	itemCount = 0;
+}
+
+@UIState()
+export class BackpackContainerState extends ContainerState {
+	visible = false;
 }

@@ -7,14 +7,14 @@
         "clientModulePath": "client/module",
         "serverModulePath": "server/module",
 
-        "clientManagerSpecPath": "framework/client-manager",
-        "serverManagerSpecPath": "framework/server-manager",
+        "clientManagerSpecPath": "framework/client-side/client-manager",
+        "serverManagerSpecPath": "framework/server-side/server-manager",
 
-        "clientControllerSpecPath": "framework/client-controller",
-        "serverControllerSpecPath": "framework/server-controller",
+        "clientControllerSpecPath": "framework/client-side/client-controller",
+        "serverControllerSpecPath": "framework/server-side/server-controller",
 
-        "eventBusClientSpecPath": "framework/bus-client",
-        "eventBusServerSpecPath": "framework/bus-server",
+        "eventBusClientSpecPath": "framework/client-side/bus-client",
+        "eventBusServerSpecPath": "framework/server-side/bus-server",
 
         "clientInternalEventsModulePath": "client/event/internal",
         "clientExternalEventsModulePath": "client/event/external",

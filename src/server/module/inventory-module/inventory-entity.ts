@@ -33,9 +33,9 @@ export class ShortcutContainer extends Container {
 	playerId: number;
 }
 
-export class BackpackMainContainer extends Container {
+export class BackpackContainer extends Container {
 	size = BLOCKS_PER_PLAYER_INVENTORY_CONTAINER;
-	containerType = ContainerType.PLAYER_MAIN_CONTAINER;
+	containerType = ContainerType.BACKPACK_CONTAINER;
 	playerId: number;
 }
 

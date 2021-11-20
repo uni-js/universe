@@ -1,5 +1,5 @@
 import { Player } from '../player-module/player-entity';
-import { BackpackMainContainer, Container, ContainerBlock, Inventory, PlayerInventory, ShortcutContainer } from './inventory-entity';
+import { BackpackContainer, Container, ContainerBlock, Inventory, PlayerInventory, ShortcutContainer } from './inventory-entity';
 import {
 	BLOCKS_PER_PLAYER_INVENTORY_CONTAINER,
 	BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER,
@@ -77,6 +77,10 @@ export class InventoryManager extends EntityManager<Inventory> {
 
 			const player = this.playerManager.getEntityById(shortcut.playerId);
 			this.sendBlockUpdateData(player, shortcut.$loki, index);
+		} else if (container.containerType === ContainerType.BACKPACK_CONTAINER) {
+			const backpack = container as BackpackContainer;
+			const player = this.playerManager.getEntityById(backpack.playerId);
+			this.sendBlockUpdateData(player, backpack.$loki, index);
 		}
 
 		//TODO: notify this change
@@ -91,8 +95,8 @@ export class InventoryManager extends EntityManager<Inventory> {
 		return shortcut;
 	}
 
-	private addNewBackpackMain(playerId: number) {
-		const mainContainer = new BackpackMainContainer();
+	private addNewBackpack(playerId: number) {
+		const mainContainer = new BackpackContainer();
 		mainContainer.playerId = playerId;
 		this.containerList.insertOne(mainContainer);
 		this.addNewEmptyBlocks(mainContainer.$loki, BLOCKS_PER_PLAYER_INVENTORY_CONTAINER);
@@ -103,9 +107,9 @@ export class InventoryManager extends EntityManager<Inventory> {
 		const inventory = new PlayerInventory();
 
 		const { $loki: shortcutId } = this.addNewShortcut(playerId);
-		const { $loki: mainContainerId } = this.addNewBackpackMain(playerId);
+		const { $loki: backpackId } = this.addNewBackpack(playerId);
 
-		inventory.containers = [shortcutId, mainContainerId];
+		inventory.containers = [shortcutId, backpackId];
 		inventory.playerId = playerId;
 
 		return this.addNewEntity(inventory);
@@ -268,6 +272,12 @@ export class InventoryManager extends EntityManager<Inventory> {
 	getShortcut(player: Player): Readonly<ShortcutContainer> {
 		const inventory = this.getPlayerInventory(player);
 		const containerId = inventory.containers[0];
+		return this.containerList.findOne({ $loki: containerId }) as ShortcutContainer;
+	}
+
+	getBackpack(player: Player): Readonly<ShortcutContainer> {
+		const inventory = this.getPlayerInventory(player);
+		const containerId = inventory.containers[1];
 		return this.containerList.findOne({ $loki: containerId }) as ShortcutContainer;
 	}
 

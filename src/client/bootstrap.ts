@@ -20,7 +20,7 @@ export function bootstrap() {
 	const playground = document.getElementById('playground') as HTMLDivElement;
 	const texturePaths = JSON.parse(process.env.TEXTURE_LOADED);
 	const serverUrl = process.env.UNIVERSE_SERVER_URL;
-	const inputProvider = new HTMLInputProvider(playground);
+	const inputProvider = new HTMLInputProvider();
 
 	const appModule = createClientSideModule({
 		imports: [LandModule, ActorModule, PlayerModule, InventoryModule, BowModule],
@@ -37,6 +37,8 @@ export function bootstrap() {
 	app.addTicker(() => inputProvider.doFixedUpdateTick());
 	app.addDisplayObject(app.get<any>(LandStore).container);
 	app.addDisplayObject(app.get<any>(ActorStore).container);
+
+	inputProvider.bind(app.getCanvasContainer());
 
 	Logger.info('Server URL is: ', serverUrl);
 

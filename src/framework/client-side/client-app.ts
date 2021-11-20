@@ -57,8 +57,9 @@ export class ClientApp {
 	private worldWidth = 4 * 7;
 	private worldHeight = 3 * 7;
 
-	private wrapper: HTMLDivElement;
-	private uiContainer: HTMLDivElement;
+	private wrapper: HTMLElement;
+	private uiContainer: HTMLElement;
+	private canvasContainer: HTMLElement;
 
 	private playground: HTMLElement;
 
@@ -97,6 +98,10 @@ export class ClientApp {
 
 	getCanvasElement() {
 		return this.app.view;
+	}
+
+	getCanvasContainer() {
+		return this.canvasContainer;
 	}
 
 	get<T>(identifier: interfaces.ServiceIdentifier<T>) {
@@ -150,19 +155,24 @@ export class ClientApp {
 	}
 
 	private initUiContainer() {
-		const container = document.createElement('div');
-		container.classList.add('uni-ui-container');
-		container.style.position = 'absolute';
-		container.style.left = '0px';
-		container.style.top = '0px';
-		container.style.width = '100%';
-		container.style.height = '100%';
-		container.style.userSelect = 'none';
-		container.style.pointerEvents = 'none';
+		const uiContainer = document.createElement('div');
+		uiContainer.classList.add('uni-ui-container');
+		uiContainer.style.position = 'absolute';
+		uiContainer.style.left = '0px';
+		uiContainer.style.top = '0px';
+		uiContainer.style.width = '100%';
+		uiContainer.style.height = '100%';
+		uiContainer.style.userSelect = 'none';
+		uiContainer.style.pointerEvents = 'none';
 
-		this.wrapper.appendChild(container);
-		this.wrapper.appendChild(this.app.view);
-		this.uiContainer = container;
+		const canvasContainer = document.createElement('div');
+		canvasContainer.classList.add('uni-canvas-container');
+		canvasContainer.append(this.app.view);
+
+		this.wrapper.appendChild(uiContainer);
+		this.wrapper.appendChild(canvasContainer);
+		this.uiContainer = uiContainer;
+		this.canvasContainer = canvasContainer;
 	}
 
 	private initProviderBindings() {

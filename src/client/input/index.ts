@@ -15,6 +15,7 @@ export enum InputKey {
 	E = 'E',
 	J = 'J',
 	Q = 'Q',
+	R = 'R',
 
 	NUM_1 = 'NUM_1',
 	NUM_2 = 'NUM_2',
@@ -45,8 +46,16 @@ export class HTMLInputProvider implements InputProvider {
 	private actions: any = [];
 	private tick = 0;
 	private cursorAt = new Vector2(0, 0);
+	private mouseElem: HTMLElement;
 
-	constructor(private elem: HTMLElement) {
+	private binded = false;
+
+	constructor() {}
+
+	bind(mouseElem: HTMLElement) {
+		if (this.binded) return;
+		this.binded = true;
+
 		this.bindKey('up', InputKey.UP);
 		this.bindKey('down', InputKey.DOWN);
 		this.bindKey('left', InputKey.LEFT);
@@ -60,6 +69,7 @@ export class HTMLInputProvider implements InputProvider {
 		this.bindKey('e', InputKey.E);
 		this.bindKey('j', InputKey.J);
 		this.bindKey('q', InputKey.Q);
+		this.bindKey('r', InputKey.R);
 
 		this.bindKey('1', InputKey.NUM_1);
 		this.bindKey('2', InputKey.NUM_2);
@@ -72,9 +82,10 @@ export class HTMLInputProvider implements InputProvider {
 		this.bindKey('9', InputKey.NUM_9);
 		this.bindKey('0', InputKey.NUM_0);
 
-		this.elem.addEventListener('mousemove', this.onCursorMove.bind(this));
-		this.elem.addEventListener('mousedown', this.onCursorDown.bind(this));
-		this.elem.addEventListener('mouseup', this.onCursorUp.bind(this));
+		this.mouseElem = mouseElem;
+		this.mouseElem.addEventListener('mousemove', this.onCursorMove.bind(this));
+		this.mouseElem.addEventListener('mousedown', this.onCursorDown.bind(this));
+		this.mouseElem.addEventListener('mouseup', this.onCursorUp.bind(this));
 	}
 
 	private onCursorMove(event: MouseEvent) {

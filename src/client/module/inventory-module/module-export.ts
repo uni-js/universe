@@ -1,12 +1,12 @@
 import { createClientSideModule } from '../../../framework/module';
 import { PickDropController } from './pick-drop-controller';
 import { PickDropManager } from './pick-drop-manager';
-import { ShortcutController } from './shortcut-controller';
-import { ShortcutManager } from './shortcut-manager';
-import { InventoryBlockState, ShortcutContainerState } from './ui-state';
+import { InvetoryController } from './inventory-controller';
+import { ShortcutManager, BackpackManager } from './inventory-manager';
+import { BackpackContainerState, InventoryBlockState, ShortcutContainerState } from './ui-state';
 
 export const InventoryModule = createClientSideModule({
-	controllers: [PickDropController, ShortcutController],
-	managers: [PickDropManager, ShortcutManager],
-	uiStates: [ShortcutContainerState, InventoryBlockState],
+	controllers: [PickDropController, InvetoryController],
+	managers: [PickDropManager, ShortcutManager, BackpackManager],
+	uiStates: [ShortcutContainerState, InventoryBlockState, BackpackContainerState],
 });

@@ -28,7 +28,7 @@ export class PickDropController extends ServerSideController {
 	@HandleExternalEvent(ClientEvents.PickItemEvent)
 	private handlePickItem(connId: string) {
 		const player = this.playerManager.findEntity({ connId });
-		const shortcut = this.inventoryManager.getShortcut(player);
+		const shortcut = this.inventoryManager.getBackpack(player);
 		const pickFromPos = new Vector2(player.posX, player.posY);
 		this.inventoryManager.pickItemsFromPos(shortcut.$loki, pickFromPos);
 	}
