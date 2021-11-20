@@ -269,6 +269,15 @@ export class InventoryManager extends EntityManager<Inventory> {
 		}
 	}
 
+	moveContainerBlock(sourceContainerId: number, sourceIndex: number, targetContainerId: number, targetIndex: number) {
+		const sourceBlock = this.getBlock(sourceContainerId, sourceIndex);
+		const targetBlock = this.getBlock(targetContainerId, targetIndex);
+		if (targetBlock.itemType === ItemType.EMPTY) {
+			this.setBlock(targetContainerId, targetIndex, sourceBlock.itemType, sourceBlock.itemCount);
+			this.setBlock(sourceContainerId, sourceIndex, ItemType.EMPTY, 0);
+		}
+	}
+
 	getShortcut(player: Player): Readonly<ShortcutContainer> {
 		const inventory = this.getPlayerInventory(player);
 		const containerId = inventory.containers[0];

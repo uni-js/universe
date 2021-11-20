@@ -71,7 +71,7 @@ export function useTicker(fn: TickingFunction, deps: any[] = []) {
 	}, deps);
 }
 
-export function useUIState<E>(cls: new () => E) {
+export function useUIState<E>(cls: new () => E): E {
 	const [state, setState] = React.useState<E>();
 	const versionRef = React.useRef(null);
 	const uiState = useDataSource().getState(cls);

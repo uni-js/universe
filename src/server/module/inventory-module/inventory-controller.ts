@@ -30,4 +30,9 @@ export class InventoryController extends ServerSideController {
 	private handleSetShortcutIndex(connId: string, event: ClientEvents.SetShortcutIndexEvent) {
 		this.inventoryManager.setShortcutIndex(event.containerId, event.indexAt);
 	}
+
+	@HandleExternalEvent(ClientEvents.ContainerMoveBlockEvent)
+	private handleContainerMoveBlock(connId: string, event: ClientEvents.ContainerMoveBlockEvent) {
+		this.inventoryManager.moveContainerBlock(event.sourceContainerId, event.sourceIndex, event.targetContainerId, event.targetIndex);
+	}
 }

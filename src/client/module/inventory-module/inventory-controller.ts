@@ -20,6 +20,7 @@ export class InvetoryController extends ClientSideController {
 		super(eventBus);
 
 		this.redirectToBusEvent(this.shortcutManager, Events.SetShortcutIndexEvent, ExternalEvents.SetShortcutIndexEvent);
+		this.redirectToBusEvent(this.backpackManager, Events.ContainerMoveBlockEvent, ExternalEvents.ContainerMoveBlockEvent);
 	}
 
 	@HandleExternalEvent(ServerEvents.UpdateContainerEvent)

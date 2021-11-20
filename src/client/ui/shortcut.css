@@ -12,6 +12,7 @@
     justify-content: space-around;
     padding:5px;
     border-radius: 5px;
+    pointer-events: auto;
 }
 .shortcut-block{
     height: 30px;
@@ -23,6 +24,9 @@
 }
 .shortcut-block-highlight{
     background-color: #CCC;    
+}
+.shortcut-block-drag-over{
+    background-color: #888;
 }
 .shortcut-img{
     width: 100%;

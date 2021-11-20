@@ -13,10 +13,22 @@ import { ItemType } from '../../../server/module/inventory-module/item-entity';
 import { InventoryBlockState, ShortcutContainerState } from './ui-state';
 
 import * as Events from '../../event/internal';
+import { UIEventBus } from '../../../framework/client-side/user-interface/hooks';
 
 export class ContainerManager extends ClientSideManager {
-	constructor(protected container: ContainerState, protected input: HTMLInputProvider) {
+	constructor(protected container: ContainerState, protected input: HTMLInputProvider, protected uiEventBus: UIEventBus) {
 		super();
+
+		this.uiEventBus.on('ContainerMoveBlock', this.onContainerMoveBlock.bind(this));
+	}
+
+	private onContainerMoveBlock(sourceContainerId: number, sourceIndex: number, targetContainerId: number, targetIndex: number) {
+		this.emitEvent(Events.ContainerMoveBlockEvent, {
+			sourceContainerId,
+			sourceIndex,
+			targetContainerId,
+			targetIndex,
+		});
 	}
 
 	updateBlock(updateDataUnit: ContainerUpdateDataUnit) {
@@ -64,8 +76,9 @@ export class BackpackManager extends ContainerManager {
 	constructor(
 		@inject(BackpackContainerState) private backpack: BackpackContainerState,
 		@inject(HTMLInputProvider) input: HTMLInputProvider,
+		@inject(UIEventBus) uiEventBus: UIEventBus,
 	) {
-		super(backpack, input);
+		super(backpack, input, uiEventBus);
 	}
 
 	doFixedUpdateTick() {
@@ -80,8 +93,9 @@ export class ShortcutManager extends ContainerManager {
 	constructor(
 		@inject(HTMLInputProvider) input: HTMLInputProvider,
 		@inject(ShortcutContainerState) private shortcut: ShortcutContainerState,
+		@inject(UIEventBus) uiEventBus: UIEventBus,
 	) {
-		super(shortcut, input);
+		super(shortcut, input, uiEventBus);
 
 		this.initBlocks();
 	}

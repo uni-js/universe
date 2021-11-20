@@ -1,3 +1,4 @@
+import { ContainerMoveBlockEvent } from './container-move-block-event';
 import { PickItemEvent } from './pick-item-event';
 import { RotateAttachmentEvent } from './rotate-attachment-event';
 import { ControlMovedEvent } from './control-moved-event';
@@ -15,4 +16,5 @@ export {
 	ControlMovedEvent,
 	RotateAttachmentEvent,
 	PickItemEvent,
+	ContainerMoveBlockEvent,
 };
