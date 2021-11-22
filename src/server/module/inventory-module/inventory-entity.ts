@@ -29,7 +29,7 @@ export class ContainerBlock extends Entity {
 export class ShortcutContainer extends Container {
 	containerType = ContainerType.SHORTCUT_CONTAINER;
 	size = BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER;
-	currentIndex = 0;
+	currentIndex: number = undefined;
 	playerId: number;
 }
 

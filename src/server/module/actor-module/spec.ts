@@ -73,6 +73,9 @@ export class Actor extends Entity {
 	lastPosY = 0;
 
 	@ConstructOption()
+	aimTarget = 0;
+
+	@ConstructOption()
 	motionX = 0;
 
 	@ConstructOption()
@@ -114,3 +117,28 @@ export class Actor extends Entity {
 
 @injectable()
 export class ActorFactory extends Factory<string, Actor, any[]> {}
+
+export function getDirectionAngle(direction: Direction) {
+	if (direction === Direction.RIGHT) return 0;
+	if (direction === Direction.BACK) return (3 * Math.PI) / 2;
+	if (direction === Direction.LEFT) return Math.PI;
+	if (direction === Direction.FORWARD) return Math.PI / 2;
+}
+
+/**
+ * determinate if the angle match the direction
+ * @param angle rad unit
+ */
+export function isAngleMatchDirection(direction: Direction, angle: number) {
+	if (direction === Direction.RIGHT && (angle > (3 * Math.PI) / 2 || angle <= Math.PI / 2)) {
+		return true;
+	} else if (direction === Direction.BACK && (angle > Math.PI || angle <= 2 * Math.PI)) {
+		return true;
+	} else if (direction === Direction.LEFT && angle > Math.PI / 2 && angle <= (3 * Math.PI) / 2) {
+		return true;
+	} else if (direction === Direction.FORWARD && angle > 0 && angle <= Math.PI) {
+		return true;
+	}
+
+	return false;
+}

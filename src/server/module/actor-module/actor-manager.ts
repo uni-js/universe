@@ -6,7 +6,7 @@ import { injectable } from 'inversify';
 import { injectCollection } from '../../../framework/server-side/memory-database';
 import { Vector2 } from '../../shared/math';
 import { PosToLandPos } from '../land-module/helper';
-import { Direction, RunningState, Actor, AttachType } from './spec';
+import { Direction, RunningState, Actor, AttachType, isAngleMatchDirection, getDirectionAngle } from './spec';
 import { Input } from '../../../framework/client-side/prediction';
 
 import * as Events from '../../event/internal';
@@ -165,7 +165,8 @@ export class ActorManager extends EntityManager<Actor> {
 		this.actorList.update(actor);
 
 		if (isDirectionChanged) {
-			this.rotateAttachment(actorId, actor.rotation);
+			const attachment = this.getAttachment(actor.$loki, AttachType.RIGHT_HAND);
+			attachment && this.setRotation(attachment.actorId, getDirectionAngle(actor.direction));
 		}
 	}
 
@@ -192,10 +193,11 @@ export class ActorManager extends EntityManager<Actor> {
 		this.emitEvent(Events.ActorToggleUsingEvent, { actorId, startOrEnd: false, useTick });
 	}
 
-	rotateAttachment(actorId: number, rotation: number) {
-		const attachment = this.getAttachment(actorId, AttachType.RIGHT_HAND);
-		if (!attachment) return;
-		this.setRotation(attachment.actorId, rotation);
+	setAimTarget(actorId: number, aimTarget: number) {
+		const actor = this.actorList.findOne({ $loki: actorId });
+		const validDirection = isAngleMatchDirection(actor.direction, aimTarget);
+		actor.aimTarget = validDirection ? aimTarget : undefined;
+		this.actorList.update(actor);
 	}
 
 	processInput(actorId: number, input: Input) {

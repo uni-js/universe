@@ -12,11 +12,11 @@ import { PlayerState } from './ui-state';
 
 @injectable()
 export class PlayerManager extends ClientSideManager {
-	public canRotateAttachment = true;
+	public settingAimTarget = false;
 
 	private currentPlayer: Player;
 
-	private lastAttachmentRotateRad: number;
+	private lastAimTarget: number;
 
 	constructor(
 		@inject(PlayerState) private playerState: PlayerState,
@@ -104,9 +104,9 @@ export class PlayerManager extends ClientSideManager {
 		}
 	}
 
-	private doRotateAttachmentTick(tick: number) {
+	private doSetAimTargetTick(tick: number) {
 		if (!this.currentPlayer) return;
-		if (!this.canRotateAttachment) return;
+		if (!this.settingAimTarget) return;
 
 		const screenPoint = this.inputProvider.getCursorAt();
 		const cursorAt = this.stage.getWorldPointAt(screenPoint);
@@ -118,17 +118,17 @@ export class PlayerManager extends ClientSideManager {
 		const rad = cursorAt.sub(vPos).getRad();
 
 		if (tick % 5 === 0) {
-			if (this.lastAttachmentRotateRad === rad) return;
-			this.emitEvent(Events.RotateAttachmentEvent, {
+			if (this.lastAimTarget === rad) return;
+			this.emitEvent(Events.SetAimTargetEvent, {
 				rotation: rad,
 			});
-			this.lastAttachmentRotateRad = rad;
+			this.lastAimTarget = rad;
 		}
 	}
 
 	doFixedUpdateTick(tick: number) {
 		this.doControlMoveTick();
 		this.doUsingRightHand();
-		this.doRotateAttachmentTick(tick);
+		this.doSetAimTargetTick(tick);
 	}
 }

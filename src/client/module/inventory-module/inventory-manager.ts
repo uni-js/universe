@@ -43,7 +43,6 @@ export class ContainerManager extends ClientSideManager {
 	 */
 	updateBlocks(containerId: number, updateData: ContainerUpdateData, isFullUpdate: boolean) {
 		this.container.containerId = containerId;
-		this.container.firstUpdated = true;
 
 		const blocks: InventoryBlockState[] = [];
 		for (const unit of updateData.units) {
@@ -68,7 +67,14 @@ export class ContainerManager extends ClientSideManager {
 				this.container.blocks[block.index] = source;
 			});
 		}
+
+		if (!this.container.firstUpdated) {
+			this.container.firstUpdated = true;
+			this.handleFirstUpdated();
+		}
 	}
+
+	handleFirstUpdated() {}
 }
 
 @injectable()
@@ -98,6 +104,10 @@ export class ShortcutManager extends ContainerManager {
 		super(shortcut, input, uiEventBus);
 
 		this.initBlocks();
+	}
+
+	handleFirstUpdated() {
+		this.setCurrentIndex(0, true);
 	}
 
 	/**

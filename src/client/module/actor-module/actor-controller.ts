@@ -28,7 +28,7 @@ export class ActorController extends ClientSideController {
 
 		this.redirectToBusEvent(this.actorManager, Events.ActorToggleUsingEvent, ExternalEvents.ActorToggleUsingEvent);
 		this.redirectToBusEvent(this.actorManager, Events.ActorToggleWalkEvent, ExternalEvents.ActorToggleWalkEvent);
-		this.redirectToBusEvent(this.playerManager, Events.RotateAttachmentEvent, ExternalEvents.RotateAttachmentEvent);
+		this.redirectToBusEvent(this.playerManager, Events.SetAimTargetEvent, ExternalEvents.SetAimTargetEvent);
 	}
 
 	@HandleExternalEvent(ServerEvents.ActorToggleUsingEvent)

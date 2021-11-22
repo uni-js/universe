@@ -59,9 +59,9 @@ export class PlayerController extends ServerSideController {
 		this.actorManager.processInput(player.$loki, event.input);
 	}
 
-	@HandleExternalEvent(ClientEvents.RotateAttachmentEvent)
-	private handleRotateAttachment(connId: string, event: ClientEvents.RotateAttachmentEvent) {
+	@HandleExternalEvent(ClientEvents.SetAimTargetEvent)
+	private handleSetAimTargetEvent(connId: string, event: ClientEvents.SetAimTargetEvent) {
 		const player = this.playerManager.findEntity({ connId });
-		this.actorManager.rotateAttachment(player.$loki, event.rotation);
+		this.actorManager.setAimTarget(player.$loki, event.rotation);
 	}
 }

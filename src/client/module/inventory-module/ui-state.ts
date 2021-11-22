@@ -17,7 +17,7 @@ export class ContainerState {
 
 @UIState()
 export class ShortcutContainerState extends ContainerState {
-	currentIndexAt = 0;
+	currentIndexAt: number = undefined;
 }
 
 export class InventoryBlockState {

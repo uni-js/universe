@@ -1,6 +1,6 @@
 import { ContainerMoveBlockEvent } from './container-move-block-event';
 import { PickItemEvent } from './pick-item-event';
-import { RotateAttachmentEvent } from './rotate-attachment-event';
+import { SetAimTargetEvent } from './set-aim-target-event';
 import { ControlMovedEvent } from './control-moved-event';
 import { LoginEvent } from './login-event';
 import { DropItemEvent } from './drop-item-event';
@@ -14,7 +14,7 @@ export {
 	DropItemEvent,
 	LoginEvent,
 	ControlMovedEvent,
-	RotateAttachmentEvent,
+	SetAimTargetEvent,
 	PickItemEvent,
 	ContainerMoveBlockEvent,
 };

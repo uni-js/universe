@@ -37,6 +37,9 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		if (useTick <= BOW_RELEASING_MIN_TICKS) return;
 
 		const attachingActor = this.actorManager.getEntityById(actor.attaching.actorId);
+		const aimTarget = attachingActor.aimTarget;
+
+		if (aimTarget === undefined) return;
 
 		const arrow = new Arrow();
 		arrow.posX = actor.posX;
@@ -47,10 +50,10 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 
 		const motion = arrow.power * 2;
 
-		arrow.rotation = actor.rotation;
+		arrow.rotation = aimTarget;
 		this.addNewEntity(arrow);
 
-		this.actorManager.setMotion(arrow.$loki, new Vector2(motion * Math.cos(actor.rotation), motion * Math.sin(actor.rotation)));
+		this.actorManager.setMotion(arrow.$loki, new Vector2(motion * Math.cos(aimTarget), motion * Math.sin(aimTarget)));
 
 		this.updateArrowBoundingBox(arrow);
 	}

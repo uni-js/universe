@@ -42,13 +42,13 @@ export class BowManager extends ClientSideManager {
 		}
 	}
 
-	@HandleInternalEvent('shortcutManager', Events.ActorToggleUsingEvent)
+	@HandleInternalEvent('shortcutManager', Events.SetShortcutIndexEvent)
 	private onShortcutSetIndex(event: Events.SetShortcutIndexEvent) {
 		if (event.itemType !== ItemType.BOW) {
 			this.bowUsingState.isUsing = false;
-			this.playerManager.canRotateAttachment = false;
+			this.playerManager.settingAimTarget = false;
 		} else {
-			this.playerManager.canRotateAttachment = true;
+			this.playerManager.settingAimTarget = true;
 		}
 	}
 
