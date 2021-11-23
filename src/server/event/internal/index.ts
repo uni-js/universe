@@ -1,3 +1,4 @@
+import { UpdateBuildingNearbyEvent } from './update-building-nearby-event';
 import { DespawnActorEvent } from './despawn-actor-event';
 import { SpawnActorEvent } from './spawn-actor-event';
 import { LandNeverUsedEvent } from './land-never-used-event';
@@ -31,4 +32,5 @@ export {
 	LandNeverUsedEvent,
 	SpawnActorEvent,
 	DespawnActorEvent,
+	UpdateBuildingNearbyEvent,
 };

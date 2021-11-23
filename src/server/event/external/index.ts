@@ -1,3 +1,4 @@
+import { UpdateBuildingNearbyEvent } from './update-building-nearby-event';
 import { ActorDamagedEvent } from './actor-damaged-event';
 import { UpdateContainerEvent } from './update-container-event';
 import { ActorToggleUsingEvent } from './actor-toggle-using-event';
@@ -25,4 +26,5 @@ export {
 	ActorToggleUsingEvent,
 	UpdateContainerEvent,
 	ActorDamagedEvent,
+	UpdateBuildingNearbyEvent,
 };
