@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { useState } from 'react';
 import { useEventBus, useTexturePath, useTextureProvider, useUIState } from '../../framework/client-side/user-interface/hooks';
-import { ItemType } from '../../server/module/inventory-module/item-entity';
+import { ItemType, ItemTypeName } from '../../server/module/inventory-module/item-entity';
 import { BackpackContainerState } from '../module/inventory-module/ui-state';
 import './backpack.css';
 
@@ -59,7 +59,7 @@ export function Backpack() {
 	}
 
 	for (const [index, block] of container.blocks.entries()) {
-		const path = useTexturePath(provider, `item.${block.itemType}.normal`);
+		const path = useTexturePath(provider, `item.${ItemTypeName[block.itemType]}.normal`);
 		blockElems.push(
 			<div
 				onDrop={onBlockDrop}

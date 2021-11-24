@@ -1,23 +1,15 @@
 import SimplexNoise from 'simplex-noise';
 
 export enum BiomeType {
-	RAINFOREST = 'rf',
-
-	FOREST = 'fr',
-
-	LAKE = 'lk',
-
-	ICELAND = 'ic',
-
-	MOUNTAIN = 'mt',
-
-	PLAIN = 'pl',
-
-	COLD = 'co',
-
-	DESERT = 'ds',
-
-	DRY = 'dr',
+	RAINFOREST,
+	FOREST,
+	LAKE,
+	ICELAND,
+	MOUNTAIN,
+	PLAIN,
+	COLD,
+	DESERT,
+	DRY,
 }
 
 export class BiomePicker {

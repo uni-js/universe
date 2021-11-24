@@ -121,11 +121,11 @@ export class EntityManager<T extends Entity> extends ServerSideManager implement
 		this.emitEvent(RemoveEntityEvent, { entityId: entityId, entity });
 	}
 
-	addAtRecord<R>(entity: T, propertyName: string, record: R, key?: string) {
+	addAtRecord<R>(entity: T, propertyName: string, record: R, key?: string | number) {
 		const recordStore = (entity as any)[propertyName] as any;
 		if (recordStore.has(record)) return;
 
-		if (key) {
+		if (key !== undefined) {
 			recordStore.add(key, record);
 		} else {
 			recordStore.add(record);

@@ -2,8 +2,13 @@ import { Entity } from '../../../framework/server-side/memory-database';
 import { ActorType } from '../actor-module/spec';
 
 export enum ItemType {
-	EMPTY = 'empty',
-	BOW = 'bow',
+	EMPTY,
+	BOW,
+}
+
+export enum ItemTypeName {
+	'empty',
+	'bow',
 }
 
 export const ToolsItemTypes: ItemType[] = [ItemType.BOW];

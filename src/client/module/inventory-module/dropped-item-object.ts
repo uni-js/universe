@@ -1,5 +1,5 @@
 import { ActorType } from '../../../server/module/actor-module/spec';
-import { ItemType } from '../../../server/module/inventory-module/item-entity';
+import { ItemType, ItemTypeName } from '../../../server/module/inventory-module/item-entity';
 import { Vector2 } from '../../../server/shared/math';
 import { ActorConstructOption, ActorObject } from '../actor-module/actor-object';
 import { TextureProvider } from '../../../framework/client-side/texture';
@@ -15,7 +15,7 @@ export class DroppedItemActor extends ActorObject {
 		this.sprite.anchor.set(0.5, 1.3);
 		this.hasShadow = true;
 
-		this.singleTexture = this.texture.getOne(`item.${this.itemType}.normal`);
+		this.singleTexture = this.texture.getOne(`item.${ItemTypeName[this.itemType]}.normal`);
 	}
 
 	doFixedUpdateTick() {

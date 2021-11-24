@@ -99,7 +99,7 @@ export class ActorManager extends EntityManager<Actor> {
 		});
 	}
 
-	setAttachment(targetActorId: number, key: string, actorId: number) {
+	setAttachment(targetActorId: number, key: AttachType, actorId: number) {
 		const targetActor = this.actorList.findOne({ $loki: targetActorId });
 		const actor = this.actorList.findOne({ $loki: actorId });
 
@@ -124,7 +124,7 @@ export class ActorManager extends EntityManager<Actor> {
 		});
 	}
 
-	getAttachment(targetActorId: number, key: string) {
+	getAttachment(targetActorId: number, key: AttachType) {
 		const actor = this.actorList.findOne({ $loki: targetActorId });
 		return actor.attachments.get(key);
 	}
@@ -134,7 +134,7 @@ export class ActorManager extends EntityManager<Actor> {
 		return actor.attachments.getAll();
 	}
 
-	removeAttachment(targetActorId: number, key: string) {
+	removeAttachment(targetActorId: number, key: AttachType) {
 		const actor = this.actorList.findOne({ $loki: targetActorId });
 		this.removeAtRecord(actor, 'attachments', key);
 
@@ -286,7 +286,7 @@ export class ActorManager extends EntityManager<Actor> {
 		}
 	}
 
-	private getAttachPosition(actor: Actor, key: string): [number, number] {
+	private getAttachPosition(actor: Actor, key: AttachType): [number, number] {
 		if (actor.attachMapping && actor.attachMapping[key]) {
 			return actor.attachMapping[key][actor.direction];
 		} else {

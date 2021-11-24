@@ -4,7 +4,7 @@ import { ShortcutContainerState } from '../module/inventory-module/ui-state';
 import { useEventBus, useTexturePath, useTextureProvider, useUIState } from '../../framework/client-side/user-interface/hooks';
 
 import './shortcut.css';
-import { ItemType } from '../../server/module/inventory-module/item-entity';
+import { ItemType, ItemTypeName } from '../../server/module/inventory-module/item-entity';
 
 export const SHORTCUT_SIZE = 5;
 
@@ -68,7 +68,7 @@ export function Shortcut(props: any) {
 
 	if (shortcut && shortcut.blocks.length > 0) {
 		for (let i = 0; i < SHORTCUT_SIZE; i++) {
-			const texturePath = useTexturePath(provider, `item.${shortcut.blocks[i].itemType}.normal`);
+			const texturePath = useTexturePath(provider, `item.${ItemTypeName[shortcut.blocks[i].itemType]}.normal`);
 			const isCurrent = i == shortcut.currentIndexAt;
 			const clsName = classnames({
 				'shortcut-block': true,

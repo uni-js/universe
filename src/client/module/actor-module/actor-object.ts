@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-import { ActorType, AttachMapping, Direction, RunningState } from '../../../server/module/actor-module/spec';
+import { ActorType, ActorTypeName, AttachMapping, AttachType, Direction, RunningState } from '../../../server/module/actor-module/spec';
 import { GameObject } from '../../../framework/client-side/game-object';
 import { GetEmptyTexture, TextureProvider } from '../../../framework/client-side/texture';
 import { Interpolate2d, Vector2 } from '../../../server/shared/math';
@@ -56,7 +56,7 @@ export class MoveInterpolator extends EventEmitter2 {
 }
 
 export interface Attachment {
-	key: string;
+	key: AttachType;
 	relativePos?: Vector2;
 	actorId: number;
 }
@@ -92,7 +92,7 @@ export class ActorObject extends GameObject {
 	private _hasShadow = false;
 
 	private _attaching?: Attachment;
-	private attachments = new Map<string, Attachment>();
+	private attachments = new Map<AttachType, Attachment>();
 	private attachMapping?: AttachMapping;
 
 	private isUsingDirty = false;
@@ -139,7 +139,7 @@ export class ActorObject extends GameObject {
 			this.endUsing();
 		}
 
-		this.singleTexture = this.texture.getOne(`actor.${actorType}.normal`);
+		this.singleTexture = this.texture.getOne(`actor.${ActorTypeName[actorType]}.normal`);
 
 		this.controlDirection(Direction.FORWARD);
 
@@ -276,7 +276,7 @@ export class ActorObject extends GameObject {
 		return this.sprite.textures;
 	}
 
-	set attaching(attaching: { key: string; actorId: number }) {
+	set attaching(attaching: { key: AttachType; actorId: number }) {
 		this._attaching = attaching;
 		this.zIndex = 3;
 		this.anchor = new Vector2(0.5, 0.5);
@@ -322,22 +322,22 @@ export class ActorObject extends GameObject {
 		this.moveInterpolator.addMovePoint(point);
 	}
 
-	getAttachRelPos(key: string) {
+	getAttachRelPos(key: AttachType) {
 		const keyMapped = this.attachMapping && this.attachMapping[key];
 		const mappedRelPos = keyMapped && keyMapped[this._direction];
 		const relPos = mappedRelPos ? new Vector2(mappedRelPos[0], mappedRelPos[1]) : new Vector2(0, 0);
 		return relPos;
 	}
 
-	removeAttachment(key: string) {
+	removeAttachment(key: AttachType) {
 		this.attachments.delete(key);
 	}
 
-	getAttachment(key: string) {
+	getAttachment(key: AttachType) {
 		return this.attachments.get(key);
 	}
 
-	setAttachment(key: string, actorId: number) {
+	setAttachment(key: AttachType, actorId: number) {
 		this.attachments.set(key, {
 			key,
 			relativePos: this.getAttachRelPos(key),

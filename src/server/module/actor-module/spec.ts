@@ -5,27 +5,34 @@ import { Attachment, ConstructOption } from '../../shared/entity';
 import { RecordMap } from '../../utils';
 
 export enum ActorType {
-	PLAYER = 'player',
-	BOW = 'bow',
-	ARROW = 'arrow',
-	DROPPED_ITEM = 'dropped_item',
+	PLAYER,
+	BOW,
+	ARROW,
+	DROPPED_ITEM,
+}
+
+export enum ActorTypeName {
+	'player',
+	'bow',
+	'arrow',
+	'dropitem',
 }
 
 export enum Direction {
-	LEFT = 'left',
-	RIGHT = 'right',
-	FORWARD = 'forward',
-	BACK = 'back',
+	LEFT,
+	RIGHT,
+	FORWARD,
+	BACK,
 }
 
 export enum RunningState {
-	SILENT = 'silent',
-	WALKING = 'walking',
-	RUNNING = 'running',
+	SILENT,
+	WALKING,
+	RUNNING,
 }
 
 export enum AttachType {
-	RIGHT_HAND = 'right_hand',
+	RIGHT_HAND,
 }
 
 export interface AttachMappingUnit {
@@ -33,12 +40,12 @@ export interface AttachMappingUnit {
 	[Direction.FORWARD]: [number, number];
 	[Direction.LEFT]: [number, number];
 	[Direction.RIGHT]: [number, number];
-	[key: string]: [number, number];
+	[key: number]: [number, number];
 }
 
 export interface AttachMapping {
 	[AttachType.RIGHT_HAND]: AttachMappingUnit;
-	[key: string]: AttachMappingUnit;
+	[key: number]: AttachMappingUnit;
 }
 
 export class Actor extends Entity {
@@ -92,7 +99,7 @@ export class Actor extends Entity {
 	useTick = 0;
 
 	@ConstructOption()
-	attachments: RecordMap<Attachment> = new RecordMap();
+	attachments: RecordMap<Attachment, AttachType> = new RecordMap();
 
 	@ConstructOption()
 	attaching: Attachment;
@@ -116,7 +123,7 @@ export class Actor extends Entity {
 }
 
 @injectable()
-export class ActorFactory extends Factory<string, Actor, any[]> {}
+export class ActorFactory extends Factory<ActorType, Actor, any[]> {}
 
 export function getDirectionAngle(direction: Direction) {
 	if (direction === Direction.RIGHT) return 0;

@@ -1,11 +1,11 @@
 import { createClientSideModule } from '../../../framework/module';
-import { ActorFactory } from './actor-object';
 import { ActorController } from './actor-controller';
 import { ActorManager } from './actor-manager';
-import { ActorMapper } from './spec';
+import { ActorFactory } from './actor-object';
+import { actorFactory } from './spec';
 
 export const ActorModule = createClientSideModule({
 	controllers: [ActorController],
 	managers: [ActorManager],
-	providers: [{ key: ActorFactory, value: new ActorFactory().addImpls(ActorMapper) }],
+	providers: [{ key: ActorFactory, value: actorFactory }],
 });

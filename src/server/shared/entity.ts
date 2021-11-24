@@ -1,3 +1,4 @@
+import { AttachType } from '../module/actor-module/spec';
 import { RecordMap, RecordSet } from '../utils';
 
 export const MOVEMENT_TICK_MIN_DISTANCE = 0.0001;
@@ -32,7 +33,7 @@ export function GetConstructOptions(target: any) {
 }
 
 export interface Attachment {
-	key: string;
+	key: AttachType;
 	relPos?: [number, number];
 	actorId: number;
 }

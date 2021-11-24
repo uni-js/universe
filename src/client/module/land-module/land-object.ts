@@ -5,6 +5,7 @@ import { TextureProvider } from '../../../framework/client-side/texture';
 import { BRICK_WIDTH } from './brick-object';
 import { CompositeRectTileLayer } from '@pixi/tilemap';
 import { StaticObject } from '../actor-module/static';
+import { BrickTypeName } from '../../../server/module/land-module/brick-entity';
 
 export class LandObject extends StaticObject {
 	private tileLayer: CompositeRectTileLayer;
@@ -27,7 +28,7 @@ export class LandObject extends StaticObject {
 
 	setLandData(landData: LandData) {
 		for (const [, brick] of landData.bricks.entries()) {
-			const texture = this.texture.getOne(`brick.${brick.type}.normal`);
+			const texture = this.texture.getOne(`brick.${BrickTypeName[brick.type]}.normal`);
 			this.tileLayer.addFrame(texture, brick.offX * BRICK_WIDTH, brick.offY * BRICK_WIDTH);
 		}
 	}

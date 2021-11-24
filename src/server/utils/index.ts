@@ -62,22 +62,22 @@ export class RecordSet<T> {
 	}
 }
 
-export class RecordMap<T> {
-	private map = new Map<string, T>();
+export class RecordMap<T, K = string> {
+	private map = new Map<K, T>();
 	constructor() {}
-	add(key: string, record: T) {
+	add(key: K, record: T) {
 		this.map.set(key, record);
 	}
 
-	has(key: string) {
+	has(key: K) {
 		return this.map.has(key);
 	}
 
-	get(key: string) {
+	get(key: K) {
 		return this.map.get(key);
 	}
 
-	remove(key: string) {
+	remove(key: K) {
 		this.map.delete(key);
 	}
 

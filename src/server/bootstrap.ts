@@ -3,7 +3,6 @@ import 'threads/register';
 
 import { ConnectionController } from './controller/connection-controller';
 import { ActorFactory } from './module/actor-module/spec';
-import { ActorMapper } from './module/actor-module/mapper';
 import { ServerApp } from '../framework/server-side/server-app';
 import { createPersistDatabase, PersistDatabaseSymbol } from './database';
 
@@ -16,6 +15,7 @@ import { InventoryModule } from './module/inventory-module/module-export';
 import { PickDropModule } from './module/pick-drop-module/module-export';
 
 import DotEnv from 'dotenv';
+import { actorFactory } from './module/actor-module/mapper';
 
 DotEnv.config();
 
@@ -31,9 +31,6 @@ function bootstrap() {
 	if (Boolean(dbLocation) === false) throw new Error(`please provide env: DB_LOCATION`);
 
 	const pdb = createPersistDatabase(dbLocation);
-
-	const actorFactory = new ActorFactory();
-	actorFactory.addImpls(ActorMapper);
 
 	const appModule = createServerSideModule({
 		imports: [LandModule, ActorModule, PlayerModule, BowModule, InventoryModule, PickDropModule],

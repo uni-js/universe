@@ -1,4 +1,4 @@
-import { ActorType, AttachMapping, Actor } from '../actor-module/spec';
+import { ActorType, AttachMapping, Actor, AttachType, Direction } from '../actor-module/spec';
 import { ConstructOption } from '../../shared/entity';
 import { RecordSet } from '../../utils';
 
@@ -25,14 +25,14 @@ export class Player extends Actor {
 	playerName = 'Player';
 
 	@ConstructOption()
-	attachMapping: AttachMapping = {
-		right_hand: {
-			left: [-0.4, -0.5],
-			right: [0.4, -0.5],
-			back: [0, -0.5],
-			forward: [0, -0.4],
-		},
-	};
+	attachMapping: AttachMapping = [
+		[
+			[-0.4, -0.5],
+			[0.4, -0.5],
+			[0, -0.5],
+			[0, -0.4],
+		],
+	];
 
 	motionDecreaseRate = 0.75;
 
