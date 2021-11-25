@@ -26,14 +26,6 @@
     box-sizing: border-box;
     padding: 5px;
 }
-.backpack-block-drag-over{
-    background: #888;
-}
-.backpack-block img{
-    width: 100%;
-    height: 100%;
-}
-
 .backpack-block:hover{
     background: #CCC;
 }

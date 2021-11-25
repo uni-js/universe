@@ -1,0 +1,19 @@
+
+.item-block{
+    height: 30px;
+    width: 30px;
+    border: 2px solid #555;
+    background-color: #FFF;
+    padding: 1px;
+    pointer-events: auto;
+}
+.item-block-highlight{
+    background-color: #CCC;    
+}
+.item-block-drag-over{
+    background-color: #888;
+}
+.item-block-img{
+    width: 100%;
+    height: 100%;
+}
