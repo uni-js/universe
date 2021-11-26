@@ -12,10 +12,13 @@ export interface ItemBlockProps {
 	count: number;
 	highlight: boolean;
 	className?: string;
+	containerType: string;
+	draggable?: boolean;
 	onDragOver?: (index: number, containerId: number) => void;
 	onDragLeave?: () => void;
 	onDragEnd?: () => void;
-	onDrop: (sourceContainerId: number, sourceIndex: number, targetContainerId: number, targetIndex: number) => void;
+	onClick?: () => void;
+	onDrop?: (sourceContainerId: number, sourceIndex: number, targetContainerId: number, targetIndex: number) => void;
 }
 
 export function ItemBlock(props: ItemBlockProps) {
@@ -58,17 +61,22 @@ export function ItemBlock(props: ItemBlockProps) {
 	}
 
 	function onBlockDragEnd(ev: React.DragEvent) {
-		props.onDragEnd && props.onDragEnd();
 		setDragOver(false);
+		props.onDragEnd && props.onDragEnd();
 	}
 
 	function onBlockDrop(ev: React.DragEvent) {
 		const { containerId: sourceContainerId, index: sourceIndex } = JSON.parse(ev.dataTransfer.getData('text/plain'));
 		const targetIndex = +ev.currentTarget.getAttribute('data-index');
 
-		props.onDrop(sourceContainerId, sourceIndex, props.containerId, targetIndex);
+		props.onDrop && props.onDrop(sourceContainerId, sourceIndex, props.containerId, targetIndex);
 		setDragOver(false);
 	}
+
+	function onBlockClick() {
+		props.onClick && props.onClick();
+	}
+
 	const texturePath = useTexturePath(provider, `item.${ItemTypeName[props.itemType]}.normal`);
 
 	const clsName = classNames(
@@ -81,16 +89,18 @@ export function ItemBlock(props: ItemBlockProps) {
 	);
 	return (
 		<div
-			draggable="true"
+			draggable={props.draggable ? 'true' : 'false'}
+			data-container-type={props.containerType}
 			data-index={props.index}
 			onDrop={onBlockDrop}
 			onDragStart={onBlockDragStart}
 			onDragOver={onBlockDragOver}
 			onDragEnd={onBlockDragEnd}
 			onDragLeave={onBlockDragLeave}
+			onClick={onBlockClick}
 			className={clsName}
 		>
-			<img className="item-block-img" src={texturePath} />
+			<img draggable="false" className="item-block-img" src={texturePath} />
 		</div>
 	);
 }

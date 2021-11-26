@@ -4,14 +4,17 @@ import { ActorType } from '../actor-module/spec';
 export enum ItemType {
 	EMPTY,
 	BOW,
+	WP_ROCK,
 }
 
 export enum ItemTypeName {
 	'empty',
 	'bow',
+	'wp_rock',
 }
 
 export const ToolsItemTypes: ItemType[] = [ItemType.BOW];
+export const WallpaperTypes: ItemType[] = [ItemType.BOW];
 
 export enum ItemHoldAction {
 	/**

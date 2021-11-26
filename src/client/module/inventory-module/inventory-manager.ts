@@ -89,7 +89,7 @@ export class BackpackManager extends ContainerManager {
 
 	doFixedUpdateTick() {
 		if (this.input.keyDown(InputKey.E)) {
-			this.backpack.visible = !this.backpack.visible;
+			this.uiEventBus.emit('toggleBackpack');
 		}
 	}
 }

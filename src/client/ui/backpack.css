@@ -29,3 +29,22 @@
 .backpack-block:hover{
     background: #CCC;
 }
+.backpack-func{
+    margin-top: 5px;
+}
+.backpack-func-building-creator{
+    height: 20px;
+    width: 100px;
+    background: #FFF;
+    border-radius: 5px;
+    font-size: 8px;
+    text-align: center;
+    line-height: 20px;
+    transition: background-color 0.2s;
+    pointer-events: auto;
+    cursor: pointer;
+    color: #333;
+}
+.backpack-func-building-creator:hover{
+    background: #CCC;
+}

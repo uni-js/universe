@@ -5,7 +5,12 @@ import { BackpackContainerState } from '../module/inventory-module/ui-state';
 
 import './backpack.css';
 
-export function Backpack() {
+export interface BackpackProps {
+	visible?: boolean;
+	onOpenBuildingCreator: () => void;
+}
+
+export function Backpack(props: BackpackProps) {
 	const container = useUIState(BackpackContainerState);
 	const eventBus = useEventBus();
 
@@ -20,8 +25,11 @@ export function Backpack() {
 			blockElems[i] = (
 				<ItemBlock
 					className="backpack-block"
+					containerType="backpack"
 					containerId={container.containerId}
+					draggable={true}
 					index={i}
+					key={i}
 					itemType={container.blocks[i].itemType}
 					count={0}
 					highlight={false}
@@ -32,9 +40,16 @@ export function Backpack() {
 	}
 
 	return (
-		<div className="backpack-wrapper" style={{ visibility: container.visible ? 'visible' : 'hidden' }}>
-			<div className="backpack-main">
-				<div className="backpack-body">{blockElems}</div>
+		<div className="backpack-wrapper" style={{ visibility: props.visible ? 'visible' : 'hidden' }}>
+			<div className="backpack">
+				<div className="backpack-main">
+					<div className="backpack-body">{blockElems}</div>
+				</div>
+				<div className="backpack-func">
+					<div className="backpack-func-building-creator" onClick={() => props.onOpenBuildingCreator()}>
+						Create Building
+					</div>
+				</div>
 			</div>
 		</div>
 	);

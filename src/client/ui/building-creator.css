@@ -1,0 +1,64 @@
+.building-creator{
+    left: calc(50% - 300px);
+    top: 10%;
+    width: 600px;
+    height: 400px;
+    display: flex;
+    background: rgba(255,255,255,0.8);
+    border-radius: 5px;
+    padding: 10px;
+    padding-top: 60px;
+    justify-content: space-around;
+    position: absolute;
+    pointer-events: auto;
+}
+.building-creator-close{
+    right: 20px;
+    top: 20px;
+    height: 20px;
+    width: 60px;
+    background: #FFF;
+    position: absolute;
+    border-radius: 3px;
+    text-align: center;
+    color: #666;
+    line-height: 20px;
+}
+.building-creator-canvas{
+    width: 300px;
+    height: 300px;
+    flex-wrap: wrap;
+    display: flex;
+    align-content: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    background: #666;
+    border-radius: 5px;
+}
+
+.building-creator-canvas-line{
+    display: flex;
+}
+
+.building-creator-canvas-block{
+    width: 20px;
+    height: 20px;
+    border: 0.5px solid #CCC;
+}
+
+.building-creator-canvas-block:hover{
+    background: #EEE;
+}
+
+.building-creator-canvas-block:active{
+    background: #CCC;
+}
+
+.building-creator-picker{
+    width: 200px;
+    height: 300px;
+    display: flex;
+    border-radius: 5px;
+    border: 1px solid #AAA;
+    background: #FFF;
+}

@@ -30,7 +30,10 @@ export function Shortcut(props: any) {
 				<ItemBlock
 					className="shortcut-block"
 					containerId={shortcut.containerId}
+					containerType="shortcut"
+					draggable={true}
 					index={i}
+					key={i}
 					itemType={shortcut.blocks[i].itemType}
 					count={0}
 					highlight={isCurrent}

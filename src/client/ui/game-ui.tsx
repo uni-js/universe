@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Shortcut } from './shortcut';
 import { useEventBus, useUIState } from '../../framework/client-side/user-interface/hooks';
@@ -7,11 +7,25 @@ import { BowUI } from './bow';
 import { Backpack } from './backpack';
 
 import './game-ui.css';
+import { BuildingCreator } from './building-creator';
 
 export function GameUI(props: any) {
 	function onClicked() {
 		eventBus.emit('PlayerNameClicked');
 	}
+
+	const [buildingCreatorVisible, setBuildingCreatorVisible] = useState(false);
+	const [backpackVisible, setBackpackVisible] = useState(false);
+
+	useEffect(() => {
+		const callback = () => {
+			setBackpackVisible(!backpackVisible);
+		};
+		eventBus.on('toggleBackpack', callback);
+		return () => {
+			eventBus.off('toggleBackpack', callback);
+		};
+	}, [backpackVisible]);
 
 	const eventBus = useEventBus();
 	const player = useUIState(PlayerState);
@@ -20,7 +34,21 @@ export function GameUI(props: any) {
 			<div id="player-name" style={{ fontSize: '24px', color: 'white' }}>
 				{player?.playerName}
 			</div>
-			<Backpack></Backpack>
+			<BuildingCreator
+				onCloseClicked={() => {
+					setBuildingCreatorVisible(false);
+				}}
+				width={10}
+				height={10}
+				visible={buildingCreatorVisible}
+			></BuildingCreator>
+			<Backpack
+				visible={backpackVisible}
+				onOpenBuildingCreator={() => {
+					setBuildingCreatorVisible(true);
+					setBackpackVisible(false);
+				}}
+			></Backpack>
 			<div id="bottom-area">
 				<BowUI></BowUI>
 				<Shortcut></Shortcut>
