@@ -17,7 +17,9 @@ export interface ItemBlockProps {
 	onDragOver?: (index: number, containerId: number) => void;
 	onDragLeave?: () => void;
 	onDragEnd?: () => void;
-	onClick?: () => void;
+	onMouseEnter?: () => void;
+	onLeftClick?: () => void;
+	onRightClick?: () => void;
 	onDrop?: (sourceContainerId: number, sourceIndex: number, targetContainerId: number, targetIndex: number) => void;
 }
 
@@ -73,8 +75,18 @@ export function ItemBlock(props: ItemBlockProps) {
 		setDragOver(false);
 	}
 
-	function onBlockClick() {
-		props.onClick && props.onClick();
+	function onMouseUp(ev: React.MouseEvent) {
+		ev.preventDefault();
+
+		if (ev.button === 0) {
+			props.onLeftClick && props.onLeftClick();
+		} else if (ev.button === 2) {
+			props.onRightClick && props.onRightClick();
+		}
+	}
+
+	function onMouseEnter() {
+		props.onMouseEnter && props.onMouseEnter();
 	}
 
 	const texturePath = useTexturePath(provider, `item.${ItemTypeName[props.itemType]}.normal`);
@@ -97,7 +109,9 @@ export function ItemBlock(props: ItemBlockProps) {
 			onDragOver={onBlockDragOver}
 			onDragEnd={onBlockDragEnd}
 			onDragLeave={onBlockDragLeave}
-			onClick={onBlockClick}
+			onMouseEnter={onMouseEnter}
+			onMouseUp={onMouseUp}
+			onContextMenu={(e) => e.preventDefault()}
 			className={clsName}
 		>
 			<img draggable="false" className="item-block-img" src={texturePath} />

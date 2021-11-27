@@ -38,8 +38,8 @@ export function GameUI(props: any) {
 				onCloseClicked={() => {
 					setBuildingCreatorVisible(false);
 				}}
-				width={10}
-				height={10}
+				width={15}
+				height={15}
 				visible={buildingCreatorVisible}
 			></BuildingCreator>
 			<Backpack

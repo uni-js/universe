@@ -122,7 +122,8 @@ export class InventoryManager extends EntityManager<Inventory> {
 
 		//HACK: remove in the future
 		//add player a bow in shortcut
-		this.setBlock(inventory.containers[0], 0, ItemType.BOW, 1);
+		this.setBlock(inventory.containers[1], 0, ItemType.BOW, 1);
+		this.setBlock(inventory.containers[1], 1, ItemType.WP_ROCK, 1);
 		this.sendInventoryUpdateData(player, inventory.$loki);
 	}
 

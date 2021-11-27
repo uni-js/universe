@@ -5,6 +5,7 @@ import { BackpackContainerState } from '../module/inventory-module/ui-state';
 import { ItemBlock } from './item-block';
 
 import './building-creator.css';
+import classNames from 'classnames';
 
 export interface BuildingCreatorProps {
 	width: number;
@@ -13,24 +14,35 @@ export interface BuildingCreatorProps {
 	onCloseClicked: () => void;
 }
 
+export enum PaintType {
+	NONE,
+	DRAWING,
+	ERASING,
+}
+
 export function BuildingCreator(props: BuildingCreatorProps) {
 	const [showIndex, setShowIndex] = useState<number>();
 	const [index, setIndex] = useState<number>();
-
 	const [bitmap, setBitmap] = useState<ItemType[]>([]);
+	const [dragPaint, setDragPaint] = useState<PaintType>(PaintType.NONE);
 
 	const backpack = useUIState(BackpackContainerState);
 	const blockItems = [];
 	const canvasLines = [];
 
-	useEffect(() => {
+	function clearBitmap() {
 		setBitmap(Array(props.width * props.height).fill(ItemType.EMPTY));
-	}, []);
+	}
 
 	function setBitmapItem(index: number, itemType: ItemType) {
+		if (bitmap[index] === itemType) return;
 		bitmap[index] = itemType;
 		setBitmap({ ...bitmap });
 	}
+
+	useEffect(() => {
+		clearBitmap();
+	}, [props.visible]);
 
 	let showIndexCount = 0;
 	for (let i = 0; i < backpack.blocks.length; i++) {
@@ -42,9 +54,12 @@ export function BuildingCreator(props: BuildingCreatorProps) {
 				<ItemBlock
 					containerId={backpack.containerId}
 					containerType="creator-picker"
+					className={classNames({
+						'creator-picker-selected': isCurrent,
+					})}
 					index={block.index}
-					key={index}
-					onClick={() => {
+					key={i}
+					onLeftClick={() => {
 						setShowIndex(currentShowIndex);
 						setIndex(block.index);
 					}}
@@ -68,9 +83,19 @@ export function BuildingCreator(props: BuildingCreatorProps) {
 					containerId={backpack.containerId}
 					containerType="creator-canvas"
 					index={blockIndex}
-					key={index}
-					onClick={() => {
+					key={blockIndex}
+					onLeftClick={() => {
 						setBitmapItem(blockIndex, backpack.blocks[index].itemType);
+					}}
+					onRightClick={() => {
+						setBitmapItem(blockIndex, ItemType.EMPTY);
+					}}
+					onMouseEnter={() => {
+						if (dragPaint === PaintType.DRAWING) {
+							setBitmapItem(blockIndex, backpack.blocks[index].itemType);
+						} else if (dragPaint === PaintType.ERASING) {
+							setBitmapItem(blockIndex, ItemType.EMPTY);
+						}
 					}}
 					itemType={bitmap[blockIndex]}
 					count={1}
@@ -87,7 +112,23 @@ export function BuildingCreator(props: BuildingCreatorProps) {
 				close
 			</div>
 			<div className="building-creator-picker">{blockItems}</div>
-			<div className="building-creator-canvas">{canvasLines}</div>
+			<div className="building-creator-canvas-wrapper">
+				<div
+					className="building-creator-canvas"
+					onMouseDown={(e) => {
+						if (e.button === 0) {
+							setDragPaint(PaintType.DRAWING);
+						} else if (e.button === 2) {
+							setDragPaint(PaintType.ERASING);
+						}
+					}}
+					onMouseUp={(e) => {
+						setDragPaint(PaintType.NONE);
+					}}
+				>
+					{canvasLines}
+				</div>
+			</div>
 		</div>
 	);
 }

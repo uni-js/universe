@@ -14,7 +14,7 @@ export enum ItemTypeName {
 }
 
 export const ToolsItemTypes: ItemType[] = [ItemType.BOW];
-export const WallpaperTypes: ItemType[] = [ItemType.BOW];
+export const WallpaperTypes: ItemType[] = [ItemType.WP_ROCK];
 
 export enum ItemHoldAction {
 	/**
