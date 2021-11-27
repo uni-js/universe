@@ -2,14 +2,14 @@ import { inject, injectable } from 'inversify';
 import { Direction } from '../../../server/module/actor-module/spec';
 import { ActorObject } from './actor-object';
 import { GameObjectManager } from '../../../framework/client-side/client-manager';
-import { ActorStore } from '../../store';
+import { ActorLayer } from '../../store';
 
 import * as Events from '../../event/internal';
 
 @injectable()
 export class ActorManager extends GameObjectManager<ActorObject> {
-	constructor(@inject(ActorStore) private actorStore: ActorStore) {
-		super(actorStore);
+	constructor(@inject(ActorLayer) private actorLayer: ActorLayer) {
+		super(actorLayer);
 
 		this.redirectObjectEvent(Events.ActorToggleUsingEvent);
 		this.redirectObjectEvent(Events.ActorToggleWalkEvent);
@@ -48,12 +48,12 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 
 	doUpdateTick(tick: number) {
 		super.doUpdateTick.call(this, tick);
-		this.actorStore.container.sortChildren();
+		this.actorLayer.container.sortChildren();
 	}
 
 	doFixedUpdateTick(tick: number) {
 		super.doFixedUpdateTick.call(this, tick);
-		for (const actor of this.actorStore.getAll()) {
+		for (const actor of this.actorLayer.getAll()) {
 			this.updateAttachingMovement(actor);
 		}
 	}

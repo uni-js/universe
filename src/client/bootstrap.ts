@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { ClientApp } from '../framework/client-side/client-app';
 import { BootController } from './controller/boot-controller';
 
-import { ActorStore, LandStore } from './store';
+import { ActorLayer, BuildingCreatorLayer, LandLayer } from './store';
 
 import { GameUI } from './ui/game-ui';
 import { HTMLInputProvider } from './input';
@@ -15,6 +15,7 @@ import { PlayerModule } from './module/player-module/module-export';
 import { InventoryModule } from './module/inventory-module/module-export';
 import { BowModule } from './module/bow-module/module-export';
 import { Logger } from '../framework/local-logger';
+import { Viewport } from '../framework/client-side/viewport';
 
 export function bootstrap() {
 	const playground = document.getElementById('playground') as HTMLDivElement;
@@ -22,23 +23,43 @@ export function bootstrap() {
 	const serverUrl = process.env.UNIVERSE_SERVER_URL;
 	const inputProvider = new HTMLInputProvider();
 
+	const worldWidth = 4 * 7;
+	const worldHeight = 3 * 7;
+	const resolution = 32;
+
+	const viewport = new Viewport(worldWidth * resolution, worldHeight * resolution, worldWidth, worldHeight);
+
 	const appModule = createClientSideModule({
 		imports: [LandModule, ActorModule, PlayerModule, InventoryModule, BowModule],
 		controllers: [BootController],
 		providers: [
-			{ key: LandStore, value: new LandStore() },
-			{ key: ActorStore, value: new ActorStore() },
+			{ key: LandLayer, value: new LandLayer() },
+			{ key: ActorLayer, value: new ActorLayer() },
+			{ key: BuildingCreatorLayer, value: new BuildingCreatorLayer() },
 			{ key: HTMLInputProvider, value: inputProvider },
+			{ key: Viewport, value: viewport },
 		],
 	});
 
-	const app = new ClientApp({ serverUrl, playground, texturePaths, uiEntry: GameUI, module: appModule });
-
-	app.addTicker(() => inputProvider.doFixedUpdateTick());
-	app.addDisplayObject(app.get<any>(LandStore).container);
-	app.addDisplayObject(app.get<any>(ActorStore).container);
+	const app = new ClientApp({
+		serverUrl,
+		playground,
+		texturePaths,
+		uiEntry: GameUI,
+		module: appModule,
+		width: worldWidth,
+		height: worldHeight,
+		resolution,
+	});
 
 	inputProvider.bind(app.getCanvasContainer());
+
+	viewport.addChild(app.get(LandLayer).container);
+	viewport.addChild(app.get(ActorLayer).container);
+	viewport.addChild(app.get(BuildingCreatorLayer).container);
+
+	app.addDisplayObject(viewport);
+	app.addTicker(() => inputProvider.doFixedUpdateTick());
 
 	Logger.info('Server URL is: ', serverUrl);
 

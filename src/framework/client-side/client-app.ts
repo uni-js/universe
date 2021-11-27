@@ -6,7 +6,6 @@ import ReactDOM from 'react-dom';
 
 import { ParseTexturePath, TextureProvider, TextureType } from './texture';
 import { EventBusClient } from './bus-client';
-import { Viewport } from './viewport';
 import { Container, interfaces } from 'inversify';
 import { bindToContainer, resolveAllBindings } from '../inversify';
 import { UIEntry, UIEventBus } from './user-interface/hooks';
@@ -28,6 +27,9 @@ export interface ClientApplicationOption {
 	playground: HTMLDivElement;
 	texturePaths: string[];
 	uiEntry: any;
+	width: number;
+	height: number;
+	resolution: number;
 	module: ClientSideModule;
 }
 
@@ -47,15 +49,10 @@ export class ClientApp {
 	private uiStatesContainer: UIStateContainer;
 	private textureProvider = new TextureProvider();
 
-	private viewport: Viewport;
 	private busClient: EventBusClient;
 	private uiEventBus: UIEventBus;
 
 	private iocContainer: Container;
-	private resolution = 32;
-
-	private worldWidth = 4 * 7;
-	private worldHeight = 3 * 7;
 
 	private wrapper: HTMLElement;
 	private uiContainer: HTMLElement;
@@ -69,9 +66,9 @@ export class ClientApp {
 		this.moduleResolved = resolveClientSideModule(option.module);
 
 		this.app = new PIXI.Application({
-			resolution: this.resolution,
-			width: this.worldWidth,
-			height: this.worldHeight,
+			width: option.width,
+			height: option.height,
+			resolution: option.resolution,
 		});
 
 		this.playground = option.playground;
@@ -82,12 +79,6 @@ export class ClientApp {
 		this.managers = this.moduleResolved.managers;
 		this.controllers = this.moduleResolved.controllers;
 
-		this.viewport = new Viewport(
-			this.worldWidth * this.resolution,
-			this.worldHeight * this.resolution,
-			this.worldWidth,
-			this.worldHeight,
-		);
 		this.busClient = new EventBusClient(this.option.serverUrl);
 		this.uiEventBus = new UIEventBus();
 
@@ -117,11 +108,11 @@ export class ClientApp {
 	}
 
 	addDisplayObject(displayObject: PIXI.DisplayObject) {
-		this.viewport.addChild(displayObject);
+		this.app.stage.addChild(displayObject);
 	}
 
 	removeDisplayObject(displayObject: PIXI.DisplayObject) {
-		this.viewport.removeChild(displayObject);
+		this.app.stage.removeChild(displayObject);
 	}
 
 	removeTicker(fn: any) {
@@ -185,14 +176,10 @@ export class ClientApp {
 		const ioc = this.iocContainer;
 
 		ioc.bind(EventBusClient).toConstantValue(this.busClient);
-		ioc.bind(Viewport).toConstantValue(this.viewport);
 		ioc.bind(TextureProvider).toConstantValue(this.textureProvider);
 		ioc.bind(UIEventBus).toConstantValue(this.uiEventBus);
 
 		bindToContainer(ioc, [...this.managers, ...this.controllers]);
-
-		const viewport = ioc.get(Viewport);
-		this.app.stage.addChild(viewport);
 	}
 
 	private initUIBindings() {

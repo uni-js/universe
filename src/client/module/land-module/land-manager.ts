@@ -3,16 +3,16 @@ import { LandLocToLoc, PosToLandPos } from '../../../server/module/land-module/h
 import { Vector2 } from '../../../server/shared/math';
 import { GameObjectManager } from '../../../framework/client-side/client-manager';
 import { LandObject } from './land-object';
-import { LandStore } from '../../store';
+import { LandLayer } from '../../store';
 
 @injectable()
 export class LandManager extends GameObjectManager<LandObject> {
-	constructor(@inject(LandStore) private landStore: LandStore) {
-		super(landStore);
+	constructor(@inject(LandLayer) private landLayer: LandLayer) {
+		super(landLayer);
 	}
 
 	getLandByLoc(landLoc: Vector2) {
-		return this.landStore.get(landLoc.x, landLoc.y);
+		return this.landLayer.get(landLoc.x, landLoc.y);
 	}
 
 	getBrickByLoc(pos: Vector2) {
