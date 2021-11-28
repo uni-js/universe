@@ -41,6 +41,7 @@ export class BuildingManager extends ClientSideManager {
 		this.viewportEventDispatcher.on('mousedown', (ev: ConvertedMouseEvent) => {
 			const point = new Vector2(ev.floorX, ev.floorY);
 			this.buildingRangeSelecting = point;
+			this.coverObject.coverRange = new Range2(point, point);
 		});
 		this.viewportEventDispatcher.on('mousemove', (ev: ConvertedMouseEvent) => {
 			if (!this.buildingRangeSelecting) return;

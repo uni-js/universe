@@ -12,8 +12,17 @@ export interface ConvertedMouseEvent {
 }
 
 export class ViewportHTMLEventDispatcher extends EventEmitter2 {
-	constructor(private viewport: Viewport, private element: HTMLElement) {
+	private element: HTMLElement;
+
+	constructor(private viewport: Viewport) {
 		super();
+	}
+
+	bind(element: HTMLElement) {
+		if (this.element) {
+			throw new Error(`already bound`);
+		}
+		this.element = element;
 		this.element.addEventListener('mousedown', (ev) => {
 			this.emit('mousedown', this.convertMouseEvent(ev));
 		});

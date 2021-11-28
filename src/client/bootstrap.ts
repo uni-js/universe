@@ -31,6 +31,7 @@ export function bootstrap() {
 	const resolution = 32;
 
 	const viewport = new Viewport(worldWidth * resolution, worldHeight * resolution, worldWidth, worldHeight);
+	const viewportEventDispatcher = new ViewportHTMLEventDispatcher(viewport);
 
 	const appModule = createClientSideModule({
 		imports: [LandModule, ActorModule, PlayerModule, InventoryModule, BowModule, BuildingModule],
@@ -41,7 +42,7 @@ export function bootstrap() {
 			{ key: BuildingCreatorLayer, value: new BuildingCreatorLayer() },
 			{ key: HTMLInputProvider, value: inputProvider },
 			{ key: Viewport, value: viewport },
-			{ key: ViewportHTMLEventDispatcher, value: new ViewportHTMLEventDispatcher(viewport, playground) },
+			{ key: ViewportHTMLEventDispatcher, value: viewportEventDispatcher },
 			{ key: PlaygroundSymbol, value: playground },
 		],
 	});
@@ -57,7 +58,9 @@ export function bootstrap() {
 		resolution,
 	});
 
-	inputProvider.bind(app.getCanvasContainer());
+	const mouseElem = app.getCanvasContainer();
+	inputProvider.bind(mouseElem);
+	viewportEventDispatcher.bind(mouseElem);
 
 	viewport.addChild(app.get(LandLayer).container);
 	viewport.addChild(app.get(BuildingCreatorLayer).container);
