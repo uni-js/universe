@@ -1,7 +1,7 @@
 import { Vector2 } from '../../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '../../input';
 import { ClientSideManager } from '../../../framework/client-side/client-manager';
-import { Viewport } from '../../../framework/client-side/viewport';
+import { Viewport } from '../../../framework/client-side/viewport/viewport';
 import { AttachType } from '../../../server/module/actor-module/spec';
 import { inject, injectable } from 'inversify';
 import { Player } from './player-object';
@@ -109,7 +109,7 @@ export class PlayerManager extends ClientSideManager {
 		if (!this.settingAimTarget) return;
 
 		const screenPoint = this.inputProvider.getCursorAt();
-		const cursorAt = this.stage.getWorldPointAt(screenPoint);
+		const cursorAt = Vector2.fromArray(this.stage.getWorldPointAt(screenPoint.x, screenPoint.y));
 		const attachment = this.currentPlayer.getAttachment(AttachType.RIGHT_HAND);
 		if (!attachment) return;
 

@@ -1,10 +1,9 @@
-import { Vector2 } from '../../server/shared/math';
 import { injectable } from 'inversify';
 import * as PIXI from 'pixi.js';
 
 export interface IViewport {
 	moveCenter(x: number, y: number): void;
-	getWorldPointAt(screenPoint: Vector2): Vector2;
+	getWorldPointAt(screenX: number, screenY: number): [number, number];
 	getWorldWidth(): number;
 	getWorldHeight(): number;
 }
@@ -21,14 +20,11 @@ export class Viewport extends PIXI.Container implements IViewport {
 		this.position.set(this.worldWidth / 2 - x, this.worldHeight / 2 - y);
 	}
 
-	getWorldPointAt(screenPoint: Vector2): Vector2 {
+	getWorldPointAt(screenX: number, screenY: number): [number, number] {
 		const ratioW = this.worldWidth / this.screenWidth;
 		const ratioH = this.worldHeight / this.screenHeight;
 
-		const screenX = screenPoint.x;
-		const screenY = screenPoint.y;
-
-		return new Vector2(screenX * ratioW - this.position.x, screenY * ratioH - this.position.y);
+		return [screenX * ratioW - this.position.x, screenY * ratioH - this.position.y];
 	}
 
 	getWorldWidth() {

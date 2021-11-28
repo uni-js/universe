@@ -24,7 +24,7 @@ export interface TextureDef {
 
 export interface ClientApplicationOption {
 	serverUrl: string;
-	playground: HTMLDivElement;
+	playground: HTMLElement;
 	texturePaths: string[];
 	uiEntry: any;
 	width: number;

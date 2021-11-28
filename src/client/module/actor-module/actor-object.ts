@@ -139,7 +139,7 @@ export class ActorObject extends GameObject {
 			this.endUsing();
 		}
 
-		this.singleTexture = this.texture.getOne(`actor.${ActorTypeName[actorType]}.normal`);
+		this.singleTexture = this.textureProvider.getOne(`actor.${ActorTypeName[actorType]}.normal`);
 
 		this.controlDirection(Direction.FORWARD);
 
@@ -297,7 +297,7 @@ export class ActorObject extends GameObject {
 
 	private updateShowHealth() {
 		if (this._showHealth && !this.healthBar) {
-			this.healthBar = new HealthBar(this.texture);
+			this.healthBar = new HealthBar(this.textureProvider);
 			this.addChild(this.healthBar);
 		} else if (!this._showHealth && this.healthBar) {
 			this.removeChild(this.healthBar);
@@ -306,7 +306,7 @@ export class ActorObject extends GameObject {
 
 	set hasShadow(val: boolean) {
 		if (val && !this._hasShadow) {
-			this.shadow = new PIXI.Sprite(this.texture.getOne('system.shadow'));
+			this.shadow = new PIXI.Sprite(this.textureProvider.getOne('system.shadow'));
 			this.shadow.anchor.set(0.5, 0.5);
 			this.addChild(this.shadow);
 		}

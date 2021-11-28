@@ -15,10 +15,13 @@ import { PlayerModule } from './module/player-module/module-export';
 import { InventoryModule } from './module/inventory-module/module-export';
 import { BowModule } from './module/bow-module/module-export';
 import { Logger } from '../framework/local-logger';
-import { Viewport } from '../framework/client-side/viewport';
+import { Viewport } from '../framework/client-side/viewport/viewport';
+import { ViewportHTMLEventDispatcher } from '../framework/client-side/viewport/event-dispatcher';
+import { PlaygroundSymbol } from '../framework/client-side/playground';
+import { BuildingModule } from './module/building-module/module-export';
 
 export function bootstrap() {
-	const playground = document.getElementById('playground') as HTMLDivElement;
+	const playground = document.getElementById('playground') as HTMLElement;
 	const texturePaths = JSON.parse(process.env.TEXTURE_LOADED);
 	const serverUrl = process.env.UNIVERSE_SERVER_URL;
 	const inputProvider = new HTMLInputProvider();
@@ -30,7 +33,7 @@ export function bootstrap() {
 	const viewport = new Viewport(worldWidth * resolution, worldHeight * resolution, worldWidth, worldHeight);
 
 	const appModule = createClientSideModule({
-		imports: [LandModule, ActorModule, PlayerModule, InventoryModule, BowModule],
+		imports: [LandModule, ActorModule, PlayerModule, InventoryModule, BowModule, BuildingModule],
 		controllers: [BootController],
 		providers: [
 			{ key: LandLayer, value: new LandLayer() },
@@ -38,6 +41,8 @@ export function bootstrap() {
 			{ key: BuildingCreatorLayer, value: new BuildingCreatorLayer() },
 			{ key: HTMLInputProvider, value: inputProvider },
 			{ key: Viewport, value: viewport },
+			{ key: ViewportHTMLEventDispatcher, value: new ViewportHTMLEventDispatcher(viewport, playground) },
+			{ key: PlaygroundSymbol, value: playground },
 		],
 	});
 
@@ -55,8 +60,8 @@ export function bootstrap() {
 	inputProvider.bind(app.getCanvasContainer());
 
 	viewport.addChild(app.get(LandLayer).container);
-	viewport.addChild(app.get(ActorLayer).container);
 	viewport.addChild(app.get(BuildingCreatorLayer).container);
+	viewport.addChild(app.get(ActorLayer).container);
 
 	app.addDisplayObject(viewport);
 	app.addTicker(() => inputProvider.doFixedUpdateTick());

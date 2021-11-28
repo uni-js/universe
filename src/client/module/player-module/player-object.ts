@@ -34,7 +34,7 @@ export class Player extends ActorObject {
 		this.anchor = new Vector2(0.5, 1);
 		this.sprite.animationSpeed = 0.12;
 
-		this.walkTextures = this.texture.get('actor.player');
+		this.walkTextures = this.textureProvider.get('actor.player');
 
 		this.controlRunning(RunningState.SILENT);
 		this.predictedInputManager = new PredictedInputManager({ ...this.vPos, motionX: option.motionX, motionY: option.motionY });

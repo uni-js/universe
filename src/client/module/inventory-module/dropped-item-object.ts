@@ -15,7 +15,7 @@ export class DroppedItemActor extends ActorObject {
 		this.sprite.anchor.set(0.5, 1.3);
 		this.hasShadow = true;
 
-		this.singleTexture = this.texture.getOne(`item.${ItemTypeName[this.itemType]}.normal`);
+		this.singleTexture = this.textureProvider.getOne(`item.${ItemTypeName[this.itemType]}.normal`);
 	}
 
 	doFixedUpdateTick() {

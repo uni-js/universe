@@ -65,6 +65,10 @@ export class Vector2 {
 	static getVector2ByDistance(distance: number, rad: number) {
 		return new Vector2(Math.cos(rad), Math.sin(rad)).mul(distance);
 	}
+
+	static fromArray(array: [number, number]) {
+		return new Vector2(array[0], array[1]);
+	}
 }
 
 export function Interpolate2d(points: Vector2[], x: number) {

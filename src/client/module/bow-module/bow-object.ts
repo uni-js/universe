@@ -23,8 +23,8 @@ export class Arrow extends ActorObject {
 export class Bow extends ActorObject {
 	private dragging = false;
 
-	constructor(serverId: number, option: ActorConstructOption, texture: TextureProvider) {
-		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.BOW, texture);
+	constructor(serverId: number, option: ActorConstructOption, textureProvider: TextureProvider) {
+		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.BOW, textureProvider);
 
 		this.canWalk = false;
 		this.hasShadow = false;
@@ -32,7 +32,7 @@ export class Bow extends ActorObject {
 		this.sprite.animationSpeed = 0.1;
 		this.sprite.loop = false;
 
-		this.textures = this.texture.getGroup('actor.bow.{order}', 3);
+		this.textures = this.textureProvider.getGroup('actor.bow.{order}', 3);
 	}
 
 	startUsing() {
