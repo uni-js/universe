@@ -14,7 +14,6 @@ export function GameUI(props: any) {
 		eventBus.emit('PlayerNameClicked');
 	}
 
-	const [buildingCreatorVisible, setBuildingCreatorVisible] = useState(false);
 	const [backpackVisible, setBackpackVisible] = useState(false);
 
 	useEffect(() => {
@@ -34,18 +33,11 @@ export function GameUI(props: any) {
 			<div id="player-name" style={{ fontSize: '24px', color: 'white' }}>
 				{player?.playerName}
 			</div>
-			<BuildingCreator
-				onCloseClicked={() => {
-					setBuildingCreatorVisible(false);
-				}}
-				width={15}
-				height={15}
-				visible={buildingCreatorVisible}
-			></BuildingCreator>
+			<BuildingCreator />
 			<Backpack
 				visible={backpackVisible}
 				onOpenBuildingCreator={() => {
-					setBuildingCreatorVisible(true);
+					eventBus.emit('SelectingBuildingRange', 'start');
 					setBackpackVisible(false);
 				}}
 			></Backpack>

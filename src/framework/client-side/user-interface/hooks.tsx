@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from 'react';
 import { TextureProvider } from '../texture';
 import { injectable } from 'inversify';
 import { EventEmitter2 } from 'eventemitter2';
-import { UIStateContainer } from './state';
+import { UIStateContainer, UIStateWithMetaInfo } from './state';
 
 @injectable()
 export class UIEventBus extends EventEmitter2 {}
@@ -71,19 +71,19 @@ export function useTicker(fn: TickingFunction, deps: any[] = []) {
 	}, deps);
 }
 
-export function useUIState<E>(cls: new () => E): E {
-	const [state, setState] = React.useState<E>();
+export function useUIState<E>(cls: new () => E): UIStateWithMetaInfo<E> {
+	const [state, setState] = React.useState<UIStateWithMetaInfo<E>>();
 	const versionRef = React.useRef(null);
 	const uiState = useDataSource().getState(cls);
 
 	useTicker(() => {
 		if (uiState && uiState.meta.revision !== versionRef.current) {
 			versionRef.current = uiState.meta.revision;
-			setState({ ...uiState });
+			setState({ ...uiState, meta: uiState.meta });
 		}
 	});
 
-	return state || { ...uiState };
+	return state || { ...uiState, meta: uiState.meta };
 }
 
 export function useTexturePath(provider: TextureProvider, key: string) {

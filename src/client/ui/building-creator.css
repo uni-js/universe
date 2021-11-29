@@ -42,11 +42,13 @@
 
 .building-creator-canvas-line{
     display: flex;
+    width: 100%;
+    justify-content: center;
 }
 
 .building-creator-canvas-block{
-    width: 15px;
-    height: 15px;
+    width: 10px;
+    height: 10px;
     border: 0.5px solid #CCC;
 }
 

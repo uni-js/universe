@@ -1,18 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useUIState } from '../../framework/client-side/user-interface/hooks';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEventBus, useUIState } from '../../framework/client-side/user-interface/hooks';
 import { ItemType, WallpaperTypes } from '../../server/module/inventory-module/item-entity';
 import { BackpackContainerState } from '../module/inventory-module/ui-state';
 import { ItemBlock } from './item-block';
 
 import './building-creator.css';
 import classNames from 'classnames';
-
-export interface BuildingCreatorProps {
-	width: number;
-	height: number;
-	visible: boolean;
-	onCloseClicked: () => void;
-}
+import { Range2 } from '../../server/shared/range';
+import { BUILDING_BITMAP_PER_BRICK } from '../../server/module/building-module/building-entity';
 
 export enum PaintType {
 	NONE,
@@ -20,18 +15,21 @@ export enum PaintType {
 	ERASING,
 }
 
-export function BuildingCreator(props: BuildingCreatorProps) {
+export function BuildingCreator() {
+	const [visible, setVisible] = useState(false);
 	const [showIndex, setShowIndex] = useState<number>();
-	const [index, setIndex] = useState<number>();
 	const [bitmap, setBitmap] = useState<ItemType[]>([]);
-	const [dragPaint, setDragPaint] = useState<PaintType>(PaintType.NONE);
+	const [range, setRange] = useState<Range2>();
+
+	const backpackIndexRef = useRef<number>();
+	const paintTypeRef = useRef<PaintType>(PaintType.NONE);
 
 	const backpack = useUIState(BackpackContainerState);
-	const blockItems = [];
-	const canvasLines = [];
+	const eventBus = useEventBus();
 
-	function clearBitmap() {
-		setBitmap(Array(props.width * props.height).fill(ItemType.EMPTY));
+	function clearBitmap(range: Range2 | undefined) {
+		const count = range ? range.getWidth() * range.getHeight() * BUILDING_BITMAP_PER_BRICK * BUILDING_BITMAP_PER_BRICK : 0;
+		setBitmap(Array(count).fill(ItemType.EMPTY));
 	}
 
 	function setBitmapItem(index: number, itemType: ItemType) {
@@ -41,74 +39,108 @@ export function BuildingCreator(props: BuildingCreatorProps) {
 	}
 
 	useEffect(() => {
-		clearBitmap();
-	}, [props.visible]);
+		const handler = (range: Range2) => {
+			setVisible(true);
+			setRange(range);
+		};
 
-	let showIndexCount = 0;
-	for (let i = 0; i < backpack.blocks.length; i++) {
-		const block = backpack.blocks[i];
-		if (WallpaperTypes.includes(block.itemType)) {
-			const currentShowIndex = showIndexCount;
-			const isCurrent = currentShowIndex === showIndex;
-			blockItems.push(
-				<ItemBlock
-					containerId={backpack.containerId}
-					containerType="creator-picker"
-					className={classNames({
-						'creator-picker-selected': isCurrent,
-					})}
-					index={block.index}
-					key={i}
-					onLeftClick={() => {
-						setShowIndex(currentShowIndex);
-						setIndex(block.index);
-					}}
-					itemType={backpack.blocks[i].itemType}
-					count={0}
-					highlight={isCurrent}
-				/>,
-			);
-			showIndexCount++;
+		eventBus.on('BuildingRangeSelected', handler);
+		return () => {
+			eventBus.off('BuildingRangeSelected', handler);
+		};
+	}, []);
+
+	useEffect(() => {
+		clearBitmap(range);
+	}, [range]);
+
+	const blockItems = useMemo(() => {
+		const items = [];
+		let showIndexCount = 0;
+		for (let i = 0; i < backpack.blocks.length; i++) {
+			const block = backpack.blocks[i];
+			if (WallpaperTypes.includes(block.itemType)) {
+				const currentShowIndex = showIndexCount;
+				const isCurrent = currentShowIndex === showIndex;
+				items.push(
+					<ItemBlock
+						containerId={backpack.containerId}
+						containerType="creator-picker"
+						className={classNames({
+							'creator-picker-selected': isCurrent,
+						})}
+						index={block.index}
+						key={i}
+						onLeftClick={() => {
+							setShowIndex(currentShowIndex);
+							backpackIndexRef.current = block.index;
+						}}
+						itemType={backpack.blocks[i].itemType}
+						count={0}
+						highlight={isCurrent}
+					/>,
+				);
+				showIndexCount++;
+			}
 		}
-	}
+		return items;
+	}, [backpack.meta.revision, showIndex]);
 
-	for (let y = 0; y < props.height; y++) {
-		const lineBlocks = [];
-		for (let x = 0; x < props.width; x++) {
-			const blockIndex = y * props.width + x;
+	const canvasLines = useMemo(() => {
+		if (!range) return;
 
-			lineBlocks.push(
-				<ItemBlock
-					className="building-creator-canvas-block"
-					containerId={backpack.containerId}
-					containerType="creator-canvas"
-					index={blockIndex}
-					key={blockIndex}
-					onLeftClick={() => {
-						setBitmapItem(blockIndex, backpack.blocks[index].itemType);
-					}}
-					onRightClick={() => {
-						setBitmapItem(blockIndex, ItemType.EMPTY);
-					}}
-					onMouseEnter={() => {
-						if (dragPaint === PaintType.DRAWING) {
-							setBitmapItem(blockIndex, backpack.blocks[index].itemType);
-						} else if (dragPaint === PaintType.ERASING) {
+		const items = [];
+		const width = range.getWidth() * BUILDING_BITMAP_PER_BRICK;
+		const height = range.getHeight() * BUILDING_BITMAP_PER_BRICK;
+
+		for (let y = 0; y < height; y++) {
+			const lineBlocks = [];
+			for (let x = 0; x < width; x++) {
+				const blockIndex = y * width + x;
+
+				lineBlocks.push(
+					<ItemBlock
+						className="building-creator-canvas-block"
+						containerId={backpack.containerId}
+						containerType="creator-canvas"
+						index={blockIndex}
+						key={blockIndex}
+						onLeftClick={() => {
+							if (backpackIndexRef.current === undefined) return;
+							setBitmapItem(blockIndex, backpack.blocks[backpackIndexRef.current].itemType);
+						}}
+						onRightClick={() => {
+							if (backpackIndexRef.current === undefined) return;
 							setBitmapItem(blockIndex, ItemType.EMPTY);
-						}
-					}}
-					itemType={bitmap[blockIndex]}
-					count={1}
-					highlight={false}
-				/>,
-			);
+						}}
+						onMouseEnter={() => {
+							if (paintTypeRef.current === PaintType.DRAWING) {
+								setBitmapItem(blockIndex, backpack.blocks[backpackIndexRef.current].itemType);
+							} else if (paintTypeRef.current === PaintType.ERASING) {
+								setBitmapItem(blockIndex, ItemType.EMPTY);
+							}
+						}}
+						itemType={bitmap[blockIndex]}
+						count={1}
+						highlight={false}
+					/>,
+				);
+			}
+			items.push(<div className="building-creator-canvas-line">{lineBlocks}</div>);
 		}
-		canvasLines.push(<div className="building-creator-canvas-line">{lineBlocks}</div>);
-	}
+
+		return items;
+	}, [range, bitmap]);
 
 	return (
-		<div className="building-creator" style={{ visibility: props.visible ? 'visible' : 'hidden' }}>
-			<div className="building-creator-close" onClick={() => props.onCloseClicked()}>
+		<div className="building-creator" style={{ visibility: visible ? 'visible' : 'hidden' }}>
+			<div
+				className="building-creator-close"
+				onClick={() => {
+					eventBus.emit('SelectingBuildingRange', 'end');
+					setVisible(false);
+				}}
+			>
 				close
 			</div>
 			<div className="building-creator-picker">{blockItems}</div>
@@ -117,13 +149,13 @@ export function BuildingCreator(props: BuildingCreatorProps) {
 					className="building-creator-canvas"
 					onMouseDown={(e) => {
 						if (e.button === 0) {
-							setDragPaint(PaintType.DRAWING);
+							paintTypeRef.current = PaintType.DRAWING;
 						} else if (e.button === 2) {
-							setDragPaint(PaintType.ERASING);
+							paintTypeRef.current = PaintType.ERASING;
 						}
 					}}
 					onMouseUp={(e) => {
-						setDragPaint(PaintType.NONE);
+						paintTypeRef.current = PaintType.NONE;
 					}}
 				>
 					{canvasLines}

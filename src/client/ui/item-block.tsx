@@ -18,12 +18,13 @@ export interface ItemBlockProps {
 	onDragLeave?: () => void;
 	onDragEnd?: () => void;
 	onMouseEnter?: () => void;
+	onMouseMove?: () => void;
 	onLeftClick?: () => void;
 	onRightClick?: () => void;
 	onDrop?: (sourceContainerId: number, sourceIndex: number, targetContainerId: number, targetIndex: number) => void;
 }
 
-export function ItemBlock(props: ItemBlockProps) {
+export const ItemBlock = React.memo((props: ItemBlockProps) => {
 	const provider = useTextureProvider();
 
 	const [dragOver, setDragOver] = useState(false);
@@ -89,6 +90,10 @@ export function ItemBlock(props: ItemBlockProps) {
 		props.onMouseEnter && props.onMouseEnter();
 	}
 
+	function onMouseMove() {
+		props.onMouseMove && props.onMouseMove();
+	}
+
 	const texturePath = useTexturePath(provider, `item.${ItemTypeName[props.itemType]}.normal`);
 
 	const clsName = classNames(
@@ -111,10 +116,11 @@ export function ItemBlock(props: ItemBlockProps) {
 			onDragLeave={onBlockDragLeave}
 			onMouseEnter={onMouseEnter}
 			onMouseUp={onMouseUp}
+			onMouseMove={onMouseMove}
 			onContextMenu={(e) => e.preventDefault()}
 			className={clsName}
 		>
 			<img draggable="false" className="item-block-img" src={texturePath} />
 		</div>
 	);
-}
+});

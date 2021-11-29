@@ -20,6 +20,10 @@ export function Backpack(props: BackpackProps) {
 		eventBus.emit('ContainerMoveBlock', sourceContainerId, sourceIndex, targetContainerId, targetIndex);
 	}
 
+	function onCreatingBuilding() {
+		props.onOpenBuildingCreator();
+	}
+
 	if (container && container.blocks.length > 0) {
 		for (let i = 0; i < container.blocks.length; i++) {
 			blockElems[i] = (
@@ -46,7 +50,7 @@ export function Backpack(props: BackpackProps) {
 					<div className="backpack-body">{blockElems}</div>
 				</div>
 				<div className="backpack-func">
-					<div className="backpack-func-building-creator" onClick={() => props.onOpenBuildingCreator()}>
+					<div className="backpack-func-building-creator" onClick={onCreatingBuilding}>
 						Create Building
 					</div>
 				</div>

@@ -11,6 +11,8 @@ export interface UIStateMetaInfo {
 	class: any;
 }
 
+export type UIStateWithMetaInfo<T> = T & { meta: UIStateMetaInfo };
+
 export function ObserveArrayChange(array: any[], onchange: () => void) {
 	return new Proxy(array, {
 		set() {

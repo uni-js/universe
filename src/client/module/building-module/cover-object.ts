@@ -17,14 +17,20 @@ export class CoverObject extends GameObject {
 		this.addChild(this.coverLayer);
 	}
 
-	set coverRange(range: Range2) {
+	set coverRange(range: Range2 | undefined) {
 		this._coverRange = range;
-		const texture = this.textureProvider.getOne('building.cover');
 		this.coverLayer.clear();
+		if (range === undefined) return;
+
+		const texture = this.textureProvider.getOne('building.cover');
 		for (let x = range.from.x; x <= range.to.x; x++) {
 			for (let y = range.from.y; y <= range.to.y; y++) {
 				this.coverLayer.addFrame(texture, x * BRICK_WIDTH, y * BRICK_WIDTH);
 			}
 		}
+	}
+
+	get coverRange() {
+		return this._coverRange;
 	}
 }
