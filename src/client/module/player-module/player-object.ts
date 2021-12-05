@@ -47,18 +47,6 @@ export class Player extends ActorObject {
 		}
 
 		this.controlMoved = delta;
-
-		if (delta) {
-			if (delta.y > 0) {
-				this.controlDirection(Direction.FORWARD);
-			} else if (delta.y < 0) {
-				this.controlDirection(Direction.BACK);
-			} else if (delta.x > 0) {
-				this.controlDirection(Direction.RIGHT);
-			} else if (delta.x < 0) {
-				this.controlDirection(Direction.LEFT);
-			}
-		}
 	}
 
 	ackInput(ackData: AckData) {

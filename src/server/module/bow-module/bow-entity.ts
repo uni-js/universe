@@ -9,6 +9,8 @@ export class Bow extends Actor {
 
 	@ConstructOption()
 	sizeY = 0.65;
+
+	boundings: number[] = undefined;
 }
 
 export class Arrow extends Actor {
@@ -26,7 +28,7 @@ export class Arrow extends Actor {
 	@ConstructOption()
 	anchorY = 0.5;
 
-	bounding = [1.9, -0.1, 2.1, 0.1];
+	boundings = [1.9, -0.1, 2.1, 0.1];
 
 	@ConstructOption()
 	power = 0.5;

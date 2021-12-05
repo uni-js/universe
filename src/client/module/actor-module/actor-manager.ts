@@ -15,6 +15,13 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 		this.redirectObjectEvent(Events.ActorToggleWalkEvent);
 	}
 
+	/**
+	 * actors which are loaded locally
+	 */
+	getAllActors() {
+		return this.actorLayer.getAll();
+	}
+
 	private updateAttachingMovement(actor: ActorObject) {
 		if (!actor.attaching) return;
 		const targetActor = this.getObjectById(actor.attaching.actorId);

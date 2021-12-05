@@ -1,4 +1,5 @@
 import RandomBytes from 'randombytes';
+import SAT from 'sat';
 import { CurveInterpolator2D } from 'curve-interpolator';
 
 export const BILLION_VALUE = Math.pow(10, 9);
@@ -68,6 +69,10 @@ export class Vector2 {
 
 	static fromArray(array: [number, number]) {
 		return new Vector2(array[0], array[1]);
+	}
+
+	static fromSATVector(satVec: SAT.Vector) {
+		return new Vector2(satVec.x, satVec.y);
 	}
 }
 

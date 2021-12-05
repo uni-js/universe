@@ -8,6 +8,7 @@ import {
 	ContainerUpdateDataUnit,
 	BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER,
 	ContainerType,
+	BLOCKS_PER_PLAYER_INVENTORY_CONTAINER,
 } from '../../../server/module/inventory-module/spec';
 import { ItemType } from '../../../server/module/inventory-module/item-entity';
 import { InventoryBlockState, ShortcutContainerState } from './ui-state';
@@ -85,6 +86,19 @@ export class BackpackManager extends ContainerManager {
 		@inject(UIEventBus) uiEventBus: UIEventBus,
 	) {
 		super(backpack, input, uiEventBus);
+		this.initBlocks();
+	}
+
+	private initBlocks() {
+		const blocks: InventoryBlockState[] = [];
+		for (let i = 0; i < BLOCKS_PER_PLAYER_INVENTORY_CONTAINER; i++) {
+			const block = new InventoryBlockState();
+			block.containerType = ContainerType.BACKPACK_CONTAINER;
+			block.itemType = ItemType.EMPTY;
+			block.index = i;
+			blocks.push(block);
+		}
+		this.backpack.blocks = blocks;
 	}
 
 	doFixedUpdateTick() {

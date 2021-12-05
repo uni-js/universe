@@ -2,7 +2,10 @@ import { injectable } from 'inversify';
 import { Entity } from '../../../framework/server-side/memory-database';
 import { Factory } from '../../../shared/factory';
 import { Attachment, ConstructOption } from '../../shared/entity';
+import { Vector2 } from '../../shared/math';
 import { RecordMap } from '../../utils';
+
+import SAT from 'sat';
 
 export enum ActorType {
 	PLAYER,
@@ -64,7 +67,8 @@ export class Actor extends Entity {
 	@ConstructOption()
 	anchorY = 0;
 
-	bounding = [0, 0, this.sizeX, this.sizeY];
+	@ConstructOption()
+	boundings = [0, 0, this.sizeX, this.sizeY];
 
 	@ConstructOption()
 	rotation = 0;
@@ -148,4 +152,18 @@ export function isAngleMatchDirection(direction: Direction, angle: number) {
 	}
 
 	return false;
+}
+
+export function calcBoundingBox(pos: Vector2, boundings: number[]): [number, number, number, number] {
+	const fromX = pos.x + boundings[0];
+	const fromY = pos.y + boundings[1];
+	const toX = pos.x + boundings[2];
+	const toY = pos.y + boundings[3];
+
+	return [fromX, fromY, toX, toY];
+}
+
+export function calcBoundingSATBox(pos: Vector2, boundings: number[]) {
+	const [fromX, fromY, toX, toY] = calcBoundingBox(pos, boundings);
+	return new SAT.Box(new SAT.Vector(fromX, fromY), toX - fromX, toY - fromY);
 }

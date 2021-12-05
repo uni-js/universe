@@ -87,7 +87,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		const toX = arrowTop.x + boxSize;
 		const toY = arrowTop.y + boxSize;
 
-		arrow.bounding = [fromX, fromY, toX, toY];
+		arrow.boundings = [fromX, fromY, toX, toY];
 	}
 
 	private doCollisionTick() {

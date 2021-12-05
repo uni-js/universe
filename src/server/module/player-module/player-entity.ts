@@ -13,7 +13,8 @@ export class Player extends Actor {
 	@ConstructOption()
 	sizeY = 1.5;
 
-	bounding = [-0.5, -1.5, 0.5, 0];
+	@ConstructOption()
+	boundings = [-0.5, -1.5, 0.5, 0];
 
 	@ConstructOption()
 	anchorX = 0.5;

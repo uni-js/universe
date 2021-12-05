@@ -72,6 +72,11 @@ export class ActorObject extends GameObject {
 	 */
 	public isUsing = false;
 
+	/**
+	 * @readonly
+	 */
+	public boundings: number[];
+
 	protected _walkTextures: PIXI.Texture<PIXI.Resource>[] = [];
 
 	protected shadow: PIXI.Sprite;
@@ -139,6 +144,7 @@ export class ActorObject extends GameObject {
 			this.endUsing();
 		}
 
+		this.boundings = option.boundings;
 		this.singleTexture = this.textureProvider.getOne(`actor.${ActorTypeName[actorType]}.normal`);
 
 		this.controlDirection(Direction.FORWARD);

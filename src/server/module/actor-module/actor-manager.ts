@@ -6,7 +6,7 @@ import { injectable } from 'inversify';
 import { injectCollection } from '../../../framework/server-side/memory-database';
 import { Vector2 } from '../../shared/math';
 import { PosToLandPos } from '../land-module/helper';
-import { Direction, RunningState, Actor, AttachType, isAngleMatchDirection, getDirectionAngle } from './spec';
+import { Direction, RunningState, Actor, AttachType, isAngleMatchDirection, getDirectionAngle, calcBoundingBox } from './spec';
 import { Input } from '../../../framework/client-side/prediction';
 
 import * as Events from '../../event/internal';
@@ -43,14 +43,10 @@ export class ActorManager extends EntityManager<Actor> {
 		this.emitEvent(Events.ActorDamagedEvent, { actorId: actor.$loki, finalHealth: actor.health });
 	}
 
-	getActorBoundingBox(actor: Actor): [number, number, number, number] {
-		const fromX = actor.posX + actor.bounding[0];
-		const fromY = actor.posY + actor.bounding[1];
+	getActorBoundingBox(actor: Actor) {
+		if (!actor.boundings) return;
 
-		const toX = actor.posX + actor.bounding[2];
-		const toY = actor.posY + actor.bounding[3];
-
-		return [fromX, fromY, toX, toY];
+		return calcBoundingBox(new Vector2(actor.posX, actor.posY), actor.boundings);
 	}
 
 	/**
@@ -61,7 +57,9 @@ export class ActorManager extends EntityManager<Actor> {
 	 * @returns {CollisionResult[]} check results
 	 */
 	getActorCollisionWith(targetActor: Actor, lastMovement = false, excepts: Actor[] = []): CollisionResult[] {
-		const [fX, fY, tX, tY] = this.getActorBoundingBox(targetActor);
+		const bBox = this.getActorBoundingBox(targetActor);
+		if (!bBox) return [];
+		const [fX, fY, tX, tY] = bBox;
 		const { lastPosX, lastPosY } = targetActor;
 
 		const vecA = lastMovement ? new SAT.Vector(lastPosX, lastPosY) : new SAT.Vector(fX, fY);
@@ -74,8 +72,10 @@ export class ActorManager extends EntityManager<Actor> {
 		for (const actor of nearActors) {
 			if (actor === targetActor) continue;
 			if (excepts.includes(actor)) continue;
+			const actorBBox = this.getActorBoundingBox(actor);
+			if (!actorBBox) continue;
 
-			const [fromX, fromY, toX, toY] = this.getActorBoundingBox(actor);
+			const [fromX, fromY, toX, toY] = actorBBox;
 
 			const vecB = new SAT.Vector(fromX, fromY);
 			const boxB = new SAT.Box(vecB, toX - fromX, toY - fromY).toPolygon();

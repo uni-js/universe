@@ -2,13 +2,15 @@ import { Vector2 } from '../../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '../../input';
 import { ClientSideManager } from '../../../framework/client-side/client-manager';
 import { Viewport } from '../../../framework/client-side/viewport/viewport';
-import { AttachType } from '../../../server/module/actor-module/spec';
+import { AttachType, calcBoundingSATBox, Direction } from '../../../server/module/actor-module/spec';
 import { inject, injectable } from 'inversify';
 import { Player } from './player-object';
 import { ActorManager } from '../actor-module/actor-manager';
 import * as Events from '../../event/internal';
 import { UIEventBus } from '../../../framework/client-side/user-interface/hooks';
 import { PlayerState } from './ui-state';
+
+import SAT from 'sat';
 
 @injectable()
 export class PlayerManager extends ClientSideManager {
@@ -52,6 +54,34 @@ export class PlayerManager extends ClientSideManager {
 		return this.currentPlayer === player;
 	}
 
+	private setControlMoved(deltaMove: Vector2 | false) {
+		const player = this.currentPlayer;
+
+		if (deltaMove === false) {
+			player.controlMove(false);
+			return;
+		}
+		let move: Vector2 = deltaMove;
+
+		const actors = this.actorManager.getAllActors();
+		for (const actor of actors) {
+			if (player === actor) continue;
+			if (!actor.boundings) continue;
+
+			const boxA = calcBoundingSATBox(player.vPos.add(deltaMove), player.boundings);
+			const boxB = calcBoundingSATBox(actor.vPos, actor.boundings);
+			const response = new SAT.Response();
+
+			if (SAT.testPolygonPolygon(boxA.toPolygon(), boxB.toPolygon(), response)) {
+				if (response.overlapV.len() <= 0) continue;
+				move = move.sub(Vector2.fromSATVector(response.overlapV));
+			}
+		}
+
+		player.controlMove(move);
+		this.stage.moveCenter(player.position.x, player.position.y);
+	}
+
 	private doControlMoveTick() {
 		const player = this.currentPlayer;
 		if (!player) return;
@@ -63,29 +93,42 @@ export class PlayerManager extends ClientSideManager {
 		const leftPress = this.inputProvider.keyPress(InputKey.A);
 		const rightPress = this.inputProvider.keyPress(InputKey.D);
 
+		let deltaMove;
 		if (upPress && leftPress) {
-			player.controlMove(new Vector2(-0.707 * moveSpeed, -0.707 * moveSpeed));
+			deltaMove = new Vector2(-0.707 * moveSpeed, -0.707 * moveSpeed);
 		} else if (upPress && rightPress) {
-			player.controlMove(new Vector2(0.707 * moveSpeed, -0.707 * moveSpeed));
+			deltaMove = new Vector2(0.707 * moveSpeed, -0.707 * moveSpeed);
 		} else if (downPress && leftPress) {
-			player.controlMove(new Vector2(-0.707 * moveSpeed, 0.707 * moveSpeed));
+			deltaMove = new Vector2(-0.707 * moveSpeed, 0.707 * moveSpeed);
 		} else if (downPress && rightPress) {
-			player.controlMove(new Vector2(0.707 * moveSpeed, 0.707 * moveSpeed));
+			deltaMove = new Vector2(0.707 * moveSpeed, 0.707 * moveSpeed);
 		} else if (downPress) {
-			player.controlMove(new Vector2(0, moveSpeed));
+			deltaMove = new Vector2(0, moveSpeed);
 		} else if (leftPress) {
-			player.controlMove(new Vector2(-moveSpeed, 0));
+			deltaMove = new Vector2(-moveSpeed, 0);
 		} else if (rightPress) {
-			player.controlMove(new Vector2(moveSpeed, 0));
+			deltaMove = new Vector2(moveSpeed, 0);
 		} else if (upPress) {
-			player.controlMove(new Vector2(0, -moveSpeed));
+			deltaMove = new Vector2(0, -moveSpeed);
+		}
+
+		if (deltaMove) {
+			if (deltaMove.y > 0) {
+				player.controlDirection(Direction.FORWARD);
+			} else if (deltaMove.y < 0) {
+				player.controlDirection(Direction.BACK);
+			} else if (deltaMove.x > 0) {
+				player.controlDirection(Direction.RIGHT);
+			} else if (deltaMove.x < 0) {
+				player.controlDirection(Direction.LEFT);
+			}
 		}
 
 		if (!upPress && !leftPress && !rightPress && !downPress) {
-			player.controlMove(false);
+			this.setControlMoved(false);
+		} else {
+			this.setControlMoved(deltaMove);
 		}
-
-		this.stage.moveCenter(player.position.x, player.position.y);
 	}
 
 	private doUsingRightHand() {
