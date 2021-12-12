@@ -71,6 +71,12 @@ export class Actor extends Entity {
 	boundings = [0, 0, this.sizeX, this.sizeY];
 
 	@ConstructOption()
+	obstacle = false;
+
+	@ConstructOption()
+	obstacleHinder = true;
+
+	@ConstructOption()
 	rotation = 0;
 
 	@ConstructOption()

@@ -1,3 +1,4 @@
+import { ActorCollusionEvent } from './actor-collusion-event';
 import { UpdateBuildingNearbyEvent } from './update-building-nearby-event';
 import { DespawnActorEvent } from './despawn-actor-event';
 import { SpawnActorEvent } from './spawn-actor-event';
@@ -33,4 +34,5 @@ export {
 	SpawnActorEvent,
 	DespawnActorEvent,
 	UpdateBuildingNearbyEvent,
+	ActorCollusionEvent,
 };

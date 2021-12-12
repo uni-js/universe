@@ -16,6 +16,8 @@ export class Player extends Actor {
 	@ConstructOption()
 	boundings = [-0.5, -1.5, 0.5, 0];
 
+	obstacle = true;
+
 	@ConstructOption()
 	anchorX = 0.5;
 

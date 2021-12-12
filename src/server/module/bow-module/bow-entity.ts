@@ -10,6 +10,8 @@ export class Bow extends Actor {
 	@ConstructOption()
 	sizeY = 0.65;
 
+	obstacleHinder = false;
+
 	boundings: number[] = undefined;
 }
 
@@ -27,6 +29,8 @@ export class Arrow extends Actor {
 
 	@ConstructOption()
 	anchorY = 0.5;
+
+	obstacleHinder = false;
 
 	boundings = [1.9, -0.1, 2.1, 0.1];
 

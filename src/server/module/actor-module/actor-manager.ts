@@ -6,7 +6,7 @@ import { injectable } from 'inversify';
 import { injectCollection } from '../../../framework/server-side/memory-database';
 import { Vector2 } from '../../shared/math';
 import { PosToLandPos } from '../land-module/helper';
-import { Direction, RunningState, Actor, AttachType, isAngleMatchDirection, getDirectionAngle, calcBoundingBox } from './spec';
+import { Direction, RunningState, Actor, AttachType, isAngleMatchDirection, getDirectionAngle, calcBoundingBox, ActorType } from './spec';
 import { Input } from '../../../framework/client-side/prediction';
 
 import * as Events from '../../event/internal';
@@ -49,29 +49,23 @@ export class ActorManager extends EntityManager<Actor> {
 		return calcBoundingBox(new Vector2(actor.posX, actor.posY), actor.boundings);
 	}
 
-	/**
-	 * @param {Actor} targetActor the actor being checked
-	 * @param {boolean} lastMovement
-	 * consider last movement into checking
-	 * @param {Actor[]} excepts excepts entities will not be checked
-	 * @returns {CollisionResult[]} check results
-	 */
-	getActorCollisionWith(targetActor: Actor, lastMovement = false, excepts: Actor[] = []): CollisionResult[] {
-		const bBox = this.getActorBoundingBox(targetActor);
+	getCollisionWith(boundings: number[], pos: Vector2, excepts: Actor[] = [], checkObstacle = true) {
+		const boundingBox = calcBoundingBox(pos, boundings);
+		const bBox = boundingBox;
 		if (!bBox) return [];
 		const [fX, fY, tX, tY] = bBox;
-		const { lastPosX, lastPosY } = targetActor;
 
-		const vecA = lastMovement ? new SAT.Vector(lastPosX, lastPosY) : new SAT.Vector(fX, fY);
-		const width = lastMovement ? tX - lastPosX : tX - fX;
-		const height = lastMovement ? tY - lastPosY : tY - fY;
+		const vecA = new SAT.Vector(fX, fY);
+		const width = tX - fX;
+		const height = tY - fY;
 
 		const boxA = new SAT.Box(vecA, width, height).toPolygon();
 		const nearActors = this.getNearActors(new Vector2(fX, fY));
 		const results: CollisionResult[] = [];
 		for (const actor of nearActors) {
-			if (actor === targetActor) continue;
 			if (excepts.includes(actor)) continue;
+			if (checkObstacle && !actor.obstacle) continue;
+
 			const actorBBox = this.getActorBoundingBox(actor);
 			if (!actorBBox) continue;
 
@@ -80,14 +74,27 @@ export class ActorManager extends EntityManager<Actor> {
 			const vecB = new SAT.Vector(fromX, fromY);
 			const boxB = new SAT.Box(vecB, toX - fromX, toY - fromY).toPolygon();
 			const response = new SAT.Response();
-			const collided = SAT.testPolygonPolygon(boxB, boxA, response);
+			const collided = SAT.testPolygonPolygon(boxA, boxB, response);
 			if (!collided) continue;
+			if (response.overlapV.len() <= 0) continue;
 			results.push({
 				actor,
 				response,
 			});
 		}
 		return results;
+	}
+
+	/**
+	 * @param {Actor} targetActor the actor being checked
+	 * @param {boolean} obstacle some actor will be filtered if they are not obstacle
+	 * @param {Actor[]} excepts excepts entities will not be checked
+	 * @returns {CollisionResult[]} check results
+	 */
+	getActorCollisionWith(targetActor: Actor, checkObstacle = true, excepts: Actor[] = []): CollisionResult[] {
+		const pos = new Vector2(targetActor.posX, targetActor.posY);
+		const lastPos = new Vector2(targetActor.lastPosX, targetActor.lastPosY);
+		return this.getCollisionWith(targetActor.boundings, pos, [targetActor, ...excepts], checkObstacle);
 	}
 
 	getNearActors(pos: Vector2): Actor[] {
@@ -223,21 +230,36 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	moveToPosition(actor: Actor, position: Vector2) {
-		const originPosX = actor.posX;
-		const originPosY = actor.posY;
+		const originPos = new Vector2(actor.posX, actor.posY);
+		let delta = position.sub(originPos);
 
-		const delta = position.sub(new Vector2(originPosX, originPosY));
+		if (actor.boundings) {
+			const checkResults = this.getCollisionWith(actor.boundings, position, [actor], true);
+			for (const result of checkResults) {
+				delta = delta.sub(Vector2.fromSATVector(result.response.overlapV));
+			}
+			if (checkResults.length > 0) {
+				this.emitEvent(Events.ActorCollusionEvent, {
+					actorId: actor.$loki,
+					actorType: actor.type,
+					checkResults: checkResults.map((r) => ({ actorId: r.actor.$loki, actorType: r.actor.type, checkResponse: r.response })),
+				});
+			}
+		}
 
-		actor.posX += delta.x;
-		actor.posY += delta.y;
+		if (delta.getSqrt() < 0.001) return;
 
-		actor.lastPosX = originPosX;
-		actor.lastPosY = originPosY;
+		const targetPos = originPos.add(delta);
+		actor.posX = targetPos.x;
+		actor.posY = targetPos.y;
+
+		actor.lastPosX = originPos.x;
+		actor.lastPosY = originPos.y;
 
 		actor.isMoveDirty = true;
 
-		const landPos = PosToLandPos(new Vector2(actor.posX, actor.posY));
-		const lastLandPos = PosToLandPos(new Vector2(originPosX, originPosY));
+		const landPos = PosToLandPos(targetPos);
+		const lastLandPos = PosToLandPos(originPos);
 		const landDelta = landPos.sub(lastLandPos);
 
 		if (landDelta.getSqrt() > 0) {

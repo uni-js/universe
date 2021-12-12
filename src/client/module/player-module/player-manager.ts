@@ -79,7 +79,6 @@ export class PlayerManager extends ClientSideManager {
 		}
 
 		player.controlMove(move);
-		this.stage.moveCenter(player.position.x, player.position.y);
 	}
 
 	private doControlMoveTick() {
@@ -169,9 +168,19 @@ export class PlayerManager extends ClientSideManager {
 		}
 	}
 
+	private doUpdateDebugInfo() {
+		this.playerState.position = this.currentPlayer?.vPos;
+	}
+
+	private doUpdateViewportCenter() {
+		this.stage.moveCenter(this.currentPlayer.position.x, this.currentPlayer.position.y);
+	}
+
 	doFixedUpdateTick(tick: number) {
 		this.doControlMoveTick();
 		this.doUsingRightHand();
 		this.doSetAimTargetTick(tick);
+		this.doUpdateDebugInfo();
+		this.doUpdateViewportCenter();
 	}
 }

@@ -28,10 +28,13 @@ export function GameUI(props: any) {
 
 	const eventBus = useEventBus();
 	const player = useUIState(PlayerState);
+
+	const positionString = `${player?.position?.x.toFixed(2)},${player?.position?.y.toFixed(2)}`;
+
 	return (
 		<div onClick={onClicked}>
 			<div id="player-name" style={{ fontSize: '24px', color: 'white' }}>
-				{player?.playerName}
+				{positionString}
 			</div>
 			<BuildingCreator />
 			<Backpack

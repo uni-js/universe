@@ -31,6 +31,26 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		}
 	}
 
+	@HandleInternalEvent('actorManager', Events.ActorCollusionEvent)
+	private onActorCollusion(event: Events.ActorCollusionEvent) {
+		if (event.actorType !== ActorType.ARROW) return;
+
+		const arrow = this.actorManager.getEntityById(event.actorId) as Arrow;
+		const shooter = this.actorManager.getEntityById(arrow.shooter);
+
+		const results = event.checkResults.filter((r) => {
+			return r.actorId !== shooter.$loki;
+		});
+
+		for (const result of results) {
+			const collisionWith = this.actorManager.getEntityById(result.actorId);
+			if (collisionWith.canDamage) {
+				this.arrowDamageActor(arrow, collisionWith);
+				break;
+			}
+		}
+	}
+
 	private startDragging(actor: Actor) {}
 
 	private endDragging(actor: Actor, useTick: number) {
@@ -90,21 +110,6 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		arrow.boundings = [fromX, fromY, toX, toY];
 	}
 
-	private doCollisionTick() {
-		const arrows = this.actorManager.findEntities({ type: ActorType.ARROW });
-		for (const actor of arrows) {
-			const arrow = actor as Arrow;
-			const shooter = this.actorManager.getEntityById(arrow.shooter);
-
-			const collisions = this.actorManager.getActorCollisionWith(arrow, true, [shooter]);
-			const damageTarget = collisions.find((collision) => collision.actor.canDamage);
-			if (damageTarget) {
-				this.arrowDamageActor(arrow, damageTarget.actor);
-				break;
-			}
-		}
-	}
-
 	private arrowDamageActor(arrow: Arrow, actor: Actor) {
 		this.actorManager.damageActor(actor, 10, arrow.rotation, arrow.power);
 
@@ -114,6 +119,5 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 
 	doTick() {
 		this.doAliveTick();
-		this.doCollisionTick();
 	}
 }
