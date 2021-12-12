@@ -37,6 +37,8 @@ export class ContainerManager extends ClientSideManager {
 		if (!block) return;
 		block.itemType = updateDataUnit.itemType;
 		block.itemCount = updateDataUnit.count;
+
+		this.handleBlocksUpdated();
 	}
 
 	/**
@@ -73,9 +75,12 @@ export class ContainerManager extends ClientSideManager {
 			this.container.firstUpdated = true;
 			this.handleFirstUpdated();
 		}
+
+		this.handleBlocksUpdated();
 	}
 
 	handleFirstUpdated() {}
+	handleBlocksUpdated() {}
 }
 
 @injectable()
@@ -124,6 +129,10 @@ export class ShortcutManager extends ContainerManager {
 		this.setCurrentIndex(0, true);
 	}
 
+	handleBlocksUpdated() {
+		this.emitOutCurrentIndex();
+	}
+
 	/**
 	 * set a block data
 	 */
@@ -154,17 +163,20 @@ export class ShortcutManager extends ContainerManager {
 
 	setCurrentIndex(indexAt: number, dirty = true) {
 		if (!this.shortcut.firstUpdated) return;
-
 		this.shortcut.currentIndexAt = indexAt;
-		const block = this.shortcut.blocks[indexAt];
-
 		if (dirty) {
-			this.emitEvent(Events.SetShortcutIndexEvent, {
-				itemType: block.itemType,
-				indexAt,
-				containerId: this.shortcut.containerId,
-			});
+			this.emitOutCurrentIndex();
 		}
+	}
+
+	private emitOutCurrentIndex() {
+		const indexAt = this.shortcut.currentIndexAt;
+		const block = this.shortcut.blocks[indexAt];
+		this.emitEvent(Events.SetShortcutIndexEvent, {
+			itemType: block.itemType,
+			indexAt,
+			containerId: this.shortcut.containerId,
+		});
 	}
 
 	private updateShortcutIndex() {

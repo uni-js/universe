@@ -173,6 +173,7 @@ export class PlayerManager extends ClientSideManager {
 	}
 
 	private doUpdateViewportCenter() {
+		if (!this.currentPlayer) return;
 		this.stage.moveCenter(this.currentPlayer.position.x, this.currentPlayer.position.y);
 	}
 
