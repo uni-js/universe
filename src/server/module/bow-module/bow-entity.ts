@@ -32,7 +32,7 @@ export class Arrow extends Actor {
 
 	obstacleHinder = false;
 
-	boundings = [1.9, -0.1, 2.1, 0.1];
+	boundings: number[] = undefined;
 
 	@ConstructOption()
 	power = 0.5;

@@ -59,6 +59,10 @@ export class Vector2 {
 		return new Vector2(this.x * Math.cos(rad) - this.y * Math.sin(rad), this.x * Math.sin(rad) + this.y * Math.cos(rad));
 	}
 
+	toSATVector() {
+		return new SAT.Vector(this.x, this.y);
+	}
+
 	static getVectorDelta(v1: Vector2, v2: Vector2): Vector2 {
 		return new Vector2(v2.x - v1.x, v2.y - v1.y);
 	}

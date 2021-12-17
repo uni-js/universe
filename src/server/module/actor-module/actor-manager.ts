@@ -49,19 +49,11 @@ export class ActorManager extends EntityManager<Actor> {
 		return calcBoundingBox(new Vector2(actor.posX, actor.posY), actor.boundings);
 	}
 
-	getCollisionWith(boundings: number[], pos: Vector2, excepts: Actor[] = [], checkObstacle = true) {
-		const boundingBox = calcBoundingBox(pos, boundings);
-		const bBox = boundingBox;
-		if (!bBox) return [];
-		const [fX, fY, tX, tY] = bBox;
-
-		const vecA = new SAT.Vector(fX, fY);
-		const width = tX - fX;
-		const height = tY - fY;
-
-		const boxA = new SAT.Box(vecA, width, height).toPolygon();
-		const nearActors = this.getNearActors(new Vector2(fX, fY));
+	getCollisionWith(polygon: SAT.Polygon, pos: Vector2, excepts: Actor[] = [], checkObstacle = true) {
+		const nearActors = this.getNearActors(pos);
 		const results: CollisionResult[] = [];
+
+		// check collusion
 		for (const actor of nearActors) {
 			if (excepts.includes(actor)) continue;
 			if (checkObstacle && !actor.obstacle) continue;
@@ -74,7 +66,7 @@ export class ActorManager extends EntityManager<Actor> {
 			const vecB = new SAT.Vector(fromX, fromY);
 			const boxB = new SAT.Box(vecB, toX - fromX, toY - fromY).toPolygon();
 			const response = new SAT.Response();
-			const collided = SAT.testPolygonPolygon(boxA, boxB, response);
+			const collided = SAT.testPolygonPolygon(polygon, boxB, response);
 			if (!collided) continue;
 			if (response.overlapV.len() <= 0) continue;
 			results.push({
@@ -85,16 +77,18 @@ export class ActorManager extends EntityManager<Actor> {
 		return results;
 	}
 
-	/**
-	 * @param {Actor} targetActor the actor being checked
-	 * @param {boolean} obstacle some actor will be filtered if they are not obstacle
-	 * @param {Actor[]} excepts excepts entities will not be checked
-	 * @returns {CollisionResult[]} check results
-	 */
-	getActorCollisionWith(targetActor: Actor, checkObstacle = true, excepts: Actor[] = []): CollisionResult[] {
-		const pos = new Vector2(targetActor.posX, targetActor.posY);
-		const lastPos = new Vector2(targetActor.lastPosX, targetActor.lastPosY);
-		return this.getCollisionWith(targetActor.boundings, pos, [targetActor, ...excepts], checkObstacle);
+	getBoundingsCollisionWith(boundings: number[], pos: Vector2, checkObstacle = true, excepts: Actor[] = []): CollisionResult[] {
+		const boundingBox = calcBoundingBox(pos, boundings);
+		const bBox = boundingBox;
+		if (!bBox) return [];
+		const [fX, fY, tX, tY] = bBox;
+
+		const vecA = new SAT.Vector(fX, fY);
+		const width = tX - fX;
+		const height = tY - fY;
+
+		const polygon = new SAT.Box(vecA, width, height).toPolygon();
+		return this.getCollisionWith(polygon, pos, excepts, checkObstacle);
 	}
 
 	getNearActors(pos: Vector2): Actor[] {
@@ -234,7 +228,7 @@ export class ActorManager extends EntityManager<Actor> {
 		let delta = position.sub(originPos);
 
 		if (actor.boundings) {
-			const checkResults = this.getCollisionWith(actor.boundings, position, [actor], true);
+			const checkResults = this.getBoundingsCollisionWith(actor.boundings, position, true, [actor]);
 			for (const result of checkResults) {
 				delta = delta.sub(Vector2.fromSATVector(result.response.overlapV));
 			}

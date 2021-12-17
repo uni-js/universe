@@ -8,6 +8,8 @@ import * as Events from '../../event/internal';
 import { HandleInternalEvent } from '../../../framework/event';
 import { Vector2 } from '../../shared/math';
 
+import SAT from 'sat';
+
 export const ARROW_DROP_TICKS = 10;
 export const ARROW_DEAD_TICKS = 30;
 export const BOW_DRAGGING_MAX_TICKS = 25;
@@ -31,21 +33,20 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		}
 	}
 
-	@HandleInternalEvent('actorManager', Events.ActorCollusionEvent)
-	private onActorCollusion(event: Events.ActorCollusionEvent) {
-		if (event.actorType !== ActorType.ARROW) return;
+	private doCollisionTick() {
+		const arrows = this.actorManager.findEntities({ type: ActorType.ARROW });
+		for (const actor of arrows) {
+			const arrow = actor as Arrow;
+			const shooter = this.actorManager.getEntityById(arrow.shooter);
+			const pos = new Vector2(arrow.posX, arrow.posY);
+			const lastPos = new Vector2(arrow.lastPosX, arrow.lastPosY);
 
-		const arrow = this.actorManager.getEntityById(event.actorId) as Arrow;
-		const shooter = this.actorManager.getEntityById(arrow.shooter);
+			const polygon = new SAT.Polygon(new SAT.Vector(), [pos.toSATVector(), lastPos.toSATVector()]);
+			const collisions = this.actorManager.getCollisionWith(polygon, pos, [shooter], true);
 
-		const results = event.checkResults.filter((r) => {
-			return r.actorId !== shooter.$loki;
-		});
-
-		for (const result of results) {
-			const collisionWith = this.actorManager.getEntityById(result.actorId);
-			if (collisionWith.canDamage) {
-				this.arrowDamageActor(arrow, collisionWith);
+			const damageTarget = collisions.find((collision) => collision.actor.canDamage);
+			if (damageTarget) {
+				this.arrowDamageActor(arrow, damageTarget.actor);
 				break;
 			}
 		}
@@ -74,8 +75,6 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		this.addNewEntity(arrow);
 
 		this.actorManager.setMotion(arrow.$loki, new Vector2(motion * Math.cos(aimTarget), motion * Math.sin(aimTarget)));
-
-		this.updateArrowBoundingBox(arrow);
 	}
 
 	private doAliveTick() {
@@ -97,19 +96,6 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		}
 	}
 
-	private updateArrowBoundingBox(arrow: Arrow) {
-		const boxSize = arrow.sizeY / 2;
-		const arrowTop = new Vector2(arrow.sizeX, 0).rotate(arrow.rotation);
-
-		const fromX = arrowTop.x - boxSize;
-		const fromY = arrowTop.y - boxSize;
-
-		const toX = arrowTop.x + boxSize;
-		const toY = arrowTop.y + boxSize;
-
-		arrow.boundings = [fromX, fromY, toX, toY];
-	}
-
 	private arrowDamageActor(arrow: Arrow, actor: Actor) {
 		this.actorManager.damageActor(actor, 10, arrow.rotation, arrow.power);
 
@@ -118,6 +104,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 	}
 
 	doTick() {
+		this.doCollisionTick();
 		this.doAliveTick();
 	}
 }

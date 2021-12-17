@@ -64,6 +64,9 @@ export class PlayerManager extends ClientSideManager {
 		let move: Vector2 = deltaMove;
 
 		const actors = this.actorManager.getAllActors();
+
+		let overlapX = 0;
+		let overlapY = 0;
 		for (const actor of actors) {
 			if (player === actor) continue;
 			if (!actor.boundings) continue;
@@ -74,10 +77,19 @@ export class PlayerManager extends ClientSideManager {
 
 			if (SAT.testPolygonPolygon(boxA.toPolygon(), boxB.toPolygon(), response)) {
 				if (response.overlapV.len() <= 0) continue;
-				move = move.sub(Vector2.fromSATVector(response.overlapV));
+				const { x, y } = response.overlapV;
+				if (Math.abs(x) > Math.abs(overlapX)) {
+					overlapX = x;
+				}
+				if (Math.abs(y) > Math.abs(overlapY)) {
+					overlapY = y;
+				}
 			}
 		}
 
+		if (overlapX !== 0 || overlapY !== 0) {
+			move = move.sub(new Vector2(overlapX, overlapY));
+		}
 		player.controlMove(move);
 	}
 
