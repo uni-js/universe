@@ -1,0 +1,1 @@
+export const BUILDING_BITMAP_PER_BRICK = 2;
