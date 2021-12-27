@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 
-import { ClientApp, createClientSideModule, PlaygroundSymbol } from '@uni.js/client';
+import { ClientApp, createClientSideModule } from '@uni.js/client';
 import { UIPlugin } from '@uni.js/ui';
-import { Viewport, ViewportHTMLEventDispatcher } from "@uni.js/viewport";
+import { ViewportPlugin } from "@uni.js/viewport";
 import { BootController } from './controller/boot-controller';
 
 import { ActorLayer, BuildingCreatorLayer, LandLayer } from './store';
@@ -20,18 +20,12 @@ import { Logger } from '@uni.js/utils';
 import { TexturePlugin } from '@uni.js/texture';
 
 export async function bootstrap() {
-	const playground = document.getElementById('playground') as HTMLElement;
 	const texturePaths = JSON.parse(process.env.TEXTURE_LOADED);
 	const serverUrl = process.env.UNIVERSE_SERVER_URL;
-
-	const inputProvider = new HTMLInputProvider();
 
 	const worldWidth = 4 * 7;
 	const worldHeight = 3 * 7;
 	const resolution = 32;
-
-	const viewport = new Viewport(worldWidth * resolution, worldHeight * resolution, worldWidth, worldHeight);
-	const viewportEventDispatcher = new ViewportHTMLEventDispatcher(viewport);
 
 	const appModule = createClientSideModule({
 		imports: [LandModule, ActorModule, PlayerModule, InventoryModule, BowModule, BuildingModule],
@@ -40,35 +34,37 @@ export async function bootstrap() {
 			{ key: LandLayer, value: new LandLayer() },
 			{ key: ActorLayer, value: new ActorLayer() },
 			{ key: BuildingCreatorLayer, value: new BuildingCreatorLayer() },
-			{ key: HTMLInputProvider, value: inputProvider },
-			{ key: Viewport, value: viewport },
-			{ key: ViewportHTMLEventDispatcher, value: viewportEventDispatcher },
-			{ key: PlaygroundSymbol, value: playground },
 		],
 	});
 
 	const app = new ClientApp({
 		serverUrl,
-		playground,
+		playground: document.getElementById('playground'),
 		module: appModule,
 		width: worldWidth,
 		height: worldHeight,
 		resolution,
 	});
 
+	const mouseElem = app.getCanvasContainer();
+	const inputProvider = new HTMLInputProvider();
+	inputProvider.bind(mouseElem);
+	app.add(HTMLInputProvider, inputProvider)
+	app.addTicker(() => inputProvider.doFixedUpdateTick());
+
 	await app.use(TexturePlugin(texturePaths));
 	await app.use(UIPlugin(GameUI));
-
-	const mouseElem = app.getCanvasContainer();
-	inputProvider.bind(mouseElem);
-	viewportEventDispatcher.bind(mouseElem);
-	
-	viewport.addChild(app.get(LandLayer).container);
-	viewport.addChild(app.get(BuildingCreatorLayer).container);
-	viewport.addChild(app.get(ActorLayer).container);
-
-	app.addDisplayObject(viewport);
-	app.addTicker(() => inputProvider.doFixedUpdateTick());
+	await app.use(ViewportPlugin({
+		screenWidth: resolution * worldWidth,
+		screenHeight: resolution * worldHeight,
+		worldWidth,
+		worldHeight,
+		initLayers: [
+			app.get(LandLayer).container,
+			app.get(BuildingCreatorLayer).container,
+			app.get(ActorLayer).container
+		]
+	}))
 
 	Logger.info('Server URL is: ', serverUrl);
 
