@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
 import { ClientApp, createClientSideModule, PlaygroundSymbol } from '@uni.js/client';
+import { UIPlugin } from '@uni.js/ui';
 import { Viewport, ViewportHTMLEventDispatcher } from "@uni.js/viewport";
 import { BootController } from './controller/boot-controller';
 
@@ -16,11 +17,13 @@ import { InventoryModule } from './module/inventory-module/module-export';
 import { BowModule } from './module/bow-module/module-export';
 import { BuildingModule } from './module/building-module/module-export';
 import { Logger } from '@uni.js/utils';
+import { TexturePlugin } from '@uni.js/texture';
 
-export function bootstrap() {
+export async function bootstrap() {
 	const playground = document.getElementById('playground') as HTMLElement;
 	const texturePaths = JSON.parse(process.env.TEXTURE_LOADED);
 	const serverUrl = process.env.UNIVERSE_SERVER_URL;
+
 	const inputProvider = new HTMLInputProvider();
 
 	const worldWidth = 4 * 7;
@@ -47,18 +50,19 @@ export function bootstrap() {
 	const app = new ClientApp({
 		serverUrl,
 		playground,
-		texturePaths,
-		uiEntry: GameUI,
 		module: appModule,
 		width: worldWidth,
 		height: worldHeight,
 		resolution,
 	});
 
+	await app.use(TexturePlugin(texturePaths));
+	await app.use(UIPlugin(GameUI));
+
 	const mouseElem = app.getCanvasContainer();
 	inputProvider.bind(mouseElem);
 	viewportEventDispatcher.bind(mouseElem);
-
+	
 	viewport.addChild(app.get(LandLayer).container);
 	viewport.addChild(app.get(BuildingCreatorLayer).container);
 	viewport.addChild(app.get(ActorLayer).container);
@@ -69,6 +73,7 @@ export function bootstrap() {
 	Logger.info('Server URL is: ', serverUrl);
 
 	app.start();
+
 }
 
 bootstrap();

@@ -13,6 +13,5 @@
 
     "start:client": "yarn workspace universe run start:client",
     "build:client": "yarn workspace universe run build:client"
-    
   }
 }
