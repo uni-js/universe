@@ -2,7 +2,7 @@ import { EventBusClient } from '@uni.js/client';
 import { Vector2 } from '../../../server/shared/math';
 import { ActorManager } from './actor-manager';
 import { Player } from '../player-module/player-object';
-import { TextureProvider } from '@uni.js/client';
+import { TextureProvider } from '@uni.js/texture';
 import { inject, injectable } from 'inversify';
 import { PlayerManager } from '../player-module/player-manager';
 import { ActorFactory, ActorObject } from './actor-object';

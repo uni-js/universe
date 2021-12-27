@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useEventBus, useUIState } from '@uni.js/client';
+import { useEventBus, useUIState } from '@uni.js/ui';
 import { ItemType, WallpaperTypes } from '../../server/module/inventory-module/spec';
 import { BackpackContainerState } from '../module/inventory-module/ui-state';
 import { ItemBlock } from './item-block';

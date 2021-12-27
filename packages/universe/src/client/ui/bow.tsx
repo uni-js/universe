@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { useUIState } from '@uni.js/client';
+import { useUIState } from '@uni.js/ui';
 import { BowUsingState } from '../module/bow-module/ui-state';
 
 import './bow.css';

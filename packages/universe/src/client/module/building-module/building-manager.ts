@@ -1,9 +1,8 @@
 import { inject, injectable } from 'inversify';
 import { ClientSideManager } from '@uni.js/client';
-import { TextureProvider } from '@uni.js/client';
-import { UIEventBus } from '@uni.js/client';
-import { ConvertedMouseEvent, ViewportHTMLEventDispatcher } from '@uni.js/client';
-import { Viewport } from '@uni.js/client';
+import { TextureProvider } from '@uni.js/texture';
+import { UIEventBus } from '@uni.js/ui';
+import { ConvertedMouseEvent, ViewportHTMLEventDispatcher, Viewport } from '@uni.js/viewport';
 import { Vector2 } from '../../../server/shared/math';
 import { Range2 } from '../../../server/shared/range';
 

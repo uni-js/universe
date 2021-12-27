@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { GameObject } from '@uni.js/client';
-import { TextureProvider } from '@uni.js/client';
+import { TextureProvider } from '@uni.js/texture';
 import { Vector2 } from '../../../server/shared/math';
 
 /**

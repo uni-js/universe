@@ -1,13 +1,13 @@
 import { Vector2 } from '../../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '../../input';
 import { ClientSideManager } from '@uni.js/client';
-import { Viewport } from '@uni.js/client';
+import { Viewport } from '@uni.js/viewport';
 import { AttachType, calcBoundingSATBox, Direction } from '../../../server/module/actor-module/spec';
 import { inject, injectable } from 'inversify';
 import { Player } from './player-object';
 import { ActorManager } from '../actor-module/actor-manager';
 import * as Events from '../../event/internal';
-import { UIEventBus } from '@uni.js/client';
+import { UIEventBus } from '@uni.js/ui';
 import { PlayerState } from './ui-state';
 
 import SAT from 'sat';

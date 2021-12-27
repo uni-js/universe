@@ -1,8 +1,8 @@
 import { BILLION_VALUE, Vector2 } from '../../../server/shared/math';
-import { TextureProvider } from '@uni.js/client';
+import { TextureProvider } from '@uni.js/texture';
 import { ActorType, Direction, RunningState } from '../../../server/module/actor-module/spec';
 import { ActorConstructOption, ActorObject } from '../actor-module/actor-object';
-import { AckData, EntityState, Input, PredictedInputManager } from '@uni.js/client';
+import { AckData, EntityState, Input, PredictedInputManager } from '@uni.js/prediction';
 import * as Events from '../../event/internal';
 
 export interface ControlMoved {

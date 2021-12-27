@@ -7,7 +7,7 @@ import { injectCollection } from '@uni.js/server';
 import { Vector2 } from '../../shared/math';
 import { PosToLandPos } from '../land-module/helper';
 import { Direction, RunningState, AttachType, isAngleMatchDirection, getDirectionAngle, calcBoundingBox, ActorType } from './spec';
-import { Input } from '@uni.js/client';
+import { Input } from '@uni.js/prediction';
 import { Actor } from './actor-entity';
 
 import * as Events from '../../event/internal';

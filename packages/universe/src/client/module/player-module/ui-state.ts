@@ -1,4 +1,4 @@
-import { UIState } from '@uni.js/client';
+import { UIState } from '@uni.js/ui';
 import { Vector2 } from '../../../server/shared/math';
 
 @UIState()

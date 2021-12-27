@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { useState } from 'react';
-import { useTexturePath, useTextureProvider } from '@uni.js/client';
+import { useTexturePath, useTextureProvider } from '@uni.js/ui';
 import { ItemType, ItemTypeName } from '../../server/module/inventory-module/spec';
 
 import './item-block.css';

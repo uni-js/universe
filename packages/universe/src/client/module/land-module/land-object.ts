@@ -1,6 +1,6 @@
 import { LAND_WIDTH, LandData, BrickTypeName } from '../../../server/module/land-module/spec';
 import { Vector2 } from '../../../server/shared/math';
-import { TextureProvider } from '@uni.js/client';
+import { TextureProvider } from '@uni.js/texture';
 import { BRICK_WIDTH } from './brick-object';
 import { CompositeRectTileLayer } from '@pixi/tilemap';
 import { StaticObject } from '../actor-module/static';

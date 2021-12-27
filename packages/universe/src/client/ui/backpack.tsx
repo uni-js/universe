@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEventBus, useUIState } from '@uni.js/client';
+import { useEventBus, useUIState } from '@uni.js/ui';
 import { ItemBlock } from './item-block';
 import { BackpackContainerState } from '../module/inventory-module/ui-state';
 

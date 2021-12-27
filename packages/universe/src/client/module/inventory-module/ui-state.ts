@@ -1,4 +1,4 @@
-import { UIState } from '@uni.js/client';
+import { UIState } from '@uni.js/ui';
 import { ContainerType } from '../../../server/module/inventory-module/spec';
 import { ItemType } from '../../../server/module/inventory-module/spec';
 

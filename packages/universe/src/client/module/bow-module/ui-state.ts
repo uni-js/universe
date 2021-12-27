@@ -1,4 +1,4 @@
-import { UIState } from '@uni.js/client';
+import { UIState } from '@uni.js/ui';
 
 @UIState()
 export class BowUsingState {

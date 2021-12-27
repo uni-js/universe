@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
-import { ClientApp, createClientSideModule, Viewport, ViewportHTMLEventDispatcher, PlaygroundSymbol } from '@uni.js/client';
+import { ClientApp, createClientSideModule, PlaygroundSymbol } from '@uni.js/client';
+import { Viewport, ViewportHTMLEventDispatcher } from "@uni.js/viewport";
 import { BootController } from './controller/boot-controller';
 
 import { ActorLayer, BuildingCreatorLayer, LandLayer } from './store';

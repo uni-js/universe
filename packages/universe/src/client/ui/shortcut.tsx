@@ -1,6 +1,6 @@
 import React from 'react';
 import { ShortcutContainerState } from '../module/inventory-module/ui-state';
-import { useEventBus, useUIState } from '@uni.js/client';
+import { useEventBus, useUIState } from '@uni.js/ui';
 import { ItemBlock } from './item-block';
 
 import './shortcut.css';

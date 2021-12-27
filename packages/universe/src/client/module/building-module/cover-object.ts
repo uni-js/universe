@@ -2,7 +2,7 @@ import { CompositeRectTileLayer } from '@pixi/tilemap';
 import * as PIXI from 'pixi.js';
 
 import { GameObject } from '@uni.js/client';
-import { TextureProvider } from '@uni.js/client';
+import { TextureProvider } from '@uni.js/texture';
 import { Range2 } from '../../../server/shared/range';
 import { BRICK_WIDTH } from '../land-module/brick-object';
 

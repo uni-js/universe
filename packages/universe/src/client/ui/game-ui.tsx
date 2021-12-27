@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Shortcut } from './shortcut';
-import { useEventBus, useUIState } from '@uni.js/client';
+import { useEventBus, useUIState } from '@uni.js/ui';
 import { PlayerState } from '../module/player-module/ui-state';
 import { BowUI } from './bow';
 import { Backpack } from './backpack';

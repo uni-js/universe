@@ -14,7 +14,7 @@ import { ItemType } from '../../../server/module/inventory-module/spec';
 import { InventoryBlockState, ShortcutContainerState } from './ui-state';
 
 import * as Events from '../../event/internal';
-import { UIEventBus } from '@uni.js/client';
+import { UIEventBus } from '@uni.js/ui';
 
 export class ContainerManager extends ClientSideManager {
 	constructor(protected container: ContainerState, protected input: HTMLInputProvider, protected uiEventBus: UIEventBus) {

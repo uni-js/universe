@@ -3,7 +3,7 @@ import { EventBusClient } from '@uni.js/client';
 import { Vector2 } from '../../../server/shared/math';
 import { LandManager } from './land-manager';
 import { LandObject } from './land-object';
-import { TextureProvider } from '@uni.js/client';
+import { TextureProvider } from '@uni.js/texture';
 
 import * as ServerEvents from '../../../server/event/external';
 import { HandleExternalEvent } from '@uni.js/event';
