@@ -1,5 +1,5 @@
 import { Vector2 } from '../../../server/shared/math';
-import { HTMLInputProvider, InputKey } from '../../input';
+import { HTMLInputProvider, InputKey } from '@uni.js/html-input';
 import { ClientSideManager } from '@uni.js/client';
 import { Viewport } from '@uni.js/viewport';
 import { AttachType, calcBoundingSATBox, Direction } from '../../../server/module/actor-module/spec';

@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { ClientSideManager } from '@uni.js/client';
 
-import { HTMLInputProvider, InputKey } from '../../input';
+import { HTMLInputProvider, InputKey } from '@uni.js/html-input';
 import { BackpackContainerState, ContainerState } from './ui-state';
 import {
 	ContainerUpdateData,

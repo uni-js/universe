@@ -1,14 +1,13 @@
 import 'reflect-metadata';
-
 import { ClientApp, createClientSideModule } from '@uni.js/client';
+
 import { UIPlugin } from '@uni.js/ui';
 import { ViewportPlugin } from "@uni.js/viewport";
-import { BootController } from './controller/boot-controller';
-
-import { ActorLayer, BuildingCreatorLayer, LandLayer } from './store';
+import { HTMLInputPlugin } from '@uni.js/html-input';
+import { TexturePlugin } from '@uni.js/texture';
+import { Logger } from '@uni.js/utils';
 
 import { GameUI } from './ui/game-ui';
-import { HTMLInputProvider } from './input';
 
 import { LandModule } from './module/land-module/module-export';
 import { ActorModule } from './module/actor-module/module-export';
@@ -16,8 +15,9 @@ import { PlayerModule } from './module/player-module/module-export';
 import { InventoryModule } from './module/inventory-module/module-export';
 import { BowModule } from './module/bow-module/module-export';
 import { BuildingModule } from './module/building-module/module-export';
-import { Logger } from '@uni.js/utils';
-import { TexturePlugin } from '@uni.js/texture';
+
+import { BootController } from './controller/boot-controller';
+import { ActorLayer, BuildingCreatorLayer, LandLayer } from './store';
 
 export async function bootstrap() {
 	const texturePaths = JSON.parse(process.env.TEXTURE_LOADED);
@@ -46,12 +46,7 @@ export async function bootstrap() {
 		resolution,
 	});
 
-	const mouseElem = app.getCanvasContainer();
-	const inputProvider = new HTMLInputProvider();
-	inputProvider.bind(mouseElem);
-	app.add(HTMLInputProvider, inputProvider)
-	app.addTicker(() => inputProvider.doFixedUpdateTick());
-
+	await app.use(HTMLInputPlugin());
 	await app.use(TexturePlugin(texturePaths));
 	await app.use(UIPlugin(GameUI));
 	await app.use(ViewportPlugin({

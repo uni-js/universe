@@ -30,6 +30,7 @@
     "@uni.js/prediction": "^0.1.0",
     "@uni.js/viewport": "^0.1.0",
     "@uni.js/ui": "^0.1.0",
+    "@uni.js/html-input": "^0.1.0",
     "buffer": "^6.0.3",
     "chalk": "^4.1.2",
     "classnames": "^2.3.1",

@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { HTMLInputProvider, InputKey, InputProvider } from '../../input';
+import { HTMLInputProvider, InputKey, InputProvider } from '@uni.js/html-input';
 import { ClientSideManager } from '@uni.js/client';
 import * as Events from '../../event/internal';
 
