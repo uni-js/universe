@@ -110,8 +110,8 @@ export class ActorObject extends GameObject {
 
 	private moveInterpolator;
 
-	constructor(serverId: number, option: ActorConstructOption, size: Vector2, actorType: ActorType, texture: TextureProvider) {
-		super(texture, serverId);
+	constructor(serverId: number, option: ActorConstructOption, size: Vector2, actorType: ActorType, protected textureProvider: TextureProvider) {
+		super(serverId);
 		this.size = size;
 		this.actorType = actorType;
 
@@ -306,7 +306,7 @@ export class ActorObject extends GameObject {
 
 	private updateShowHealth() {
 		if (this._showHealth && !this.healthBar) {
-			this.healthBar = new HealthBar(this.textureProvider);
+			this.healthBar = new HealthBar();
 			this.addChild(this.healthBar);
 		} else if (!this._showHealth && this.healthBar) {
 			this.removeChild(this.healthBar);

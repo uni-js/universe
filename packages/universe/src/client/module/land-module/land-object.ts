@@ -9,8 +9,8 @@ import { StaticObject } from '../actor-module/static';
 export class LandObject extends StaticObject {
 	private tileLayer: CompositeRectTileLayer;
 
-	constructor(texture: TextureProvider, initLandData: LandData, objectId: number, private landPos: Vector2) {
-		super(texture, objectId, new Vector2(1, 1), landPos.mul(LAND_WIDTH));
+	constructor(textureProvider: TextureProvider, initLandData: LandData, objectId: number, private landPos: Vector2) {
+		super(textureProvider, objectId, new Vector2(1, 1), landPos.mul(LAND_WIDTH));
 		this.zIndex = 0;
 
 		this.tileLayer = new CompositeRectTileLayer();

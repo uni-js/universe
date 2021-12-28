@@ -15,8 +15,8 @@ export class HealthBar extends GameObject {
 	private graph: PIXI.Graphics;
 	private size = new Vector2(1, 0.2);
 
-	constructor(textureProvider: TextureProvider) {
-		super(textureProvider);
+	constructor() {
+		super();
 
 		this.graph = new PIXI.Graphics();
 		this.graph.width = this.size.x;

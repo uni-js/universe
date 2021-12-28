@@ -21,8 +21,8 @@ export class Player extends ActorObject {
 	private controlMoved: Vector2 | false = false;
 	private predictedInputManager: PredictedInputManager;
 
-	constructor(serverId: number, option: ActorConstructOption, texture: TextureProvider) {
-		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.PLAYER, texture);
+	constructor(serverId: number, option: ActorConstructOption, textureProvider: TextureProvider) {
+		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.PLAYER, textureProvider);
 
 		this.canWalk = true;
 		this.showHealth = true;

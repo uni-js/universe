@@ -10,8 +10,8 @@ export class StaticObject extends GameObject {
 	protected sprite: PIXI.Sprite;
 	private worldPos: Vector2;
 
-	constructor(texture: TextureProvider, serverId: number, size: Vector2, position: Vector2) {
-		super(texture, serverId);
+	constructor(protected textureProvider: TextureProvider, serverId: number, size: Vector2, position: Vector2) {
+		super(serverId);
 
 		this.sprite = new PIXI.Sprite();
 

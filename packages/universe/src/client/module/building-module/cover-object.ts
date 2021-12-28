@@ -10,8 +10,8 @@ export class CoverObject extends GameObject {
 	private coverLayer: CompositeRectTileLayer;
 	private _coverRange: Range2;
 
-	constructor(textureProvider: TextureProvider) {
-		super(textureProvider);
+	constructor(protected textureProvider: TextureProvider) {
+		super();
 		this.coverLayer = new CompositeRectTileLayer();
 		this.coverLayer.scale.set(1 / BRICK_WIDTH, 1 / BRICK_WIDTH);
 		this.addChild(this.coverLayer);
