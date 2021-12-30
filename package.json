@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "private": true,
-  "workspaces": ["packages/universe", "packages/framework/packages/*"],
+  "workspaces": ["packages/universe", "packages/framework", "packages/framework/packages/*"],
   "repository": "ssh://git@github.com/uni-js/universe",
   "author": "wyattzheng <854185073@qq.com>",
   "license": "MIT",
