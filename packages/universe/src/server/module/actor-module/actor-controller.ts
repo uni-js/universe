@@ -62,7 +62,7 @@ export class ActorController extends ServerSideController {
 	private getSpawnedActorConnIds(actorId: number) {
 		const sids = this.playerManager
 			.getAllEntities()
-			.filter((player) => this.playerManager.hasAtRecord(player, 'spawnedActors', actorId))
+			.filter((player) => player.spawnedActors.has(actorId))
 			.map((player) => player.connId);
 		return sids;
 	}

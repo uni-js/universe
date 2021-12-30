@@ -1,5 +1,4 @@
 import { Player } from './player-entity';
-import { ExtendedEntityManager } from '@uni.js/server';
 import { Actor } from '../actor-module/actor-entity';
 import { GetRadiusLands } from '../land-module/land-entity';
 import { inject, injectable } from 'inversify';
@@ -12,11 +11,12 @@ import { GetConstructOptions } from '../../shared/entity';
 import * as Events from '../../event/internal';
 import { LandManager } from '../land-module/land-manager';
 import { AddEntityEvent, HandleInternalEvent, RemoveEntityEvent } from '@uni.js/event';
+import { ExtendedEntityManager } from '@uni.js/server';
 
 @injectable()
 export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	constructor(@inject(ActorManager) private actorManager: ActorManager, @inject(LandManager) private landManager: LandManager) {
-		super(actorManager, Player);
+		super(actorManager, Player)
 	}
 
 	@HandleInternalEvent('actorManager', AddEntityEvent)
@@ -42,7 +42,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	}
 
 	isUseLand(player: Player, landPos: Vector2) {
-		return this.hasAtRecord(player, 'usedLands', GetPosHash(landPos));
+		return player.usedLands.has(GetPosHash(landPos));
 	}
 
 	getCanSeeLands(player: Player) {
@@ -74,34 +74,36 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 	}
 
 	spawnActor(player: Player, actorId: number) {
-		if (this.hasAtRecord(player, 'spawnedActors', actorId)) return;
+		if (player.spawnedActors.has(actorId)) return;
 
 		const actor = this.actorManager.getEntityById(actorId);
 
-		this.addAtRecord(player, 'spawnedActors', actorId);
+		player.spawnedActors.add(actorId)
 		const ctorOption = GetConstructOptions(actor);
 
-		this.emitEvent(Events.SpawnActorEvent, { actorId, actorType: actor.type, fromPlayerId: player.$loki, ctorOption });
+		this.emitEvent(Events.SpawnActorEvent, { actorId, actorType: actor.type, fromPlayerId: player.id, ctorOption });
 	}
 
 	despawnActor(player: Player, actorId: number) {
-		if (!this.hasAtRecord(player, 'spawnedActors', actorId)) return;
+		if (!player.spawnedActors.has(actorId)) return;
 
-		this.removeAtRecord(player, 'spawnedActors', actorId);
-		this.emitEvent(Events.DespawnActorEvent, { actorId, fromPlayerId: player.$loki });
+		player.spawnedActors.remove(actorId)
+		this.emitEvent(Events.DespawnActorEvent, { actorId, fromPlayerId: player.id });
 	}
 
 	useLand(player: Player, landHash: string) {
 		const landPos = GetPosByHash(landHash);
-		this.addAtRecord(player, 'usedLands', landHash);
-		this.emitEvent(Events.LandUsedEvent, { playerId: player.$loki, landPosX: landPos.x, landPosY: landPos.y, landId: undefined });
+
+		player.usedLands.add(landHash)
+		this.emitEvent(Events.LandUsedEvent, { playerId: player.id, landPosX: landPos.x, landPosY: landPos.y, landId: undefined });
 	}
 
 	unuseLand(player: Player, landHash: string) {
 		const landPos = GetPosByHash(landHash);
 		const land = this.landManager.getLand(landPos);
-		this.removeAtRecord(player, 'usedLands', landHash);
-		this.emitEvent(Events.LandNeverUsedEvent, { playerId: player.$loki, landPosX: landPos.x, landPosY: landPos.y, landId: land.$loki });
+
+		player.usedLands.remove(landHash)
+		this.emitEvent(Events.LandNeverUsedEvent, { playerId: player.id, landPosX: landPos.x, landPosY: landPos.y, landId: land.id });
 	}
 
 	private updateUsedLands(player: Player) {
@@ -115,5 +117,9 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player> {
 		for (const item of diff.remove) {
 			this.unuseLand(player, item);
 		}
+	}
+
+	doTick() {
+		
 	}
 }

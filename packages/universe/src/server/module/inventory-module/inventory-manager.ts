@@ -66,7 +66,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 	}
 
 	setBlock(containerId: number, index: number, itemType: ItemType, count: number) {
-		const container = this.containerList.findOne({ $loki: containerId });
+		const container = this.containerList.findOne({ id: containerId });
 		const block = this.blocksList.findOne({ containerId, index });
 		block.itemType = itemType;
 		block.itemCount = count;
@@ -78,11 +78,11 @@ export class InventoryManager extends EntityManager<Inventory> {
 			if (shortcut.currentIndex === index) this.updateHoldItem(shortcut);
 
 			const player = this.playerManager.getEntityById(shortcut.playerId);
-			this.sendBlockUpdateData(player, shortcut.$loki, index);
+			this.sendBlockUpdateData(player, shortcut.id, index);
 		} else if (container.containerType === ContainerType.BACKPACK_CONTAINER) {
 			const backpack = container as BackpackContainer;
 			const player = this.playerManager.getEntityById(backpack.playerId);
-			this.sendBlockUpdateData(player, backpack.$loki, index);
+			this.sendBlockUpdateData(player, backpack.id, index);
 		}
 
 		//TODO: notify this change
@@ -92,7 +92,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 		const shortcut = new ShortcutContainer();
 		shortcut.playerId = playerId;
 		this.containerList.insertOne(shortcut);
-		this.addNewEmptyBlocks(shortcut.$loki, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER);
+		this.addNewEmptyBlocks(shortcut.id, BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER);
 
 		return shortcut;
 	}
@@ -101,15 +101,15 @@ export class InventoryManager extends EntityManager<Inventory> {
 		const mainContainer = new BackpackContainer();
 		mainContainer.playerId = playerId;
 		this.containerList.insertOne(mainContainer);
-		this.addNewEmptyBlocks(mainContainer.$loki, BLOCKS_PER_PLAYER_INVENTORY_CONTAINER);
+		this.addNewEmptyBlocks(mainContainer.id, BLOCKS_PER_PLAYER_INVENTORY_CONTAINER);
 		return mainContainer;
 	}
 
 	private addNewPlayerInventory(playerId: number) {
 		const inventory = new PlayerInventory();
 
-		const { $loki: shortcutId } = this.addNewShortcut(playerId);
-		const { $loki: backpackId } = this.addNewBackpack(playerId);
+		const { id: shortcutId } = this.addNewShortcut(playerId);
+		const { id: backpackId } = this.addNewBackpack(playerId);
 
 		inventory.containers = [shortcutId, backpackId];
 		inventory.playerId = playerId;
@@ -120,19 +120,19 @@ export class InventoryManager extends EntityManager<Inventory> {
 	@HandleInternalEvent('playerManager', AddEntityEvent)
 	private onPlayerAdded(event: AddEntityEvent) {
 		const player = event.entity as Player;
-		const inventory = this.addNewPlayerInventory(player.$loki);
+		const inventory = this.addNewPlayerInventory(player.id);
 
 		//HACK: remove in the future
 		//add player a bow in shortcut
 		this.setBlock(inventory.containers[1], 0, ItemType.BOW, 1);
 		this.setBlock(inventory.containers[1], 1, ItemType.WP_ROCK, 1);
-		this.sendInventoryUpdateData(player, inventory.$loki);
+		this.sendInventoryUpdateData(player, inventory.id);
 	}
 
 	@HandleInternalEvent('playerManager', RemoveEntityEvent)
 	private onPlayerRemoved(event: RemoveEntityEvent) {
-		const invetory = this.playerInventoryList.findOne({ playerId: event.entityId });
-		this.removeInventory(invetory.$loki);
+		const inventory = this.playerInventoryList.findOne({ playerId: event.entityId });
+		this.removeInventory(inventory.id);
 	}
 
 	private removeContainer(containerId: number) {
@@ -140,21 +140,21 @@ export class InventoryManager extends EntityManager<Inventory> {
 	}
 
 	private removeInventory(inventoryId: number) {
-		const inventory = this.findEntity({ $loki: inventoryId });
+		const inventory = this.findEntity({ id: inventoryId });
 		for (const containerId of inventory.containers) {
 			this.removeContainer(containerId);
 		}
 	}
 
 	sendInventoryUpdateData(player: Player, inventoryId: number) {
-		const inventory = this.findEntity({ $loki: inventoryId });
+		const inventory = this.findEntity({ id: inventoryId });
 		for (const containerId of inventory.containers) {
 			this.sendContainerUpdateData(player, containerId);
 		}
 	}
 
 	sendContainerUpdateData(player: Player, containerId: number) {
-		const container = this.containerList.findOne({ $loki: containerId });
+		const container = this.containerList.findOne({ id: containerId });
 		const blocks = this.blocksList.find({ containerId });
 		const updateData: ContainerUpdateData = { units: [] };
 
@@ -167,7 +167,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 		}
 
 		this.emitEvent(Events.UpdateContainerEvent, {
-			playerId: player.$loki,
+			playerId: player.id,
 			containerType: container.containerType,
 			updateData,
 			containerId,
@@ -176,7 +176,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 	}
 
 	sendBlockUpdateData(player: Player, containerId: number, indexAt: number) {
-		const container = this.containerList.findOne({ $loki: containerId });
+		const container = this.containerList.findOne({ id: containerId });
 		const block = this.blocksList.findOne({ containerId, index: indexAt });
 
 		const updateData: ContainerUpdateData = { units: [] };
@@ -188,7 +188,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 		});
 
 		this.emitEvent(Events.UpdateContainerEvent, {
-			playerId: player.$loki,
+			playerId: player.id,
 			containerType: container.containerType,
 			updateData,
 			containerId,
@@ -198,7 +198,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 
 	private updateHoldItem(shortcut: ShortcutContainer) {
 		const player = this.playerManager.getEntityById(shortcut.playerId);
-		const block = this.getBlock(shortcut.$loki, shortcut.currentIndex);
+		const block = this.getBlock(shortcut.id, shortcut.currentIndex);
 
 		const itemDef = this.itemDefList.findOne({ itemType: block.itemType });
 
@@ -210,7 +210,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 			actor.posY = player.posY;
 
 			this.actorManager.addNewEntity(actor);
-			this.actorManager.setAttachment(shortcut.playerId, AttachType.RIGHT_HAND, actor.$loki);
+			this.actorManager.setAttachment(shortcut.playerId, AttachType.RIGHT_HAND, actor.id);
 		}
 	}
 
@@ -230,7 +230,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 	}
 
 	setShortcutIndex(containerId: number, indexAt: number) {
-		const container = this.shortcutContainerList.findOne({ $loki: containerId });
+		const container = this.shortcutContainerList.findOne({ id: containerId });
 		if (indexAt == container.currentIndex) return;
 
 		container.currentIndex = indexAt;
@@ -261,8 +261,8 @@ export class InventoryManager extends EntityManager<Inventory> {
 
 		const entities = this.actorManager.findEntities({
 			type: ActorType.DROPPED_ITEM,
-			posX: { $between: [Xmin, Xmax] },
-			posY: { $between: [Ymin, Ymax] },
+//			posX: { $between: [Xmin, Xmax] },
+//			posY: { $between: [Ymin, Ymax] },
 		}) as DroppedItemActor[];
 
 		for (const entity of entities) {
@@ -284,16 +284,16 @@ export class InventoryManager extends EntityManager<Inventory> {
 	getShortcut(player: Player): Readonly<ShortcutContainer> {
 		const inventory = this.getPlayerInventory(player);
 		const containerId = inventory.containers[0];
-		return this.containerList.findOne({ $loki: containerId }) as ShortcutContainer;
+		return this.containerList.findOne({ id: containerId }) as ShortcutContainer;
 	}
 
 	getBackpack(player: Player): Readonly<ShortcutContainer> {
 		const inventory = this.getPlayerInventory(player);
 		const containerId = inventory.containers[1];
-		return this.containerList.findOne({ $loki: containerId }) as ShortcutContainer;
+		return this.containerList.findOne({ id: containerId }) as ShortcutContainer;
 	}
 
 	getPlayerInventory(player: Player) {
-		return this.playerInventoryList.findOne({ playerId: player.$loki });
+		return this.playerInventoryList.findOne({ playerId: player.id });
 	}
 }

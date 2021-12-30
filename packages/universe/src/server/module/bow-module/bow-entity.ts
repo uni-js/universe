@@ -1,44 +1,61 @@
 import { Actor } from '../actor-module/actor-entity';
 import { ActorType } from '../actor-module/spec';
-import { ConstructOption } from '../../shared/entity';
+import { Entity, Private, Property } from '@uni.js/database';
 
+@Entity()
 export class Bow extends Actor {
+	@Property()
+	@Private()
 	type = ActorType.BOW;
 
-	@ConstructOption()
+	@Property()
 	sizeX = 0.65;
 
-	@ConstructOption()
+	@Property()
 	sizeY = 0.65;
 
+	@Property()
+	@Private()
 	obstacleHinder = false;
 
+	@Property()
+	@Private()
 	boundings: number[] = undefined;
 }
 
 export class Arrow extends Actor {
+	@Property()
+	@Private()
 	type = ActorType.ARROW;
 
-	@ConstructOption()
+	@Property()
 	sizeX = 2;
 
-	@ConstructOption()
+	@Property()
 	sizeY = 0.2;
 
-	@ConstructOption()
+	@Property()
 	anchorX = 0;
 
-	@ConstructOption()
+	@Property()
 	anchorY = 0.5;
 
+	@Property()
+	@Private()
 	obstacleHinder = false;
 
+	@Property()
+	@Private()
 	boundings: number[] = undefined;
 
-	@ConstructOption()
+	@Property()
 	power = 0.5;
 
+	@Property()
+	@Private()
 	shooter: number;
 
+	@Property()
+	@Private()
 	aliveTick = 0;
 }

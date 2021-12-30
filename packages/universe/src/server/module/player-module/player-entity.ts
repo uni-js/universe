@@ -1,34 +1,41 @@
 import { ActorType, AttachMapping } from '../actor-module/spec';
 import { Actor } from '../actor-module/actor-entity';
-import { ConstructOption } from '../../shared/entity';
 import { RecordSet } from '../../utils';
+import { Entity, Private, Property, Index } from '@uni.js/database';
 
+@Entity()
 export class Player extends Actor {
+	@Private()
+	@Property()
 	type = ActorType.PLAYER;
 
+	@Index()
+	@Private()
+	@Property()
 	connId: string;
 
-	@ConstructOption()
+	@Property()
 	sizeX = 1;
 
-	@ConstructOption()
+	@Property()
 	sizeY = 1.5;
 
-	@ConstructOption()
+	@Property()
 	boundings = [-0.5, -1.5, 0.5, 0];
 
+	@Property()
 	obstacle = true;
 
-	@ConstructOption()
+	@Property()
 	anchorX = 0.5;
 
-	@ConstructOption()
+	@Property()
 	anchorY = 1;
 
-	@ConstructOption()
+	@Property()
 	playerName = 'Player';
 
-	@ConstructOption()
+	@Property()
 	attachMapping: AttachMapping = [
 		[
 			[-0.4, -0.5],
@@ -38,12 +45,20 @@ export class Player extends Actor {
 		],
 	];
 
+	@Property()
 	motionDecreaseRate = 0.75;
 
+	@Property()
 	canDamage = true;
 
+	@Property()
 	isPlayer = true;
 
+	@Private()
+	@Property()
 	usedLands: RecordSet<string> = new RecordSet();
+
+	@Private()
+	@Property()
 	spawnedActors: RecordSet<number> = new RecordSet();
 }

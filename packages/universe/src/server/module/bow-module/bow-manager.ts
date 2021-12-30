@@ -2,8 +2,8 @@ import { inject, injectable } from 'inversify';
 import { ActorType } from '../actor-module/spec';
 import { Actor } from '../actor-module/actor-entity';
 import { Arrow, Bow } from './bow-entity';
-import { ExtendedEntityManager } from '@uni.js/server';
 import { ActorManager } from '../actor-module/actor-manager';
+import { ExtendedEntityManager } from '@uni.js/server';
 
 import * as Events from '../../event/internal';
 import { HandleInternalEvent } from '@uni.js/event';
@@ -14,8 +14,9 @@ import SAT from 'sat';
 
 @injectable()
 export class BowManager extends ExtendedEntityManager<Actor, Bow> {
-	constructor(@inject(ActorManager) private actorManager: ActorManager) {
-		super(actorManager, Bow);
+	constructor(@inject(ActorManager) private actorManager: ActorManager){
+		super(actorManager, Bow)
+
 	}
 
 	@HandleInternalEvent('actorManager', Events.ActorToggleUsingEvent)
@@ -62,7 +63,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		const arrow = new Arrow();
 		arrow.posX = actor.posX;
 		arrow.posY = actor.posY;
-		arrow.shooter = attachingActor.$loki;
+		arrow.shooter = attachingActor.id;
 
 		arrow.power = Math.min(useTick, BOW_DRAGGING_MAX_TICKS) / 20;
 
@@ -71,7 +72,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		arrow.rotation = aimTarget;
 		this.addNewEntity(arrow);
 
-		this.actorManager.setMotion(arrow.$loki, new Vector2(motion * Math.cos(aimTarget), motion * Math.sin(aimTarget)));
+		this.actorManager.setMotion(arrow.id, new Vector2(motion * Math.cos(aimTarget), motion * Math.sin(aimTarget)));
 	}
 
 	private doAliveTick() {

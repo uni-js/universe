@@ -1,6 +1,5 @@
 import SAT from 'sat';
 
-import { Attachment } from '../../shared/entity';
 import { EntityManager, UpdateOnlyCollection } from '@uni.js/server';
 import { injectable } from 'inversify';
 import { injectCollection } from '@uni.js/server';
@@ -37,11 +36,11 @@ export class ActorManager extends EntityManager<Actor> {
 		}
 
 		const knockBackMotion = Vector2.getVector2ByDistance(power, fromRad);
-		this.setMotion(actor.$loki, knockBackMotion);
+		this.setMotion(actor.id, knockBackMotion);
 
 		this.actorList.update(actor);
 
-		this.emitEvent(Events.ActorDamagedEvent, { actorId: actor.$loki, finalHealth: actor.health });
+		this.emitEvent(Events.ActorDamagedEvent, { actorId: actor.id, finalHealth: actor.health });
 	}
 
 	getActorBoundingBox(actor: Actor) {
@@ -93,54 +92,44 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	getNearActors(pos: Vector2): Actor[] {
-		const distance = 10;
-
-		return this.actorList.find({
-			posX: { $between: [pos.x - distance, pos.x + distance] },
-			posY: { $between: [pos.y - distance, pos.y + distance] },
-		});
+		return this.actorList.find({ isActor: true });
 	}
 
 	setAttachment(targetActorId: number, key: AttachType, actorId: number) {
-		const targetActor = this.actorList.findOne({ $loki: targetActorId });
-		const actor = this.actorList.findOne({ $loki: actorId });
+		const targetActor = this.actorList.findOne({ id: targetActorId });
+		const actor = this.actorList.findOne({ id: actorId });
 
-		this.addAtRecord<Attachment>(
-			targetActor,
-			'attachments',
-			{
-				key,
-				actorId,
-			},
+		targetActor.attachments.add(key, {
 			key,
-		);
+			actorId,
+		});
 
 		actor.attaching = { key, actorId: targetActorId };
 
 		this.updateAttachment(targetActorId);
 
 		this.emitEvent(Events.ActorSetAttachmentEvent, {
-			targetActorId: targetActor.$loki,
+			targetActorId: targetActor.id,
 			key,
 			actorId,
 		});
 	}
 
 	getAttachment(targetActorId: number, key: AttachType) {
-		const actor = this.actorList.findOne({ $loki: targetActorId });
+		const actor = this.actorList.findOne({ id: targetActorId });
 		return actor.attachments.get(key);
 	}
 
 	getAttachments(targetActorId: number) {
-		const actor = this.actorList.findOne({ $loki: targetActorId });
+		const actor = this.actorList.findOne({ id: targetActorId });
 		return actor.attachments.getAll();
 	}
 
 	removeAttachment(targetActorId: number, key: AttachType) {
-		const actor = this.actorList.findOne({ $loki: targetActorId });
-		this.removeAtRecord(actor, 'attachments', key);
+		const actor = this.actorList.findOne({ id: targetActorId });
+		actor.attachments.remove(key);
 
-		this.emitEvent(Events.ActorRemoveAttachmentEvent, { targetActorId: actor.$loki, key });
+		this.emitEvent(Events.ActorRemoveAttachmentEvent, { targetActorId: actor.id, key });
 	}
 
 	clearAttachments(targetActorId: number, removeActors = false) {
@@ -155,7 +144,7 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	setWalkState(actorId: number, running: RunningState, direction: Direction) {
-		const actor = this.actorList.findOne({ $loki: actorId });
+		const actor = this.actorList.findOne({ id: actorId });
 		const isRunningChanged = actor.running !== running;
 		const isDirectionChanged = actor.direction !== direction;
 		if (!isRunningChanged && !isDirectionChanged) return;
@@ -167,13 +156,13 @@ export class ActorManager extends EntityManager<Actor> {
 		this.actorList.update(actor);
 
 		if (isDirectionChanged) {
-			const attachment = this.getAttachment(actor.$loki, AttachType.RIGHT_HAND);
+			const attachment = this.getAttachment(actor.id, AttachType.RIGHT_HAND);
 			attachment && this.setRotation(attachment.actorId, getDirectionAngle(actor.direction));
 		}
 	}
 
 	startUsing(actorId: number) {
-		const actor = this.actorList.findOne({ $loki: actorId });
+		const actor = this.actorList.findOne({ id: actorId });
 
 		actor.isUsing = true;
 		actor.useTick = 0;
@@ -184,7 +173,7 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	endUsing(actorId: number) {
-		const actor = this.actorList.findOne({ $loki: actorId });
+		const actor = this.actorList.findOne({ id: actorId });
 		const useTick = actor.useTick;
 
 		actor.isUsing = false;
@@ -196,20 +185,20 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	setAimTarget(actorId: number, aimTarget: number) {
-		const actor = this.actorList.findOne({ $loki: actorId });
+		const actor = this.actorList.findOne({ id: actorId });
 		const validDirection = isAngleMatchDirection(actor.direction, aimTarget);
 		actor.aimTarget = validDirection ? aimTarget : undefined;
 		this.actorList.update(actor);
 	}
 
 	processInput(actorId: number, input: Input) {
-		const actor = this.actorList.findOne({ $loki: actorId });
+		const actor = this.actorList.findOne({ id: actorId });
 		actor.lastInputSeqId = input.seqId;
 		this.moveToPosition(actor, new Vector2(actor.posX + input.moveX, actor.posY + input.moveY));
 	}
 
 	setRotation(actorId: number, rotation: number) {
-		const actor = this.actorList.findOne({ $loki: actorId });
+		const actor = this.actorList.findOne({ id: actorId });
 		actor.rotation = rotation;
 		this.actorList.update(actor);
 
@@ -217,7 +206,7 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	removeEntity<T extends Actor>(actor: T): void {
-		super.removeEntity.call(this, actor);
+		super.removeEntity.call(this, actor as any);
 
 		for (const attachment of actor.attachments.getAll()) {
 			this.removeEntity(this.getEntityById(attachment.actorId));
@@ -235,9 +224,9 @@ export class ActorManager extends EntityManager<Actor> {
 			}
 			if (checkResults.length > 0) {
 				this.emitEvent(Events.ActorCollusionEvent, {
-					actorId: actor.$loki,
+					actorId: actor.id,
 					actorType: actor.type,
-					checkResults: checkResults.map((r) => ({ actorId: r.actor.$loki, actorType: r.actor.type, checkResponse: r.response })),
+					checkResults: checkResults.map((r) => ({ actorId: r.actor.id, actorType: r.actor.type, checkResponse: r.response })),
 				});
 			}
 		}
@@ -259,7 +248,7 @@ export class ActorManager extends EntityManager<Actor> {
 
 		if (landDelta.getSqrt() > 0) {
 			this.emitEvent(Events.LandMoveEvent, {
-				actorId: actor.$loki,
+				actorId: actor.id,
 				targetLandPosX: landPos.x,
 				targetLandPosY: landPos.y,
 				sourceLandPosX: lastLandPos.x,
@@ -272,14 +261,14 @@ export class ActorManager extends EntityManager<Actor> {
 	private updateMoveDirty() {
 		const dirtyActors = this.actorList.find({ isMoveDirty: true });
 		for (const actor of dirtyActors) {
-			this.updateAttachment(actor.$loki);
+			this.updateAttachment(actor.id);
 
 			if (actor.isMoveDirty) {
 				actor.isMoveDirty = false;
 				this.actorList.update(actor);
 
 				this.emitEvent(Events.NewPosEvent, {
-					actorId: actor.$loki,
+					actorId: actor.id,
 					posX: actor.posX,
 					posY: actor.posY,
 					motionX: actor.motionX,
@@ -296,7 +285,7 @@ export class ActorManager extends EntityManager<Actor> {
 			actor.isWalkDirty = false;
 			this.actorList.update(actor);
 			this.emitEvent(Events.NewWalkStateEvent, {
-				actorId: actor.$loki,
+				actorId: actor.id,
 				direction: actor.direction,
 				running: actor.running,
 			});
@@ -334,30 +323,18 @@ export class ActorManager extends EntityManager<Actor> {
 	}
 
 	private updateMotion() {
-		const motionActors = this.actorList.find({
-			$or: [
-				{
-					motionX: {
-						$ne: 0,
-					},
-				},
-				{
-					motionY: {
-						$ne: 0,
-					},
-				},
-			],
-		});
+		const motionActors = this.actorList.find({ isActor: true });
 
 		for (const actor of motionActors) {
+			if(actor.motionX === 0 && actor.motionY === 0) continue;
 			const newMotion = new Vector2(actor.motionX, actor.motionY).mul(actor.motionDecreaseRate);
-			this.setMotion(actor.$loki, newMotion.getSqrt() > 0.1 ? newMotion : new Vector2(0, 0));
+			this.setMotion(actor.id, newMotion.getSqrt() > 0.1 ? newMotion : new Vector2(0, 0));
 			this.moveToPosition(actor, new Vector2(actor.posX + actor.motionX, actor.posY + actor.motionY));
 		}
 	}
 
 	setMotion(actorId: number, motion: Vector2, motionRate?: number) {
-		const actor = this.actorList.findOne({ $loki: actorId });
+		const actor = this.actorList.findOne({ id: actorId });
 		actor.motionX = motion.x;
 		actor.motionY = motion.y;
 		actor.isMoveDirty = true;

@@ -1,6 +1,6 @@
 import { PosToLandPos } from './helper';
 import { Vector2 } from '../../shared/math';
-import { Entity } from '@uni.js/server';
+import { Entity, Index, Property } from '@uni.js/database';
 import { RecordSet } from '../../utils';
 
 /**
@@ -24,10 +24,21 @@ export function GetRadiusLands(pos: Vector2, radius: number): Vector2[] {
 	return landLocs;
 }
 
-export class Land extends Entity {
+@Index(["landLocX", "landLocY"])
+@Entity()
+export class Land {
+	@Property()
 	landLocX: number;
+
+	@Property()
 	landLocY: number;
+
+	@Property()
 	isLoaded = false;
+
+	@Property()
 	isLoading = false;
+
+	@Property()
 	actors: RecordSet<number> = new RecordSet();
 }

@@ -1,88 +1,123 @@
-import { Entity } from '@uni.js/server';
-import { Attachment, ConstructOption } from '../../shared/entity';
+import { Entity, Private, Property, Index } from '@uni.js/database';
+import { Attachment } from '../../shared/entity';
 import { RecordMap } from '../../utils';
 import { ActorType, AttachMapping, AttachType, Direction, RunningState } from './spec';
 import { injectable } from 'inversify';
 import { Factory } from '../../../shared/factory';
 
-export class Actor extends Entity {
-	@ConstructOption()
+@Index(["posX", "posY"])
+@Entity()
+export class Actor {
+	
+	id: number = undefined;
+
+	@Property()
 	health = 100;
 
-	@ConstructOption()
+	@Property()
 	sizeX = 1;
 
-	@ConstructOption()
+	@Property()
 	sizeY = 1;
 
-	@ConstructOption()
+	@Property()
 	anchorX = 0;
 
-	@ConstructOption()
+	@Property()
 	anchorY = 0;
 
-	@ConstructOption()
+	@Property()
 	boundings = [0, 0, this.sizeX, this.sizeY];
 
-	@ConstructOption()
+	@Property()
 	obstacle = false;
 
-	@ConstructOption()
+	@Property()
 	obstacleHinder = true;
 
-	@ConstructOption()
+	@Property()
 	rotation = 0;
 
-	@ConstructOption()
+	@Property()
 	posX = 0;
 
-	@ConstructOption()
+	@Property()
 	posY = 0;
 
+	@Private()
+	@Property()
 	lastPosX = 0;
 
+	@Private()
+	@Property()
 	lastPosY = 0;
 
-	@ConstructOption()
+	@Property()
 	aimTarget = 0;
 
-	@ConstructOption()
+	@Property()
 	motionX = 0;
 
-	@ConstructOption()
+	@Property()
 	motionY = 0;
 
+	@Private()
+	@Property()
 	motionDecreaseRate = 0.9;
 
-	@ConstructOption()
+	@Index()
+	@Property()
 	isUsing = false;
 
+	@Private()
+	@Index()
+	@Property()
 	isPlayer = false;
 
-	@ConstructOption()
+	@Property()
 	useTick = 0;
 
-	@ConstructOption()
+	@Property()
 	attachments: RecordMap<Attachment, AttachType> = new RecordMap();
 
-	@ConstructOption()
+	@Property()
 	attaching: Attachment;
 
+	@Private()
+	@Property()
+	@Index()
 	type: ActorType;
 
-	@ConstructOption()
+	@Private()
+	@Property()
 	attachMapping: AttachMapping;
 
+	@Private()
+	@Property()
 	lastInputSeqId = -1;
 
+	@Private()
+	@Property()
 	canDamage = false;
 
+	@Private()
+	@Index()
+	@Property()
 	isMoveDirty = false;
+
+	@Private()
+	@Index()
+	@Property()
 	isWalkDirty = false;
 
+	@Index()
+	@Property()
 	isActor = true;
 
+	@Property()
 	direction: Direction = Direction.FORWARD;
+
+	@Property()
 	running: RunningState = RunningState.SILENT;
 }
 

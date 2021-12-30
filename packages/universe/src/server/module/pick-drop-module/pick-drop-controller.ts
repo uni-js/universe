@@ -22,7 +22,7 @@ export class PickDropController extends ServerSideController {
 		const player = this.playerManager.findEntity({ connId });
 		const shortcut = this.inventoryManager.getShortcut(player);
 		const dropAtPos = new Vector2(player.posX, player.posY);
-		this.inventoryManager.dropContainerItem(shortcut.$loki, shortcut.currentIndex, dropAtPos);
+		this.inventoryManager.dropContainerItem(shortcut.id, shortcut.currentIndex, dropAtPos);
 	}
 
 	@HandleExternalEvent(ClientEvents.PickItemEvent)
@@ -30,6 +30,6 @@ export class PickDropController extends ServerSideController {
 		const player = this.playerManager.findEntity({ connId });
 		const shortcut = this.inventoryManager.getBackpack(player);
 		const pickFromPos = new Vector2(player.posX, player.posY);
-		this.inventoryManager.pickItemsFromPos(shortcut.$loki, pickFromPos);
+		this.inventoryManager.pickItemsFromPos(shortcut.id, pickFromPos);
 	}
 }

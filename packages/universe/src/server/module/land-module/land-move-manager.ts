@@ -27,12 +27,12 @@ export class LandMoveManager extends ServerSideManager {
 		this.landManager.ensureLand(landPos);
 
 		const land = this.landManager.getLand(landPos);
-		this.landManager.addAtRecord(land, 'actors', actorId);
+		land.actors.add(actorId)
 	}
 
 	removeLandActor(landPos: Vector2, actorId: number) {
 		const land = this.landManager.getLand(landPos);
-		this.landManager.removeAtRecord(land, 'actors', actorId);
+		land.actors.remove(actorId)
 	}
 
 	@HandleInternalEvent('actorManager', AddEntityEvent)

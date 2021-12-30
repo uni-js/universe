@@ -1,20 +1,22 @@
 import { Actor } from '../actor-module/actor-entity';
 import { ActorType } from '../actor-module/spec';
 import { ItemType } from '../inventory-module/spec';
-import { ConstructOption } from '../../shared/entity';
+import { Entity, Property } from '@uni.js/database';
 
+@Entity()
 export class DroppedItemActor extends Actor {
+	@Property()
 	type = ActorType.DROPPED_ITEM;
 
-	@ConstructOption()
+	@Property()
 	itemType: ItemType;
 
-	@ConstructOption()
+	@Property()
 	itemCount = 1;
 
-	@ConstructOption()
+	@Property()
 	sizeX = 0.7;
 
-	@ConstructOption()
+	@Property()
 	sizeY = 0.7;
 }

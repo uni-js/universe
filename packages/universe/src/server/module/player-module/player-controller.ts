@@ -38,16 +38,16 @@ export class PlayerController extends ServerSideController {
 	@HandleExternalEvent(ClientEvents.ActorToggleWalkEvent)
 	private handleActorToggleWalk(connId: string, event: ClientEvents.ActorToggleWalkEvent) {
 		const player = this.playerManager.findEntity({ connId });
-		if (event.actorId !== player.$loki) return;
+		if (event.actorId !== player.id) return;
 
-		this.actorManager.setWalkState(player.$loki, event.running, event.direction);
+		this.actorManager.setWalkState(player.id, event.running, event.direction);
 	}
 
 	@HandleExternalEvent(ClientEvents.LoginEvent)
 	private handleLogin(connId: string) {
 		const player = this.playerManager.addNewPlayer(connId);
 		const event = new ExternalEvents.LoginedEvent();
-		event.actorId = player.$loki;
+		event.actorId = player.id;
 
 		this.eventBus.emitTo([connId], event);
 		Logger.info(`user logined :`, player.playerName, player.connId);
@@ -56,12 +56,12 @@ export class PlayerController extends ServerSideController {
 	@HandleExternalEvent(ClientEvents.ControlMovedEvent)
 	private handleMovePlayer(connId: string, event: ClientEvents.ControlMovedEvent) {
 		const player = this.playerManager.findEntity({ connId });
-		this.actorManager.processInput(player.$loki, event.input);
+		this.actorManager.processInput(player.id, event.input);
 	}
 
 	@HandleExternalEvent(ClientEvents.SetAimTargetEvent)
 	private handleSetAimTargetEvent(connId: string, event: ClientEvents.SetAimTargetEvent) {
 		const player = this.playerManager.findEntity({ connId });
-		this.actorManager.setAimTarget(player.$loki, event.rotation);
+		this.actorManager.setAimTarget(player.id, event.rotation);
 	}
 }

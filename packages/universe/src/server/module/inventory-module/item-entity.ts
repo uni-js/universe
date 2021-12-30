@@ -1,10 +1,18 @@
-import { Entity } from '@uni.js/server';
+import { Entity, Index, Property } from '@uni.js/database';
 import { ActorType } from '../actor-module/spec';
 import { ItemType, ItemHoldAction } from "./spec"
 
-export class ItemDef extends Entity {
+@Entity()
+export class ItemDef {
+
+	@Index()
+	@Property()
 	itemType: ItemType;
+
+	@Property()
 	holdAction: ItemHoldAction = ItemHoldAction.NONE;
+
+	@Property()
 	specActorType?: ActorType;
 }
 

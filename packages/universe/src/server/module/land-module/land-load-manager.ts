@@ -26,7 +26,7 @@ export class LandLoadManager extends ServerSideManager {
 		for (const player of players) {
 			if (!this.playerManager.isUseLand(player, landPos)) continue;
 
-			this.landManager.sendLandDataToPlayer(player.$loki, landPos);
+			this.landManager.sendLandDataToPlayer(player.id, landPos);
 		}
 	}
 
