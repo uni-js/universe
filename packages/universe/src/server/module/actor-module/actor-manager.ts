@@ -1,8 +1,8 @@
 import SAT from 'sat';
 
-import { EntityManager, UpdateOnlyCollection } from '@uni.js/server';
+import { EntityManager, UpdateOnlyCollection } from '@uni.js/database';
 import { injectable } from 'inversify';
-import { injectCollection } from '@uni.js/server';
+import { injectCollection } from '@uni.js/database';
 import { Vector2 } from '../../shared/math';
 import { PosToLandPos } from '../land-module/helper';
 import { Direction, RunningState, AttachType, isAngleMatchDirection, getDirectionAngle, calcBoundingBox, ActorType } from './spec';

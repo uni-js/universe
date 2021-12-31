@@ -11,7 +11,7 @@ import { GetConstructOptions } from '../../shared/entity';
 import * as Events from '../../event/internal';
 import { LandManager } from '../land-module/land-manager';
 import { AddEntityEvent, HandleInternalEvent, RemoveEntityEvent } from '@uni.js/event';
-import { ExtendedEntityManager } from '@uni.js/server';
+import { ExtendedEntityManager } from '@uni.js/database';
 
 @injectable()
 export class PlayerManager extends ExtendedEntityManager<Actor, Player> {

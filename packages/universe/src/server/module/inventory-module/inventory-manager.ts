@@ -8,9 +8,8 @@ import {
 	MAX_STACK_SIZE,
 } from './spec';
 import { PlayerManager } from '../player-module/player-manager';
-import { injectCollection, NotLimitCollection } from '@uni.js/server';
+import { EntityManager, UpdateOnlyCollection, injectCollection, NotLimitCollection } from "@uni.js/database"
 import { inject, injectable } from 'inversify';
-import { EntityManager, UpdateOnlyCollection } from '@uni.js/server';
 import { ItemHoldAction, ItemType, ToolsItemTypes } from './spec';
 import { ItemDef, ItemDefList } from "./item-entity";
 import { ActorManager } from '../actor-module/actor-manager';

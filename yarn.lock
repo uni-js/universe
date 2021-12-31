@@ -1871,7 +1871,7 @@
     "@types/level-errors" "*"
     "@types/node" "*"
 
-"@types/lokijs@^1.5.6", "@types/lokijs@^1.5.7":
+"@types/lokijs@^1.5.7":
   version "1.5.7"
   resolved "https://registry.yarnpkg.com/@types/lokijs/-/lokijs-1.5.7.tgz#5eb4b189149681a89acad6dc8adb088f6025feb3"
   integrity sha512-WEFQLgO3u2Wa7yFybqkTZYumqF1GcHvUwx8Tv2SUHy2qpnIainMMoLmEUGdjhPNp/v5pyC9e91fSMC3mkxBIDw==

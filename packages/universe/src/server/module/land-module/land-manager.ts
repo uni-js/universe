@@ -1,13 +1,12 @@
 import { Logger } from '@uni.js/utils';
 import { Land } from './land-entity';
-import { EntityManager, UpdateOnlyCollection } from '@uni.js/server';
+import { EntityManager, UpdateOnlyCollection, injectCollection, NotLimitCollection } from '@uni.js/database';
 import { Vector2 } from '../../shared/math';
 import { PersistDatabaseSymbol, IPersistDatabase } from '../../database';
 import { spawn } from 'threads';
 
 import { BrickData, LandData } from './spec';
 import { inject, injectable } from 'inversify';
-import { NotLimitCollection, injectCollection } from '@uni.js/server';
 import { Brick } from './brick-entity';
 
 import * as Events from '../../event/internal';

@@ -3,7 +3,7 @@ import { ActorType } from '../actor-module/spec';
 import { Actor } from '../actor-module/actor-entity';
 import { Arrow, Bow } from './bow-entity';
 import { ActorManager } from '../actor-module/actor-manager';
-import { ExtendedEntityManager } from '@uni.js/server';
+import { ExtendedEntityManager } from '@uni.js/database';
 
 import * as Events from '../../event/internal';
 import { HandleInternalEvent } from '@uni.js/event';
