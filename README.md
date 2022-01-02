@@ -2,7 +2,7 @@
 
 ## Multi-Player Game
 
-This is a multi-player HTML5 game based on `pixi.js`, `socket.io` and `loki.js` written in TypeScript.
+This is a multi-player HTML5 game based on `pixi.js`, `socket.io` written in TypeScript.
 
 ![](./images/pic1.png)
 
