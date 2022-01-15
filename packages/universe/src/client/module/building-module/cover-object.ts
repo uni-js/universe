@@ -22,7 +22,7 @@ export class CoverObject extends GameObject {
 		this.coverLayer.clear();
 		if (range === undefined) return;
 
-		const texture = this.textureProvider.getOne('building.cover');
+		const texture = this.textureProvider.get('building.cover');
 		for (let x = range.from.x; x <= range.to.x; x++) {
 			for (let y = range.from.y; y <= range.to.y; y++) {
 				this.coverLayer.addFrame(texture, x * BRICK_WIDTH, y * BRICK_WIDTH);

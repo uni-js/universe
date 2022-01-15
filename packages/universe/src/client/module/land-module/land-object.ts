@@ -27,7 +27,7 @@ export class LandObject extends StaticObject {
 
 	setLandData(landData: LandData) {
 		for (const [, brick] of landData.bricks.entries()) {
-			const texture = this.textureProvider.getOne(`brick.${BrickTypeName[brick.type]}.normal`);
+			const texture = this.textureProvider.get(`brick.${BrickTypeName[brick.type]}`);
 			this.tileLayer.addFrame(texture, brick.offX * BRICK_WIDTH, brick.offY * BRICK_WIDTH);
 		}
 	}

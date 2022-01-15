@@ -32,6 +32,7 @@
     "@uni.js/ui": "^0.1.0",
     "@uni.js/html-input": "^0.1.0",
     "@uni.js/database": "^0.1.0",
+    "@uni.js/texture-webpack-loader": "^0.1.0",
     "buffer": "^6.0.3",
     "chalk": "^4.1.2",
     "classnames": "^2.3.1",

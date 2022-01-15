@@ -32,7 +32,7 @@ export class Bow extends ActorObject {
 		this.sprite.animationSpeed = 0.1;
 		this.sprite.loop = false;
 
-		this.textures = this.textureProvider.getGroup('actor.bow.{order}', 3);
+		this.textures = this.textureProvider.getGroup('actor.bow');
 	}
 
 	startUsing() {

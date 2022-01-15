@@ -148,7 +148,7 @@ export class ActorObject extends GameObject {
 		}
 
 		this.boundings = option.boundings;
-		this.singleTexture = this.textureProvider.getOne(`actor.${ActorTypeName[actorType]}.normal`);
+		this.singleTexture = this.textureProvider.get(`actor.${ActorTypeName[actorType]}`);
 
 		this.controlDirection(Direction.FORWARD);
 
@@ -315,7 +315,7 @@ export class ActorObject extends GameObject {
 
 	set hasShadow(val: boolean) {
 		if (val && !this._hasShadow) {
-			this.shadow = new PIXI.Sprite(this.textureProvider.getOne('system.shadow'));
+			this.shadow = new PIXI.Sprite(this.textureProvider.get('system.shadow'));
 			this.shadow.anchor.set(0.5, 0.5);
 			this.addChild(this.shadow);
 		}

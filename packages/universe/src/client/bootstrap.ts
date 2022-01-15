@@ -20,7 +20,7 @@ import { BootController } from './controller/boot-controller';
 import { ActorLayer, BuildingCreatorLayer, LandLayer } from './store';
 
 export async function bootstrap() {
-	const texturePaths = JSON.parse(process.env.TEXTURE_LOADED);
+	const textureList = JSON.parse(process.env.UNI_TEXTURE_LIST);
 	const serverUrl = process.env.UNIVERSE_SERVER_URL;
 
 	const worldWidth = 4 * 7;
@@ -47,7 +47,9 @@ export async function bootstrap() {
 	});
 
 	await app.use(HTMLInputPlugin());
-	await app.use(TexturePlugin(texturePaths));
+	await app.use(TexturePlugin({
+		imports: textureList
+	}));
 	await app.use(UIPlugin(GameUI));
 	await app.use(ViewportPlugin({
 		screenWidth: resolution * worldWidth,

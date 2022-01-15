@@ -94,7 +94,7 @@ export const ItemBlock = React.memo((props: ItemBlockProps) => {
 		props.onMouseMove && props.onMouseMove();
 	}
 
-	const texturePath = useTexturePath(provider, `item.${ItemTypeName[props.itemType]}.normal`);
+	const texturePath = useTexturePath(provider, `item.${ItemTypeName[props.itemType]}`);
 
 	const clsName = classNames(
 		{
