@@ -1,6 +1,6 @@
 import { Logger } from '@uni.js/utils';
 import { Land } from './land-entity';
-import { EntityManager, UpdateOnlyCollection, injectCollection, NotLimitCollection } from '@uni.js/database';
+import { EntityManager, UpdateOnlyCollection, injectCollection, NotLimitCollection, EntityBaseEvent } from '@uni.js/database';
 import { Vector2 } from '../../shared/math';
 import { PersistDatabaseSymbol, IPersistDatabase } from '../../database';
 import { spawn } from 'threads';
@@ -9,14 +9,29 @@ import { BrickData, LandData } from './spec';
 import { inject, injectable } from 'inversify';
 import { Brick } from './brick-entity';
 
-import * as Events from '../../event/internal';
-
 export function BuildLandHash(pos: Vector2) {
 	return `land.${pos.x}.${pos.y}`;
 }
 
+export interface LandManagerEvents extends EntityBaseEvent {
+	LandLoadedEvent: {
+		landPosX: number;
+		landPosY: number;
+	},
+	LandDataToPlayerEvent: {
+		playerId: number;
+		landId: number;
+		landPosX: number;
+		landPosY: number;
+		landData: any;
+	},
+	LandUnloadedEvent: {
+		landId: number;
+	}
+}
+
 @injectable()
-export class LandManager extends EntityManager<Land> {
+export class LandManager extends EntityManager<Land, LandManagerEvents> {
 	private generatorWorker = spawn(new Worker('./generator.worker'));
 
 	constructor(
@@ -70,7 +85,7 @@ export class LandManager extends EntityManager<Land> {
 		const land = this.getLand(landPos);
 		const landData = this.getLandData(landPos.x, landPos.y);
 
-		this.emitEvent(Events.LandDataToPlayerEvent, {
+		this.emit("LandDataToPlayerEvent", {
 			playerId,
 			landId: land.id,
 			landPosX: land.landLocX,
@@ -117,7 +132,7 @@ export class LandManager extends EntityManager<Land> {
 		land.isLoading = false;
 		this.landList.update(land);
 
-		this.emitEvent(Events.LandLoadedEvent, {
+		this.emit("LandLoadedEvent", {
 			landPosX: landPos.x,
 			landPosY: landPos.y,
 		});
@@ -132,7 +147,7 @@ export class LandManager extends EntityManager<Land> {
 
 		this.removeLandBricks(landPos.x, landPos.y);
 
-		this.emitEvent(Events.LandUnloadedEvent, {
+		this.emit("LandUnloadedEvent", {
 			landId: land.id,
 		});
 	}

@@ -1,6 +1,6 @@
 import SAT from 'sat';
 
-import { EntityManager, UpdateOnlyCollection } from '@uni.js/database';
+import { EntityBaseEvent, EntityManager, UpdateOnlyCollection } from '@uni.js/database';
 import { injectable } from 'inversify';
 import { injectCollection } from '@uni.js/database';
 import { Vector2 } from '../../shared/math';
@@ -9,15 +9,69 @@ import { Direction, RunningState, AttachType, isAngleMatchDirection, getDirectio
 import { Input } from '@uni.js/prediction';
 import { Actor } from './actor-entity';
 
-import * as Events from '../../event/internal';
+export interface CheckResult {
+	actorId: number;
+	actorType: ActorType;
+	checkResponse: SAT.Response;
+}
 
 export interface CollisionResult {
 	actor: Actor;
 	response: SAT.Response;
 }
 
+export interface ActorManagerEvents extends EntityBaseEvent{
+	ActorDamagedEvent: {
+		actorId: number;
+		finalHealth: number;
+	},
+	ActorSetAttachmentEvent: {
+		targetActorId: number;
+		key: AttachType;
+		actorId: number;
+	},
+	ActorRemoveAttachmentEvent: {
+		targetActorId: number;
+		key: AttachType;
+	},
+	ActorToggleUsingEvent: {
+		actorId: number;
+		startOrEnd: boolean;
+		useTick: number;
+	},
+	ActorSetRotationEvent: {
+		actorId: number;
+		rotation: number;
+	},
+	NewWalkStateEvent: {
+		actorId: number;
+		direction: Direction;
+		running: RunningState;
+	},
+	NewPosEvent: {
+		actorId: number;
+		posX: number;
+		posY: number;
+		motionX: number;
+		motionY: number;
+		processedInputSeq: number;
+	},
+	LandMoveEvent: {
+		actorId: number;
+		targetLandPosX: number;
+		targetLandPosY: number;
+		sourceLandPosX: number;
+		sourceLandPosY: number;
+	},
+	ActorCollusionEvent: {
+		actorId: number;
+		actorType: ActorType;
+		checkResults: CheckResult[];
+	}
+}
+
 @injectable()
-export class ActorManager extends EntityManager<Actor> {
+export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 	constructor(@injectCollection(Actor) private actorList: UpdateOnlyCollection<Actor>) {
 		super(actorList);
 	}
@@ -40,7 +94,7 @@ export class ActorManager extends EntityManager<Actor> {
 
 		this.actorList.update(actor);
 
-		this.emitEvent(Events.ActorDamagedEvent, { actorId: actor.id, finalHealth: actor.health });
+		this.emit("ActorDamagedEvent", { actorId: actor.id, finalHealth: actor.health });
 	}
 
 	getActorBoundingBox(actor: Actor) {
@@ -108,7 +162,7 @@ export class ActorManager extends EntityManager<Actor> {
 
 		this.updateAttachment(targetActorId);
 
-		this.emitEvent(Events.ActorSetAttachmentEvent, {
+		this.emit("ActorSetAttachmentEvent", {
 			targetActorId: targetActor.id,
 			key,
 			actorId,
@@ -129,7 +183,7 @@ export class ActorManager extends EntityManager<Actor> {
 		const actor = this.actorList.findOne({ id: targetActorId });
 		actor.attachments.remove(key);
 
-		this.emitEvent(Events.ActorRemoveAttachmentEvent, { targetActorId: actor.id, key });
+		this.emit("ActorRemoveAttachmentEvent", { targetActorId: actor.id, key });
 	}
 
 	clearAttachments(targetActorId: number, removeActors = false) {
@@ -169,7 +223,7 @@ export class ActorManager extends EntityManager<Actor> {
 
 		this.actorList.update(actor);
 
-		this.emitEvent(Events.ActorToggleUsingEvent, { actorId, startOrEnd: true, useTick: 0 });
+		this.emit("ActorToggleUsingEvent", { actorId, startOrEnd: true, useTick: 0 });
 	}
 
 	endUsing(actorId: number) {
@@ -181,7 +235,7 @@ export class ActorManager extends EntityManager<Actor> {
 
 		this.actorList.update(actor);
 
-		this.emitEvent(Events.ActorToggleUsingEvent, { actorId, startOrEnd: false, useTick });
+		this.emit("ActorToggleUsingEvent", { actorId, startOrEnd: false, useTick });
 	}
 
 	setAimTarget(actorId: number, aimTarget: number) {
@@ -202,7 +256,7 @@ export class ActorManager extends EntityManager<Actor> {
 		actor.rotation = rotation;
 		this.actorList.update(actor);
 
-		this.emitEvent(Events.ActorSetRotationEvent, { actorId, rotation });
+		this.emit("ActorSetRotationEvent", { actorId, rotation });
 	}
 
 	removeEntity<T extends Actor>(actor: T): void {
@@ -223,7 +277,7 @@ export class ActorManager extends EntityManager<Actor> {
 				delta = delta.sub(Vector2.fromSATVector(result.response.overlapV));
 			}
 			if (checkResults.length > 0) {
-				this.emitEvent(Events.ActorCollusionEvent, {
+				this.emit("ActorCollusionEvent", {
 					actorId: actor.id,
 					actorType: actor.type,
 					checkResults: checkResults.map((r) => ({ actorId: r.actor.id, actorType: r.actor.type, checkResponse: r.response })),
@@ -247,7 +301,7 @@ export class ActorManager extends EntityManager<Actor> {
 		const landDelta = landPos.sub(lastLandPos);
 
 		if (landDelta.getSqrt() > 0) {
-			this.emitEvent(Events.LandMoveEvent, {
+			this.emit("LandMoveEvent", {
 				actorId: actor.id,
 				targetLandPosX: landPos.x,
 				targetLandPosY: landPos.y,
@@ -267,7 +321,7 @@ export class ActorManager extends EntityManager<Actor> {
 				actor.isMoveDirty = false;
 				this.actorList.update(actor);
 
-				this.emitEvent(Events.NewPosEvent, {
+				this.emit("NewPosEvent", {
 					actorId: actor.id,
 					posX: actor.posX,
 					posY: actor.posY,
@@ -284,7 +338,7 @@ export class ActorManager extends EntityManager<Actor> {
 		for (const actor of dirtyActors) {
 			actor.isWalkDirty = false;
 			this.actorList.update(actor);
-			this.emitEvent(Events.NewWalkStateEvent, {
+			this.emit("NewWalkStateEvent", {
 				actorId: actor.id,
 				direction: actor.direction,
 				running: actor.running,

@@ -3,12 +3,12 @@ import { Actor } from '../actor-module/actor-entity';
 import { PosToLandPos } from './helper';
 import { ServerSideManager } from '@uni.js/server';
 import { Vector2 } from '../../shared/math';
-import { ActorManager } from '../actor-module/actor-manager';
+import { ActorManager, ActorManagerEvents } from '../actor-module/actor-manager';
 import { LandManager } from './land-manager';
-import { PlayerManager } from '../player-module/player-manager';
+import { PlayerManager, PlayerManagerEvents } from '../player-module/player-manager';
 
-import * as Events from '../../event/internal';
-import { AddEntityEvent, HandleInternalEvent, RemoveEntityEvent } from '@uni.js/event';
+import { HandleEvent } from '@uni.js/event';
+import { AddEntityEvent, RemoveEntityEvent } from '@uni.js/database';
 
 /**
  * maintaining land crossing and land loading
@@ -35,7 +35,7 @@ export class LandMoveManager extends ServerSideManager {
 		land.actors.remove(actorId)
 	}
 
-	@HandleInternalEvent('actorManager', AddEntityEvent)
+	@HandleEvent('actorManager', "AddEntityEvent")
 	private onActorAdded(event: AddEntityEvent) {
 		const actor = event.entity as Actor;
 		const pos = new Vector2(actor.posX, actor.posY);
@@ -43,7 +43,7 @@ export class LandMoveManager extends ServerSideManager {
 		this.addLandActor(landPos, event.entityId);
 	}
 
-	@HandleInternalEvent('actorManager', RemoveEntityEvent)
+	@HandleEvent('actorManager', "RemoveEntityEvent")
 	private onActorRemoved(event: RemoveEntityEvent) {
 		const actor = event.entity as Actor;
 		const pos = new Vector2(actor.posX, actor.posY);
@@ -51,8 +51,8 @@ export class LandMoveManager extends ServerSideManager {
 		this.removeLandActor(landPos, event.entityId);
 	}
 
-	@HandleInternalEvent('actorManager', Events.LandMoveEvent)
-	private onActorLandMoved(event: Events.LandMoveEvent) {
+	@HandleEvent('actorManager', "LandMoveEvent")
+	private onActorLandMoved(event: ActorManagerEvents['LandMoveEvent']) {
 		const sourceLandPos = new Vector2(event.sourceLandPosX, event.sourceLandPosY);
 		const targetLandPos = new Vector2(event.targetLandPosX, event.targetLandPosY);
 
@@ -69,8 +69,8 @@ export class LandMoveManager extends ServerSideManager {
 		});
 	}
 
-	@HandleInternalEvent('playerManager', Events.LandUsedEvent)
-	private onLandUsed(event: Events.LandUsedEvent) {
+	@HandleEvent('playerManager', "LandUsedEvent")
+	private onLandUsed(event: PlayerManagerEvents['LandUsedEvent']) {
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 		const player = this.playerManager.getEntityById(event.playerId);
 
@@ -81,8 +81,8 @@ export class LandMoveManager extends ServerSideManager {
 		}
 	}
 
-	@HandleInternalEvent('playerManager', Events.LandNeverUsedEvent)
-	private onLandNeverUsed = (event: Events.LandNeverUsedEvent) => {
+	@HandleEvent('playerManager', "LandNeverUsedEvent")
+	private onLandNeverUsed = (event: PlayerManagerEvents['LandNeverUsedEvent']) => {
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 		const player = this.playerManager.getEntityById(event.playerId);
 

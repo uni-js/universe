@@ -10,8 +10,6 @@ import { HealthBar } from './health-bar';
 import { NameTag } from './nametag';
 import { SERVER_TICKS_MULTIPLE } from '../../../server/shared/server';
 
-import * as Events from '../../event/internal';
-
 function GetEmptyTexture() {
 	return PIXI.Texture.fromBuffer(new Uint8Array(1), 1, 1);
 }
@@ -435,12 +433,12 @@ export class ActorObject extends GameObject {
 		this.healthBar && this.healthBar.doFixedUpdateTick();
 
 		if (this.isUsingDirty) {
-			this.emitEvent(Events.ActorToggleUsingEvent, { actorId: this.serverId, startOrEnd: this.isUsing ? true : false });
+			this.emit("ActorToggleUsingEvent", { actorId: this.serverId, startOrEnd: this.isUsing ? true : false });
 			this.isUsingDirty = false;
 		}
 
 		if (this.isWalkDirty) {
-			this.emitEvent(Events.ActorToggleWalkEvent, {
+			this.emit("ActorToggleWalkEvent", {
 				actorId: this.serverId,
 				running: this.running,
 				direction: this.direction,

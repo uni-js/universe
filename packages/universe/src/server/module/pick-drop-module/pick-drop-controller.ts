@@ -4,8 +4,8 @@ import { InventoryManager } from '../../module/inventory-module/inventory-manage
 import { PlayerManager } from '../../module/player-module/player-manager';
 import { ServerSideController } from '@uni.js/server';
 import { Vector2 } from '../../shared/math';
-import * as ClientEvents from '../../../client/event/external';
-import { HandleExternalEvent } from '@uni.js/event';
+import * as ClientEvents from '../../../client/event';
+import { HandleRemoteEvent } from '@uni.js/event';
 
 @injectable()
 export class PickDropController extends ServerSideController {
@@ -17,7 +17,7 @@ export class PickDropController extends ServerSideController {
 		super(eventBus);
 	}
 
-	@HandleExternalEvent(ClientEvents.DropItemEvent)
+	@HandleRemoteEvent(ClientEvents.DropItemEvent)
 	private handleDropItem(connId: string) {
 		const player = this.playerManager.findEntity({ connId });
 		const shortcut = this.inventoryManager.getShortcut(player);
@@ -25,7 +25,7 @@ export class PickDropController extends ServerSideController {
 		this.inventoryManager.dropContainerItem(shortcut.id, shortcut.currentIndex, dropAtPos);
 	}
 
-	@HandleExternalEvent(ClientEvents.PickItemEvent)
+	@HandleRemoteEvent(ClientEvents.PickItemEvent)
 	private handlePickItem(connId: string) {
 		const player = this.playerManager.findEntity({ connId });
 		const shortcut = this.inventoryManager.getBackpack(player);

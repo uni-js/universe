@@ -21,5 +21,14 @@ export class Brick {
 	offLocY: number;
 
 	@Property()
+	posX: number;
+
+	@Property()
+	posY: number;
+
+	@Property()
+	layers: BrickType[] = [];
+
+	@Property()
 	broken: boolean;
 }

@@ -4,8 +4,7 @@ import { PlayerManager } from '../player-module/player-manager';
 import { inject, injectable } from 'inversify';
 import { LandManager } from '../../module/land-module/land-manager';
 
-import * as Events from '../../event/internal';
-import * as ExternalEvents from '../../event/external';
+import * as ExternalEvents from '../../event';
 
 @injectable()
 export class LandController extends ServerSideController {
@@ -18,13 +17,13 @@ export class LandController extends ServerSideController {
 
 		this.redirectToBusEvent(
 			this.landManager,
-			Events.LandDataToPlayerEvent,
+			"LandDataToPlayerEvent",
 			ExternalEvents.LandDataToPlayerEvent,
 			(ev) => this.playerManager.getEntityById(ev.playerId).connId,
 		);
 		this.redirectToBusEvent(
 			this.playerManager,
-			Events.LandNeverUsedEvent,
+			"LandNeverUsedEvent",
 			ExternalEvents.LandNeverUsedEvent,
 			(ev) => this.playerManager.getEntityById(ev.playerId).connId,
 		);

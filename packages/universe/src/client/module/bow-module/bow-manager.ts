@@ -4,13 +4,12 @@ import { ItemType } from '../../../server/module/inventory-module/spec';
 import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../../../server/module/bow-module/spec';
 import { SERVER_TICKS_MULTIPLE } from '../../../server/shared/server';
 import { ClientSideManager } from '@uni.js/client';
-import { ActorManager } from '../actor-module/actor-manager';
+import { ActorManager, ActorManagerEvents } from '../actor-module/actor-manager';
 import { PlayerManager } from '../player-module/player-manager';
-import { ShortcutManager } from '../inventory-module/inventory-manager';
-import { HandleInternalEvent } from '@uni.js/event';
+import { ContainerManagerEvents, ShortcutManager } from '../inventory-module/inventory-manager';
+import { HandleEvent } from '@uni.js/event';
 import { BowUsingState } from './ui-state';
 
-import * as Events from '../../event/internal';
 
 @injectable()
 export class BowManager extends ClientSideManager {
@@ -27,8 +26,8 @@ export class BowManager extends ClientSideManager {
 		super();
 	}
 
-	@HandleInternalEvent('actorManager', Events.ActorToggleUsingEvent)
-	private onActorToggleUsing(event: Events.ActorToggleUsingEvent) {
+	@HandleEvent('actorManager', "ActorToggleUsingEvent")
+	private onActorToggleUsing(event: ActorManagerEvents['ActorToggleUsingEvent']) {
 		const actor = this.actorManager.getObjectById(event.actorId);
 		if (actor.actorType !== ActorType.BOW) return;
 		if (actor.attaching.actorId !== this.playerManager.getCurrentPlayer().getServerId()) return;
@@ -42,8 +41,8 @@ export class BowManager extends ClientSideManager {
 		}
 	}
 
-	@HandleInternalEvent('shortcutManager', Events.SetShortcutIndexEvent)
-	private onShortcutSetIndex(event: Events.SetShortcutIndexEvent) {
+	@HandleEvent('shortcutManager', "SetShortcutIndexEvent")
+	private onShortcutSetIndex(event: ContainerManagerEvents['SetShortcutIndexEvent']) {
 		if (event.itemType !== ItemType.BOW) {
 			this.bowUsingState.isUsing = false;
 			this.playerManager.settingAimTarget = false;

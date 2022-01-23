@@ -3,11 +3,10 @@ import { ServerSideController } from '@uni.js/server';
 import { inject, injectable } from 'inversify';
 import { InventoryManager } from './inventory-manager';
 import { PlayerManager } from '../player-module/player-manager';
-import { HandleExternalEvent } from '@uni.js/event';
-import * as ClientEvents from '../../../client/event/external';
+import { HandleRemoteEvent } from '@uni.js/event';
+import * as ClientEvents from '../../../client/event';
 
-import * as Events from '../../event/internal';
-import * as ExternalEvents from '../../event/external';
+import * as ExternalEvents from '../../event';
 
 @injectable()
 export class InventoryController extends ServerSideController {
@@ -20,18 +19,18 @@ export class InventoryController extends ServerSideController {
 
 		this.redirectToBusEvent(
 			this.inventoryManager,
-			Events.UpdateContainerEvent,
+			"UpdateContainerEvent",
 			ExternalEvents.UpdateContainerEvent,
 			(ev) => this.playerManager.getEntityById(ev.playerId).connId,
 		);
 	}
 
-	@HandleExternalEvent(ClientEvents.SetShortcutIndexEvent)
+	@HandleRemoteEvent(ClientEvents.SetShortcutIndexEvent)
 	private handleSetShortcutIndex(connId: string, event: ClientEvents.SetShortcutIndexEvent) {
 		this.inventoryManager.setShortcutIndex(event.containerId, event.indexAt);
 	}
 
-	@HandleExternalEvent(ClientEvents.ContainerMoveBlockEvent)
+	@HandleRemoteEvent(ClientEvents.ContainerMoveBlockEvent)
 	private handleContainerMoveBlock(connId: string, event: ClientEvents.ContainerMoveBlockEvent) {
 		this.inventoryManager.moveContainerBlock(event.sourceContainerId, event.sourceIndex, event.targetContainerId, event.targetIndex);
 	}

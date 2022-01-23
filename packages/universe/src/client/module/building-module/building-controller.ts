@@ -1,11 +1,10 @@
-import * as Events from '../../event/internal';
-import * as ExternalEvents from '../../event/external';
+import * as ExternalEvents from '../../event';
 
-import * as ServerEvents from '../../../server/event/external';
+import * as ServerEvents from '../../../server/event';
 
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '@uni.js/client';
-import { HandleExternalEvent } from '@uni.js/event';
+import { HandleRemoteEvent } from '@uni.js/event';
 import { ClientSideController } from '@uni.js/client';
 import { BuildingManager } from './building-manager';
 
@@ -15,7 +14,7 @@ export class BuildingController extends ClientSideController {
 		super(eventBus);
 	}
 
-	@HandleExternalEvent(ServerEvents.UpdateBuildingNearbyEvent)
+	@HandleRemoteEvent(ServerEvents.UpdateBuildingNearbyEvent)
 	private handleUpdateBuildingNearbyEvent(event: ServerEvents.UpdateBuildingNearbyEvent) {
 		this.buildingManager.setBuildingsNearby(event.buildings);
 	}

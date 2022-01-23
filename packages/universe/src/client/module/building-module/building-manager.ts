@@ -6,7 +6,6 @@ import { ConvertedMouseEvent, ViewportHTMLEventDispatcher, Viewport } from '@uni
 import { Vector2 } from '../../../server/shared/math';
 import { Range2 } from '../../../server/shared/range';
 
-import * as Events from '../../event/internal';
 import { BuildingCreatorLayer } from '../../store';
 import { PlayerManager } from '../player-module/player-manager';
 import { CoverObject } from './cover-object';

@@ -2,11 +2,10 @@ import { inject, injectable } from 'inversify';
 import { ActorType } from '../actor-module/spec';
 import { Actor } from '../actor-module/actor-entity';
 import { Arrow, Bow } from './bow-entity';
-import { ActorManager } from '../actor-module/actor-manager';
+import { ActorManager, ActorManagerEvents } from '../actor-module/actor-manager';
 import { ExtendedEntityManager } from '@uni.js/database';
 
-import * as Events from '../../event/internal';
-import { HandleInternalEvent } from '@uni.js/event';
+import { HandleEvent } from '@uni.js/event';
 import { Vector2 } from '../../shared/math';
 import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS, ARROW_DEAD_TICKS, ARROW_DROP_TICKS } from "./spec"
 
@@ -19,8 +18,8 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 
 	}
 
-	@HandleInternalEvent('actorManager', Events.ActorToggleUsingEvent)
-	private onActorToggleUsing(event: Events.ActorToggleUsingEvent) {
+	@HandleEvent('actorManager', "ActorToggleUsingEvent")
+	private onActorToggleUsing(event: ActorManagerEvents['ActorToggleUsingEvent']) {
 		const actor = this.actorManager.getEntityById(event.actorId);
 		if (actor.type != ActorType.BOW) return;
 

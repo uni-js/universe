@@ -4,11 +4,10 @@ import { ActorManager } from '../actor-module/actor-manager';
 import { PlayerManager } from './player-manager';
 import { Player } from './player-object';
 import { ClientSideController } from '@uni.js/client';
-import * as Events from '../../event/internal';
-import * as ExternalEvents from '../../event/external';
+import * as ExternalEvents from '../../event';
 
-import * as ServerEvents from '../../../server/event/external';
-import { HandleExternalEvent } from '@uni.js/event';
+import * as ServerEvents from '../../../server/event';
+import { HandleRemoteEvent } from '@uni.js/event';
 import { Logger } from '@uni.js/utils';
 
 @injectable()
@@ -20,10 +19,10 @@ export class PlayerController extends ClientSideController {
 	) {
 		super(eventBus);
 
-		this.redirectToBusEvent(this.playerManager, Events.ControlMovedEvent, ExternalEvents.ControlMovedEvent);
+		this.redirectToBusEvent(this.playerManager, "ControlMovedEvent", ExternalEvents.ControlMovedEvent);
 	}
 
-	@HandleExternalEvent(ServerEvents.LoginedEvent)
+	@HandleRemoteEvent(ServerEvents.LoginedEvent)
 	private handleLogined(event: ServerEvents.LoginedEvent) {
 		Logger.info('user is logined to server', event);
 		const actorId = event.actorId;

@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient, ClientSideController } from '@uni.js/client';
-import { LoginEvent } from '../event/external';
+import { LoginEvent } from '../event';
 
 @injectable()
 export class BootController extends ClientSideController {

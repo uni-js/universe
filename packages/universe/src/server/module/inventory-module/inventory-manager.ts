@@ -8,7 +8,7 @@ import {
 	MAX_STACK_SIZE,
 } from './spec';
 import { PlayerManager } from '../player-module/player-manager';
-import { EntityManager, UpdateOnlyCollection, injectCollection, NotLimitCollection } from "@uni.js/database"
+import { EntityManager, UpdateOnlyCollection, injectCollection, NotLimitCollection, EntityBaseEvent, RemoveEntityEvent, AddEntityEvent } from "@uni.js/database"
 import { inject, injectable } from 'inversify';
 import { ItemHoldAction, ItemType, ToolsItemTypes } from './spec';
 import { ItemDef, ItemDefList } from "./item-entity";
@@ -17,12 +17,22 @@ import { ActorType, AttachType } from '../actor-module/spec';
 import { DroppedItemActor } from '../pick-drop-module/dropped-item-entity';
 import { Vector2 } from '../../shared/math';
 
-import * as Events from '../../event/internal';
-import { AddEntityEvent, HandleInternalEvent, RemoveEntityEvent } from '@uni.js/event';
 import { ActorFactory } from '../actor-module/actor-entity';
+import { HandleEvent } from '@uni.js/event';
+
+
+export interface InventoryManagerEvents extends EntityBaseEvent{
+	UpdateContainerEvent: {
+		playerId: number;
+		containerId: number;
+		containerType: ContainerType;
+		updateData: ContainerUpdateData;
+		isFullUpdate: boolean;
+	}
+}
 
 @injectable()
-export class InventoryManager extends EntityManager<Inventory> {
+export class InventoryManager extends EntityManager<Inventory, InventoryManagerEvents> {
 	constructor(
 		@injectCollection(Inventory) private inventoryList: UpdateOnlyCollection<Inventory>,
 		@injectCollection(Inventory) private playerInventoryList: UpdateOnlyCollection<PlayerInventory>,
@@ -116,7 +126,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 		return this.addNewEntity(inventory);
 	}
 
-	@HandleInternalEvent('playerManager', AddEntityEvent)
+	@HandleEvent('playerManager', "AddEntityEvent")
 	private onPlayerAdded(event: AddEntityEvent) {
 		const player = event.entity as Player;
 		const inventory = this.addNewPlayerInventory(player.id);
@@ -128,7 +138,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 		this.sendInventoryUpdateData(player, inventory.id);
 	}
 
-	@HandleInternalEvent('playerManager', RemoveEntityEvent)
+	@HandleEvent('playerManager', "RemoveEntityEvent")
 	private onPlayerRemoved(event: RemoveEntityEvent) {
 		const inventory = this.playerInventoryList.findOne({ playerId: event.entityId });
 		this.removeInventory(inventory.id);
@@ -165,7 +175,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 			});
 		}
 
-		this.emitEvent(Events.UpdateContainerEvent, {
+		this.emit("UpdateContainerEvent", {
 			playerId: player.id,
 			containerType: container.containerType,
 			updateData,
@@ -186,7 +196,7 @@ export class InventoryManager extends EntityManager<Inventory> {
 			count: block.itemCount,
 		});
 
-		this.emitEvent(Events.UpdateContainerEvent, {
+		this.emit("UpdateContainerEvent", {
 			playerId: player.id,
 			containerType: container.containerType,
 			updateData,

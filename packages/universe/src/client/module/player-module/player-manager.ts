@@ -2,18 +2,29 @@ import { Vector2 } from '../../../server/shared/math';
 import { HTMLInputProvider, InputKey } from '@uni.js/html-input';
 import { ClientSideManager } from '@uni.js/client';
 import { Viewport } from '@uni.js/viewport';
-import { AttachType, calcBoundingSATBox, Direction } from '../../../server/module/actor-module/spec';
+import { AttachType, calcBoundingSATBox, Direction, RunningState } from '../../../server/module/actor-module/spec';
 import { inject, injectable } from 'inversify';
 import { Player } from './player-object';
 import { ActorManager } from '../actor-module/actor-manager';
-import * as Events from '../../event/internal';
 import { UIEventBus } from '@uni.js/ui';
 import { PlayerState } from './ui-state';
 
 import SAT from 'sat';
+import { Input } from '@uni.js/prediction';
+
+export interface PlayerManagerEvents{
+	ControlMovedEvent: {
+		input: Input;
+		direction: Direction;
+		running: RunningState;
+	},
+	SetAimTargetEvent: {
+		rotation: number;
+	}
+}
 
 @injectable()
-export class PlayerManager extends ClientSideManager {
+export class PlayerManager extends ClientSideManager<PlayerManagerEvents> {
 	public settingAimTarget = false;
 
 	private currentPlayer: Player;
@@ -36,14 +47,14 @@ export class PlayerManager extends ClientSideManager {
 		this.playerState.actorId = player.getServerId();
 		this.playerState.playerName = 'Player';
 
-		player.onEvent(Events.ControlMovedEvent, this.onPlayerControlMoved);
+		player.on("ControlMovedEvent", this.onPlayerControlMoved);
 		player.setTakeControl();
 
 		this.currentPlayer = player;
 	}
 
-	private onPlayerControlMoved = (event: Events.ControlMovedEvent) => {
-		this.emitEvent(Events.ControlMovedEvent, event);
+	private onPlayerControlMoved = (event: PlayerManagerEvents['ControlMovedEvent']) => {
+		this.emit("ControlMovedEvent", event);
 	};
 
 	getCurrentPlayer() {
@@ -173,7 +184,7 @@ export class PlayerManager extends ClientSideManager {
 
 		if (tick % 5 === 0) {
 			if (this.lastAimTarget === rad) return;
-			this.emitEvent(Events.SetAimTargetEvent, {
+			this.emit("SetAimTargetEvent", {
 				rotation: rad,
 			});
 			this.lastAimTarget = rad;

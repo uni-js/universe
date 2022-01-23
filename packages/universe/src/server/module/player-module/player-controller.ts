@@ -5,12 +5,11 @@ import { PlayerManager } from '../player-module/player-manager';
 import { ServerSideController } from '@uni.js/server';
 import { inject, injectable } from 'inversify';
 import { ActorManager } from '../../module/actor-module/actor-manager';
-import { HandleExternalEvent } from '@uni.js/event';
+import { HandleEvent, HandleRemoteEvent } from '@uni.js/event';
 
-import * as ClientEvents from '../../../client/event/external';
+import * as ClientEvents from '../../../client/event';
 
-import * as Events from '../../event/internal';
-import * as ExternalEvents from '../../event/external';
+import * as ExternalEvents from '../../event';
 
 @injectable()
 export class PlayerController extends ServerSideController {
@@ -23,19 +22,19 @@ export class PlayerController extends ServerSideController {
 
 		this.redirectToBusEvent(
 			this.playerManager,
-			Events.SpawnActorEvent,
+			"SpawnActorEvent",
 			ExternalEvents.SpawnActorEvent,
 			(ev) => this.playerManager.getEntityById(ev.fromPlayerId).connId,
 		);
 		this.redirectToBusEvent(
 			this.playerManager,
-			Events.DespawnActorEvent,
+			"DespawnActorEvent",
 			ExternalEvents.DespawnActorEvent,
 			(ev) => this.playerManager.getEntityById(ev.fromPlayerId).connId,
 		);
 	}
 
-	@HandleExternalEvent(ClientEvents.ActorToggleWalkEvent)
+	@HandleRemoteEvent(ClientEvents.ActorToggleWalkEvent)
 	private handleActorToggleWalk(connId: string, event: ClientEvents.ActorToggleWalkEvent) {
 		const player = this.playerManager.findEntity({ connId });
 		if (event.actorId !== player.id) return;
@@ -43,7 +42,7 @@ export class PlayerController extends ServerSideController {
 		this.actorManager.setWalkState(player.id, event.running, event.direction);
 	}
 
-	@HandleExternalEvent(ClientEvents.LoginEvent)
+	@HandleRemoteEvent(ClientEvents.LoginEvent)
 	private handleLogin(connId: string) {
 		const player = this.playerManager.addNewPlayer(connId);
 		const event = new ExternalEvents.LoginedEvent();
@@ -53,13 +52,13 @@ export class PlayerController extends ServerSideController {
 		Logger.info(`user logined :`, player.playerName, player.connId);
 	}
 
-	@HandleExternalEvent(ClientEvents.ControlMovedEvent)
+	@HandleRemoteEvent(ClientEvents.ControlMovedEvent)
 	private handleMovePlayer(connId: string, event: ClientEvents.ControlMovedEvent) {
 		const player = this.playerManager.findEntity({ connId });
 		this.actorManager.processInput(player.id, event.input);
 	}
 
-	@HandleExternalEvent(ClientEvents.SetAimTargetEvent)
+	@HandleRemoteEvent(ClientEvents.SetAimTargetEvent)
 	private handleSetAimTargetEvent(connId: string, event: ClientEvents.SetAimTargetEvent) {
 		const player = this.playerManager.findEntity({ connId });
 		this.actorManager.setAimTarget(player.id, event.rotation);

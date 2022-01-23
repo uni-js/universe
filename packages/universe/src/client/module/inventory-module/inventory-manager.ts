@@ -13,10 +13,23 @@ import {
 import { ItemType } from '../../../server/module/inventory-module/spec';
 import { InventoryBlockState, ShortcutContainerState } from './ui-state';
 
-import * as Events from '../../event/internal';
 import { UIEventBus } from '@uni.js/ui';
 
-export class ContainerManager extends ClientSideManager {
+export interface ContainerManagerEvents{
+	ContainerMoveBlockEvent: {
+		sourceContainerId: number;
+		sourceIndex: number;
+		targetContainerId: number;
+		targetIndex: number;
+	},
+	SetShortcutIndexEvent: {
+		containerId: number;
+		indexAt: number;
+		itemType: ItemType;
+	}
+}
+
+export class ContainerManager extends ClientSideManager<ContainerManagerEvents> {
 	constructor(protected container: ContainerState, protected input: HTMLInputProvider, protected uiEventBus: UIEventBus) {
 		super();
 
@@ -24,7 +37,7 @@ export class ContainerManager extends ClientSideManager {
 	}
 
 	private onContainerMoveBlock(sourceContainerId: number, sourceIndex: number, targetContainerId: number, targetIndex: number) {
-		this.emitEvent(Events.ContainerMoveBlockEvent, {
+		this.emit("ContainerMoveBlockEvent", {
 			sourceContainerId,
 			sourceIndex,
 			targetContainerId,
@@ -172,7 +185,7 @@ export class ShortcutManager extends ContainerManager {
 	private emitOutCurrentIndex() {
 		const indexAt = this.shortcut.currentIndexAt;
 		const block = this.shortcut.blocks[indexAt];
-		this.emitEvent(Events.SetShortcutIndexEvent, {
+		this.emit("SetShortcutIndexEvent", {
 			itemType: block.itemType,
 			indexAt,
 			containerId: this.shortcut.containerId,

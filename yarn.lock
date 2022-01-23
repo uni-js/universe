@@ -12477,6 +12477,11 @@ tiny-lr@^1.0.3:
     object-assign "^4.1.0"
     qs "^6.4.0"
 
+tiny-typed-emitter@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.nlark.com/tiny-typed-emitter/download/tiny-typed-emitter-2.1.0.tgz#b3b027fdd389ff81a152c8e847ee2f5be9fad7b5"
+  integrity sha1-s7An/dOJ/4GhUsjoR+4vW+n617U=
+
 "tiny-worker@>= 2", tiny-worker@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/tiny-worker/-/tiny-worker-2.3.0.tgz#715ae34304c757a9af573ae9a8e3967177e6011e"

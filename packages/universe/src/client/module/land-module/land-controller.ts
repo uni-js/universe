@@ -5,8 +5,8 @@ import { LandManager } from './land-manager';
 import { LandObject } from './land-object';
 import { TextureProvider } from '@uni.js/texture';
 
-import * as ServerEvents from '../../../server/event/external';
-import { HandleExternalEvent } from '@uni.js/event';
+import * as ServerEvents from '../../../server/event';
+import { HandleRemoteEvent } from '@uni.js/event';
 import { ClientSideController } from '@uni.js/client';
 import { Logger } from '@uni.js/utils';
 
@@ -20,7 +20,7 @@ export class LandController extends ClientSideController {
 		super(eventBus);
 	}
 
-	@HandleExternalEvent(ServerEvents.LandDataToPlayerEvent)
+	@HandleRemoteEvent(ServerEvents.LandDataToPlayerEvent)
 	private handleLandAdded(event: ServerEvents.LandDataToPlayerEvent) {
 		const pos = new Vector2(event.landPosX, event.landPosY);
 		const land = new LandObject(this.texture, event.landData, event.landId, pos);
@@ -28,7 +28,7 @@ export class LandController extends ClientSideController {
 		Logger.info(`add new land:(${event.landPosX},${event.landPosY})`, event);
 	}
 
-	@HandleExternalEvent(ServerEvents.LandNeverUsedEvent)
+	@HandleRemoteEvent(ServerEvents.LandNeverUsedEvent)
 	private handleLandRemoved(event: ServerEvents.LandNeverUsedEvent) {
 		const land = this.landManager.getObjectById(event.landId);
 		this.landManager.removeGameObject(land);

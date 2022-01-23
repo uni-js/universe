@@ -1,12 +1,12 @@
 import { inject, injectable } from 'inversify';
-import { HandleInternalEvent } from '@uni.js/event';
+import { HandleEvent } from '@uni.js/event';
 import { ServerSideManager } from '@uni.js/server';
-import { LandManager } from './land-manager';
-import { PlayerManager } from '../player-module/player-manager';
+import { LandManager, LandManagerEvents } from './land-manager';
+import { PlayerManager, PlayerManagerEvents } from '../player-module/player-manager';
 
-import * as Events from '../../event/internal';
 import { Vector2 } from '../../shared/math';
 import { TaskWorker } from '../../utils';
+
 
 @injectable()
 export class LandLoadManager extends ServerSideManager {
@@ -18,8 +18,8 @@ export class LandLoadManager extends ServerSideManager {
 		this.loadWorker = new TaskWorker(this.onLoadTask.bind(this));
 	}
 
-	@HandleInternalEvent('landManager', Events.LandLoadedEvent)
-	private onLandLoaded(event: Events.LandLoadedEvent) {
+	@HandleEvent('landManager', "LandLoadedEvent")
+	private onLandLoaded(event: LandManagerEvents["LandLoadedEvent"]) {
 		const players = this.playerManager.getAllEntities();
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 
@@ -30,8 +30,8 @@ export class LandLoadManager extends ServerSideManager {
 		}
 	}
 
-	@HandleInternalEvent('playerManager', Events.LandUsedEvent)
-	private onLandUsedEvent(event: Events.LandUsedEvent) {
+	@HandleEvent('playerManager', "LandUsedEvent")
+	private onLandUsedEvent(event: PlayerManagerEvents["LandUsedEvent"]) {
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 		this.landManager.ensureLand(landPos);
 

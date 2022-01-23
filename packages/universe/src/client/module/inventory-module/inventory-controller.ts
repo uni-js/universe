@@ -4,11 +4,10 @@ import { ContainerType } from '../../../server/module/inventory-module/spec';
 import { ShortcutManager, BackpackManager } from './inventory-manager';
 import { ClientSideController } from '@uni.js/client';
 
-import * as ServerEvents from '../../../server/event/external';
+import * as ServerEvents from '../../../server/event';
 
-import * as Events from '../../event/internal';
-import * as ExternalEvents from '../../event/external';
-import { HandleExternalEvent } from '@uni.js/event';
+import * as ExternalEvents from '../../event';
+import { HandleRemoteEvent } from '@uni.js/event';
 
 @injectable()
 export class InvetoryController extends ClientSideController {
@@ -19,11 +18,11 @@ export class InvetoryController extends ClientSideController {
 	) {
 		super(eventBus);
 
-		this.redirectToBusEvent(this.shortcutManager, Events.SetShortcutIndexEvent, ExternalEvents.SetShortcutIndexEvent);
-		this.redirectToBusEvent(this.backpackManager, Events.ContainerMoveBlockEvent, ExternalEvents.ContainerMoveBlockEvent);
+		this.redirectToBusEvent(this.shortcutManager, "SetShortcutIndexEvent", ExternalEvents.SetShortcutIndexEvent);
+		this.redirectToBusEvent(this.backpackManager, "ContainerMoveBlockEvent", ExternalEvents.ContainerMoveBlockEvent);
 	}
 
-	@HandleExternalEvent(ServerEvents.UpdateContainerEvent)
+	@HandleRemoteEvent(ServerEvents.UpdateContainerEvent)
 	private handleUpdateContainer(event: ServerEvents.UpdateContainerEvent) {
 		if (event.containerType == ContainerType.SHORTCUT_CONTAINER) {
 			this.shortcutManager.updateBlocks(event.containerId, event.updateData, event.isFullUpdate);
