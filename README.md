@@ -27,7 +27,7 @@ to start development, following the steps:
 clone the repository firstly,
 
 ```bash
-git clone https://github.com/uni-js/universe
+git clone --recurse-submodules https://github.com/uni-js/universe
 ```
 
 and create a `.env` file, in the root of project folder,
