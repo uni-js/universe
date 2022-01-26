@@ -24,23 +24,34 @@ reference: <https://www.gabrielgambetta.com/client-server-game-architecture.html
 
 to start development, following the steps:
 
-clone the repository firstly,
+1. clone the repository firstly,
 
 ```bash
 git clone --recurse-submodules https://github.com/uni-js/universe
 ```
 
-and create a `.env` file, in the root of project folder,
+2. install the project dependencies
+
+```bash
+yarn install
+```
+
+3. build the framework from git submodule:
+```
+yarn build:framework
+```
+
+4. then create a `.env` file, which the file path is: `packages/universe/.env`,
 to specify data folder of the server and some other options.
 
+its content is like:
 ```
 DB_LOCATION=./data/
 ```
 
-then run the commands:
+5. finally, run the commands:
 
 ```bash
-yarn # install the dependencies
 yarn start:server # start developing server
 yarn start:client # start developing client
 ```

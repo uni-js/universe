@@ -8,6 +8,8 @@
   "author": "wyattzheng <854185073@qq.com>",
   "license": "MIT",
   "scripts": {
+    "build:framework": "yarn workspace @uni.js/monorepo run build",
+    
     "start:server": "yarn workspace universe run start:server",
     "build:server": "yarn workspace universe run build:server",
 
