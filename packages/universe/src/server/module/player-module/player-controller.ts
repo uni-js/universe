@@ -5,7 +5,7 @@ import { PlayerManager } from '../player-module/player-manager';
 import { ServerSideController } from '@uni.js/server';
 import { inject, injectable } from 'inversify';
 import { ActorManager } from '../../module/actor-module/actor-manager';
-import { HandleEvent, HandleRemoteEvent } from '@uni.js/event';
+import { EmitLocalEvent, HandleEvent, HandleRemoteEvent } from '@uni.js/event';
 
 import * as ClientEvents from '../../../client/event';
 
@@ -19,19 +19,12 @@ export class PlayerController extends ServerSideController {
 		@inject(ActorManager) private actorManager: ActorManager,
 	) {
 		super(eventBus);
+	}
 
-		this.redirectToBusEvent(
-			this.playerManager,
-			"SpawnActorEvent",
-			ExternalEvents.SpawnActorEvent,
-			(ev) => this.playerManager.getEntityById(ev.fromPlayerId).connId,
-		);
-		this.redirectToBusEvent(
-			this.playerManager,
-			"DespawnActorEvent",
-			ExternalEvents.DespawnActorEvent,
-			(ev) => this.playerManager.getEntityById(ev.fromPlayerId).connId,
-		);
+	@EmitLocalEvent("playerManager", "SpawnActorEvent")
+	@EmitLocalEvent("playerManager", "DespawnActorEvent")
+	private emitToPlayer(ev: any){
+		return this.playerManager.getEntityById(ev.fromPlayerId).connId;
 	}
 
 	@HandleRemoteEvent(ClientEvents.ActorToggleWalkEvent)

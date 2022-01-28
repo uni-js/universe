@@ -6,7 +6,7 @@ import { inject, injectable } from 'inversify';
 import * as ClientEvents from '../../../client/event';
 
 import * as ExternalEvents from '../../event';
-import { HandleRemoteEvent } from '@uni.js/event';
+import { EmitLocalEvent, HandleRemoteEvent } from '@uni.js/event';
 import { ServerSideController } from '@uni.js/server';
 
 @injectable()
@@ -20,33 +20,21 @@ export class ActorController extends ServerSideController {
 	) {
 		super(eventBus);
 
-		this.redirectToBusEvent(this.actorManager, "ActorDamagedEvent", ExternalEvents.ActorDamagedEvent, (ev) =>
-			this.getSpawnedActorConnIds(ev.actorId),
-		);
+	}
 
-		this.redirectToBusEvent(this.actorManager, "ActorToggleUsingEvent", ExternalEvents.ActorToggleUsingEvent, (ev) =>
-			this.getSpawnedActorConnIds(ev.actorId),
-		);
-
-		this.redirectToBusEvent(this.actorManager, "ActorSetAttachmentEvent", ExternalEvents.ActorSetAttachmentEvent, (ev) =>
-			this.getSpawnedActorConnIds(ev.targetActorId),
-		);
-
-		this.redirectToBusEvent(this.actorManager, "ActorRemoveAttachmentEvent", ExternalEvents.ActorRemoveAttachmentEvent, (ev) =>
-			this.getSpawnedActorConnIds(ev.targetActorId),
-		);
-
-		this.redirectToBusEvent(this.actorManager, "NewWalkStateEvent", ExternalEvents.NewWalkStateEvent, (ev) =>
-			this.getSpawnedActorConnIds(ev.actorId),
-		);
-
-		this.redirectToBusEvent(this.actorManager, "NewPosEvent", ExternalEvents.NewPosEvent, (ev) =>
-			this.getSpawnedActorConnIds(ev.actorId),
-		);
-
-		this.redirectToBusEvent(this.actorManager, "ActorSetRotationEvent", ExternalEvents.ActorSetRotationEvent, (ev) =>
-			this.getSpawnedActorConnIds(ev.actorId),
-		);
+	@EmitLocalEvent("actorManager", "NewPosEvent")
+	@EmitLocalEvent("actorManager", "NewWalkStateEvent")
+	@EmitLocalEvent("actorManager", "ActorSetAttachmentEvent")
+	@EmitLocalEvent("actorManager", "ActorRemoveAttachmentEvent")
+	@EmitLocalEvent("actorManager", "ActorSetRotationEvent")
+	@EmitLocalEvent("actorManager", "ActorToggleUsingEvent")
+	@EmitLocalEvent("actorManager", "ActorDamagedEvent")
+	private emitByActorId(ev: any) {
+		const sids = this.playerManager
+			.getAllEntities()
+			.filter((player) => player.spawnedActors.has(ev.actorId))
+			.map((player) => player.connId);
+		return sids;
 	}
 
 	@HandleRemoteEvent(ClientEvents.ActorToggleUsingEvent)
@@ -58,11 +46,4 @@ export class ActorController extends ServerSideController {
 		}
 	}
 
-	private getSpawnedActorConnIds(actorId: number) {
-		const sids = this.playerManager
-			.getAllEntities()
-			.filter((player) => player.spawnedActors.has(actorId))
-			.map((player) => player.connId);
-		return sids;
-	}
 }

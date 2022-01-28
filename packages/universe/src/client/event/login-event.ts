@@ -1,3 +1,3 @@
-import { ExternalEvent } from '@uni.js/event';
+import { RemoteEvent } from '@uni.js/event';
 
-export class LoginEvent extends ExternalEvent {}
+export class LoginEvent extends RemoteEvent {}

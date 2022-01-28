@@ -42,16 +42,16 @@ export class ActorController extends ClientSideController {
 
 	@HandleRemoteEvent(ServerEvents.ActorSetAttachmentEvent)
 	private handleSetAttachment(event: ServerEvents.ActorSetAttachmentEvent) {
-		const targetActor = this.actorManager.getObjectById(event.targetActorId);
-		const actor = this.actorManager.getObjectById(event.actorId);
+		const targetActor = this.actorManager.getObjectById(event.actorId);
+		const actor = this.actorManager.getObjectById(event.attachActorId);
 
-		targetActor.setAttachment(event.key, event.actorId);
-		actor.attaching = { key: event.key, actorId: event.targetActorId };
+		targetActor.setAttachment(event.key, event.attachActorId);
+		actor.attaching = { key: event.key, actorId: event.actorId };
 	}
 
 	@HandleRemoteEvent(ServerEvents.ActorRemoveAttachmentEvent)
 	private handleRemoveAttachment(event: ServerEvents.ActorRemoveAttachmentEvent) {
-		const actor = this.actorManager.getObjectById(event.targetActorId);
+		const actor = this.actorManager.getObjectById(event.actorId);
 		actor.removeAttachment(event.key);
 	}
 

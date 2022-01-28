@@ -1,5 +1,5 @@
-import { ExternalEvent } from '@uni.js/event';
+import { RemoteEvent } from '@uni.js/event';
 
-export class LoginedEvent extends ExternalEvent {
+export class LoginedEvent extends RemoteEvent {
 	actorId: number;
 }

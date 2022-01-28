@@ -1,7 +1,7 @@
 import type { AttachType } from "../module/actor-module/spec";
 
 export class ActorSetAttachmentEvent {
-    targetActorId: number;
+    actorId: number;
 	key: AttachType;
-	actorId: number;
+	attachActorId: number;
 }

@@ -3,7 +3,7 @@ import { ServerSideController } from '@uni.js/server';
 import { inject, injectable } from 'inversify';
 import { InventoryManager } from './inventory-manager';
 import { PlayerManager } from '../player-module/player-manager';
-import { HandleRemoteEvent } from '@uni.js/event';
+import { EmitLocalEvent, HandleRemoteEvent } from '@uni.js/event';
 import * as ClientEvents from '../../../client/event';
 
 import * as ExternalEvents from '../../event';
@@ -17,12 +17,11 @@ export class InventoryController extends ServerSideController {
 	) {
 		super(eventBus);
 
-		this.redirectToBusEvent(
-			this.inventoryManager,
-			"UpdateContainerEvent",
-			ExternalEvents.UpdateContainerEvent,
-			(ev) => this.playerManager.getEntityById(ev.playerId).connId,
-		);
+	}
+
+	@EmitLocalEvent("inventoryManager", "UpdateContainerEvent")
+	private emitToPlayer(ev: any){
+		return this.playerManager.getEntityById(ev.playerId).connId;
 	}
 
 	@HandleRemoteEvent(ClientEvents.SetShortcutIndexEvent)

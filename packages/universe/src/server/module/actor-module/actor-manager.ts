@@ -26,12 +26,12 @@ export interface ActorManagerEvents extends EntityBaseEvent{
 		finalHealth: number;
 	},
 	ActorSetAttachmentEvent: {
-		targetActorId: number;
-		key: AttachType;
 		actorId: number;
+		key: AttachType;
+		attachActorId: number;
 	},
 	ActorRemoveAttachmentEvent: {
-		targetActorId: number;
+		actorId: number;
 		key: AttachType;
 	},
 	ActorToggleUsingEvent: {
@@ -163,9 +163,9 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 		this.updateAttachment(targetActorId);
 
 		this.emit("ActorSetAttachmentEvent", {
-			targetActorId: targetActor.id,
+			actorId: targetActor.id,
 			key,
-			actorId,
+			attachActorId: actorId,
 		});
 	}
 
@@ -183,7 +183,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 		const actor = this.actorList.findOne({ id: targetActorId });
 		actor.attachments.remove(key);
 
-		this.emit("ActorRemoveAttachmentEvent", { targetActorId: actor.id, key });
+		this.emit("ActorRemoveAttachmentEvent", { actorId: actor.id, key });
 	}
 
 	clearAttachments(targetActorId: number, removeActors = false) {

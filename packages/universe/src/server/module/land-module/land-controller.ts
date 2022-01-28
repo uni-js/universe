@@ -1,5 +1,6 @@
 import { EventBusServer, EventBusServerSymbol } from '@uni.js/server';
 import { ServerSideController } from '@uni.js/server';
+import { EmitLocalEvent } from '@uni.js/event';
 import { PlayerManager } from '../player-module/player-manager';
 import { inject, injectable } from 'inversify';
 import { LandManager } from '../../module/land-module/land-manager';
@@ -15,17 +16,11 @@ export class LandController extends ServerSideController {
 	) {
 		super(eventBus);
 
-		this.redirectToBusEvent(
-			this.landManager,
-			"LandDataToPlayerEvent",
-			ExternalEvents.LandDataToPlayerEvent,
-			(ev) => this.playerManager.getEntityById(ev.playerId).connId,
-		);
-		this.redirectToBusEvent(
-			this.playerManager,
-			"LandNeverUsedEvent",
-			ExternalEvents.LandNeverUsedEvent,
-			(ev) => this.playerManager.getEntityById(ev.playerId).connId,
-		);
+	}
+
+	@EmitLocalEvent("playerManager", "LandNeverUsedEvent")
+	@EmitLocalEvent("landManager", "LandDataToPlayerEvent")
+	private emitToPlayer(ev: any) {
+		return this.playerManager.getEntityById(ev.playerId).connId
 	}
 }
