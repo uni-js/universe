@@ -1,5 +1,4 @@
 const gulp = require('gulp');
-const textureToEnv = require('./texture-to-env');
 const webpack = require('webpack');
 const webpackDevServer = require('webpack-dev-server');
 const webpackStream = require('webpack-stream');
@@ -24,14 +23,6 @@ const path = {
 	public: 'public/**/*',
 	texture: 'public/texture/**/*',
 };
-
-gulp.task('inject-textures-to-env', () => {
-	return gulp.src(path.texture).pipe(
-		textureToEnv((name) => {
-			console.log('inject texture:', name);
-		}),
-	);
-});
 
 gulp.task('bundle-client-by-webpack', () => {
 	return gulp
@@ -62,8 +53,8 @@ gulp.task('compile-as-typescript', () => {
 		.pipe(gulp.dest(path.serverDest));
 });
 
-gulp.task('client', gulp.series('inject-textures-to-env', 'copy-public-to-dist', 'bundle-client-by-webpack'));
-gulp.task('watch-client', gulp.series('inject-textures-to-env', 'copy-public-to-dist', 'watch-client-by-webpack'));
+gulp.task('client', gulp.series('copy-public-to-dist', 'bundle-client-by-webpack'));
+gulp.task('watch-client', gulp.series('watch-client-by-webpack'));
 
 gulp.task('server', gulp.series('compile-as-typescript'));
 
