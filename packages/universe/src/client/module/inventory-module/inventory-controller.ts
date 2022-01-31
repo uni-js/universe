@@ -7,7 +7,7 @@ import { ClientSideController } from '@uni.js/client';
 import * as ServerEvents from '../../../server/event';
 
 import * as ExternalEvents from '../../event';
-import { HandleRemoteEvent } from '@uni.js/event';
+import { EmitLocalEvent, HandleRemoteEvent } from '@uni.js/event';
 
 @injectable()
 export class InvetoryController extends ClientSideController {
@@ -18,8 +18,12 @@ export class InvetoryController extends ClientSideController {
 	) {
 		super(eventBus);
 
-		this.redirectToBusEvent(this.shortcutManager, "SetShortcutIndexEvent", ExternalEvents.SetShortcutIndexEvent);
-		this.redirectToBusEvent(this.backpackManager, "ContainerMoveBlockEvent", ExternalEvents.ContainerMoveBlockEvent);
+	}
+
+	@EmitLocalEvent("shortcutManager", "SetShortcutIndexEvent")
+	@EmitLocalEvent("backpackManager", "ContainerMoveBlockEvent")
+	private emitLocalEvent() {
+
 	}
 
 	@HandleRemoteEvent(ServerEvents.UpdateContainerEvent)

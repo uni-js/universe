@@ -7,7 +7,7 @@ import { ClientSideController } from '@uni.js/client';
 import * as ExternalEvents from '../../event';
 
 import * as ServerEvents from '../../../server/event';
-import { HandleRemoteEvent } from '@uni.js/event';
+import { EmitLocalEvent, HandleRemoteEvent } from '@uni.js/event';
 import { Logger } from '@uni.js/utils';
 
 @injectable()
@@ -19,8 +19,10 @@ export class PlayerController extends ClientSideController {
 	) {
 		super(eventBus);
 
-		this.redirectToBusEvent(this.playerManager, "ControlMovedEvent", ExternalEvents.ControlMovedEvent);
 	}
+
+	@EmitLocalEvent("playerManager", "ControlMovedEvent")
+	private emitLocalEvent() {}
 
 	@HandleRemoteEvent(ServerEvents.LoginedEvent)
 	private handleLogined(event: ServerEvents.LoginedEvent) {

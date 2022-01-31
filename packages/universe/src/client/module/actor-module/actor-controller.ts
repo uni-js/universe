@@ -11,7 +11,7 @@ import { ClientSideController } from '@uni.js/client';
 import * as ServerEvents from '../../../server/event';
 
 import * as ExternalEvents from '../../event';
-import { HandleRemoteEvent } from '@uni.js/event';
+import { EmitLocalEvent, HandleRemoteEvent } from '@uni.js/event';
 import { Logger } from '@uni.js/utils';
 
 @injectable()
@@ -25,10 +25,12 @@ export class ActorController extends ClientSideController {
 	) {
 		super(eventBus);
 
-		this.redirectToBusEvent(this.actorManager, "ActorToggleUsingEvent", ExternalEvents.ActorToggleUsingEvent);
-		this.redirectToBusEvent(this.actorManager, "ActorToggleWalkEvent", ExternalEvents.ActorToggleWalkEvent);
-		this.redirectToBusEvent(this.playerManager, "SetAimTargetEvent", ExternalEvents.SetAimTargetEvent);
 	}
+
+	@EmitLocalEvent("actorManager", "ActorToggleUsingEvent")
+	@EmitLocalEvent("actorManager", "ActorToggleWalkEvent")
+	@EmitLocalEvent("playerManager", "SetAimTargetEvent")
+	private emitLocalEvent() { }
 
 	@HandleRemoteEvent(ServerEvents.ActorToggleUsingEvent)
 	private handleActorToggleUsing(event: ServerEvents.ActorToggleUsingEvent) {
