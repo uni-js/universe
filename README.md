@@ -41,7 +41,7 @@ yarn install
 yarn build:framework
 ```
 
-4. then create a `.env` file, which the file path is: `packages/universe/.env`,
+4. then create a `.env` file, in the pronject root folder,
 to specify data folder of the server and some other options.
 
 its content is like:
