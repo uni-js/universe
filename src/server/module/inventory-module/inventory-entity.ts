@@ -23,7 +23,7 @@ export class PlayerInventory extends Inventory {
 
 @Entity()
 export class Container {
-	id : number;
+	id: number;
 
 	@Property()
 	containerType = ContainerType.SIMPLE_CONTAINER;
@@ -32,7 +32,7 @@ export class Container {
 	size: number;
 }
 
-@Index(["containerId", "index"])
+@Index(['containerId', 'index'])
 @Entity()
 export class ContainerBlock {
 	@Index()
@@ -49,7 +49,7 @@ export class ContainerBlock {
 	itemCount = 0;
 }
 
-@Index(["playerId", "currentIndex"])
+@Index(['playerId', 'currentIndex'])
 @Entity()
 export class ShortcutContainer extends Container {
 	@Property()

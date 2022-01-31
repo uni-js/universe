@@ -7,18 +7,17 @@ import { ExtendedEntityManager } from '@uni.js/database';
 
 import { HandleEvent } from '@uni.js/event';
 import { Vector2 } from '../../shared/math';
-import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS, ARROW_DEAD_TICKS, ARROW_DROP_TICKS } from "./spec"
+import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS, ARROW_DEAD_TICKS, ARROW_DROP_TICKS } from './spec';
 
 import SAT from 'sat';
 
 @injectable()
 export class BowManager extends ExtendedEntityManager<Actor, Bow> {
-	constructor(@inject(ActorManager) private actorManager: ActorManager){
-		super(actorManager, Bow)
-
+	constructor(@inject(ActorManager) private actorManager: ActorManager) {
+		super(actorManager, Bow);
 	}
 
-	@HandleEvent('actorManager', "ActorToggleUsingEvent")
+	@HandleEvent('actorManager', 'ActorToggleUsingEvent')
 	private onActorToggleUsing(event: ActorManagerEvents['ActorToggleUsingEvent']) {
 		const actor = this.actorManager.getEntityById(event.actorId);
 		if (actor.type != ActorType.BOW) return;

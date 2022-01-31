@@ -27,15 +27,15 @@ export class LandMoveManager extends ServerSideManager {
 		this.landManager.ensureLand(landPos);
 
 		const land = this.landManager.getLand(landPos);
-		land.actors.add(actorId)
+		land.actors.add(actorId);
 	}
 
 	removeLandActor(landPos: Vector2, actorId: number) {
 		const land = this.landManager.getLand(landPos);
-		land.actors.remove(actorId)
+		land.actors.remove(actorId);
 	}
 
-	@HandleEvent('actorManager', "AddEntityEvent")
+	@HandleEvent('actorManager', 'AddEntityEvent')
 	private onActorAdded(event: AddEntityEvent) {
 		const actor = event.entity as Actor;
 		const pos = new Vector2(actor.posX, actor.posY);
@@ -43,7 +43,7 @@ export class LandMoveManager extends ServerSideManager {
 		this.addLandActor(landPos, event.entityId);
 	}
 
-	@HandleEvent('actorManager', "RemoveEntityEvent")
+	@HandleEvent('actorManager', 'RemoveEntityEvent')
 	private onActorRemoved(event: RemoveEntityEvent) {
 		const actor = event.entity as Actor;
 		const pos = new Vector2(actor.posX, actor.posY);
@@ -51,7 +51,7 @@ export class LandMoveManager extends ServerSideManager {
 		this.removeLandActor(landPos, event.entityId);
 	}
 
-	@HandleEvent('actorManager', "LandMoveEvent")
+	@HandleEvent('actorManager', 'LandMoveEvent')
 	private onActorLandMoved(event: ActorManagerEvents['LandMoveEvent']) {
 		const sourceLandPos = new Vector2(event.sourceLandPosX, event.sourceLandPosY);
 		const targetLandPos = new Vector2(event.targetLandPosX, event.targetLandPosY);
@@ -69,7 +69,7 @@ export class LandMoveManager extends ServerSideManager {
 		});
 	}
 
-	@HandleEvent('playerManager', "LandUsedEvent")
+	@HandleEvent('playerManager', 'LandUsedEvent')
 	private onLandUsed(event: PlayerManagerEvents['LandUsedEvent']) {
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 		const player = this.playerManager.getEntityById(event.playerId);
@@ -81,7 +81,7 @@ export class LandMoveManager extends ServerSideManager {
 		}
 	}
 
-	@HandleEvent('playerManager', "LandNeverUsedEvent")
+	@HandleEvent('playerManager', 'LandNeverUsedEvent')
 	private onLandNeverUsed = (event: PlayerManagerEvents['LandNeverUsedEvent']) => {
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 		const player = this.playerManager.getEntityById(event.playerId);

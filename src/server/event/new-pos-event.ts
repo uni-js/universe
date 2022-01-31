@@ -1,5 +1,5 @@
 export class NewPosEvent {
-    actorId: number;
+	actorId: number;
 	posX: number;
 	posY: number;
 	motionX: number;

@@ -24,13 +24,12 @@ export class ActorController extends ClientSideController {
 		@inject(ActorFactory) private actorFactory: ActorFactory,
 	) {
 		super(eventBus);
-
 	}
 
-	@EmitLocalEvent("actorManager", "ActorToggleUsingEvent")
-	@EmitLocalEvent("actorManager", "ActorToggleWalkEvent")
-	@EmitLocalEvent("playerManager", "SetAimTargetEvent")
-	private emitLocalEvent() { }
+	@EmitLocalEvent('actorManager', 'ActorToggleUsingEvent')
+	@EmitLocalEvent('actorManager', 'ActorToggleWalkEvent')
+	@EmitLocalEvent('playerManager', 'SetAimTargetEvent')
+	private emitLocalEvent() {}
 
 	@HandleRemoteEvent(ServerEvents.ActorToggleUsingEvent)
 	private handleActorToggleUsing(event: ServerEvents.ActorToggleUsingEvent) {

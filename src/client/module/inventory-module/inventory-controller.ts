@@ -17,14 +17,11 @@ export class InvetoryController extends ClientSideController {
 		@inject(BackpackManager) private backpackManager: BackpackManager,
 	) {
 		super(eventBus);
-
 	}
 
-	@EmitLocalEvent("shortcutManager", "SetShortcutIndexEvent")
-	@EmitLocalEvent("backpackManager", "ContainerMoveBlockEvent")
-	private emitLocalEvent() {
-
-	}
+	@EmitLocalEvent('shortcutManager', 'SetShortcutIndexEvent')
+	@EmitLocalEvent('backpackManager', 'ContainerMoveBlockEvent')
+	private emitLocalEvent() {}
 
 	@HandleRemoteEvent(ServerEvents.UpdateContainerEvent)
 	private handleUpdateContainer(event: ServerEvents.UpdateContainerEvent) {

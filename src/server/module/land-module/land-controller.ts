@@ -15,12 +15,11 @@ export class LandController extends ServerSideController {
 		@inject(LandManager) private landManager: LandManager,
 	) {
 		super(eventBus);
-
 	}
 
-	@EmitLocalEvent("playerManager", "LandNeverUsedEvent")
-	@EmitLocalEvent("landManager", "LandDataToPlayerEvent")
+	@EmitLocalEvent('playerManager', 'LandNeverUsedEvent')
+	@EmitLocalEvent('landManager', 'LandDataToPlayerEvent')
 	private emitToPlayer(ev: any) {
-		return this.playerManager.getEntityById(ev.playerId).connId
+		return this.playerManager.getEntityById(ev.playerId).connId;
 	}
 }

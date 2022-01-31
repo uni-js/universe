@@ -21,9 +21,9 @@ export class PlayerController extends ServerSideController {
 		super(eventBus);
 	}
 
-	@EmitLocalEvent("playerManager", "SpawnActorEvent")
-	@EmitLocalEvent("playerManager", "DespawnActorEvent")
-	private emitToPlayer(ev: any){
+	@EmitLocalEvent('playerManager', 'SpawnActorEvent')
+	@EmitLocalEvent('playerManager', 'DespawnActorEvent')
+	private emitToPlayer(ev: any) {
 		return this.playerManager.getEntityById(ev.fromPlayerId).connId;
 	}
 

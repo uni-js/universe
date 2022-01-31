@@ -8,10 +8,18 @@ import {
 	MAX_STACK_SIZE,
 } from './spec';
 import { PlayerManager } from '../player-module/player-manager';
-import { EntityManager, UpdateOnlyCollection, injectCollection, NotLimitCollection, EntityBaseEvent, RemoveEntityEvent, AddEntityEvent } from "@uni.js/database"
+import {
+	EntityManager,
+	UpdateOnlyCollection,
+	injectCollection,
+	NotLimitCollection,
+	EntityBaseEvent,
+	RemoveEntityEvent,
+	AddEntityEvent,
+} from '@uni.js/database';
 import { inject, injectable } from 'inversify';
 import { ItemHoldAction, ItemType, ToolsItemTypes } from './spec';
-import { ItemDef, ItemDefList } from "./item-entity";
+import { ItemDef, ItemDefList } from './item-entity';
 import { ActorManager } from '../actor-module/actor-manager';
 import { ActorType, AttachType } from '../actor-module/spec';
 import { DroppedItemActor } from '../pick-drop-module/dropped-item-entity';
@@ -20,15 +28,14 @@ import { Vector2 } from '../../shared/math';
 import { ActorFactory } from '../actor-module/actor-entity';
 import { HandleEvent } from '@uni.js/event';
 
-
-export interface InventoryManagerEvents extends EntityBaseEvent{
+export interface InventoryManagerEvents extends EntityBaseEvent {
 	UpdateContainerEvent: {
 		playerId: number;
 		containerId: number;
 		containerType: ContainerType;
 		updateData: ContainerUpdateData;
 		isFullUpdate: boolean;
-	}
+	};
 }
 
 @injectable()
@@ -126,7 +133,7 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 		return this.addNewEntity(inventory);
 	}
 
-	@HandleEvent('playerManager', "AddEntityEvent")
+	@HandleEvent('playerManager', 'AddEntityEvent')
 	private onPlayerAdded(event: AddEntityEvent) {
 		const player = event.entity as Player;
 		const inventory = this.addNewPlayerInventory(player.id);
@@ -138,7 +145,7 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 		this.sendInventoryUpdateData(player, inventory.id);
 	}
 
-	@HandleEvent('playerManager', "RemoveEntityEvent")
+	@HandleEvent('playerManager', 'RemoveEntityEvent')
 	private onPlayerRemoved(event: RemoveEntityEvent) {
 		const inventory = this.playerInventoryList.findOne({ playerId: event.entityId });
 		this.removeInventory(inventory.id);
@@ -175,7 +182,7 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 			});
 		}
 
-		this.emit("UpdateContainerEvent", {
+		this.emit('UpdateContainerEvent', {
 			playerId: player.id,
 			containerType: container.containerType,
 			updateData,
@@ -196,7 +203,7 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 			count: block.itemCount,
 		});
 
-		this.emit("UpdateContainerEvent", {
+		this.emit('UpdateContainerEvent', {
 			playerId: player.id,
 			containerType: container.containerType,
 			updateData,
@@ -270,8 +277,8 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 
 		const entities = this.actorManager.findEntities({
 			type: ActorType.DROPPED_ITEM,
-//			posX: { $between: [Xmin, Xmax] },
-//			posY: { $between: [Ymin, Ymax] },
+			//			posX: { $between: [Xmin, Xmax] },
+			//			posY: { $between: [Ymin, Ymax] },
 		}) as DroppedItemActor[];
 
 		for (const entity of entities) {

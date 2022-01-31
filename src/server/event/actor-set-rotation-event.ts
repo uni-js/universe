@@ -1,4 +1,4 @@
 export class ActorSetRotationEvent {
-    actorId: number;
+	actorId: number;
 	rotation: number;
 }

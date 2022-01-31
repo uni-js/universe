@@ -11,7 +11,7 @@ export class PickDropController extends ClientSideController {
 		super(eventBus);
 	}
 
-	@EmitLocalEvent("pickDropManager", "DropItemEvent")
-	@EmitLocalEvent("pickDropManager", "PickItemEvent")
+	@EmitLocalEvent('pickDropManager', 'DropItemEvent')
+	@EmitLocalEvent('pickDropManager', 'PickItemEvent')
 	private emitLocalEvent() {}
 }

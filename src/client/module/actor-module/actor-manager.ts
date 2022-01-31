@@ -8,12 +8,12 @@ export interface ActorManagerEvents {
 	ActorToggleUsingEvent: {
 		actorId: number;
 		startOrEnd: boolean;
-	},
+	};
 	ActorToggleWalkEvent: {
 		actorId: number;
 		running: RunningState;
 		direction: Direction;
-	}
+	};
 }
 
 @injectable()
@@ -21,8 +21,8 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 	constructor(@inject(ActorLayer) private actorLayer: ActorLayer) {
 		super(actorLayer);
 
-		this.redirectObjectEvent("ActorToggleUsingEvent");
-		this.redirectObjectEvent("ActorToggleWalkEvent");
+		this.redirectObjectEvent('ActorToggleUsingEvent');
+		this.redirectObjectEvent('ActorToggleWalkEvent');
 	}
 
 	/**

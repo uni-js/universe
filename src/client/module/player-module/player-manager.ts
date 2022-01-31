@@ -12,15 +12,15 @@ import { PlayerState } from './ui-state';
 import SAT from 'sat';
 import { Input } from '@uni.js/prediction';
 
-export interface PlayerManagerEvents{
+export interface PlayerManagerEvents {
 	ControlMovedEvent: {
 		input: Input;
 		direction: Direction;
 		running: RunningState;
-	},
+	};
 	SetAimTargetEvent: {
 		rotation: number;
-	}
+	};
 }
 
 @injectable()
@@ -47,14 +47,14 @@ export class PlayerManager extends ClientSideManager<PlayerManagerEvents> {
 		this.playerState.actorId = player.getServerId();
 		this.playerState.playerName = 'Player';
 
-		player.on("ControlMovedEvent", this.onPlayerControlMoved);
+		player.on('ControlMovedEvent', this.onPlayerControlMoved);
 		player.setTakeControl();
 
 		this.currentPlayer = player;
 	}
 
 	private onPlayerControlMoved = (event: PlayerManagerEvents['ControlMovedEvent']) => {
-		this.emit("ControlMovedEvent", event);
+		this.emit('ControlMovedEvent', event);
 	};
 
 	getCurrentPlayer() {
@@ -184,7 +184,7 @@ export class PlayerManager extends ClientSideManager<PlayerManagerEvents> {
 
 		if (tick % 5 === 0) {
 			if (this.lastAimTarget === rad) return;
-			this.emit("SetAimTargetEvent", {
+			this.emit('SetAimTargetEvent', {
 				rotation: rad,
 			});
 			this.lastAimTarget = rad;

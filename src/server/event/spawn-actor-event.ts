@@ -1,5 +1,5 @@
 export class SpawnActorEvent {
-    fromPlayerId: number;
+	fromPlayerId: number;
 	actorId: number;
 	actorType: number;
 	ctorOption: any;

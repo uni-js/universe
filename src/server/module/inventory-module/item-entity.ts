@@ -1,10 +1,9 @@
 import { Entity, Index, Property } from '@uni.js/database';
 import { ActorType } from '../actor-module/spec';
-import { ItemType, ItemHoldAction } from "./spec"
+import { ItemType, ItemHoldAction } from './spec';
 
 @Entity()
 export class ItemDef {
-
 	@Index()
 	@Property()
 	itemType: ItemType;

@@ -1,3 +1,3 @@
 export class SetAimTargetEvent {
-    rotation: number;
+	rotation: number;
 }

@@ -46,7 +46,6 @@ export interface AttachMapping {
 	[key: number]: AttachMappingUnit;
 }
 
-
 export function getDirectionAngle(direction: Direction) {
 	if (direction === Direction.RIGHT) return 0;
 	if (direction === Direction.BACK) return (3 * Math.PI) / 2;

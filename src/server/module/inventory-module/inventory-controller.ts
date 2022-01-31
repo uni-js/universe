@@ -16,11 +16,10 @@ export class InventoryController extends ServerSideController {
 		@inject(PlayerManager) private playerManager: PlayerManager,
 	) {
 		super(eventBus);
-
 	}
 
-	@EmitLocalEvent("inventoryManager", "UpdateContainerEvent")
-	private emitToPlayer(ev: any){
+	@EmitLocalEvent('inventoryManager', 'UpdateContainerEvent')
+	private emitToPlayer(ev: any) {
 		return this.playerManager.getEntityById(ev.playerId).connId;
 	}
 

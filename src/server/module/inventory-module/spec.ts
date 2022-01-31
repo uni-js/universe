@@ -2,7 +2,6 @@ export const BLOCKS_PER_PLAYER_INVENTORY_CONTAINER = 20;
 export const BLOCKS_PER_PLAYER_SHORTCUT_CONTAINER = 5;
 export const MAX_STACK_SIZE = 20;
 
-
 export interface ContainerUpdateDataUnit {
 	index: number;
 	itemType: ItemType;
@@ -32,7 +31,6 @@ export enum ContainerType {
 	CURRENT_WATCH_CONTAINER,
 }
 
-
 export enum ItemType {
 	EMPTY,
 	BOW,
@@ -44,7 +42,6 @@ export enum ItemTypeName {
 	'bow',
 	'wp_rock',
 }
-
 
 export enum ItemHoldAction {
 	/**

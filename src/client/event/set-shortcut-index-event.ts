@@ -1,5 +1,5 @@
 export class SetShortcutIndexEvent {
-    containerId: number;
+	containerId: number;
 	indexAt: number;
 	itemType: number;
 }

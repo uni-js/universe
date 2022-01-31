@@ -5,10 +5,9 @@ import { ActorType, AttachMapping, AttachType, Direction, RunningState } from '.
 import { injectable } from 'inversify';
 import { Factory } from '../../../shared/factory';
 
-@Index(["posX", "posY"])
+@Index(['posX', 'posY'])
 @Entity()
 export class Actor {
-	
 	id: number = undefined;
 
 	@Property()
@@ -120,7 +119,6 @@ export class Actor {
 	@Property()
 	running: RunningState = RunningState.SILENT;
 }
-
 
 @injectable()
 export class ActorFactory extends Factory<ActorType, Actor, any[]> {}

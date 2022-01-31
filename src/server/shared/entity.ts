@@ -20,7 +20,8 @@ export function GetConstructOptions(target: any) {
 	const options: any = {};
 	for (const propertyName of Object.getOwnPropertyNames(target)) {
 		const targetProperty = target[propertyName];
-		if (true) { //stub here
+		if (true) {
+			//stub here
 			if (targetProperty instanceof RecordMap || targetProperty instanceof RecordSet) {
 				options[propertyName] = targetProperty.getAll();
 			} else {

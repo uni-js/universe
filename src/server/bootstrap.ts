@@ -6,7 +6,7 @@ import { ServerApp } from '@uni.js/server';
 import { createPersistDatabase, PersistDatabaseSymbol } from './database';
 
 import { createServerSideModule } from '@uni.js/server';
-import { MemoryDatabasePlugin } from '@uni.js/database'
+import { MemoryDatabasePlugin } from '@uni.js/database';
 
 import { LandModule } from './module/land-module/module-export';
 import { ActorModule } from './module/actor-module/module-export';

@@ -77,7 +77,7 @@ export class Player extends ActorObject {
 		});
 
 		this.predictedInputManager.on('applyInput', (input: Input) => {
-			this.emit("ControlMovedEvent", { input: input, direction: this.direction, running: this.running });
+			this.emit('ControlMovedEvent', { input: input, direction: this.direction, running: this.running });
 		});
 	}
 

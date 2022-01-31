@@ -12,52 +12,52 @@ import { LandManager } from '../land-module/land-manager';
 import { HandleEvent } from '@uni.js/event';
 import { ExtendedEntityManager, AddEntityEvent, RemoveEntityEvent, EntityBaseEvent } from '@uni.js/database';
 
-export interface PlayerManagerEvents extends EntityBaseEvent{
+export interface PlayerManagerEvents extends EntityBaseEvent {
 	SpawnActorEvent: {
 		fromPlayerId: number;
 		actorId: number;
 		actorType: number;
 		ctorOption: any;
-	},
+	};
 	DespawnActorEvent: {
 		fromPlayerId: number;
 		actorId: number;
-	},
+	};
 	LandUsedEvent: {
 		landId: number;
 		landPosX: number;
 		landPosY: number;
 		playerId: number;
-	},
+	};
 	LandNeverUsedEvent: {
 		playerId: number;
 		landId: number;
 		landPosX: number;
 		landPosY: number;
-	}
+	};
 }
 
 @injectable()
 export class PlayerManager extends ExtendedEntityManager<Actor, Player, PlayerManagerEvents> {
 	constructor(@inject(ActorManager) private actorManager: ActorManager, @inject(LandManager) private landManager: LandManager) {
-		super(actorManager, Player)
+		super(actorManager, Player);
 	}
 
-	@HandleEvent('actorManager', "AddEntityEvent")
+	@HandleEvent('actorManager', 'AddEntityEvent')
 	private onActorAdded(event: AddEntityEvent) {
 		for (const player of this.getAllEntities()) {
 			this.spawnActor(player, event.entityId);
 		}
 	}
 
-	@HandleEvent('actorManager', "RemoveEntityEvent")
+	@HandleEvent('actorManager', 'RemoveEntityEvent')
 	private onActorRemoved(event: RemoveEntityEvent) {
 		for (const player of this.getAllEntities()) {
 			this.despawnActor(player, event.entityId);
 		}
 	}
 
-	@HandleEvent('actorManager', "NewPosEvent")
+	@HandleEvent('actorManager', 'NewPosEvent')
 	private onActorNewPos(event: ActorManagerEvents['NewPosEvent']) {
 		const player = this.actorManager.getEntityById(event.actorId) as Player;
 		if (!player.isPlayer) return;
@@ -102,32 +102,32 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player, PlayerMa
 
 		const actor = this.actorManager.getEntityById(actorId);
 
-		player.spawnedActors.add(actorId)
+		player.spawnedActors.add(actorId);
 		const ctorOption = GetConstructOptions(actor);
 
-		this.emit("SpawnActorEvent", { actorId, actorType: actor.type, fromPlayerId: player.id, ctorOption });
+		this.emit('SpawnActorEvent', { actorId, actorType: actor.type, fromPlayerId: player.id, ctorOption });
 	}
 
 	despawnActor(player: Player, actorId: number) {
 		if (!player.spawnedActors.has(actorId)) return;
 
-		player.spawnedActors.remove(actorId)
-		this.emit("DespawnActorEvent", { actorId, fromPlayerId: player.id });
+		player.spawnedActors.remove(actorId);
+		this.emit('DespawnActorEvent', { actorId, fromPlayerId: player.id });
 	}
 
 	useLand(player: Player, landHash: string) {
 		const landPos = GetPosByHash(landHash);
 
-		player.usedLands.add(landHash)
-		this.emit("LandUsedEvent", { playerId: player.id, landPosX: landPos.x, landPosY: landPos.y, landId: undefined });
+		player.usedLands.add(landHash);
+		this.emit('LandUsedEvent', { playerId: player.id, landPosX: landPos.x, landPosY: landPos.y, landId: undefined });
 	}
 
 	unuseLand(player: Player, landHash: string) {
 		const landPos = GetPosByHash(landHash);
 		const land = this.landManager.getLand(landPos);
 
-		player.usedLands.remove(landHash)
-		this.emit("LandNeverUsedEvent", { playerId: player.id, landPosX: landPos.x, landPosY: landPos.y, landId: land.id });
+		player.usedLands.remove(landHash);
+		this.emit('LandNeverUsedEvent', { playerId: player.id, landPosX: landPos.x, landPosY: landPos.y, landId: land.id });
 	}
 
 	private updateUsedLands(player: Player) {
@@ -143,7 +143,5 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player, PlayerMa
 		}
 	}
 
-	doTick() {
-		
-	}
+	doTick() {}
 }

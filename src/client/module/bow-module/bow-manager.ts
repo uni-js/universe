@@ -10,7 +10,6 @@ import { ContainerManagerEvents, ShortcutManager } from '../inventory-module/inv
 import { HandleEvent } from '@uni.js/event';
 import { BowUsingState } from './ui-state';
 
-
 @injectable()
 export class BowManager extends ClientSideManager {
 	private useTicks = 0;
@@ -26,7 +25,7 @@ export class BowManager extends ClientSideManager {
 		super();
 	}
 
-	@HandleEvent('actorManager', "ActorToggleUsingEvent")
+	@HandleEvent('actorManager', 'ActorToggleUsingEvent')
 	private onActorToggleUsing(event: ActorManagerEvents['ActorToggleUsingEvent']) {
 		const actor = this.actorManager.getObjectById(event.actorId);
 		if (actor.actorType !== ActorType.BOW) return;
@@ -41,7 +40,7 @@ export class BowManager extends ClientSideManager {
 		}
 	}
 
-	@HandleEvent('shortcutManager', "SetShortcutIndexEvent")
+	@HandleEvent('shortcutManager', 'SetShortcutIndexEvent')
 	private onShortcutSetIndex(event: ContainerManagerEvents['SetShortcutIndexEvent']) {
 		if (event.itemType !== ItemType.BOW) {
 			this.bowUsingState.isUsing = false;

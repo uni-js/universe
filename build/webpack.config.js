@@ -6,7 +6,7 @@ const DotEnv = require('dotenv-webpack');
 const { DefinePlugin } = require('webpack');
 const JsStringEscape = require('js-string-escape');
 const TerserPlugin = require('terser-webpack-plugin');
-const { UniTextureLoaderPlugin } = require("@uni.js/texture-webpack-loader");
+const { UniTextureLoaderPlugin } = require('@uni.js/texture-webpack-loader');
 
 const UNIVERSE_SERVER_URL = process.env.UNIVERSE_SERVER_URL || 'http://localhost:6100/';
 
@@ -28,13 +28,13 @@ module.exports = (textureLoaded, isProduction) => {
 				template: './static/index.html',
 			}),
 			new DefinePlugin({
-				'process.env.UNIVERSE_SERVER_URL': `"${JsStringEscape(UNIVERSE_SERVER_URL)}"`
+				'process.env.UNIVERSE_SERVER_URL': `"${JsStringEscape(UNIVERSE_SERVER_URL)}"`,
 			}),
 			new DotEnv(),
 			new UniTextureLoaderPlugin({
-				rootDir: "./public/texture",
-				rootPath: "./texture"
-			})
+				rootDir: './public/texture',
+				rootPath: './texture',
+			}),
 
 			// Add your plugins here
 			// Learn more about plugins from https://webpack.js.org/configuration/plugins/

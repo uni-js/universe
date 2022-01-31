@@ -1,5 +1,5 @@
 export class LandNeverUsedEvent {
-    playerId: number;
+	playerId: number;
 	landId: number;
 	landPosX: number;
 	landPosY: number;

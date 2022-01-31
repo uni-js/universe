@@ -1,3 +1,3 @@
 export class UpdateBuildingNearbyEvent {
-    buildings: any[];
+	buildings: any[];
 }

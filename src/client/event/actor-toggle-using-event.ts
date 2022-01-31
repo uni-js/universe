@@ -1,4 +1,4 @@
 export class ActorToggleUsingEvent {
-    actorId: number;
+	actorId: number;
 	startOrEnd: boolean;
 }

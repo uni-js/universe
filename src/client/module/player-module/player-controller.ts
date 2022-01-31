@@ -18,10 +18,9 @@ export class PlayerController extends ClientSideController {
 		@inject(ActorManager) private actorManager: ActorManager,
 	) {
 		super(eventBus);
-
 	}
 
-	@EmitLocalEvent("playerManager", "ControlMovedEvent")
+	@EmitLocalEvent('playerManager', 'ControlMovedEvent')
 	private emitLocalEvent() {}
 
 	@HandleRemoteEvent(ServerEvents.LoginedEvent)

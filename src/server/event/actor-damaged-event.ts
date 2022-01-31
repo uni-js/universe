@@ -1,4 +1,4 @@
 export class ActorDamagedEvent {
-    actorId: number;
+	actorId: number;
 	finalHealth: number;
 }

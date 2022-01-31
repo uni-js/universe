@@ -7,7 +7,6 @@ import { PlayerManager, PlayerManagerEvents } from '../player-module/player-mana
 import { Vector2 } from '../../shared/math';
 import { TaskWorker } from '../../utils';
 
-
 @injectable()
 export class LandLoadManager extends ServerSideManager {
 	private loadWorker: TaskWorker<Vector2>;
@@ -18,8 +17,8 @@ export class LandLoadManager extends ServerSideManager {
 		this.loadWorker = new TaskWorker(this.onLoadTask.bind(this));
 	}
 
-	@HandleEvent('landManager', "LandLoadedEvent")
-	private onLandLoaded(event: LandManagerEvents["LandLoadedEvent"]) {
+	@HandleEvent('landManager', 'LandLoadedEvent')
+	private onLandLoaded(event: LandManagerEvents['LandLoadedEvent']) {
 		const players = this.playerManager.getAllEntities();
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 
@@ -30,8 +29,8 @@ export class LandLoadManager extends ServerSideManager {
 		}
 	}
 
-	@HandleEvent('playerManager', "LandUsedEvent")
-	private onLandUsedEvent(event: PlayerManagerEvents["LandUsedEvent"]) {
+	@HandleEvent('playerManager', 'LandUsedEvent')
+	private onLandUsedEvent(event: PlayerManagerEvents['LandUsedEvent']) {
 		const landPos = new Vector2(event.landPosX, event.landPosY);
 		this.landManager.ensureLand(landPos);
 

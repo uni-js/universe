@@ -1,4 +1,4 @@
 export class DespawnActorEvent {
-    fromPlayerId: number;
+	fromPlayerId: number;
 	actorId: number;
 }

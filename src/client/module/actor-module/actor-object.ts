@@ -108,7 +108,13 @@ export class ActorObject extends GameObject {
 
 	private moveInterpolator;
 
-	constructor(serverId: number, option: ActorConstructOption, size: Vector2, actorType: ActorType, protected textureProvider: TextureProvider) {
+	constructor(
+		serverId: number,
+		option: ActorConstructOption,
+		size: Vector2,
+		actorType: ActorType,
+		protected textureProvider: TextureProvider,
+	) {
 		super(serverId);
 		this.size = size;
 		this.actorType = actorType;
@@ -433,12 +439,12 @@ export class ActorObject extends GameObject {
 		this.healthBar && this.healthBar.doFixedUpdateTick();
 
 		if (this.isUsingDirty) {
-			this.emit("ActorToggleUsingEvent", { actorId: this.serverId, startOrEnd: this.isUsing ? true : false });
+			this.emit('ActorToggleUsingEvent', { actorId: this.serverId, startOrEnd: this.isUsing ? true : false });
 			this.isUsingDirty = false;
 		}
 
 		if (this.isWalkDirty) {
-			this.emit("ActorToggleWalkEvent", {
+			this.emit('ActorToggleWalkEvent', {
 				actorId: this.serverId,
 				running: this.running,
 				direction: this.direction,

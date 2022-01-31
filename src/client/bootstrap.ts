@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { ClientApp, createClientSideModule } from '@uni.js/client';
 
 import { UIPlugin } from '@uni.js/ui';
-import { ViewportPlugin } from "@uni.js/viewport";
+import { ViewportPlugin } from '@uni.js/viewport';
 import { HTMLInputPlugin } from '@uni.js/html-input';
 import { TexturePlugin } from '@uni.js/texture';
 import { Logger } from '@uni.js/utils';
@@ -47,26 +47,25 @@ export async function bootstrap() {
 	});
 
 	await app.use(HTMLInputPlugin());
-	await app.use(TexturePlugin({
-		imports: textureList
-	}));
+	await app.use(
+		TexturePlugin({
+			imports: textureList,
+		}),
+	);
 	await app.use(UIPlugin(GameUI));
-	await app.use(ViewportPlugin({
-		screenWidth: resolution * worldWidth,
-		screenHeight: resolution * worldHeight,
-		worldWidth,
-		worldHeight,
-		initLayers: [
-			app.get(LandLayer).container,
-			app.get(BuildingCreatorLayer).container,
-			app.get(ActorLayer).container
-		]
-	}))
+	await app.use(
+		ViewportPlugin({
+			screenWidth: resolution * worldWidth,
+			screenHeight: resolution * worldHeight,
+			worldWidth,
+			worldHeight,
+			initLayers: [app.get(LandLayer).container, app.get(BuildingCreatorLayer).container, app.get(ActorLayer).container],
+		}),
+	);
 
 	Logger.info('Server URL is: ', serverUrl);
 
 	app.start();
-
 }
 
 bootstrap();

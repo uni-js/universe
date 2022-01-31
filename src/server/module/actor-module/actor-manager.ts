@@ -20,34 +20,34 @@ export interface CollisionResult {
 	response: SAT.Response;
 }
 
-export interface ActorManagerEvents extends EntityBaseEvent{
+export interface ActorManagerEvents extends EntityBaseEvent {
 	ActorDamagedEvent: {
 		actorId: number;
 		finalHealth: number;
-	},
+	};
 	ActorSetAttachmentEvent: {
 		actorId: number;
 		key: AttachType;
 		attachActorId: number;
-	},
+	};
 	ActorRemoveAttachmentEvent: {
 		actorId: number;
 		key: AttachType;
-	},
+	};
 	ActorToggleUsingEvent: {
 		actorId: number;
 		startOrEnd: boolean;
 		useTick: number;
-	},
+	};
 	ActorSetRotationEvent: {
 		actorId: number;
 		rotation: number;
-	},
+	};
 	NewWalkStateEvent: {
 		actorId: number;
 		direction: Direction;
 		running: RunningState;
-	},
+	};
 	NewPosEvent: {
 		actorId: number;
 		posX: number;
@@ -55,19 +55,19 @@ export interface ActorManagerEvents extends EntityBaseEvent{
 		motionX: number;
 		motionY: number;
 		processedInputSeq: number;
-	},
+	};
 	LandMoveEvent: {
 		actorId: number;
 		targetLandPosX: number;
 		targetLandPosY: number;
 		sourceLandPosX: number;
 		sourceLandPosY: number;
-	},
+	};
 	ActorCollusionEvent: {
 		actorId: number;
 		actorType: ActorType;
 		checkResults: CheckResult[];
-	}
+	};
 }
 
 @injectable()
@@ -94,7 +94,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 
 		this.actorList.update(actor);
 
-		this.emit("ActorDamagedEvent", { actorId: actor.id, finalHealth: actor.health });
+		this.emit('ActorDamagedEvent', { actorId: actor.id, finalHealth: actor.health });
 	}
 
 	getActorBoundingBox(actor: Actor) {
@@ -162,7 +162,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 
 		this.updateAttachment(targetActorId);
 
-		this.emit("ActorSetAttachmentEvent", {
+		this.emit('ActorSetAttachmentEvent', {
 			actorId: targetActor.id,
 			key,
 			attachActorId: actorId,
@@ -183,7 +183,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 		const actor = this.actorList.findOne({ id: targetActorId });
 		actor.attachments.remove(key);
 
-		this.emit("ActorRemoveAttachmentEvent", { actorId: actor.id, key });
+		this.emit('ActorRemoveAttachmentEvent', { actorId: actor.id, key });
 	}
 
 	clearAttachments(targetActorId: number, removeActors = false) {
@@ -223,7 +223,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 
 		this.actorList.update(actor);
 
-		this.emit("ActorToggleUsingEvent", { actorId, startOrEnd: true, useTick: 0 });
+		this.emit('ActorToggleUsingEvent', { actorId, startOrEnd: true, useTick: 0 });
 	}
 
 	endUsing(actorId: number) {
@@ -235,7 +235,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 
 		this.actorList.update(actor);
 
-		this.emit("ActorToggleUsingEvent", { actorId, startOrEnd: false, useTick });
+		this.emit('ActorToggleUsingEvent', { actorId, startOrEnd: false, useTick });
 	}
 
 	setAimTarget(actorId: number, aimTarget: number) {
@@ -256,7 +256,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 		actor.rotation = rotation;
 		this.actorList.update(actor);
 
-		this.emit("ActorSetRotationEvent", { actorId, rotation });
+		this.emit('ActorSetRotationEvent', { actorId, rotation });
 	}
 
 	removeEntity<T extends Actor>(actor: T): void {
@@ -277,7 +277,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 				delta = delta.sub(Vector2.fromSATVector(result.response.overlapV));
 			}
 			if (checkResults.length > 0) {
-				this.emit("ActorCollusionEvent", {
+				this.emit('ActorCollusionEvent', {
 					actorId: actor.id,
 					actorType: actor.type,
 					checkResults: checkResults.map((r) => ({ actorId: r.actor.id, actorType: r.actor.type, checkResponse: r.response })),
@@ -301,7 +301,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 		const landDelta = landPos.sub(lastLandPos);
 
 		if (landDelta.getSqrt() > 0) {
-			this.emit("LandMoveEvent", {
+			this.emit('LandMoveEvent', {
 				actorId: actor.id,
 				targetLandPosX: landPos.x,
 				targetLandPosY: landPos.y,
@@ -321,7 +321,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 				actor.isMoveDirty = false;
 				this.actorList.update(actor);
 
-				this.emit("NewPosEvent", {
+				this.emit('NewPosEvent', {
 					actorId: actor.id,
 					posX: actor.posX,
 					posY: actor.posY,
@@ -338,7 +338,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 		for (const actor of dirtyActors) {
 			actor.isWalkDirty = false;
 			this.actorList.update(actor);
-			this.emit("NewWalkStateEvent", {
+			this.emit('NewWalkStateEvent', {
 				actorId: actor.id,
 				direction: actor.direction,
 				running: actor.running,
@@ -380,7 +380,7 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 		const motionActors = this.actorList.find({ isActor: true });
 
 		for (const actor of motionActors) {
-			if(actor.motionX === 0 && actor.motionY === 0) continue;
+			if (actor.motionX === 0 && actor.motionY === 0) continue;
 			const newMotion = new Vector2(actor.motionX, actor.motionY).mul(actor.motionDecreaseRate);
 			this.setMotion(actor.id, newMotion.getSqrt() > 0.1 ? newMotion : new Vector2(0, 0));
 			this.moveToPosition(actor, new Vector2(actor.posX + actor.motionX, actor.posY + actor.motionY));

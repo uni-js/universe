@@ -24,7 +24,7 @@ export function GetRadiusLands(pos: Vector2, radius: number): Vector2[] {
 	return landLocs;
 }
 
-@Index(["landLocX", "landLocY"])
+@Index(['landLocX', 'landLocY'])
 @Entity()
 export class Land {
 	@Property()

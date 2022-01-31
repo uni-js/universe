@@ -5,7 +5,6 @@ import { BRICK_WIDTH } from './brick-object';
 import { CompositeRectTileLayer } from '@pixi/tilemap';
 import { StaticObject } from '../actor-module/static';
 
-
 export class LandObject extends StaticObject {
 	private tileLayer: CompositeRectTileLayer;
 

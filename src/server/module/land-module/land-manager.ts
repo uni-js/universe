@@ -17,17 +17,17 @@ export interface LandManagerEvents extends EntityBaseEvent {
 	LandLoadedEvent: {
 		landPosX: number;
 		landPosY: number;
-	},
+	};
 	LandDataToPlayerEvent: {
 		playerId: number;
 		landId: number;
 		landPosX: number;
 		landPosY: number;
 		landData: any;
-	},
+	};
 	LandUnloadedEvent: {
 		landId: number;
-	}
+	};
 }
 
 @injectable()
@@ -85,7 +85,7 @@ export class LandManager extends EntityManager<Land, LandManagerEvents> {
 		const land = this.getLand(landPos);
 		const landData = this.getLandData(landPos.x, landPos.y);
 
-		this.emit("LandDataToPlayerEvent", {
+		this.emit('LandDataToPlayerEvent', {
 			playerId,
 			landId: land.id,
 			landPosX: land.landLocX,
@@ -132,7 +132,7 @@ export class LandManager extends EntityManager<Land, LandManagerEvents> {
 		land.isLoading = false;
 		this.landList.update(land);
 
-		this.emit("LandLoadedEvent", {
+		this.emit('LandLoadedEvent', {
 			landPosX: landPos.x,
 			landPosY: landPos.y,
 		});
@@ -147,7 +147,7 @@ export class LandManager extends EntityManager<Land, LandManagerEvents> {
 
 		this.removeLandBricks(landPos.x, landPos.y);
 
-		this.emit("LandUnloadedEvent", {
+		this.emit('LandUnloadedEvent', {
 			landId: land.id,
 		});
 	}
