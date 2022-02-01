@@ -11,7 +11,7 @@ import { BuildingCreator } from './building-creator';
 
 export function GameUI(props: any) {
 	function onClicked() {
-		eventBus.emit('PlayerNameClicked');
+		eventBus.emit('PlayerNameClicked', {});
 	}
 
 	const [backpackVisible, setBackpackVisible] = useState(false);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEventBus, useUIState } from '@uni.js/ui';
-import { ItemBlock } from './item-block';
+import { DropInfo, ItemBlock } from './item-block';
 import { BackpackContainerState } from '../module/inventory-module/ui-state';
 
 import './backpack.css';
@@ -16,8 +16,8 @@ export function Backpack(props: BackpackProps) {
 
 	const blockElems = [];
 
-	function onBlockDrop(sourceContainerId: number, sourceIndex: number, targetContainerId: number, targetIndex: number) {
-		eventBus.emit('ContainerMoveBlock', sourceContainerId, sourceIndex, targetContainerId, targetIndex);
+	function onBlockDrop(dropInfo: DropInfo) {
+		eventBus.emit('ContainerMoveBlock', dropInfo);
 	}
 
 	function onCreatingBuilding() {

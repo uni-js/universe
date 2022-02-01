@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShortcutContainerState } from '../module/inventory-module/ui-state';
 import { useEventBus, useUIState } from '@uni.js/ui';
-import { ItemBlock } from './item-block';
+import { DropInfo, ItemBlock } from './item-block';
 
 import './shortcut.css';
 
@@ -19,8 +19,8 @@ export function Shortcut(props: any) {
 
 	const blockElems = [];
 
-	function onBlockDrop(sourceContainerId: number, sourceIndex: number, targetContainerId: number, targetIndex: number) {
-		eventBus.emit('ContainerMoveBlock', sourceContainerId, sourceIndex, targetContainerId, targetIndex);
+	function onBlockDrop(dropInfo: DropInfo) {
+		eventBus.emit('ContainerMoveBlock', dropInfo);
 	}
 
 	if (shortcut && shortcut.blocks.length > 0) {

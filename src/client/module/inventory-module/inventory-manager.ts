@@ -14,14 +14,11 @@ import { ItemType } from '../../../server/module/inventory-module/spec';
 import { InventoryBlockState, ShortcutContainerState } from './ui-state';
 
 import { UIEventBus } from '@uni.js/ui';
+import { HandleEvent } from '@uni.js/event';
+import type { DropInfo } from '../../ui/item-block';
 
 export interface ContainerManagerEvents {
-	ContainerMoveBlockEvent: {
-		sourceContainerId: number;
-		sourceIndex: number;
-		targetContainerId: number;
-		targetIndex: number;
-	};
+	ContainerMoveBlockEvent: DropInfo;
 	SetShortcutIndexEvent: {
 		containerId: number;
 		indexAt: number;
@@ -32,17 +29,11 @@ export interface ContainerManagerEvents {
 export class ContainerManager extends ClientSideManager<ContainerManagerEvents> {
 	constructor(protected container: ContainerState, protected input: HTMLInputProvider, protected uiEventBus: UIEventBus) {
 		super();
-
-		this.uiEventBus.on('ContainerMoveBlock', this.onContainerMoveBlock.bind(this));
 	}
 
-	private onContainerMoveBlock(sourceContainerId: number, sourceIndex: number, targetContainerId: number, targetIndex: number) {
-		this.emit('ContainerMoveBlockEvent', {
-			sourceContainerId,
-			sourceIndex,
-			targetContainerId,
-			targetIndex,
-		});
+	@HandleEvent('uiEventBus', 'ContainerMoveBlock')
+	private onContainerMoveBlock(dropInfo: DropInfo) {
+		this.emit('ContainerMoveBlockEvent', dropInfo);
 	}
 
 	updateBlock(updateDataUnit: ContainerUpdateDataUnit) {
@@ -121,7 +112,7 @@ export class BackpackManager extends ContainerManager {
 
 	doFixedUpdateTick() {
 		if (this.input.keyDown(InputKey.E)) {
-			this.uiEventBus.emit('toggleBackpack');
+			this.uiEventBus.emit('toggleBackpack', {});
 		}
 	}
 }

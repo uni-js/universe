@@ -5,6 +5,13 @@ import { ItemType, ItemTypeName } from '../../server/module/inventory-module/spe
 
 import './item-block.css';
 
+export interface DropInfo {
+	sourceContainerId: number;
+	sourceIndex: number;
+	targetContainerId: number;
+	targetIndex: number;
+}
+
 export interface ItemBlockProps {
 	containerId: number;
 	index: number;
@@ -21,7 +28,7 @@ export interface ItemBlockProps {
 	onMouseMove?: () => void;
 	onLeftClick?: () => void;
 	onRightClick?: () => void;
-	onDrop?: (sourceContainerId: number, sourceIndex: number, targetContainerId: number, targetIndex: number) => void;
+	onDrop?: (dropInfo: DropInfo) => void;
 }
 
 export const ItemBlock = React.memo((props: ItemBlockProps) => {
@@ -72,7 +79,7 @@ export const ItemBlock = React.memo((props: ItemBlockProps) => {
 		const { containerId: sourceContainerId, index: sourceIndex } = JSON.parse(ev.dataTransfer.getData('text/plain'));
 		const targetIndex = +ev.currentTarget.getAttribute('data-index');
 
-		props.onDrop && props.onDrop(sourceContainerId, sourceIndex, props.containerId, targetIndex);
+		props.onDrop && props.onDrop({ sourceContainerId, sourceIndex, targetContainerId: props.containerId, targetIndex });
 		setDragOver(false);
 	}
 

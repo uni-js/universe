@@ -3,6 +3,7 @@ import { Direction, RunningState } from '../../../server/module/actor-module/spe
 import { ActorObject } from './actor-object';
 import { GameObjectManager } from '@uni.js/client';
 import { ActorLayer } from '../../store';
+import { EmitObjectEvent } from '@uni.js/event';
 
 export interface ActorManagerEvents {
 	ActorToggleUsingEvent: {
@@ -20,10 +21,11 @@ export interface ActorManagerEvents {
 export class ActorManager extends GameObjectManager<ActorObject> {
 	constructor(@inject(ActorLayer) private actorLayer: ActorLayer) {
 		super(actorLayer);
-
-		this.redirectObjectEvent('ActorToggleUsingEvent');
-		this.redirectObjectEvent('ActorToggleWalkEvent');
 	}
+
+	@EmitObjectEvent('ActorToggleUsingEvent')
+	@EmitObjectEvent('ActorToggleWalkEvent')
+	private emitObjectEvent() {}
 
 	/**
 	 * actors which are loaded locally
