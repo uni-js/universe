@@ -26,7 +26,7 @@ export interface BrickData {
 	offX: number;
 	offY: number;
 
-	type: BrickType;
+	layers: BrickType[];
 }
 
 export enum LandEvent {

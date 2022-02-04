@@ -1,5 +1,5 @@
 import { ActorType } from '../../../server/module/actor-module/spec';
-import { Arrow, Bow } from '../bow-module/bow-object';
+import { Arrow, Bow } from '../tool-module/bow-object';
 import { DroppedItemActor } from '../inventory-module/dropped-item-object';
 import { Player } from '../player-module/player-object';
 import { ActorFactory } from './actor-object';

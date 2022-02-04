@@ -21,6 +21,10 @@ export interface PlayerManagerEvents {
 	SetAimTargetEvent: {
 		rotation: number;
 	};
+	ToggleUsingEvent: {
+		playerId: number;
+		startOrEnd: boolean;
+	};
 }
 
 @injectable()
@@ -48,10 +52,15 @@ export class PlayerManager extends ClientSideManager<PlayerManagerEvents> {
 		this.playerState.playerName = 'Player';
 
 		player.on('ControlMovedEvent', this.onPlayerControlMoved);
+		player.on('ToggleUsingEvent', this.onToggleUsing);
 		player.setTakeControl();
 
 		this.currentPlayer = player;
 	}
+
+	private onToggleUsing = (event: PlayerManagerEvents['ToggleUsingEvent']) => {
+		this.emit('ToggleUsingEvent', event);
+	};
 
 	private onPlayerControlMoved = (event: PlayerManagerEvents['ControlMovedEvent']) => {
 		this.emit('ControlMovedEvent', event);
@@ -159,12 +168,10 @@ export class PlayerManager extends ClientSideManager<PlayerManagerEvents> {
 		const rightHand = player.getAttachment(AttachType.RIGHT_HAND);
 
 		if (rightHand) {
-			const actor = this.actorManager.getObjectById(rightHand.actorId);
-
 			if (this.inputProvider.cursorPress() || this.inputProvider.keyPress(InputKey.J)) {
-				!actor.isUsing && actor.startUsing();
+				!player.isUsing && player.startUsing();
 			} else {
-				actor.isUsing && actor.endUsing();
+				player.isUsing && player.endUsing();
 			}
 		}
 	}

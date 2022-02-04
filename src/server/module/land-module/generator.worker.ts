@@ -5,8 +5,8 @@ import { expose } from 'threads/worker';
 
 expose({
 	GenerateLandData(landX: number, landY: number, seed = 'seed'): LandData {
-		const landLoc = new Vector2(landX, landY);
-		const startAt = landLoc.mul(LAND_WIDTH);
+		const landPos = new Vector2(landX, landY);
+		const startAt = landPos.mul(LAND_WIDTH);
 		const picker = new BiomePicker(seed);
 
 		const landData: LandData = {
@@ -40,7 +40,7 @@ expose({
 				landData.bricks.push({
 					offX: x,
 					offY: y,
-					type: brickType,
+					layers: [brickType],
 				});
 			}
 

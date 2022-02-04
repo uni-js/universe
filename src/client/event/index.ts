@@ -4,6 +4,6 @@ export * from './set-aim-target-event';
 export * from './control-moved-event';
 export * from './login-event';
 export * from './drop-item-event';
-export * from './actor-toggle-using-event';
+export * from './toggle-using-event';
 export * from './set-shortcut-index-event';
 export * from './actor-toggle-walk-event';

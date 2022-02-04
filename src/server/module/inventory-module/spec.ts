@@ -57,6 +57,3 @@ export enum ItemHoldAction {
 	 */
 	ATTACH_ITEM_ACTOR,
 }
-
-export const ToolsItemTypes: ItemType[] = [ItemType.BOW];
-export const WallpaperTypes: ItemType[] = [ItemType.WP_ROCK];

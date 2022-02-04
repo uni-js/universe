@@ -9,29 +9,29 @@ import { RecordSet } from '../../utils';
  * @returns land position array
  */
 export function GetRadiusLands(pos: Vector2, radius: number): Vector2[] {
-	const landLoc = PosToLandPos(pos);
-	const landLocs: Vector2[] = [];
+	const landPos = PosToLandPos(pos);
+	const landPoss: Vector2[] = [];
 
 	for (let dx = -radius; dx <= radius; dx++)
 		for (let dy = -radius; dy <= radius; dy++) {
 			if (dx == 0 && dy == 0) continue;
 
-			landLocs.push(landLoc.add(new Vector2(dx, dy)));
+			landPoss.push(landPos.add(new Vector2(dx, dy)));
 		}
 
-	landLocs.push(landLoc);
+	landPoss.push(landPos);
 
-	return landLocs;
+	return landPoss;
 }
 
-@Index(['landLocX', 'landLocY'])
+@Index(['landPosX', 'landPosY'])
 @Entity()
 export class Land {
 	@Property()
-	landLocX: number;
+	landPosX: number;
 
 	@Property()
-	landLocY: number;
+	landPosY: number;
 
 	@Property()
 	isLoaded = false;

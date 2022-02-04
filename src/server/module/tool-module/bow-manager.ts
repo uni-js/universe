@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { ActorType } from '../actor-module/spec';
+import { ActorType, AttachType } from '../actor-module/spec';
 import { Actor } from '../actor-module/actor-entity';
 import { Arrow, Bow } from './bow-entity';
 import { ActorManager, ActorManagerEvents } from '../actor-module/actor-manager';
@@ -10,16 +10,24 @@ import { Vector2 } from '../../shared/math';
 import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS, ARROW_DEAD_TICKS, ARROW_DROP_TICKS } from './spec';
 
 import SAT from 'sat';
+import { PlayerManager, PlayerManagerEvents } from '../player-module/player-manager';
+import { InventoryManager } from '../inventory-module/inventory-manager';
 
 @injectable()
 export class BowManager extends ExtendedEntityManager<Actor, Bow> {
-	constructor(@inject(ActorManager) private actorManager: ActorManager) {
+	constructor(
+		@inject(ActorManager) private actorManager: ActorManager,
+		@inject(PlayerManager) private playerManager: PlayerManager,
+		@inject(InventoryManager) private inventoryManager: InventoryManager,
+	) {
 		super(actorManager, Bow);
 	}
 
-	@HandleEvent('actorManager', 'ActorToggleUsingEvent')
-	private onActorToggleUsing(event: ActorManagerEvents['ActorToggleUsingEvent']) {
-		const actor = this.actorManager.getEntityById(event.actorId);
+	@HandleEvent('playerManager', 'ToggleUsingEvent')
+	private onToggleUsing(event: PlayerManagerEvents['ToggleUsingEvent']) {
+		const { actorId } = this.playerManager.getAttachment(event.playerId, AttachType.RIGHT_HAND);
+		const actor = this.actorManager.getEntityById(actorId);
+
 		if (actor.type != ActorType.BOW) return;
 
 		if (event.startOrEnd) {

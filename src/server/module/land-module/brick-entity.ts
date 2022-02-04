@@ -1,17 +1,14 @@
 import { Entity, Index, Property } from '@uni.js/database';
 import type { BrickType } from './spec';
 
-@Index(['landLocX', 'landLocY'])
+@Index(['landPosX', 'landPosY'])
 @Entity()
 export class Brick {
 	@Property()
-	brickType: BrickType;
+	landPosX: number;
 
 	@Property()
-	landLocX: number;
-
-	@Property()
-	landLocY: number;
+	landPosY: number;
 
 	@Property()
 	offLocX: number;

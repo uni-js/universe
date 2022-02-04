@@ -64,17 +64,10 @@ export class Actor {
 	@Property()
 	motionDecreaseRate = 0.9;
 
-	@Index()
-	@Property()
-	isUsing = false;
-
 	@Private()
 	@Index()
 	@Property()
 	isPlayer = false;
-
-	@Property()
-	useTick = 0;
 
 	@Property()
 	attachments: RecordMap<Attachment, AttachType> = new RecordMap();

@@ -20,8 +20,19 @@ export class PlayerController extends ClientSideController {
 		super(eventBus);
 	}
 
+	@EmitLocalEvent('playerManager', 'ToggleUsingEvent')
 	@EmitLocalEvent('playerManager', 'ControlMovedEvent')
 	private emitLocalEvent() {}
+
+	@HandleRemoteEvent(ServerEvents.ToggleUsingEvent)
+	private handleToggleUsing(event: ServerEvents.ToggleUsingEvent) {
+		const player = <Player>this.actorManager.getObjectById(event.playerId);
+		if (event.startOrEnd) {
+			player.startUsing(false);
+		} else {
+			player.endUsing(false);
+		}
+	}
 
 	@HandleRemoteEvent(ServerEvents.LoginedEvent)
 	private handleLogined(event: ServerEvents.LoginedEvent) {

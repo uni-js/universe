@@ -7,7 +7,6 @@ import { BowUI } from './bow';
 import { Backpack } from './backpack';
 
 import './game-ui.css';
-import { BuildingCreator } from './building-creator';
 
 export function GameUI(props: any) {
 	function onClicked() {
@@ -36,14 +35,7 @@ export function GameUI(props: any) {
 			<div id="player-name" style={{ fontSize: '24px', color: 'white' }}>
 				{positionString}
 			</div>
-			<BuildingCreator />
-			<Backpack
-				visible={backpackVisible}
-				onOpenBuildingCreator={() => {
-					eventBus.emit('SelectingBuildingRange', 'start');
-					setBackpackVisible(false);
-				}}
-			></Backpack>
+			<Backpack visible={backpackVisible}></Backpack>
 			<div id="bottom-area">
 				<BowUI></BowUI>
 				<Shortcut></Shortcut>

@@ -23,7 +23,6 @@ export class ActorManager extends GameObjectManager<ActorObject> {
 		super(actorLayer);
 	}
 
-	@EmitObjectEvent('ActorToggleUsingEvent')
 	@EmitObjectEvent('ActorToggleWalkEvent')
 	private emitObjectEvent() {}
 

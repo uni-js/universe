@@ -26,20 +26,9 @@ export class ActorController extends ClientSideController {
 		super(eventBus);
 	}
 
-	@EmitLocalEvent('actorManager', 'ActorToggleUsingEvent')
 	@EmitLocalEvent('actorManager', 'ActorToggleWalkEvent')
 	@EmitLocalEvent('playerManager', 'SetAimTargetEvent')
 	private emitLocalEvent() {}
-
-	@HandleRemoteEvent(ServerEvents.ActorToggleUsingEvent)
-	private handleActorToggleUsing(event: ServerEvents.ActorToggleUsingEvent) {
-		const actor = this.actorManager.getObjectById(event.actorId);
-		if (event.startOrEnd) {
-			actor.startUsing(false);
-		} else {
-			actor.endUsing(false);
-		}
-	}
 
 	@HandleRemoteEvent(ServerEvents.ActorSetAttachmentEvent)
 	private handleSetAttachment(event: ServerEvents.ActorSetAttachmentEvent) {

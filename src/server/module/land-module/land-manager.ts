@@ -43,19 +43,19 @@ export class LandManager extends EntityManager<Land, LandManagerEvents> {
 	}
 
 	private removeLandBricks(x: number, y: number) {
-		this.brickList.removeWhere({ landLocX: x, landLocY: y });
+		this.brickList.removeWhere({ landPosX: x, landPosY: y });
 	}
 
 	private setBricksByLandData(x: number, y: number, landData: LandData) {
-		this.brickList.findAndRemove({ landLocX: x, landLocY: y });
+		this.brickList.findAndRemove({ landPosX: x, landPosY: y });
 		const bricks = [];
 		for (const brickData of landData.bricks) {
 			const newBrick = new Brick();
 			newBrick.offLocX = brickData.offX;
 			newBrick.offLocY = brickData.offY;
-			newBrick.landLocX = x;
-			newBrick.landLocY = y;
-			newBrick.brickType = brickData.type;
+			newBrick.landPosX = x;
+			newBrick.landPosY = y;
+			newBrick.layers = brickData.layers;
 
 			bricks.push(newBrick);
 		}
@@ -66,13 +66,13 @@ export class LandManager extends EntityManager<Land, LandManagerEvents> {
 		const landData: LandData = {
 			bricks: [],
 		};
-		const bricks = this.brickList.find({ landLocX: x, landLocY: y });
+		const bricks = this.brickList.find({ landPosX: x, landPosY: y });
 
 		for (const brick of bricks) {
 			const brickData: BrickData = {
 				offX: brick.offLocX,
 				offY: brick.offLocY,
-				type: brick.brickType,
+				layers: brick.layers,
 			};
 
 			landData.bricks.push(brickData);
@@ -88,20 +88,20 @@ export class LandManager extends EntityManager<Land, LandManagerEvents> {
 		this.emit('LandDataToPlayerEvent', {
 			playerId,
 			landId: land.id,
-			landPosX: land.landLocX,
-			landPosY: land.landLocY,
+			landPosX: land.landPosX,
+			landPosY: land.landPosY,
 			landData,
 		});
 	}
 
 	getLand(landPos: Vector2) {
-		return this.findEntity({ landLocX: landPos.x, landLocY: landPos.y });
+		return this.findEntity({ landPosX: landPos.x, landPosY: landPos.y });
 	}
 
-	async generateLand(landLoc: Vector2) {
-		const hash = BuildLandHash(landLoc);
+	async generateLand(landPos: Vector2) {
+		const hash = BuildLandHash(landPos);
 		const worker = await this.generatorWorker;
-		const landData = await worker.GenerateLandData(landLoc.x, landLoc.y, process.env['LAND_SEED']);
+		const landData = await worker.GenerateLandData(landPos.x, landPos.y, process.env['LAND_SEED']);
 
 		await this.pdb.set(hash, landData);
 		return landData;
@@ -113,7 +113,7 @@ export class LandManager extends EntityManager<Land, LandManagerEvents> {
 	}
 
 	async loadLand(landPos: Vector2) {
-		const land = this.landList.findOne({ landLocX: landPos.x, landLocY: landPos.y });
+		const land = this.landList.findOne({ landPosX: landPos.x, landPosY: landPos.y });
 		if (land.isLoaded || land.isLoading) return;
 
 		const hash = BuildLandHash(landPos);
@@ -153,7 +153,7 @@ export class LandManager extends EntityManager<Land, LandManagerEvents> {
 	}
 
 	getLandByLoc(landPos: Vector2) {
-		return this.landList.findOne({ landLocX: landPos.x, landLocY: landPos.y });
+		return this.landList.findOne({ landPosX: landPos.x, landPosY: landPos.y });
 	}
 
 	getLandActors(landPos: Vector2): number[] {
@@ -164,8 +164,8 @@ export class LandManager extends EntityManager<Land, LandManagerEvents> {
 	addNewLand(landPos: Vector2) {
 		const newLand = new Land();
 
-		newLand.landLocX = landPos.x;
-		newLand.landLocY = landPos.y;
+		newLand.landPosX = landPos.x;
+		newLand.landPosY = landPos.y;
 		newLand.isLoaded = false;
 		newLand.isLoading = false;
 
@@ -178,7 +178,7 @@ export class LandManager extends EntityManager<Land, LandManagerEvents> {
 		this.addNewLand(landPos);
 	}
 
-	hasLand(landLoc: Vector2) {
-		return Boolean(this.getLand(landLoc));
+	hasLand(landPos: Vector2) {
+		return Boolean(this.getLand(landPos));
 	}
 }

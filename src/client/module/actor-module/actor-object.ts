@@ -101,7 +101,6 @@ export class ActorObject extends GameObject {
 	private attachments = new Map<AttachType, Attachment>();
 	private attachMapping?: AttachMapping;
 
-	private isUsingDirty = false;
 	private isWalkDirty = false;
 
 	private _tagname = '';
@@ -143,12 +142,6 @@ export class ActorObject extends GameObject {
 
 		if (option.attachMapping) {
 			this.attachMapping = option.attachMapping;
-		}
-
-		if (option.isUsing) {
-			this.startUsing();
-		} else if (this.isUsing) {
-			this.endUsing();
 		}
 
 		this.boundings = option.boundings;
@@ -358,24 +351,6 @@ export class ActorObject extends GameObject {
 		});
 	}
 
-	startUsing(dirty = true) {
-		if (this.isUsing == true) return;
-
-		this.isUsing = true;
-		if (dirty) {
-			this.isUsingDirty = true;
-		}
-	}
-
-	endUsing(dirty = true) {
-		if (this.isUsing == false) return;
-
-		this.isUsing = false;
-		if (dirty) {
-			this.isUsingDirty = true;
-		}
-	}
-
 	damage(val: number) {
 		if (this.nametag) {
 			this.nametag.hiddenTicks = 100;
@@ -437,11 +412,6 @@ export class ActorObject extends GameObject {
 		this.moveInterpolator.doFixedUpdateTick();
 		this.nametag && this.nametag.doFixedUpdateTick();
 		this.healthBar && this.healthBar.doFixedUpdateTick();
-
-		if (this.isUsingDirty) {
-			this.emit('ActorToggleUsingEvent', { actorId: this.serverId, startOrEnd: this.isUsing ? true : false });
-			this.isUsingDirty = false;
-		}
 
 		if (this.isWalkDirty) {
 			this.emit('ActorToggleWalkEvent', {

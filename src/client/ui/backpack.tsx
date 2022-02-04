@@ -7,7 +7,6 @@ import './backpack.css';
 
 export interface BackpackProps {
 	visible?: boolean;
-	onOpenBuildingCreator: () => void;
 }
 
 export function Backpack(props: BackpackProps) {
@@ -18,10 +17,6 @@ export function Backpack(props: BackpackProps) {
 
 	function onBlockDrop(dropInfo: DropInfo) {
 		eventBus.emit('ContainerMoveBlock', dropInfo);
-	}
-
-	function onCreatingBuilding() {
-		props.onOpenBuildingCreator();
 	}
 
 	if (container && container.blocks.length > 0) {
@@ -49,11 +44,7 @@ export function Backpack(props: BackpackProps) {
 				<div className="backpack-main">
 					<div className="backpack-body">{blockElems}</div>
 				</div>
-				<div className="backpack-func">
-					<div className="backpack-func-building-creator" onClick={onCreatingBuilding}>
-						Create Building
-					</div>
-				</div>
+				<div className="backpack-func"></div>
 			</div>
 		</div>
 	);

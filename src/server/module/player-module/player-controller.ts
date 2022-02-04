@@ -27,6 +27,15 @@ export class PlayerController extends ServerSideController {
 		return this.playerManager.getEntityById(ev.fromPlayerId).connId;
 	}
 
+	@EmitLocalEvent('playerManager', 'ToggleUsingEvent')
+	private emitToPlayerNearActors(ev: any) {
+		const sids = this.playerManager
+			.getAllEntities()
+			.filter((player) => player.spawnedActors.has(ev.playerId))
+			.map((player) => player.connId);
+		return sids;
+	}
+
 	@HandleRemoteEvent(ClientEvents.ActorToggleWalkEvent)
 	private handleActorToggleWalk(connId: string, event: ClientEvents.ActorToggleWalkEvent) {
 		const player = this.playerManager.findEntity({ connId });
@@ -55,5 +64,14 @@ export class PlayerController extends ServerSideController {
 	private handleSetAimTargetEvent(connId: string, event: ClientEvents.SetAimTargetEvent) {
 		const player = this.playerManager.findEntity({ connId });
 		this.actorManager.setAimTarget(player.id, event.rotation);
+	}
+
+	@HandleRemoteEvent(ClientEvents.ToggleUsingEvent)
+	private handleToggleUsingEvent(connId: string, event: ClientEvents.ToggleUsingEvent) {
+		if (event.startOrEnd) {
+			this.playerManager.startUsing(event.playerId);
+		} else {
+			this.playerManager.endUsing(event.playerId);
+		}
 	}
 }

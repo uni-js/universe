@@ -54,6 +54,13 @@ export class Player extends Actor {
 	@Property()
 	isPlayer = true;
 
+	@Index()
+	@Property()
+	isUsing = false;
+
+	@Property()
+	useTick = 0;
+
 	@Private()
 	@Property()
 	usedLands: RecordSet<string> = new RecordSet();

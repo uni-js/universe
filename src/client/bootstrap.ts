@@ -13,8 +13,7 @@ import { LandModule } from './module/land-module/module-export';
 import { ActorModule } from './module/actor-module/module-export';
 import { PlayerModule } from './module/player-module/module-export';
 import { InventoryModule } from './module/inventory-module/module-export';
-import { BowModule } from './module/bow-module/module-export';
-import { BuildingModule } from './module/building-module/module-export';
+import { BowModule } from './module/tool-module/module-export';
 
 import { BootController } from './controller/boot-controller';
 import { ActorLayer, BuildingCreatorLayer, LandLayer } from './store';
@@ -28,7 +27,7 @@ export async function bootstrap() {
 	const resolution = 32;
 
 	const appModule = createClientSideModule({
-		imports: [LandModule, ActorModule, PlayerModule, InventoryModule, BowModule, BuildingModule],
+		imports: [LandModule, ActorModule, PlayerModule, InventoryModule, BowModule],
 		controllers: [BootController],
 		providers: [
 			{ key: LandLayer, value: new LandLayer() },

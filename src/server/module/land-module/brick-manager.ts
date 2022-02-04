@@ -9,6 +9,7 @@ export interface BrickManagerEvents extends EntityBaseEvent {
 		posX: number;
 		posY: number;
 		layers: number[];
+		addOrRemove: boolean;
 	};
 }
 
@@ -22,21 +23,22 @@ export class BrickManager extends EntityManager<Brick, BrickManagerEvents> {
 		if (brick.layers.length >= BRICK_MAX_LAYER) return;
 
 		brick.layers.push(brickType);
-		this.notifyBrickUpdated(brick);
-	}
-
-	private notifyBrickUpdated(brick: Brick) {
-		this.emit('UpdateBrickEvent', {
-			posX: brick.posX,
-			posY: brick.posY,
-			layers: brick.layers,
-		});
+		this.notifyBrickUpdated(brick, true);
 	}
 
 	removeLayer(id: number) {
 		const brick = this.brickList.findOne({ id });
 		brick.layers.pop();
 
-		this.notifyBrickUpdated(brick);
+		this.notifyBrickUpdated(brick, false);
+	}
+
+	private notifyBrickUpdated(brick: Brick, addOrRemove: boolean) {
+		this.emit('UpdateBrickEvent', {
+			posX: brick.posX,
+			posY: brick.posY,
+			layers: brick.layers,
+			addOrRemove,
+		});
 	}
 }

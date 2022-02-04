@@ -35,14 +35,12 @@ export class Bow extends ActorObject {
 		this.textures = this.textureProvider.getGroup('actor.bow');
 	}
 
-	startUsing() {
-		super.startUsing.call(this);
+	startBeUsing() {
 		this.dragging = true;
 		this.playAnimate();
 	}
 
-	endUsing() {
-		super.endUsing.call(this);
+	endBeUsing() {
 		this.stopAnimate();
 	}
 

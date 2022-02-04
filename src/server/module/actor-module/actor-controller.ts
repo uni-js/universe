@@ -26,7 +26,6 @@ export class ActorController extends ServerSideController {
 	@EmitLocalEvent('actorManager', 'ActorSetAttachmentEvent')
 	@EmitLocalEvent('actorManager', 'ActorRemoveAttachmentEvent')
 	@EmitLocalEvent('actorManager', 'ActorSetRotationEvent')
-	@EmitLocalEvent('actorManager', 'ActorToggleUsingEvent')
 	@EmitLocalEvent('actorManager', 'ActorDamagedEvent')
 	private emitByActorId(ev: any) {
 		const sids = this.playerManager
@@ -34,14 +33,5 @@ export class ActorController extends ServerSideController {
 			.filter((player) => player.spawnedActors.has(ev.actorId))
 			.map((player) => player.connId);
 		return sids;
-	}
-
-	@HandleRemoteEvent(ClientEvents.ActorToggleUsingEvent)
-	private handleActorToggleUsingEvent(connId: string, event: ClientEvents.ActorToggleUsingEvent) {
-		if (event.startOrEnd) {
-			this.actorManager.startUsing(event.actorId);
-		} else {
-			this.actorManager.endUsing(event.actorId);
-		}
 	}
 }

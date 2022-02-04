@@ -34,11 +34,6 @@ export interface ActorManagerEvents extends EntityBaseEvent {
 		actorId: number;
 		key: AttachType;
 	};
-	ActorToggleUsingEvent: {
-		actorId: number;
-		startOrEnd: boolean;
-		useTick: number;
-	};
 	ActorSetRotationEvent: {
 		actorId: number;
 		rotation: number;
@@ -215,29 +210,6 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 		}
 	}
 
-	startUsing(actorId: number) {
-		const actor = this.actorList.findOne({ id: actorId });
-
-		actor.isUsing = true;
-		actor.useTick = 0;
-
-		this.actorList.update(actor);
-
-		this.emit('ActorToggleUsingEvent', { actorId, startOrEnd: true, useTick: 0 });
-	}
-
-	endUsing(actorId: number) {
-		const actor = this.actorList.findOne({ id: actorId });
-		const useTick = actor.useTick;
-
-		actor.isUsing = false;
-		actor.useTick = 0;
-
-		this.actorList.update(actor);
-
-		this.emit('ActorToggleUsingEvent', { actorId, startOrEnd: false, useTick });
-	}
-
 	setAimTarget(actorId: number, aimTarget: number) {
 		const actor = this.actorList.findOne({ id: actorId });
 		const validDirection = isAngleMatchDirection(actor.direction, aimTarget);
@@ -368,14 +340,6 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 		});
 	}
 
-	private updateUsing() {
-		const actorsIsUsing = this.actorList.find({ isUsing: true });
-		for (const actor of actorsIsUsing) {
-			actor.useTick++;
-			this.actorList.update(actor);
-		}
-	}
-
 	private updateMotion() {
 		const motionActors = this.actorList.find({ isActor: true });
 
@@ -401,7 +365,6 @@ export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
 	doTick(tick: number) {
 		this.updateMoveDirty();
 		this.updateWalkDirty();
-		this.updateUsing();
 		this.updateMotion();
 	}
 }

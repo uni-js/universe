@@ -1,7 +1,7 @@
 import { UpdateBuildingNearbyEvent } from './update-building-nearby-event';
 import { ActorDamagedEvent } from './actor-damaged-event';
 import { UpdateContainerEvent } from './update-container-event';
-import { ActorToggleUsingEvent } from './actor-toggle-using-event';
+import { ToggleUsingEvent } from './actor-toggle-using-event';
 import { ActorRemoveAttachmentEvent } from './actor-remove-attachment-event';
 import { ActorSetAttachmentEvent } from './actor-set-attachment-event';
 import { LandNeverUsedEvent } from './land-never-used-event';
@@ -23,7 +23,7 @@ export {
 	LandNeverUsedEvent,
 	ActorSetAttachmentEvent,
 	ActorRemoveAttachmentEvent,
-	ActorToggleUsingEvent,
+	ToggleUsingEvent,
 	UpdateContainerEvent,
 	ActorDamagedEvent,
 	UpdateBuildingNearbyEvent,

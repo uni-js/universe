@@ -18,7 +18,7 @@ import {
 	AddEntityEvent,
 } from '@uni.js/database';
 import { inject, injectable } from 'inversify';
-import { ItemHoldAction, ItemType, ToolsItemTypes } from './spec';
+import { ItemHoldAction, ItemType } from './spec';
 import { ItemDef, ItemDefList } from './item-entity';
 import { ActorManager } from '../actor-module/actor-manager';
 import { ActorType, AttachType } from '../actor-module/spec';
@@ -40,12 +40,12 @@ export interface InventoryManagerEvents extends EntityBaseEvent {
 
 @injectable()
 export class InventoryManager extends EntityManager<Inventory, InventoryManagerEvents> {
+	private playerInventoryList: UpdateOnlyCollection<PlayerInventory>;
+
 	constructor(
 		@injectCollection(Inventory) private inventoryList: UpdateOnlyCollection<Inventory>,
-		@injectCollection(Inventory) private playerInventoryList: UpdateOnlyCollection<PlayerInventory>,
 
 		@injectCollection(Container) private containerList: NotLimitCollection<Container>,
-		@injectCollection(Container) private shortcutContainerList: NotLimitCollection<ShortcutContainer>,
 
 		@injectCollection(ContainerBlock) private blocksList: NotLimitCollection<ContainerBlock>,
 		@injectCollection(ItemDef) private itemDefList: NotLimitCollection<ItemDef>,
@@ -57,6 +57,7 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 	) {
 		super(inventoryList);
 
+		this.playerInventoryList = inventoryList as UpdateOnlyCollection<PlayerInventory>;
 		this.initItemDefList();
 	}
 
@@ -233,7 +234,7 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 	private appendItems(containerId: number, itemType: ItemType, itemCount: number): boolean {
 		const blocks = this.blocksList.find({ containerId });
 		for (const block of blocks) {
-			if (block.itemType === itemType && block.itemCount + itemCount <= MAX_STACK_SIZE && !ToolsItemTypes.includes(itemType)) {
+			if (block.itemType === itemType && block.itemCount + itemCount <= MAX_STACK_SIZE) {
 				this.setBlock(containerId, block.index, itemType, block.itemCount + itemCount);
 				return true;
 			}
@@ -246,12 +247,12 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 	}
 
 	setShortcutIndex(containerId: number, indexAt: number) {
-		const container = this.shortcutContainerList.findOne({ id: containerId });
+		const container = <ShortcutContainer>this.containerList.findOne({ id: containerId });
 		if (indexAt == container.currentIndex) return;
 
 		container.currentIndex = indexAt;
 
-		this.shortcutContainerList.update(container);
+		this.containerList.update(container);
 		this.updateHoldItem(container);
 	}
 

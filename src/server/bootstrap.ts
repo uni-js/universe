@@ -11,7 +11,7 @@ import { MemoryDatabasePlugin } from '@uni.js/database';
 import { LandModule } from './module/land-module/module-export';
 import { ActorModule } from './module/actor-module/module-export';
 import { PlayerModule } from './module/player-module/module-export';
-import { BowModule } from './module/bow-module/module-export';
+import { BowModule } from './module/tool-module/module-export';
 import { InventoryModule } from './module/inventory-module/module-export';
 import { PickDropModule } from './module/pick-drop-module/module-export';
 import { actorFactory } from './module/actor-module/mapper';

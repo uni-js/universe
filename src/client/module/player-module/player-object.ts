@@ -17,6 +17,7 @@ export class Player extends ActorObject {
 	 */
 	public playerName: string;
 
+	private isUsingDirty = false;
 	private controlMoved: Vector2 | false = false;
 	private predictedInputManager: PredictedInputManager;
 
@@ -34,6 +35,12 @@ export class Player extends ActorObject {
 		this.sprite.animationSpeed = 0.12;
 
 		this.walkTextures = this.textureProvider.getGroup('actor.player');
+
+		if (option.isUsing) {
+			this.startUsing();
+		} else if (this.isUsing) {
+			this.endUsing();
+		}
 
 		this.controlRunning(RunningState.SILENT);
 		this.predictedInputManager = new PredictedInputManager({ ...this.vPos, motionX: option.motionX, motionY: option.motionY });
@@ -81,6 +88,24 @@ export class Player extends ActorObject {
 		});
 	}
 
+	startUsing(dirty = true) {
+		if (this.isUsing == true) return;
+
+		this.isUsing = true;
+		if (dirty) {
+			this.isUsingDirty = true;
+		}
+	}
+
+	endUsing(dirty = true) {
+		if (this.isUsing == false) return;
+
+		this.isUsing = false;
+		if (dirty) {
+			this.isUsingDirty = true;
+		}
+	}
+
 	private doOrderTick() {
 		this.zIndex = 2 + (this.y / BILLION_VALUE + 1) / 2;
 	}
@@ -90,6 +115,11 @@ export class Player extends ActorObject {
 
 		if (this.isTakeControl) {
 			this.predictedInputManager.doGameTick();
+		}
+
+		if (this.isUsingDirty) {
+			this.emit('ToggleUsingEvent', { playerId: this.serverId, startOrEnd: this.isUsing ? true : false });
+			this.isUsingDirty = false;
 		}
 
 		this.doControlMoveTick(tick);

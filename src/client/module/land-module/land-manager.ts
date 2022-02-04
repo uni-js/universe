@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { LandLocToLoc, PosToLandPos } from '../../../server/module/land-module/helper';
+import { LandPosToPos, PosToLandPos } from '../../../server/module/land-module/helper';
 import { Vector2 } from '../../../server/shared/math';
 import { GameObjectManager } from '@uni.js/client';
 import { LandObject } from './land-object';
@@ -11,15 +11,15 @@ export class LandManager extends GameObjectManager<LandObject> {
 		super(landLayer);
 	}
 
-	getLandByLoc(landLoc: Vector2) {
-		return this.landLayer.get(landLoc.x, landLoc.y);
+	getLandByLoc(landPos: Vector2) {
+		return this.landLayer.get(landPos.x, landPos.y);
 	}
 
 	getBrickByLoc(pos: Vector2) {
-		const landLoc = PosToLandPos(pos);
-		const startAt = LandLocToLoc(landLoc);
+		const landPos = PosToLandPos(pos);
+		const startAt = LandPosToPos(landPos);
 
-		const land = this.getLandByLoc(landLoc);
+		const land = this.getLandByLoc(landPos);
 		if (!land) return;
 
 		const rawOffLoc = pos.sub(startAt);

@@ -1,6 +1,6 @@
 import { ActorFactory } from './actor-entity';
 import { ActorType } from './spec';
-import { Arrow, Bow } from '../bow-module/bow-entity';
+import { Arrow, Bow } from '../tool-module/bow-entity';
 import { Player } from '../player-module/player-entity';
 import { DroppedItemActor } from '../pick-drop-module/dropped-item-entity';
 

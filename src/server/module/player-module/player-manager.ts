@@ -11,6 +11,7 @@ import { GetConstructOptions } from '../../shared/entity';
 import { LandManager } from '../land-module/land-manager';
 import { HandleEvent } from '@uni.js/event';
 import { ExtendedEntityManager, AddEntityEvent, RemoveEntityEvent, EntityBaseEvent } from '@uni.js/database';
+import { AttachType } from '../actor-module/spec';
 
 export interface PlayerManagerEvents extends EntityBaseEvent {
 	SpawnActorEvent: {
@@ -34,6 +35,11 @@ export interface PlayerManagerEvents extends EntityBaseEvent {
 		landId: number;
 		landPosX: number;
 		landPosY: number;
+	};
+	ToggleUsingEvent: {
+		playerId: number;
+		startOrEnd: boolean;
+		useTick: number;
 	};
 }
 
@@ -65,6 +71,37 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player, PlayerMa
 		this.updateUsedLands(player);
 	}
 
+	startUsing(playerId: number) {
+		const player = <Player>this.getEntityById(playerId);
+
+		player.isUsing = true;
+		player.useTick = 0;
+
+		this.actorManager.updateEntity(player);
+
+		this.emit('ToggleUsingEvent', { playerId: player.id, startOrEnd: true, useTick: 0 });
+	}
+
+	endUsing(playerId: number) {
+		const player = <Player>this.getEntityById(playerId);
+		const useTick = player.useTick;
+
+		player.isUsing = false;
+		player.useTick = 0;
+
+		this.actorManager.updateEntity(player);
+
+		this.emit('ToggleUsingEvent', { playerId: player.id, startOrEnd: false, useTick });
+	}
+
+	private updateUsing() {
+		const playersIsUsing = <Player[]>this.findEntities({ isUsing: true });
+		for (const player of playersIsUsing) {
+			player.useTick++;
+			this.updateEntity(player);
+		}
+	}
+
 	isUseLand(player: Player, landPos: Vector2) {
 		return player.usedLands.has(GetPosHash(landPos));
 	}
@@ -83,6 +120,11 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player, PlayerMa
 
 	getAllEntities(): Readonly<Player>[] {
 		return this.findEntities({ isPlayer: true });
+	}
+
+	getAttachment(playerId: number, attachType: AttachType) {
+		const player = this.getEntityById(playerId);
+		return player.attachments.get(attachType);
 	}
 
 	addNewPlayer(connId: string) {
@@ -143,5 +185,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player, PlayerMa
 		}
 	}
 
-	doTick() {}
+	doTick() {
+		this.updateUsing();
+	}
 }
