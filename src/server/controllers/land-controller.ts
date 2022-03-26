@@ -1,9 +1,9 @@
 import { EventBusServer, EventBusServerSymbol } from '@uni.js/server';
 import { ServerSideController } from '@uni.js/server';
 import { EmitLocalEvent } from '@uni.js/event';
-import { PlayerMgr } from '../managers/player-manager';
+import { PlayerMgr } from '../managers/player-mgr';
 import { inject, injectable } from 'inversify';
-import { LandMgr } from '../managers/land-manager';
+import { LandMgr } from '../managers/land-mgr';
 
 import * as ExternalEvents from '../event';
 

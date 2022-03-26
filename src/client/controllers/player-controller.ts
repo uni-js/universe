@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '@uni.js/client';
-import { ActorMgr } from '../managers/actor-manager';
-import { PlayerMgr } from '../managers/player-manager';
+import { ActorMgr } from '../managers/actor-mgr';
+import { PlayerMgr } from '../managers/player-mgr';
 import { Player } from '../objects/player-object';
 import { ClientSideController } from '@uni.js/client';
 import * as ExternalEvents from '../event';

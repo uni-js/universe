@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '@uni.js/client';
-import { PickDropMgr } from '../managers/pick-drop-manager';
+import { PickDropMgr } from '../managers/pick-drop-mgr';
 import * as ExternalEvents from '../event';
 import { ClientSideController } from '@uni.js/client';
 import { EmitLocalEvent } from '@uni.js/event';

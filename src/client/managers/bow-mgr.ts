@@ -1,9 +1,9 @@
 import { inject, injectable } from 'inversify';
 import { SERVER_TICKS_MULTIPLE } from '../../server/types/server';
 import { ClientSideManager } from '@uni.js/client';
-import { ActorMgr, ActorMgrEvents } from './actor-manager';
-import { PlayerMgr, PlayerMgrEvents } from './player-manager';
-import { ContainerMgrEvents, ShortcutMgr } from './inventory-manager';
+import { ActorMgr, ActorMgrEvents } from './actor-mgr';
+import { PlayerMgr, PlayerMgrEvents } from './player-mgr';
+import { ContainerMgrEvents, ShortcutMgr } from './inventory-mgr';
 import { HandleEvent } from '@uni.js/event';
 import { BowUsingState } from '../ui-states/bow';
 import { ActorType, AttachType } from '../../server/types/actor';

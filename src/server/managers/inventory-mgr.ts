@@ -1,6 +1,6 @@
 import { Player } from '../entity/player-entity';
 import { BackpackContainer, Container, ContainerBlock, Inventory, PlayerInventory, ShortcutContainer } from '../entity/inventory-entity';
-import { PlayerMgr } from './player-manager';
+import { PlayerMgr } from './player-mgr';
 import {
 	EntityManager,
 	UpdateOnlyCollection,
@@ -12,7 +12,7 @@ import {
 } from '@uni.js/database';
 import { inject, injectable } from 'inversify';
 import { Item, ItemDefList } from '../entity/item-entity';
-import { ActorMgr } from './actor-manager';
+import { ActorMgr } from './actor-mgr';
 import { DroppedItemActor } from '../entity/dropped-item-entity';
 import { Vector2 } from '../utils/math';
 

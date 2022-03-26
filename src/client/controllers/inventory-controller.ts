@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '@uni.js/client';
-import { ShortcutMgr, BackpackMgr } from '../managers/inventory-manager';
+import { ShortcutMgr, BackpackMgr } from '../managers/inventory-mgr';
 import { ClientSideController } from '@uni.js/client';
 
 import * as ServerEvents from '../../server/event';

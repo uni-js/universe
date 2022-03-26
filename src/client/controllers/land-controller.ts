@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '@uni.js/client';
 import { Vector2 } from '../../server/utils/math';
-import { LandMgr } from '../managers/land-manager';
+import { LandMgr } from '../managers/land-mgr';
 import { LandObject } from '../objects/land-object';
 import { TextureProvider } from '@uni.js/texture';
 

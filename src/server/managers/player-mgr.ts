@@ -2,12 +2,12 @@ import { Player } from '../entity/player-entity';
 import { Actor } from '../entity/actor-entity';
 import { GetRadiusLands } from '../entity/land-entity';
 import { inject, injectable } from 'inversify';
-import { ActorMgr, ActorMgrEvents } from './actor-manager';
+import { ActorMgr, ActorMgrEvents } from './actor-mgr';
 import { Vector2 } from '../utils/math';
 import { GetArrayDiff } from '../utils/tools';
 import { GetConstructOptions } from '../utils/entity';
 
-import { LandMgr } from './land-manager';
+import { LandMgr } from './land-mgr';
 import { HandleEvent } from '@uni.js/event';
 import { ExtendedEntityManager, AddEntityEvent, RemoveEntityEvent, EntityBaseEvent } from '@uni.js/database';
 import { GetPosByHash, GetPosHash } from '../utils/land-pos';

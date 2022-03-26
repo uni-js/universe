@@ -1,6 +1,6 @@
 import { BusEvent, EventBusServer, EventBusServerSymbol } from '@uni.js/server';
 import { ServerSideController } from '@uni.js/server';
-import { PlayerMgr } from '../managers/player-manager';
+import { PlayerMgr } from '../managers/player-mgr';
 import { inject, injectable } from 'inversify';
 
 @injectable()

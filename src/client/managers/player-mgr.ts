@@ -4,7 +4,7 @@ import { ClientSideManager } from '@uni.js/client';
 import { Viewport } from '@uni.js/viewport';
 import { inject, injectable } from 'inversify';
 import { Player } from '../objects/player-object';
-import { ActorMgr } from './actor-manager';
+import { ActorMgr } from './actor-mgr';
 import { UIEventBus } from '@uni.js/ui';
 import { PlayerState } from '../ui-states/player';
 

@@ -1,15 +1,15 @@
 import { inject, injectable } from 'inversify';
 import { Actor } from '../entity/actor-entity';
 import { Arrow, Bow } from '../entity/bow-entity';
-import { ActorMgr, ActorMgrEvents } from './actor-manager';
+import { ActorMgr, ActorMgrEvents } from './actor-mgr';
 import { ExtendedEntityManager } from '@uni.js/database';
 
 import { HandleEvent } from '@uni.js/event';
 import { Vector2 } from '../utils/math';
 
 import SAT from 'sat';
-import { PlayerMgr, PlayerMgrEvents } from './player-manager';
-import { InventoryMgr } from './inventory-manager';
+import { PlayerMgr, PlayerMgrEvents } from './player-mgr';
+import { InventoryMgr } from './inventory-mgr';
 import { ActorType, AttachType } from '../types/actor';
 import { ARROW_DEAD_TICKS, ARROW_DROP_TICKS, BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../types/tools';
 

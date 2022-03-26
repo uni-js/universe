@@ -1,8 +1,8 @@
 import { inject, injectable } from 'inversify';
 import { HandleEvent } from '@uni.js/event';
 import { ServerSideManager } from '@uni.js/server';
-import { LandMgr, LandMgrEvents } from './land-manager';
-import { PlayerMgr, PlayerMgrEvents } from './player-manager';
+import { LandMgr, LandMgrEvents } from './land-mgr';
+import { PlayerMgr, PlayerMgrEvents } from './player-mgr';
 
 import { Vector2 } from '../utils/math';
 import { TaskWorker } from '../utils/tools';

@@ -1,7 +1,7 @@
 import { EventBusServer, EventBusServerSymbol } from '@uni.js/server';
-import { ActorMgr } from '../managers/actor-manager';
-import { PlayerMgr } from '../managers/player-manager';
-import { LandMgr } from '../managers/land-manager';
+import { ActorMgr } from '../managers/actor-mgr';
+import { PlayerMgr } from '../managers/player-mgr';
+import { LandMgr } from '../managers/land-mgr';
 import { inject, injectable } from 'inversify';
 import * as ClientEvents from '../../client/event';
 

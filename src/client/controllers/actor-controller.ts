@@ -1,10 +1,10 @@
 import { EventBusClient } from '@uni.js/client';
 import { Vector2 } from '../../server/utils/math';
-import { ActorMgr } from '../managers/actor-manager';
+import { ActorMgr } from '../managers/actor-mgr';
 import { Player } from '../objects/player-object';
 import { TextureProvider } from '@uni.js/texture';
 import { inject, injectable } from 'inversify';
-import { PlayerMgr } from '../managers/player-manager';
+import { PlayerMgr } from '../managers/player-mgr';
 import { ActorFactory, ActorObject } from '../objects/actor-object';
 import { ClientSideController } from '@uni.js/client';
 

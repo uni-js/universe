@@ -3,9 +3,9 @@ import { Actor } from '../entity/actor-entity';
 import { PosToLandPos } from '../utils/land-pos';
 import { ServerSideManager } from '@uni.js/server';
 import { Vector2 } from '../utils/math';
-import { ActorMgr, ActorMgrEvents } from './actor-manager';
-import { LandMgr } from './land-manager';
-import { PlayerMgr, PlayerMgrEvents } from './player-manager';
+import { ActorMgr, ActorMgrEvents } from './actor-mgr';
+import { LandMgr } from './land-mgr';
+import { PlayerMgr, PlayerMgrEvents } from './player-mgr';
 
 import { HandleEvent } from '@uni.js/event';
 import { AddEntityEvent, RemoveEntityEvent } from '@uni.js/database';

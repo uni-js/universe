@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { EventBusServer, EventBusServerSymbol } from '@uni.js/server';
-import { InventoryMgr } from '../managers/inventory-manager';
-import { PlayerMgr } from '../managers/player-manager';
+import { InventoryMgr } from '../managers/inventory-mgr';
+import { PlayerMgr } from '../managers/player-mgr';
 import { ServerSideController } from '@uni.js/server';
 import { Vector2 } from '../utils/math';
 import * as ClientEvents from '../../client/event';

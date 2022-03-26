@@ -1,10 +1,10 @@
 import { EventBusServer, EventBusServerSymbol } from '@uni.js/server';
 import { Logger } from '@uni.js/utils';
 
-import { PlayerMgr } from '../managers/player-manager';
+import { PlayerMgr } from '../managers/player-mgr';
 import { ServerSideController } from '@uni.js/server';
 import { inject, injectable } from 'inversify';
-import { ActorMgr } from '../managers/actor-manager';
+import { ActorMgr } from '../managers/actor-mgr';
 import { EmitLocalEvent, HandleEvent, HandleRemoteEvent } from '@uni.js/event';
 
 import * as ClientEvents from '../../client/event';
