@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '@uni.js/client';
-import { ShortcutManager, BackpackManager } from '../managers/inventory-manager';
+import { ShortcutMgr, BackpackMgr } from '../managers/inventory-manager';
 import { ClientSideController } from '@uni.js/client';
 
 import * as ServerEvents from '../../server/event';
@@ -13,22 +13,22 @@ import { ContainerType } from '../../server/types/container';
 export class InvetoryController extends ClientSideController {
 	constructor(
 		@inject(EventBusClient) eventBus: EventBusClient,
-		@inject(ShortcutManager) private shortcutManager: ShortcutManager,
-		@inject(BackpackManager) private backpackManager: BackpackManager,
+		@inject(ShortcutMgr) private shortcutMgr: ShortcutMgr,
+		@inject(BackpackMgr) private backpackMgr: BackpackMgr,
 	) {
 		super(eventBus);
 	}
 
-	@EmitLocalEvent('shortcutManager', 'SetShortcutIndexEvent')
-	@EmitLocalEvent('backpackManager', 'ContainerMoveBlockEvent')
+	@EmitLocalEvent('shortcutMgr', 'SetShortcutIndexEvent')
+	@EmitLocalEvent('backpackMgr', 'ContainerMoveBlockEvent')
 	private emitLocalEvent() {}
 
 	@HandleRemoteEvent(ServerEvents.UpdateContainerEvent)
 	private handleUpdateContainer(event: ServerEvents.UpdateContainerEvent) {
 		if (event.containerType == ContainerType.SHORTCUT_CONTAINER) {
-			this.shortcutManager.updateBlocks(event.containerId, event.updateData, event.isFullUpdate);
+			this.shortcutMgr.updateBlocks(event.containerId, event.updateData, event.isFullUpdate);
 		} else if (event.containerType == ContainerType.BACKPACK_CONTAINER) {
-			this.backpackManager.updateBlocks(event.containerId, event.updateData, event.isFullUpdate);
+			this.backpackMgr.updateBlocks(event.containerId, event.updateData, event.isFullUpdate);
 		}
 	}
 }

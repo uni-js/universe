@@ -1,10 +1,10 @@
 import { EventBusServer, EventBusServerSymbol } from '@uni.js/server';
 import { Logger } from '@uni.js/utils';
 
-import { PlayerManager } from '../managers/player-manager';
+import { PlayerMgr } from '../managers/player-manager';
 import { ServerSideController } from '@uni.js/server';
 import { inject, injectable } from 'inversify';
-import { ActorManager } from '../managers/actor-manager';
+import { ActorMgr } from '../managers/actor-manager';
 import { EmitLocalEvent, HandleEvent, HandleRemoteEvent } from '@uni.js/event';
 
 import * as ClientEvents from '../../client/event';
@@ -15,21 +15,21 @@ import * as ExternalEvents from '../event';
 export class PlayerController extends ServerSideController {
 	constructor(
 		@inject(EventBusServerSymbol) eventBus: EventBusServer,
-		@inject(PlayerManager) private playerManager: PlayerManager,
-		@inject(ActorManager) private actorManager: ActorManager,
+		@inject(PlayerMgr) private playerMgr: PlayerMgr,
+		@inject(ActorMgr) private actorMgr: ActorMgr,
 	) {
 		super(eventBus);
 	}
 
-	@EmitLocalEvent('playerManager', 'SpawnActorEvent')
-	@EmitLocalEvent('playerManager', 'DespawnActorEvent')
+	@EmitLocalEvent('playerMgr', 'SpawnActorEvent')
+	@EmitLocalEvent('playerMgr', 'DespawnActorEvent')
 	private emitToPlayer(ev: any) {
-		return this.playerManager.getEntityById(ev.fromPlayerId).connId;
+		return this.playerMgr.getEntityById(ev.fromPlayerId).connId;
 	}
 
-	@EmitLocalEvent('playerManager', 'ToggleUsingEvent')
+	@EmitLocalEvent('playerMgr', 'ToggleUsingEvent')
 	private emitToPlayerNearActors(ev: any) {
-		const sids = this.playerManager
+		const sids = this.playerMgr
 			.getAllEntities()
 			.filter((player) => player.spawnedActors.has(ev.playerId))
 			.map((player) => player.connId);
@@ -38,15 +38,15 @@ export class PlayerController extends ServerSideController {
 
 	@HandleRemoteEvent(ClientEvents.ActorToggleWalkEvent)
 	private handleActorToggleWalk(connId: string, event: ClientEvents.ActorToggleWalkEvent) {
-		const player = this.playerManager.findEntity({ connId });
+		const player = this.playerMgr.findEntity({ connId });
 		if (event.actorId !== player.id) return;
 
-		this.actorManager.setWalkState(player.id, event.running, event.direction);
+		this.actorMgr.setWalkState(player.id, event.running, event.direction);
 	}
 
 	@HandleRemoteEvent(ClientEvents.LoginEvent)
 	private handleLogin(connId: string) {
-		const player = this.playerManager.addNewPlayer(connId);
+		const player = this.playerMgr.addNewPlayer(connId);
 		const event = new ExternalEvents.LoginedEvent();
 		event.actorId = player.id;
 
@@ -56,22 +56,22 @@ export class PlayerController extends ServerSideController {
 
 	@HandleRemoteEvent(ClientEvents.ControlMovedEvent)
 	private handleMovePlayer(connId: string, event: ClientEvents.ControlMovedEvent) {
-		const player = this.playerManager.findEntity({ connId });
-		this.actorManager.processInput(player.id, event.input);
+		const player = this.playerMgr.findEntity({ connId });
+		this.actorMgr.processInput(player.id, event.input);
 	}
 
 	@HandleRemoteEvent(ClientEvents.SetAimTargetEvent)
 	private handleSetAimTargetEvent(connId: string, event: ClientEvents.SetAimTargetEvent) {
-		const player = this.playerManager.findEntity({ connId });
-		this.actorManager.setAimTarget(player.id, event.rotation);
+		const player = this.playerMgr.findEntity({ connId });
+		this.actorMgr.setAimTarget(player.id, event.rotation);
 	}
 
 	@HandleRemoteEvent(ClientEvents.ToggleUsingEvent)
 	private handleToggleUsingEvent(connId: string, event: ClientEvents.ToggleUsingEvent) {
 		if (event.startOrEnd) {
-			this.playerManager.startUsing(event.playerId);
+			this.playerMgr.startUsing(event.playerId);
 		} else {
-			this.playerManager.endUsing(event.playerId);
+			this.playerMgr.endUsing(event.playerId);
 		}
 	}
 }

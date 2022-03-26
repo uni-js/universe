@@ -1,7 +1,7 @@
 import { EventBusServer, EventBusServerSymbol } from '@uni.js/server';
-import { ActorManager } from '../managers/actor-manager';
-import { PlayerManager } from '../managers/player-manager';
-import { LandManager } from '../managers/land-manager';
+import { ActorMgr } from '../managers/actor-manager';
+import { PlayerMgr } from '../managers/player-manager';
+import { LandMgr } from '../managers/land-manager';
 import { inject, injectable } from 'inversify';
 import * as ClientEvents from '../../client/event';
 
@@ -14,21 +14,21 @@ export class ActorController extends ServerSideController {
 	constructor(
 		@inject(EventBusServerSymbol) eventBus: EventBusServer,
 
-		@inject(ActorManager) private actorManager: ActorManager,
-		@inject(PlayerManager) private playerManager: PlayerManager,
-		@inject(LandManager) private landManager: LandManager,
+		@inject(ActorMgr) private actorMgr: ActorMgr,
+		@inject(PlayerMgr) private playerMgr: PlayerMgr,
+		@inject(LandMgr) private landMgr: LandMgr,
 	) {
 		super(eventBus);
 	}
 
-	@EmitLocalEvent('actorManager', 'NewPosEvent')
-	@EmitLocalEvent('actorManager', 'NewWalkStateEvent')
-	@EmitLocalEvent('actorManager', 'ActorSetAttachmentEvent')
-	@EmitLocalEvent('actorManager', 'ActorRemoveAttachmentEvent')
-	@EmitLocalEvent('actorManager', 'ActorSetRotationEvent')
-	@EmitLocalEvent('actorManager', 'ActorDamagedEvent')
+	@EmitLocalEvent('actorMgr', 'NewPosEvent')
+	@EmitLocalEvent('actorMgr', 'NewWalkStateEvent')
+	@EmitLocalEvent('actorMgr', 'ActorSetAttachmentEvent')
+	@EmitLocalEvent('actorMgr', 'ActorRemoveAttachmentEvent')
+	@EmitLocalEvent('actorMgr', 'ActorSetRotationEvent')
+	@EmitLocalEvent('actorMgr', 'ActorDamagedEvent')
 	private emitByActorId(ev: any) {
-		const sids = this.playerManager
+		const sids = this.playerMgr
 			.getAllEntities()
 			.filter((player) => player.spawnedActors.has(ev.actorId))
 			.map((player) => player.connId);

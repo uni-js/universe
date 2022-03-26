@@ -4,7 +4,7 @@ import { BrickType } from '../types/land';
 
 const BRICK_MAX_LAYER = 8;
 
-export interface BrickManagerEvents extends EntityBaseEvent {
+export interface BrickMgrEvents extends EntityBaseEvent {
 	UpdateBrickEvent: {
 		posX: number;
 		posY: number;
@@ -13,7 +13,7 @@ export interface BrickManagerEvents extends EntityBaseEvent {
 	};
 }
 
-export class BrickManager extends EntityManager<Brick, BrickManagerEvents> {
+export class BrickMgr extends EntityManager<Brick, BrickMgrEvents> {
 	constructor(@injectCollection(Brick) private brickList: EntityCollection<Brick>) {
 		super(brickList);
 	}

@@ -19,7 +19,7 @@ export class Player extends ActorObject {
 
 	private isUsingDirty = false;
 	private controlMoved: Vector2 | false = false;
-	private predictedInputManager: PredictedInputManager;
+	private predictedInputMgr: PredictedInputManager;
 
 	constructor(serverId: number, option: ActorConstructOption, textureProvider: TextureProvider) {
 		super(serverId, option, new Vector2(option.sizeX, option.sizeY), ActorType.PLAYER, textureProvider);
@@ -43,7 +43,7 @@ export class Player extends ActorObject {
 		}
 
 		this.controlRunning(RunningState.SILENT);
-		this.predictedInputManager = new PredictedInputManager({ ...this.vPos, motionX: option.motionX, motionY: option.motionY });
+		this.predictedInputMgr = new PredictedInputManager({ ...this.vPos, motionX: option.motionX, motionY: option.motionY });
 	}
 
 	controlMove(delta: Vector2 | false) {
@@ -56,14 +56,14 @@ export class Player extends ActorObject {
 	}
 
 	ackInput(ackData: AckData) {
-		this.predictedInputManager.ackInput(ackData);
+		this.predictedInputMgr.ackInput(ackData);
 	}
 
 	private doControlMoveTick(tick: number) {
 		if (this.controlMoved) {
 			const moved = this.controlMoved;
 
-			this.predictedInputManager.pendInput({
+			this.predictedInputMgr.pendInput({
 				moveX: moved.x,
 				moveY: moved.y,
 			});
@@ -79,11 +79,11 @@ export class Player extends ActorObject {
 	setTakeControl() {
 		this.isTakeControl = true;
 
-		this.predictedInputManager.on('applyState', (state: EntityState) => {
+		this.predictedInputMgr.on('applyState', (state: EntityState) => {
 			this.vPos = new Vector2(state.x, state.y);
 		});
 
-		this.predictedInputManager.on('applyInput', (input: Input) => {
+		this.predictedInputMgr.on('applyInput', (input: Input) => {
 			this.emit('ControlMovedEvent', { input: input, direction: this.direction, running: this.running });
 		});
 	}
@@ -114,7 +114,7 @@ export class Player extends ActorObject {
 		super.doFixedUpdateTick.call(this, tick);
 
 		if (this.isTakeControl) {
-			this.predictedInputManager.doGameTick();
+			this.predictedInputMgr.doGameTick();
 		}
 
 		if (this.isUsingDirty) {

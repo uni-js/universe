@@ -4,7 +4,7 @@ import { ClientSideManager } from '@uni.js/client';
 import { Viewport } from '@uni.js/viewport';
 import { inject, injectable } from 'inversify';
 import { Player } from '../objects/player-object';
-import { ActorManager } from './actor-manager';
+import { ActorMgr } from './actor-manager';
 import { UIEventBus } from '@uni.js/ui';
 import { PlayerState } from '../ui-states/player';
 
@@ -13,7 +13,7 @@ import { Input } from '@uni.js/prediction';
 import { AttachType, Direction, RunningState } from '../../server/types/actor';
 import { calcBoundingSATBox } from '../../server/utils/actor';
 
-export interface PlayerManagerEvents {
+export interface PlayerMgrEvents {
 	ControlMovedEvent: {
 		input: Input;
 		direction: Direction;
@@ -29,7 +29,7 @@ export interface PlayerManagerEvents {
 }
 
 @injectable()
-export class PlayerManager extends ClientSideManager<PlayerManagerEvents> {
+export class PlayerMgr extends ClientSideManager<PlayerMgrEvents> {
 	public settingAimTarget = false;
 
 	private currentPlayer: Player;
@@ -41,7 +41,7 @@ export class PlayerManager extends ClientSideManager<PlayerManagerEvents> {
 		@inject(HTMLInputProvider) private inputProvider: HTMLInputProvider,
 		@inject(Viewport) private stage: Viewport,
 		@inject(UIEventBus) private uiEvent: UIEventBus,
-		@inject(ActorManager) private actorManager: ActorManager,
+		@inject(ActorMgr) private actorMgr: ActorMgr,
 	) {
 		super();
 
@@ -59,11 +59,11 @@ export class PlayerManager extends ClientSideManager<PlayerManagerEvents> {
 		this.currentPlayer = player;
 	}
 
-	private onToggleUsing = (event: PlayerManagerEvents['ToggleUsingEvent']) => {
+	private onToggleUsing = (event: PlayerMgrEvents['ToggleUsingEvent']) => {
 		this.emit('ToggleUsingEvent', event);
 	};
 
-	private onPlayerControlMoved = (event: PlayerManagerEvents['ControlMovedEvent']) => {
+	private onPlayerControlMoved = (event: PlayerMgrEvents['ControlMovedEvent']) => {
 		this.emit('ControlMovedEvent', event);
 	};
 
@@ -84,7 +84,7 @@ export class PlayerManager extends ClientSideManager<PlayerManagerEvents> {
 		}
 		let move: Vector2 = deltaMove;
 
-		const actors = this.actorManager.getAllActors();
+		const actors = this.actorMgr.getAllActors();
 
 		let overlapX = 0;
 		let overlapY = 0;
@@ -186,7 +186,7 @@ export class PlayerManager extends ClientSideManager<PlayerManagerEvents> {
 		const attachment = this.currentPlayer.getAttachment(AttachType.RIGHT_HAND);
 		if (!attachment) return;
 
-		const vPos = this.actorManager.getObjectById(attachment.actorId).vPos;
+		const vPos = this.actorMgr.getObjectById(attachment.actorId).vPos;
 
 		const rad = cursorAt.sub(vPos).getRad();
 

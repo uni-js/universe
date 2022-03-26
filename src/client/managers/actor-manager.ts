@@ -5,7 +5,7 @@ import { ActorLayer } from '../store';
 import { EmitObjectEvent } from '@uni.js/event';
 import { Direction, RunningState } from '../../server/types/actor';
 
-export interface ActorManagerEvents {
+export interface ActorMgrEvents {
 	ActorToggleUsingEvent: {
 		actorId: number;
 		startOrEnd: boolean;
@@ -18,7 +18,7 @@ export interface ActorManagerEvents {
 }
 
 @injectable()
-export class ActorManager extends GameObjectManager<ActorObject> {
+export class ActorMgr extends GameObjectManager<ActorObject> {
 	constructor(@inject(ActorLayer) private actorLayer: ActorLayer) {
 		super(actorLayer);
 	}

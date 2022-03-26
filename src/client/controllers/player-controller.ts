@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '@uni.js/client';
-import { ActorManager } from '../managers/actor-manager';
-import { PlayerManager } from '../managers/player-manager';
+import { ActorMgr } from '../managers/actor-manager';
+import { PlayerMgr } from '../managers/player-manager';
 import { Player } from '../objects/player-object';
 import { ClientSideController } from '@uni.js/client';
 import * as ExternalEvents from '../event';
@@ -14,19 +14,19 @@ import { Logger } from '@uni.js/utils';
 export class PlayerController extends ClientSideController {
 	constructor(
 		@inject(EventBusClient) eventBus: EventBusClient,
-		@inject(PlayerManager) private playerManager: PlayerManager,
-		@inject(ActorManager) private actorManager: ActorManager,
+		@inject(PlayerMgr) private playerMgr: PlayerMgr,
+		@inject(ActorMgr) private actorMgr: ActorMgr,
 	) {
 		super(eventBus);
 	}
 
-	@EmitLocalEvent('playerManager', 'ToggleUsingEvent')
-	@EmitLocalEvent('playerManager', 'ControlMovedEvent')
+	@EmitLocalEvent('playerMgr', 'ToggleUsingEvent')
+	@EmitLocalEvent('playerMgr', 'ControlMovedEvent')
 	private emitLocalEvent() {}
 
 	@HandleRemoteEvent(ServerEvents.ToggleUsingEvent)
 	private handleToggleUsing(event: ServerEvents.ToggleUsingEvent) {
-		const player = <Player>this.actorManager.getObjectById(event.playerId);
+		const player = <Player>this.actorMgr.getObjectById(event.playerId);
 		if (event.startOrEnd) {
 			player.startUsing(false);
 		} else {
@@ -38,7 +38,7 @@ export class PlayerController extends ClientSideController {
 	private handleLogined(event: ServerEvents.LoginedEvent) {
 		Logger.info('user is logined to server', event);
 		const actorId = event.actorId;
-		const player = this.actorManager.getObjectById(actorId) as Player;
-		this.playerManager.setCurrentPlayer(player);
+		const player = this.actorMgr.getObjectById(actorId) as Player;
+		this.playerMgr.setCurrentPlayer(player);
 	}
 }

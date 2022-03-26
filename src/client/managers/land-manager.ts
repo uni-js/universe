@@ -6,7 +6,7 @@ import { LandObject } from '../objects/land-object';
 import { LandLayer } from '../store';
 
 @injectable()
-export class LandManager extends GameObjectManager<LandObject> {
+export class LandMgr extends GameObjectManager<LandObject> {
 	constructor(@inject(LandLayer) private landLayer: LandLayer) {
 		super(landLayer);
 	}

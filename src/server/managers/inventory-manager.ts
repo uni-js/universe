@@ -1,6 +1,6 @@
 import { Player } from '../entity/player-entity';
 import { BackpackContainer, Container, ContainerBlock, Inventory, PlayerInventory, ShortcutContainer } from '../entity/inventory-entity';
-import { PlayerManager } from './player-manager';
+import { PlayerMgr } from './player-manager';
 import {
 	EntityManager,
 	UpdateOnlyCollection,
@@ -12,7 +12,7 @@ import {
 } from '@uni.js/database';
 import { inject, injectable } from 'inversify';
 import { Item, ItemDefList } from '../entity/item-entity';
-import { ActorManager } from './actor-manager';
+import { ActorMgr } from './actor-manager';
 import { DroppedItemActor } from '../entity/dropped-item-entity';
 import { Vector2 } from '../utils/math';
 
@@ -28,7 +28,7 @@ import {
 import { ItemHoldAction, ItemType } from '../types/item';
 import { ActorType, AttachType } from '../types/actor';
 
-export interface InventoryManagerEvents extends EntityBaseEvent {
+export interface InventoryMgrEvents extends EntityBaseEvent {
 	UpdateContainerEvent: {
 		playerId: number;
 		containerId: number;
@@ -39,7 +39,7 @@ export interface InventoryManagerEvents extends EntityBaseEvent {
 }
 
 @injectable()
-export class InventoryManager extends EntityManager<Inventory, InventoryManagerEvents> {
+export class InventoryMgr extends EntityManager<Inventory, InventoryMgrEvents> {
 	private playerInventoryList: UpdateOnlyCollection<PlayerInventory>;
 
 	constructor(
@@ -50,8 +50,8 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 		@injectCollection(ContainerBlock) private blocksList: NotLimitCollection<ContainerBlock>,
 		@injectCollection(Item) private itemDefList: NotLimitCollection<Item>,
 
-		@inject(PlayerManager) private playerManager: PlayerManager,
-		@inject(ActorManager) private actorManager: ActorManager,
+		@inject(PlayerMgr) private playerMgr: PlayerMgr,
+		@inject(ActorMgr) private actorMgr: ActorMgr,
 
 		@inject(ActorFactory) private actorFactory: ActorFactory,
 	) {
@@ -94,11 +94,11 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 			const shortcut = container as ShortcutContainer;
 			if (shortcut.currentIndex === index) this.updateHoldItem(shortcut);
 
-			const player = this.playerManager.getEntityById(shortcut.playerId);
+			const player = this.playerMgr.getEntityById(shortcut.playerId);
 			this.sendBlockUpdateData(player, shortcut.id, index);
 		} else if (container.containerType === ContainerType.BACKPACK_CONTAINER) {
 			const backpack = container as BackpackContainer;
-			const player = this.playerManager.getEntityById(backpack.playerId);
+			const player = this.playerMgr.getEntityById(backpack.playerId);
 			this.sendBlockUpdateData(player, backpack.id, index);
 		}
 
@@ -134,7 +134,7 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 		return this.addNewEntity(inventory);
 	}
 
-	@HandleEvent('playerManager', 'AddEntityEvent')
+	@HandleEvent('playerMgr', 'AddEntityEvent')
 	private onPlayerAdded(event: AddEntityEvent) {
 		const player = event.entity as Player;
 		const inventory = this.addNewPlayerInventory(player.id);
@@ -146,7 +146,7 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 		this.sendInventoryUpdateData(player, inventory.id);
 	}
 
-	@HandleEvent('playerManager', 'RemoveEntityEvent')
+	@HandleEvent('playerMgr', 'RemoveEntityEvent')
 	private onPlayerRemoved(event: RemoveEntityEvent) {
 		const inventory = this.playerInventoryList.findOne({ playerId: event.entityId });
 		this.removeInventory(inventory.id);
@@ -214,20 +214,20 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 	}
 
 	private updateHoldItem(shortcut: ShortcutContainer) {
-		const player = this.playerManager.getEntityById(shortcut.playerId);
+		const player = this.playerMgr.getEntityById(shortcut.playerId);
 		const block = this.getBlock(shortcut.id, shortcut.currentIndex);
 
 		const itemDef = this.itemDefList.findOne({ itemType: block.itemType });
 
-		this.actorManager.clearAttachments(shortcut.playerId, true);
+		this.actorMgr.clearAttachments(shortcut.playerId, true);
 
 		if (itemDef.holdAction === ItemHoldAction.ATTACH_SPEC_ACTOR) {
 			const actor = this.actorFactory.getNewObject(itemDef.specActorType, []);
 			actor.posX = player.posX;
 			actor.posY = player.posY;
 
-			this.actorManager.addNewEntity(actor);
-			this.actorManager.setAttachment(shortcut.playerId, AttachType.RIGHT_HAND, actor.id);
+			this.actorMgr.addNewEntity(actor);
+			this.actorMgr.setAttachment(shortcut.playerId, AttachType.RIGHT_HAND, actor.id);
 		}
 	}
 
@@ -265,7 +265,7 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 		actor.posX = dropAtPos.x;
 		actor.posY = dropAtPos.y;
 
-		this.actorManager.addNewEntity(actor);
+		this.actorMgr.addNewEntity(actor);
 		this.setBlock(containerId, indexAt, ItemType.EMPTY, 0);
 	}
 
@@ -276,7 +276,7 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 		const Ymax = pickFromPos.y + radius;
 		const Ymin = pickFromPos.y - radius;
 
-		const entities = this.actorManager.findEntities({
+		const entities = this.actorMgr.findEntities({
 			type: ActorType.DROPPED_ITEM,
 			//			posX: { $between: [Xmin, Xmax] },
 			//			posY: { $between: [Ymin, Ymax] },
@@ -284,7 +284,7 @@ export class InventoryManager extends EntityManager<Inventory, InventoryManagerE
 
 		for (const entity of entities) {
 			if (this.appendItems(containerId, entity.itemType, entity.itemCount)) {
-				this.actorManager.removeEntity(entity);
+				this.actorMgr.removeEntity(entity);
 			}
 		}
 	}

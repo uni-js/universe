@@ -2,18 +2,18 @@ import { Player } from '../entity/player-entity';
 import { Actor } from '../entity/actor-entity';
 import { GetRadiusLands } from '../entity/land-entity';
 import { inject, injectable } from 'inversify';
-import { ActorManager, ActorManagerEvents } from './actor-manager';
+import { ActorMgr, ActorMgrEvents } from './actor-manager';
 import { Vector2 } from '../utils/math';
 import { GetArrayDiff } from '../utils/tools';
 import { GetConstructOptions } from '../utils/entity';
 
-import { LandManager } from './land-manager';
+import { LandMgr } from './land-manager';
 import { HandleEvent } from '@uni.js/event';
 import { ExtendedEntityManager, AddEntityEvent, RemoveEntityEvent, EntityBaseEvent } from '@uni.js/database';
 import { GetPosByHash, GetPosHash } from '../utils/land-pos';
 import { AttachType } from '../types/actor';
 
-export interface PlayerManagerEvents extends EntityBaseEvent {
+export interface PlayerMgrEvents extends EntityBaseEvent {
 	SpawnActorEvent: {
 		fromPlayerId: number;
 		actorId: number;
@@ -44,28 +44,28 @@ export interface PlayerManagerEvents extends EntityBaseEvent {
 }
 
 @injectable()
-export class PlayerManager extends ExtendedEntityManager<Actor, Player, PlayerManagerEvents> {
-	constructor(@inject(ActorManager) private actorManager: ActorManager, @inject(LandManager) private landManager: LandManager) {
-		super(actorManager, Player);
+export class PlayerMgr extends ExtendedEntityManager<Actor, Player, PlayerMgrEvents> {
+	constructor(@inject(ActorMgr) private actorMgr: ActorMgr, @inject(LandMgr) private landMgr: LandMgr) {
+		super(actorMgr, Player);
 	}
 
-	@HandleEvent('actorManager', 'AddEntityEvent')
+	@HandleEvent('actorMgr', 'AddEntityEvent')
 	private onActorAdded(event: AddEntityEvent) {
 		for (const player of this.getAllEntities()) {
 			this.spawnActor(player, event.entityId);
 		}
 	}
 
-	@HandleEvent('actorManager', 'RemoveEntityEvent')
+	@HandleEvent('actorMgr', 'RemoveEntityEvent')
 	private onActorRemoved(event: RemoveEntityEvent) {
 		for (const player of this.getAllEntities()) {
 			this.despawnActor(player, event.entityId);
 		}
 	}
 
-	@HandleEvent('actorManager', 'NewPosEvent')
-	private onActorNewPos(event: ActorManagerEvents['NewPosEvent']) {
-		const player = this.actorManager.getEntityById(event.actorId) as Player;
+	@HandleEvent('actorMgr', 'NewPosEvent')
+	private onActorNewPos(event: ActorMgrEvents['NewPosEvent']) {
+		const player = this.actorMgr.getEntityById(event.actorId) as Player;
 		if (!player.isPlayer) return;
 
 		this.updateUsedLands(player);
@@ -77,7 +77,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player, PlayerMa
 		player.isUsing = true;
 		player.useTick = 0;
 
-		this.actorManager.updateEntity(player);
+		this.actorMgr.updateEntity(player);
 
 		this.emit('ToggleUsingEvent', { playerId: player.id, startOrEnd: true, useTick: 0 });
 	}
@@ -89,7 +89,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player, PlayerMa
 		player.isUsing = false;
 		player.useTick = 0;
 
-		this.actorManager.updateEntity(player);
+		this.actorMgr.updateEntity(player);
 
 		this.emit('ToggleUsingEvent', { playerId: player.id, startOrEnd: false, useTick });
 	}
@@ -142,7 +142,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player, PlayerMa
 	spawnActor(player: Player, actorId: number) {
 		if (player.spawnedActors.has(actorId)) return;
 
-		const actor = this.actorManager.getEntityById(actorId);
+		const actor = this.actorMgr.getEntityById(actorId);
 
 		player.spawnedActors.add(actorId);
 		const ctorOption = GetConstructOptions(actor);
@@ -166,7 +166,7 @@ export class PlayerManager extends ExtendedEntityManager<Actor, Player, PlayerMa
 
 	unuseLand(player: Player, landHash: string) {
 		const landPos = GetPosByHash(landHash);
-		const land = this.landManager.getLand(landPos);
+		const land = this.landMgr.getLand(landPos);
 
 		player.usedLands.remove(landHash);
 		this.emit('LandNeverUsedEvent', { playerId: player.id, landPosX: landPos.x, landPosY: landPos.y, landId: land.id });

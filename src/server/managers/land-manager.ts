@@ -13,7 +13,7 @@ export function BuildLandHash(pos: Vector2) {
 	return `land.${pos.x}.${pos.y}`;
 }
 
-export interface LandManagerEvents extends EntityBaseEvent {
+export interface LandMgrEvents extends EntityBaseEvent {
 	LandLoadedEvent: {
 		landPosX: number;
 		landPosY: number;
@@ -31,7 +31,7 @@ export interface LandManagerEvents extends EntityBaseEvent {
 }
 
 @injectable()
-export class LandManager extends EntityManager<Land, LandManagerEvents> {
+export class LandMgr extends EntityManager<Land, LandMgrEvents> {
 	private generatorWorker = spawn(new Worker('../generator/generator.worker'));
 
 	constructor(

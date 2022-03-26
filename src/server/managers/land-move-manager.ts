@@ -3,9 +3,9 @@ import { Actor } from '../entity/actor-entity';
 import { PosToLandPos } from '../utils/land-pos';
 import { ServerSideManager } from '@uni.js/server';
 import { Vector2 } from '../utils/math';
-import { ActorManager, ActorManagerEvents } from './actor-manager';
-import { LandManager } from './land-manager';
-import { PlayerManager, PlayerManagerEvents } from './player-manager';
+import { ActorMgr, ActorMgrEvents } from './actor-manager';
+import { LandMgr } from './land-manager';
+import { PlayerMgr, PlayerMgrEvents } from './player-manager';
 
 import { HandleEvent } from '@uni.js/event';
 import { AddEntityEvent, RemoveEntityEvent } from '@uni.js/database';
@@ -14,28 +14,28 @@ import { AddEntityEvent, RemoveEntityEvent } from '@uni.js/database';
  * maintaining land crossing and land loading
  */
 @injectable()
-export class LandMoveManager extends ServerSideManager {
+export class LandMoveMgr extends ServerSideManager {
 	constructor(
-		@inject(PlayerManager) private playerManager: PlayerManager,
-		@inject(ActorManager) private actorManager: ActorManager,
-		@inject(LandManager) private landManager: LandManager,
+		@inject(PlayerMgr) private playerMgr: PlayerMgr,
+		@inject(ActorMgr) private actorMgr: ActorMgr,
+		@inject(LandMgr) private landMgr: LandMgr,
 	) {
 		super();
 	}
 
 	addLandActor(landPos: Vector2, actorId: number) {
-		this.landManager.ensureLand(landPos);
+		this.landMgr.ensureLand(landPos);
 
-		const land = this.landManager.getLand(landPos);
+		const land = this.landMgr.getLand(landPos);
 		land.actors.add(actorId);
 	}
 
 	removeLandActor(landPos: Vector2, actorId: number) {
-		const land = this.landManager.getLand(landPos);
+		const land = this.landMgr.getLand(landPos);
 		land.actors.remove(actorId);
 	}
 
-	@HandleEvent('actorManager', 'AddEntityEvent')
+	@HandleEvent('actorMgr', 'AddEntityEvent')
 	private onActorAdded(event: AddEntityEvent) {
 		const actor = event.entity as Actor;
 		const pos = new Vector2(actor.posX, actor.posY);
@@ -43,7 +43,7 @@ export class LandMoveManager extends ServerSideManager {
 		this.addLandActor(landPos, event.entityId);
 	}
 
-	@HandleEvent('actorManager', 'RemoveEntityEvent')
+	@HandleEvent('actorMgr', 'RemoveEntityEvent')
 	private onActorRemoved(event: RemoveEntityEvent) {
 		const actor = event.entity as Actor;
 		const pos = new Vector2(actor.posX, actor.posY);
@@ -51,43 +51,43 @@ export class LandMoveManager extends ServerSideManager {
 		this.removeLandActor(landPos, event.entityId);
 	}
 
-	@HandleEvent('actorManager', 'LandMoveEvent')
-	private onActorLandMoved(event: ActorManagerEvents['LandMoveEvent']) {
+	@HandleEvent('actorMgr', 'LandMoveEvent')
+	private onActorLandMoved(event: ActorMgrEvents['LandMoveEvent']) {
 		const sourceLandPos = new Vector2(event.sourceLandPosX, event.sourceLandPosY);
 		const targetLandPos = new Vector2(event.targetLandPosX, event.targetLandPosY);
 
 		this.removeLandActor(sourceLandPos, event.actorId);
 		this.addLandActor(targetLandPos, event.actorId);
 
-		const players = this.playerManager.getAllEntities();
+		const players = this.playerMgr.getAllEntities();
 		players.forEach((player) => {
-			if (this.playerManager.isPlayerCansee(player, targetLandPos)) {
-				this.playerManager.spawnActor(player, event.actorId);
+			if (this.playerMgr.isPlayerCansee(player, targetLandPos)) {
+				this.playerMgr.spawnActor(player, event.actorId);
 			} else {
-				this.playerManager.despawnActor(player, event.actorId);
+				this.playerMgr.despawnActor(player, event.actorId);
 			}
 		});
 	}
 
-	@HandleEvent('playerManager', 'LandUsedEvent')
-	private onLandUsed(event: PlayerManagerEvents['LandUsedEvent']) {
+	@HandleEvent('playerMgr', 'LandUsedEvent')
+	private onLandUsed(event: PlayerMgrEvents['LandUsedEvent']) {
 		const landPos = new Vector2(event.landPosX, event.landPosY);
-		const player = this.playerManager.getEntityById(event.playerId);
+		const player = this.playerMgr.getEntityById(event.playerId);
 
-		this.landManager.ensureLand(landPos);
+		this.landMgr.ensureLand(landPos);
 
-		for (const actorId of this.landManager.getLandActors(landPos)) {
-			this.playerManager.spawnActor(player, actorId);
+		for (const actorId of this.landMgr.getLandActors(landPos)) {
+			this.playerMgr.spawnActor(player, actorId);
 		}
 	}
 
-	@HandleEvent('playerManager', 'LandNeverUsedEvent')
-	private onLandNeverUsed = (event: PlayerManagerEvents['LandNeverUsedEvent']) => {
+	@HandleEvent('playerMgr', 'LandNeverUsedEvent')
+	private onLandNeverUsed = (event: PlayerMgrEvents['LandNeverUsedEvent']) => {
 		const landPos = new Vector2(event.landPosX, event.landPosY);
-		const player = this.playerManager.getEntityById(event.playerId);
+		const player = this.playerMgr.getEntityById(event.playerId);
 
-		for (const actorId of this.landManager.getLandActors(landPos)) {
-			this.playerManager.despawnActor(player, actorId);
+		for (const actorId of this.landMgr.getLandActors(landPos)) {
+			this.playerMgr.despawnActor(player, actorId);
 		}
 	};
 }

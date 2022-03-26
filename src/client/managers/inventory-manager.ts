@@ -16,7 +16,7 @@ import {
 	ContainerUpdateDataUnit,
 } from '../../server/types/container';
 
-export interface ContainerManagerEvents {
+export interface ContainerMgrEvents {
 	ContainerMoveBlockEvent: DropInfo;
 	SetShortcutIndexEvent: {
 		containerId: number;
@@ -25,7 +25,7 @@ export interface ContainerManagerEvents {
 	};
 }
 
-export class ContainerManager extends ClientSideManager<ContainerManagerEvents> {
+export class ContainerMgr extends ClientSideManager<ContainerMgrEvents> {
 	constructor(protected container: ContainerState, protected input: HTMLInputProvider, protected uiEventBus: UIEventBus) {
 		super();
 	}
@@ -87,7 +87,7 @@ export class ContainerManager extends ClientSideManager<ContainerManagerEvents> 
 }
 
 @injectable()
-export class BackpackManager extends ContainerManager {
+export class BackpackMgr extends ContainerMgr {
 	constructor(
 		@inject(BackpackContainerState) private backpack: BackpackContainerState,
 		@inject(HTMLInputProvider) input: HTMLInputProvider,
@@ -117,7 +117,7 @@ export class BackpackManager extends ContainerManager {
 }
 
 @injectable()
-export class ShortcutManager extends ContainerManager {
+export class ShortcutMgr extends ContainerMgr {
 	constructor(
 		@inject(HTMLInputProvider) input: HTMLInputProvider,
 		@inject(ShortcutContainerState) private shortcut: ShortcutContainerState,

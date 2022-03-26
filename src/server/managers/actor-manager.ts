@@ -21,7 +21,7 @@ export interface CollisionResult {
 	response: SAT.Response;
 }
 
-export interface ActorManagerEvents extends EntityBaseEvent {
+export interface ActorMgrEvents extends EntityBaseEvent {
 	ActorDamagedEvent: {
 		actorId: number;
 		finalHealth: number;
@@ -67,7 +67,7 @@ export interface ActorManagerEvents extends EntityBaseEvent {
 }
 
 @injectable()
-export class ActorManager extends EntityManager<Actor, ActorManagerEvents> {
+export class ActorMgr extends EntityManager<Actor, ActorMgrEvents> {
 	constructor(@injectCollection(Actor) private actorList: UpdateOnlyCollection<Actor>) {
 		super(actorList);
 	}

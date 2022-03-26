@@ -1,17 +1,17 @@
 import { inject, injectable } from 'inversify';
 import { EventBusClient } from '@uni.js/client';
-import { PickDropManager } from '../managers/pick-drop-manager';
+import { PickDropMgr } from '../managers/pick-drop-manager';
 import * as ExternalEvents from '../event';
 import { ClientSideController } from '@uni.js/client';
 import { EmitLocalEvent } from '@uni.js/event';
 
 @injectable()
 export class PickDropController extends ClientSideController {
-	constructor(@inject(EventBusClient) eventBus: EventBusClient, @inject(PickDropManager) private pickDropManager: PickDropManager) {
+	constructor(@inject(EventBusClient) eventBus: EventBusClient, @inject(PickDropMgr) private pickDropMgr: PickDropMgr) {
 		super(eventBus);
 	}
 
-	@EmitLocalEvent('pickDropManager', 'DropItemEvent')
-	@EmitLocalEvent('pickDropManager', 'PickItemEvent')
+	@EmitLocalEvent('pickDropMgr', 'DropItemEvent')
+	@EmitLocalEvent('pickDropMgr', 'PickItemEvent')
 	private emitLocalEvent() {}
 }

@@ -1,12 +1,12 @@
 import { HandleEvent } from '@uni.js/event';
 import { ServerSideManager } from '@uni.js/server';
-import { PlayerManagerEvents } from './player-manager';
+import { PlayerMgrEvents } from './player-manager';
 
-export class ToolManager extends ServerSideManager {
+export class ToolMgr extends ServerSideManager {
 	constructor() {
 		super();
 	}
 
-	@HandleEvent('playerManager', 'ToggleUsingEvent')
-	private onActorToggleUsing(event: PlayerManagerEvents['ToggleUsingEvent']) {}
+	@HandleEvent('playerMgr', 'ToggleUsingEvent')
+	private onActorToggleUsing(event: PlayerMgrEvents['ToggleUsingEvent']) {}
 }

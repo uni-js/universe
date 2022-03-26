@@ -1,32 +1,32 @@
 import { inject, injectable } from 'inversify';
 import { Actor } from '../entity/actor-entity';
 import { Arrow, Bow } from '../entity/bow-entity';
-import { ActorManager, ActorManagerEvents } from './actor-manager';
+import { ActorMgr, ActorMgrEvents } from './actor-manager';
 import { ExtendedEntityManager } from '@uni.js/database';
 
 import { HandleEvent } from '@uni.js/event';
 import { Vector2 } from '../utils/math';
 
 import SAT from 'sat';
-import { PlayerManager, PlayerManagerEvents } from './player-manager';
-import { InventoryManager } from './inventory-manager';
+import { PlayerMgr, PlayerMgrEvents } from './player-manager';
+import { InventoryMgr } from './inventory-manager';
 import { ActorType, AttachType } from '../types/actor';
 import { ARROW_DEAD_TICKS, ARROW_DROP_TICKS, BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../types/tools';
 
 @injectable()
-export class BowManager extends ExtendedEntityManager<Actor, Bow> {
+export class BowMgr extends ExtendedEntityManager<Actor, Bow> {
 	constructor(
-		@inject(ActorManager) private actorManager: ActorManager,
-		@inject(PlayerManager) private playerManager: PlayerManager,
-		@inject(InventoryManager) private inventoryManager: InventoryManager,
+		@inject(ActorMgr) private actorMgr: ActorMgr,
+		@inject(PlayerMgr) private playerMgr: PlayerMgr,
+		@inject(InventoryMgr) private inventoryMgr: InventoryMgr,
 	) {
-		super(actorManager, Bow);
+		super(actorMgr, Bow);
 	}
 
-	@HandleEvent('playerManager', 'ToggleUsingEvent')
-	private onToggleUsing(event: PlayerManagerEvents['ToggleUsingEvent']) {
-		const { actorId } = this.playerManager.getAttachment(event.playerId, AttachType.RIGHT_HAND);
-		const actor = this.actorManager.getEntityById(actorId);
+	@HandleEvent('playerMgr', 'ToggleUsingEvent')
+	private onToggleUsing(event: PlayerMgrEvents['ToggleUsingEvent']) {
+		const { actorId } = this.playerMgr.getAttachment(event.playerId, AttachType.RIGHT_HAND);
+		const actor = this.actorMgr.getEntityById(actorId);
 
 		if (actor.type != ActorType.BOW) return;
 
@@ -38,15 +38,15 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 	}
 
 	private doCollisionTick() {
-		const arrows = this.actorManager.findEntities({ type: ActorType.ARROW });
+		const arrows = this.actorMgr.findEntities({ type: ActorType.ARROW });
 		for (const actor of arrows) {
 			const arrow = actor as Arrow;
-			const shooter = this.actorManager.getEntityById(arrow.shooter);
+			const shooter = this.actorMgr.getEntityById(arrow.shooter);
 			const pos = new Vector2(arrow.posX, arrow.posY);
 			const lastPos = new Vector2(arrow.lastPosX, arrow.lastPosY);
 
 			const polygon = new SAT.Polygon(new SAT.Vector(), [pos.toSATVector(), lastPos.toSATVector()]);
-			const collisions = this.actorManager.getCollisionWith(polygon, pos, [shooter], true);
+			const collisions = this.actorMgr.getCollisionWith(polygon, pos, [shooter], true);
 
 			const damageTarget = collisions.find((collision) => collision.actor.canDamage);
 			if (damageTarget) {
@@ -61,7 +61,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 	private endDragging(actor: Actor, useTick: number) {
 		if (useTick <= BOW_RELEASING_MIN_TICKS) return;
 
-		const attachingActor = this.actorManager.getEntityById(actor.attaching.actorId);
+		const attachingActor = this.actorMgr.getEntityById(actor.attaching.actorId);
 		const aimTarget = attachingActor.aimTarget;
 
 		if (aimTarget === undefined) return;
@@ -78,7 +78,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 		arrow.rotation = aimTarget;
 		this.addNewEntity(arrow);
 
-		this.actorManager.setMotion(arrow.id, new Vector2(motion * Math.cos(aimTarget), motion * Math.sin(aimTarget)));
+		this.actorMgr.setMotion(arrow.id, new Vector2(motion * Math.cos(aimTarget), motion * Math.sin(aimTarget)));
 	}
 
 	private doAliveTick() {
@@ -101,7 +101,7 @@ export class BowManager extends ExtendedEntityManager<Actor, Bow> {
 	}
 
 	private arrowDamageActor(arrow: Arrow, actor: Actor) {
-		this.actorManager.damageActor(actor, 10, arrow.rotation, arrow.power);
+		this.actorMgr.damageActor(actor, 10, arrow.rotation, arrow.power);
 
 		arrow.aliveTick = ARROW_DEAD_TICKS;
 		this.updateEntity(arrow);
