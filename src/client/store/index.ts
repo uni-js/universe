@@ -1,8 +1,8 @@
 import { ObjectStore } from '@uni.js/client';
-import { LandObject } from '../module/land-module/land-object';
+import { LandObject } from '../objects/land-object';
 import { injectable } from 'inversify';
 
-import { ActorObject } from '../module/actor-module/actor-object';
+import { ActorObject } from '../objects/actor-object';
 
 @injectable()
 export class ActorLayer extends ObjectStore<ActorObject> {

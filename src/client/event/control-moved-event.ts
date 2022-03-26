@@ -1,5 +1,5 @@
 import type { Input } from '@uni.js/prediction';
-import type { Direction, RunningState } from '../../server/module/actor-module/spec';
+import type { Direction, RunningState } from '../../server/types/actor';
 
 export class ControlMovedEvent {
 	input: Input;

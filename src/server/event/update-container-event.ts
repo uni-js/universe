@@ -1,4 +1,4 @@
-import type { ContainerType, ContainerUpdateData } from '../module/inventory-module/spec';
+import { ContainerType, ContainerUpdateData } from '../types/container';
 
 export class UpdateContainerEvent {
 	playerId: number;

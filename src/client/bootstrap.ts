@@ -7,15 +7,10 @@ import { HTMLInputPlugin } from '@uni.js/html-input';
 import { TexturePlugin } from '@uni.js/texture';
 import { Logger } from '@uni.js/utils';
 
-import { GameUI } from './ui/game-ui';
+import { GameUI } from './components/game-ui';
+import { GameClientModule } from './module';
 
-import { LandModule } from './module/land-module/module-export';
-import { ActorModule } from './module/actor-module/module-export';
-import { PlayerModule } from './module/player-module/module-export';
-import { InventoryModule } from './module/inventory-module/module-export';
-import { BowModule } from './module/tool-module/module-export';
-
-import { BootController } from './controller/boot-controller';
+import { BootController } from './controllers/boot-controller';
 import { ActorLayer, BuildingCreatorLayer, LandLayer } from './store';
 
 export async function bootstrap() {
@@ -27,7 +22,7 @@ export async function bootstrap() {
 	const resolution = 32;
 
 	const appModule = createClientSideModule({
-		imports: [LandModule, ActorModule, PlayerModule, InventoryModule, BowModule],
+		imports: [GameClientModule],
 		controllers: [BootController],
 		providers: [
 			{ key: LandLayer, value: new LandLayer() },

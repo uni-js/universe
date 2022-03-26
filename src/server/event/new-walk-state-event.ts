@@ -1,4 +1,4 @@
-import type { Direction, RunningState } from '../module/actor-module/spec';
+import type { Direction, RunningState } from '../types/actor';
 
 export class NewWalkStateEvent {
 	actorId: number;

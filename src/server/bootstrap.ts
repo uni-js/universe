@@ -1,23 +1,18 @@
 import 'reflect-metadata';
 import 'threads/register';
 
-import { ConnectionController } from './controller/connection-controller';
+import { ConnectionController } from './controllers/connection-controller';
 import { ServerApp } from '@uni.js/server';
 import { createPersistDatabase, PersistDatabaseSymbol } from './database';
 
 import { createServerSideModule } from '@uni.js/server';
 import { MemoryDatabasePlugin } from '@uni.js/database';
 
-import { LandModule } from './module/land-module/module-export';
-import { ActorModule } from './module/actor-module/module-export';
-import { PlayerModule } from './module/player-module/module-export';
-import { BowModule } from './module/tool-module/module-export';
-import { InventoryModule } from './module/inventory-module/module-export';
-import { PickDropModule } from './module/pick-drop-module/module-export';
-import { actorFactory } from './module/actor-module/mapper';
-import { ActorFactory } from './module/actor-module/actor-entity';
+import { ActorFactory } from './entity/actor-entity';
+import { actorFactory } from './factory/actor';
 
 import DotEnv from 'dotenv';
+import { GameModule } from './module';
 
 DotEnv.config();
 
@@ -35,7 +30,7 @@ function bootstrap() {
 	const pdb = createPersistDatabase(dbLocation);
 
 	const appModule = createServerSideModule({
-		imports: [LandModule, ActorModule, PlayerModule, BowModule, InventoryModule, PickDropModule],
+		imports: [GameModule],
 		controllers: [ConnectionController],
 		providers: [
 			{ key: ActorFactory, value: actorFactory },
