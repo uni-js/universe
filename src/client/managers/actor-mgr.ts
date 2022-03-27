@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { ActorObject } from '../objects/actor-object';
 import { GameObjectManager } from '@uni.js/client';
-import { ActorLayer } from '../store';
+import { ActorStore } from '../store';
 import { EmitObjectEvent } from '@uni.js/event';
 import { Direction, RunningState } from '../../server/types/actor';
 
@@ -19,8 +19,8 @@ export interface ActorMgrEvents {
 
 @injectable()
 export class ActorMgr extends GameObjectManager<ActorObject> {
-	constructor(@inject(ActorLayer) private actorLayer: ActorLayer) {
-		super(actorLayer);
+	constructor(@inject(ActorStore) private actorStore: ActorStore) {
+		super(actorStore);
 	}
 
 	@EmitObjectEvent('ActorToggleWalkEvent')
@@ -30,7 +30,7 @@ export class ActorMgr extends GameObjectManager<ActorObject> {
 	 * actors which are loaded locally
 	 */
 	getAllActors() {
-		return this.actorLayer.getAll();
+		return this.actorStore.getAll();
 	}
 
 	private updateAttachingMovement(actor: ActorObject) {
@@ -66,12 +66,12 @@ export class ActorMgr extends GameObjectManager<ActorObject> {
 
 	doUpdateTick(tick: number) {
 		super.doUpdateTick.call(this, tick);
-		this.actorLayer.container.sortChildren();
+		this.actorStore.container.sortChildren();
 	}
 
 	doFixedUpdateTick(tick: number) {
 		super.doFixedUpdateTick.call(this, tick);
-		for (const actor of this.actorLayer.getAll()) {
+		for (const actor of this.actorStore.getAll()) {
 			this.updateAttachingMovement(actor);
 		}
 	}

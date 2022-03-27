@@ -11,7 +11,7 @@ import { GameUI } from './components/game-ui';
 import { GameClientModule } from './module';
 
 import { BootController } from './controllers/boot-controller';
-import { ActorLayer, BuildingCreatorLayer, LandLayer } from './store';
+import { ActorStore, LandStore } from './store';
 
 export async function bootstrap() {
 	const textureList = JSON.parse(process.env.UNI_TEXTURE_LIST);
@@ -25,9 +25,8 @@ export async function bootstrap() {
 		imports: [GameClientModule],
 		controllers: [BootController],
 		providers: [
-			{ key: LandLayer, value: new LandLayer() },
-			{ key: ActorLayer, value: new ActorLayer() },
-			{ key: BuildingCreatorLayer, value: new BuildingCreatorLayer() },
+			{ key: LandStore, value: new LandStore() },
+			{ key: ActorStore, value: new ActorStore() }
 		],
 	});
 
@@ -53,7 +52,7 @@ export async function bootstrap() {
 			screenHeight: resolution * worldHeight,
 			worldWidth,
 			worldHeight,
-			initLayers: [app.get(LandLayer).container, app.get(BuildingCreatorLayer).container, app.get(ActorLayer).container],
+			initLayers: [app.get(LandStore).container, app.get(ActorStore).container],
 		}),
 	);
 

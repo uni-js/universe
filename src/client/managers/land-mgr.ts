@@ -3,16 +3,16 @@ import { LandPosToPos, PosToLandPos } from '../../server/utils/land-pos';
 import { Vector2 } from '../../server/utils/math';
 import { GameObjectManager } from '@uni.js/client';
 import { LandObject } from '../objects/land-object';
-import { LandLayer } from '../store';
+import { LandStore } from '../store';
 
 @injectable()
 export class LandMgr extends GameObjectManager<LandObject> {
-	constructor(@inject(LandLayer) private landLayer: LandLayer) {
-		super(landLayer);
+	constructor(@inject(LandStore) private landStore: LandStore) {
+		super(landStore);
 	}
 
 	getLandByLoc(landPos: Vector2) {
-		return this.landLayer.get(landPos.x, landPos.y);
+		return this.landStore.get(landPos.x, landPos.y);
 	}
 
 	getBrickByLoc(pos: Vector2) {
