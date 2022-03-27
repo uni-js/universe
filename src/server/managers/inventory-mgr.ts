@@ -219,7 +219,11 @@ export class InventoryMgr extends EntityManager<Inventory, InventoryMgrEvents> {
 
 		const itemDef = this.itemDefList.findOne({ itemType: block.itemType });
 
-		this.actorMgr.removeRightHand(shortcut.playerId);
+		const rightHand = this.actorMgr.getRightHand(shortcut.playerId);
+		if(rightHand !== undefined) {
+			this.actorMgr.removeRightHand(shortcut.playerId);
+			this.actorMgr.removeEntity(this.actorMgr.getEntityById(rightHand));
+		}
 
 		if (itemDef.holdAction === ItemHoldAction.ATTACH_SPEC_ACTOR) {
 			const actor = this.actorFactory.getNewObject(itemDef.specActorType, []);

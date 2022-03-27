@@ -165,6 +165,7 @@ export class ActorMgr extends EntityManager<Actor, ActorMgrEvents> {
 
 	removeRightHand(targetActorId: number) {
 		const actor = this.actorList.findOne({ id: targetActorId });
+		actor.rightHandActorId = undefined;
 		this.emit('ActorRemoveRightHandEvent', { actorId: actor.id });
 	}
 

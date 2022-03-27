@@ -39,6 +39,8 @@ export class ActorController extends ClientSideController {
 		targetActor.setRightHand(event.attachActorId);
 		actor.attaching = event.actorId;
 		this.playerMgr.settingAimTarget = true;
+
+		Logger.info("set attachment:", event.actorId);
 	}
 
 	@HandleRemoteEvent(ServerEvents.ActorRemoveRightHandEvent)
@@ -46,6 +48,8 @@ export class ActorController extends ClientSideController {
 		const actor = this.actorMgr.getObjectById(event.actorId);
 		actor.setRightHand(undefined);
 		this.playerMgr.settingAimTarget = false;
+
+		Logger.info("remove attachment:", event.actorId);
 	}
 
 	@HandleRemoteEvent(ServerEvents.SpawnActorEvent)
