@@ -8,7 +8,7 @@ import { Factory, FactoryMapper } from '../../server/factory/factory';
 import { HealthBar } from './health-bar';
 import { NameTag } from './nametag';
 import { SERVER_TICKS_MULTIPLE } from '../../server/types/server';
-import { ActorType, ActorTypeName, AttachMapping, AttachType, Direction, RunningState } from '../../server/types/actor';
+import { ActorType, ActorTypeName, AttachMapping, Direction, RunningState } from '../../server/types/actor';
 
 function GetEmptyTexture() {
 	return PIXI.Texture.fromBuffer(new Uint8Array(1), 1, 1);
@@ -56,12 +56,6 @@ export class MoveInterpolator extends EventEmitter2 {
 	}
 }
 
-export interface Attachment {
-	key: AttachType;
-	relativePos?: Vector2;
-	actorId: number;
-}
-
 export class ActorObject extends GameObject {
 	/**
 	 * @readonly
@@ -97,9 +91,10 @@ export class ActorObject extends GameObject {
 	private _canWalk = false;
 	private _hasShadow = false;
 
-	private _attaching?: Attachment;
-	private attachments = new Map<AttachType, Attachment>();
-	private attachMapping?: AttachMapping;
+	private _attachingActorId: number;
+
+	private rightHandActorId: number;
+	private rightHandMapping: AttachMapping;
 
 	private isWalkDirty = false;
 
@@ -130,19 +125,9 @@ export class ActorObject extends GameObject {
 
 		this.tagname = option.tagname || '';
 
-		if (option.attachments) {
-			option.attachments.forEach((attachment) => {
-				this.setAttachment(attachment.key, attachment.actorId);
-			});
-		}
-
-		if (option.attaching) {
-			this.attaching = option.attaching;
-		}
-
-		if (option.attachMapping) {
-			this.attachMapping = option.attachMapping;
-		}
+		this.rightHandActorId = option.rightHandActorId;
+		this.attaching = option.attaching;
+		this.rightHandMapping = option.rightHandMapping;
 
 		this.boundings = option.boundings;
 		this.singleTexture = this.textureProvider.get(`actor.${ActorTypeName[actorType]}`);
@@ -282,14 +267,14 @@ export class ActorObject extends GameObject {
 		return this.sprite.textures;
 	}
 
-	set attaching(attaching: { key: AttachType; actorId: number }) {
-		this._attaching = attaching;
+	set attaching(attachingActor: number) {
+		this._attachingActorId = attachingActor;
 		this.zIndex = 3;
 		this.anchor = new Vector2(0.5, 0.5);
 	}
 
 	get attaching() {
-		return this._attaching;
+		return this._attachingActorId;
 	}
 
 	get showHealth() {
@@ -328,27 +313,19 @@ export class ActorObject extends GameObject {
 		this.moveInterpolator.addMovePoint(point);
 	}
 
-	getAttachRelPos(key: AttachType) {
-		const keyMapped = this.attachMapping && this.attachMapping[key];
+	getRightHandRelPos() {
+		const keyMapped = this.rightHandMapping;
 		const mappedRelPos = keyMapped && keyMapped[this._direction];
 		const relPos = mappedRelPos ? new Vector2(mappedRelPos[0], mappedRelPos[1]) : new Vector2(0, 0);
 		return relPos;
 	}
 
-	removeAttachment(key: AttachType) {
-		this.attachments.delete(key);
+	getRightHand() {
+		return this.rightHandActorId;
 	}
 
-	getAttachment(key: AttachType) {
-		return this.attachments.get(key);
-	}
-
-	setAttachment(key: AttachType, actorId: number) {
-		this.attachments.set(key, {
-			key,
-			relativePos: this.getAttachRelPos(key),
-			actorId,
-		});
+	setRightHand(actorId: number) {
+		this.rightHandActorId = actorId;
 	}
 
 	damage(val: number) {
@@ -401,6 +378,25 @@ export class ActorObject extends GameObject {
 		}
 	}
 
+	updateAttachingMovement(attachingActor: ActorObject) {
+		if (!attachingActor) return;
+
+		const relPos = attachingActor.getRightHandRelPos();
+		const direction = attachingActor.direction;
+
+		if (direction == Direction.BACK) {
+			this.zIndex = 1;
+		} else if (direction == Direction.LEFT) {
+			this.zIndex = 3;
+		} else if (direction == Direction.RIGHT) {
+			this.zIndex = 3;
+		} else {
+			this.zIndex = 3;
+		}
+
+		this.vPos = attachingActor.vPos.add(relPos);
+	}
+
 	controlRunning(running: RunningState) {
 		if (this.running == running) return;
 
@@ -433,8 +429,3 @@ export interface ActorConstructOption {
 	tagname?: string;
 	[key: string]: any;
 }
-
-export type ActorCtor = [number, ActorConstructOption, TextureProvider, ...any];
-export type ActorFactoryMapper = FactoryMapper<ActorType, ActorObject, ActorCtor>;
-
-export class ActorFactory extends Factory<ActorType, ActorObject, ActorCtor> {}

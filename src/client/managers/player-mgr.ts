@@ -10,7 +10,7 @@ import { PlayerState } from '../ui-states/player';
 
 import SAT from 'sat';
 import { Input } from '@uni.js/prediction';
-import { AttachType, Direction, RunningState } from '../../server/types/actor';
+import { Direction, RunningState } from '../../server/types/actor';
 import { calcBoundingSATBox } from '../../server/utils/actor';
 
 export interface PlayerMgrEvents {
@@ -25,6 +25,7 @@ export interface PlayerMgrEvents {
 	ToggleUsingEvent: {
 		playerId: number;
 		startOrEnd: boolean;
+		actorType: number;
 	};
 }
 
@@ -60,7 +61,7 @@ export class PlayerMgr extends ClientSideManager<PlayerMgrEvents> {
 	}
 
 	private onToggleUsing = (event: PlayerMgrEvents['ToggleUsingEvent']) => {
-		this.emit('ToggleUsingEvent', event);
+		this.emit('ToggleUsingEvent', { ...event, actorType: this.getRightHand().actorType });
 	};
 
 	private onPlayerControlMoved = (event: PlayerMgrEvents['ControlMovedEvent']) => {
@@ -73,6 +74,11 @@ export class PlayerMgr extends ClientSideManager<PlayerMgrEvents> {
 
 	isCurrentPlayer(player: Player) {
 		return this.currentPlayer === player;
+	}
+
+	getRightHand() {
+		if (!this.currentPlayer) return;
+		return this.actorMgr.getObjectById(this.currentPlayer.getRightHand());
 	}
 
 	private setControlMoved(deltaMove: Vector2 | false) {
@@ -165,10 +171,7 @@ export class PlayerMgr extends ClientSideManager<PlayerMgrEvents> {
 
 	private doUsingRightHand() {
 		const player = this.currentPlayer;
-		if (!player) return;
-		const rightHand = player.getAttachment(AttachType.RIGHT_HAND);
-
-		if (rightHand) {
+		if (this.getRightHand()) {
 			if (this.inputProvider.cursorPress() || this.inputProvider.keyPress(InputKey.J)) {
 				!player.isUsing && player.startUsing();
 			} else {
@@ -183,12 +186,10 @@ export class PlayerMgr extends ClientSideManager<PlayerMgrEvents> {
 
 		const screenPoint = this.inputProvider.getCursorAt();
 		const cursorAt = Vector2.fromArray(this.stage.getWorldPointAt(screenPoint.x, screenPoint.y));
-		const attachment = this.currentPlayer.getAttachment(AttachType.RIGHT_HAND);
-		if (!attachment) return;
+		const rightHand = this.getRightHand();
+		if (!rightHand) return;
 
-		const vPos = this.actorMgr.getObjectById(attachment.actorId).vPos;
-
-		const rad = cursorAt.sub(vPos).getRad();
+		const rad = cursorAt.sub(rightHand.vPos).getRad();
 
 		if (tick % 5 === 0) {
 			if (this.lastAimTarget === rad) return;

@@ -1,9 +1,7 @@
 import { Entity, Private, Property, Index } from '@uni.js/database';
-import { Attachment } from '../utils/entity';
-import { RecordMap } from '../utils/tools';
 import { injectable } from 'inversify';
 import { Factory } from '../factory/factory';
-import { ActorType, AttachMapping, AttachType, Direction, RunningState } from '../types/actor';
+import { ActorType, AttachMapping, Direction, RunningState } from '../types/actor';
 
 @Index(['posX', 'posY'])
 @Entity()
@@ -70,10 +68,10 @@ export class Actor {
 	isPlayer = false;
 
 	@Property()
-	attachments: RecordMap<Attachment, AttachType> = new RecordMap();
+	rightHandActorId: number;
 
 	@Property()
-	attaching: Attachment;
+	attaching: number;
 
 	@Private()
 	@Property()
@@ -82,7 +80,7 @@ export class Actor {
 
 	@Private()
 	@Property()
-	attachMapping: AttachMapping;
+	rightHandMapping: AttachMapping;
 
 	@Private()
 	@Property()

@@ -10,7 +10,7 @@ import { Vector2 } from '../utils/math';
 import SAT from 'sat';
 import { PlayerMgr, PlayerMgrEvents } from './player-mgr';
 import { InventoryMgr } from './inventory-mgr';
-import { ActorType, AttachType } from '../types/actor';
+import { ActorType } from '../types/actor';
 import { ARROW_DEAD_TICKS, ARROW_DROP_TICKS, BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../types/tools';
 
 @injectable()
@@ -25,7 +25,7 @@ export class BowMgr extends ExtendedEntityManager<Actor, Bow> {
 
 	@HandleEvent('playerMgr', 'ToggleUsingEvent')
 	private onToggleUsing(event: PlayerMgrEvents['ToggleUsingEvent']) {
-		const { actorId } = this.playerMgr.getAttachment(event.playerId, AttachType.RIGHT_HAND);
+		const actorId = this.playerMgr.getRightHand(event.playerId);
 		const actor = this.actorMgr.getEntityById(actorId);
 
 		if (actor.type != ActorType.BOW) return;
@@ -61,7 +61,7 @@ export class BowMgr extends ExtendedEntityManager<Actor, Bow> {
 	private endDragging(actor: Actor, useTick: number) {
 		if (useTick <= BOW_RELEASING_MIN_TICKS) return;
 
-		const attachingActor = this.actorMgr.getEntityById(actor.attaching.actorId);
+		const attachingActor = this.actorMgr.getEntityById(actor.attaching);
 		const aimTarget = attachingActor.aimTarget;
 
 		if (aimTarget === undefined) return;

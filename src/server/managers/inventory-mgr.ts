@@ -26,7 +26,7 @@ import {
 	MAX_STACK_SIZE,
 } from '../types/container';
 import { ItemHoldAction, ItemType } from '../types/item';
-import { ActorType, AttachType } from '../types/actor';
+import { ActorType } from '../types/actor';
 
 export interface InventoryMgrEvents extends EntityBaseEvent {
 	UpdateContainerEvent: {
@@ -219,7 +219,7 @@ export class InventoryMgr extends EntityManager<Inventory, InventoryMgrEvents> {
 
 		const itemDef = this.itemDefList.findOne({ itemType: block.itemType });
 
-		this.actorMgr.clearAttachments(shortcut.playerId, true);
+		this.actorMgr.removeRightHand(shortcut.playerId);
 
 		if (itemDef.holdAction === ItemHoldAction.ATTACH_SPEC_ACTOR) {
 			const actor = this.actorFactory.getNewObject(itemDef.specActorType, []);
@@ -227,7 +227,7 @@ export class InventoryMgr extends EntityManager<Inventory, InventoryMgrEvents> {
 			actor.posY = player.posY;
 
 			this.actorMgr.addNewEntity(actor);
-			this.actorMgr.setAttachment(shortcut.playerId, AttachType.RIGHT_HAND, actor.id);
+			this.actorMgr.setRightHand(shortcut.playerId, actor.id);
 		}
 	}
 

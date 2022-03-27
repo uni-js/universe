@@ -2,8 +2,8 @@ import { UpdateBuildingNearbyEvent } from './update-building-nearby-event';
 import { ActorDamagedEvent } from './actor-damaged-event';
 import { UpdateContainerEvent } from './update-container-event';
 import { ToggleUsingEvent } from './actor-toggle-using-event';
-import { ActorRemoveAttachmentEvent } from './actor-remove-attachment-event';
-import { ActorSetAttachmentEvent } from './actor-set-attachment-event';
+import { ActorRemoveRightHandEvent } from './actor-remove-right-hand-event';
+import { ActorSetRightHandEvent } from './actor-set-right-hand-event';
 import { LandNeverUsedEvent } from './land-never-used-event';
 import { LandDataToPlayerEvent } from './land-data-to-player-event';
 import { DespawnActorEvent } from './despawn-actor-event';
@@ -21,8 +21,8 @@ export {
 	DespawnActorEvent,
 	LandDataToPlayerEvent,
 	LandNeverUsedEvent,
-	ActorSetAttachmentEvent,
-	ActorRemoveAttachmentEvent,
+	ActorSetRightHandEvent,
+	ActorRemoveRightHandEvent,
 	ToggleUsingEvent,
 	UpdateContainerEvent,
 	ActorDamagedEvent,

@@ -36,13 +36,11 @@ export class Player extends Actor {
 	playerName = 'Player';
 
 	@Property()
-	attachMapping: AttachMapping = [
-		[
-			[-0.4, -0.5],
-			[0.4, -0.5],
-			[0, -0.5],
-			[0, -0.4],
-		],
+	rightHandMapping: AttachMapping = [
+		[-0.4, -0.5],
+		[0.4, -0.5],
+		[0, -0.5],
+		[0, -0.4],
 	];
 
 	@Property()

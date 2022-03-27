@@ -11,7 +11,6 @@ import { LandMgr } from './land-mgr';
 import { HandleEvent } from '@uni.js/event';
 import { ExtendedEntityManager, AddEntityEvent, RemoveEntityEvent, EntityBaseEvent } from '@uni.js/database';
 import { GetPosByHash, GetPosHash } from '../utils/land-pos';
-import { AttachType } from '../types/actor';
 
 export interface PlayerMgrEvents extends EntityBaseEvent {
 	SpawnActorEvent: {
@@ -122,9 +121,8 @@ export class PlayerMgr extends ExtendedEntityManager<Actor, Player, PlayerMgrEve
 		return this.findEntities({ isPlayer: true });
 	}
 
-	getAttachment(playerId: number, attachType: AttachType) {
-		const player = this.getEntityById(playerId);
-		return player.attachments.get(attachType);
+	getRightHand(playerId: number) {
+		return this.getEntityById(playerId).rightHandActorId;
 	}
 
 	addNewPlayer(connId: string) {

@@ -7,7 +7,7 @@ import { Vector2 } from '../utils/math';
 import { PosToLandPos } from '../utils/land-pos';
 import { Input } from '@uni.js/prediction';
 import { Actor } from '../entity/actor-entity';
-import { ActorType, AttachType, Direction, RunningState } from '../types/actor';
+import { ActorType, Direction, RunningState } from '../types/actor';
 import { calcBoundingBox, getDirectionAngle, isAngleMatchDirection } from '../utils/actor';
 
 export interface CheckResult {
@@ -26,14 +26,12 @@ export interface ActorMgrEvents extends EntityBaseEvent {
 		actorId: number;
 		finalHealth: number;
 	};
-	ActorSetAttachmentEvent: {
+	ActorSetRightHandEvent: {
 		actorId: number;
-		key: AttachType;
 		attachActorId: number;
 	};
-	ActorRemoveAttachmentEvent: {
+	ActorRemoveRightHandEvent: {
 		actorId: number;
-		key: AttachType;
 	};
 	ActorSetRotationEvent: {
 		actorId: number;
@@ -145,52 +143,29 @@ export class ActorMgr extends EntityManager<Actor, ActorMgrEvents> {
 		return this.actorList.find({ isActor: true });
 	}
 
-	setAttachment(targetActorId: number, key: AttachType, actorId: number) {
+	setRightHand(targetActorId: number, actorId: number) {
 		const targetActor = this.actorList.findOne({ id: targetActorId });
 		const actor = this.actorList.findOne({ id: actorId });
 
-		targetActor.attachments.add(key, {
-			key,
-			actorId,
-		});
-
-		actor.attaching = { key, actorId: targetActorId };
+		targetActor.rightHandActorId = actorId;
+		actor.attaching = targetActorId;
 
 		this.updateAttachment(targetActorId);
 
-		this.emit('ActorSetAttachmentEvent', {
+		this.emit('ActorSetRightHandEvent', {
 			actorId: targetActor.id,
-			key,
 			attachActorId: actorId,
 		});
 	}
 
-	getAttachment(targetActorId: number, key: AttachType) {
+	getRightHand(targetActorId: number) {
 		const actor = this.actorList.findOne({ id: targetActorId });
-		return actor.attachments.get(key);
+		return actor.rightHandActorId;
 	}
 
-	getAttachments(targetActorId: number) {
+	removeRightHand(targetActorId: number) {
 		const actor = this.actorList.findOne({ id: targetActorId });
-		return actor.attachments.getAll();
-	}
-
-	removeAttachment(targetActorId: number, key: AttachType) {
-		const actor = this.actorList.findOne({ id: targetActorId });
-		actor.attachments.remove(key);
-
-		this.emit('ActorRemoveAttachmentEvent', { actorId: actor.id, key });
-	}
-
-	clearAttachments(targetActorId: number, removeActors = false) {
-		const attachments = this.getAttachments(targetActorId);
-		for (const attachment of attachments) {
-			this.removeAttachment(targetActorId, attachment.key);
-			if (removeActors) {
-				const actor = this.getEntityById(attachment.actorId);
-				this.removeEntity(actor);
-			}
-		}
+		this.emit('ActorRemoveRightHandEvent', { actorId: actor.id });
 	}
 
 	setWalkState(actorId: number, running: RunningState, direction: Direction) {
@@ -206,8 +181,8 @@ export class ActorMgr extends EntityManager<Actor, ActorMgrEvents> {
 		this.actorList.update(actor);
 
 		if (isDirectionChanged) {
-			const attachment = this.getAttachment(actor.id, AttachType.RIGHT_HAND);
-			attachment && this.setRotation(attachment.actorId, getDirectionAngle(actor.direction));
+			const rightHand = this.getRightHand(actor.id);
+			rightHand && this.setRotation(rightHand, getDirectionAngle(actor.direction));
 		}
 	}
 
@@ -234,10 +209,8 @@ export class ActorMgr extends EntityManager<Actor, ActorMgrEvents> {
 
 	removeEntity<T extends Actor>(actor: T): void {
 		super.removeEntity.call(this, actor as any);
-
-		for (const attachment of actor.attachments.getAll()) {
-			this.removeEntity(this.getEntityById(attachment.actorId));
-		}
+		const rightHand = this.getEntityById(actor.rightHandActorId);
+		rightHand && this.removeEntity(rightHand);
 	}
 
 	moveToPosition(actor: Actor, position: Vector2) {
@@ -319,9 +292,9 @@ export class ActorMgr extends EntityManager<Actor, ActorMgrEvents> {
 		}
 	}
 
-	private getAttachPosition(actor: Actor, key: AttachType): [number, number] {
-		if (actor.attachMapping && actor.attachMapping[key]) {
-			return actor.attachMapping[key][actor.direction];
+	private getRightHandRelPos(actor: Actor): [number, number] {
+		if (actor.rightHandMapping) {
+			return actor.rightHandMapping[actor.direction];
 		} else {
 			return [0, 0];
 		}
@@ -329,16 +302,15 @@ export class ActorMgr extends EntityManager<Actor, ActorMgrEvents> {
 
 	private updateAttachment(targetActorId: number) {
 		const targetActor = this.getEntityById(targetActorId);
-		this.getAttachments(targetActorId).forEach((attachment) => {
-			const actor = this.getEntityById(attachment.actorId);
+		if (targetActor.rightHandActorId === undefined) return;
 
-			const relPos = this.getAttachPosition(targetActor, attachment.key);
+		const actor = this.getEntityById(targetActor.rightHandActorId);
+		const relPos = this.getRightHandRelPos(targetActor);
 
-			const posX = targetActor.posX + relPos[0];
-			const posY = targetActor.posY + relPos[1];
+		const posX = targetActor.posX + relPos[0];
+		const posY = targetActor.posY + relPos[1];
 
-			this.moveToPosition(actor, new Vector2(posX, posY));
-		});
+		this.moveToPosition(actor, new Vector2(posX, posY));
 	}
 
 	private updateMotion() {

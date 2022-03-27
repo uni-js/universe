@@ -26,7 +26,7 @@ export async function bootstrap() {
 		controllers: [BootController],
 		providers: [
 			{ key: LandStore, value: new LandStore() },
-			{ key: ActorStore, value: new ActorStore() }
+			{ key: ActorStore, value: new ActorStore() },
 		],
 	});
 

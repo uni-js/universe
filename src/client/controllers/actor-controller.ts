@@ -5,7 +5,7 @@ import { Player } from '../objects/player-object';
 import { TextureProvider } from '@uni.js/texture';
 import { inject, injectable } from 'inversify';
 import { PlayerMgr } from '../managers/player-mgr';
-import { ActorFactory, ActorObject } from '../objects/actor-object';
+import { ActorObject } from '../objects/actor-object';
 import { ClientSideController } from '@uni.js/client';
 
 import * as ServerEvents from '../../server/event';
@@ -13,6 +13,7 @@ import * as ServerEvents from '../../server/event';
 import * as ExternalEvents from '../event';
 import { EmitLocalEvent, HandleRemoteEvent } from '@uni.js/event';
 import { Logger } from '@uni.js/utils';
+import { ActorFactory } from '../factory/actor';
 
 @injectable()
 export class ActorController extends ClientSideController {
@@ -30,24 +31,25 @@ export class ActorController extends ClientSideController {
 	@EmitLocalEvent('playerMgr', 'SetAimTargetEvent')
 	private emitLocalEvent() {}
 
-	@HandleRemoteEvent(ServerEvents.ActorSetAttachmentEvent)
-	private handleSetAttachment(event: ServerEvents.ActorSetAttachmentEvent) {
+	@HandleRemoteEvent(ServerEvents.ActorSetRightHandEvent)
+	private handleSetAttachment(event: ServerEvents.ActorSetRightHandEvent) {
 		const targetActor = this.actorMgr.getObjectById(event.actorId);
 		const actor = this.actorMgr.getObjectById(event.attachActorId);
 
-		targetActor.setAttachment(event.key, event.attachActorId);
-		actor.attaching = { key: event.key, actorId: event.actorId };
+		targetActor.setRightHand(event.attachActorId);
+		actor.attaching = event.actorId;
 	}
 
-	@HandleRemoteEvent(ServerEvents.ActorRemoveAttachmentEvent)
-	private handleRemoveAttachment(event: ServerEvents.ActorRemoveAttachmentEvent) {
+	@HandleRemoteEvent(ServerEvents.ActorRemoveRightHandEvent)
+	private handleRemoveAttachment(event: ServerEvents.ActorRemoveRightHandEvent) {
 		const actor = this.actorMgr.getObjectById(event.actorId);
-		actor.removeAttachment(event.key);
+		actor.setRightHand(undefined);
 	}
 
 	@HandleRemoteEvent(ServerEvents.SpawnActorEvent)
 	private handleActorAdded(event: ServerEvents.SpawnActorEvent) {
-		const newActor = this.actorFactory.getNewObject(event.actorType, [event.actorId, event.ctorOption, this.texture]);
+		const option = event.ctorOption;
+		const newActor = this.actorFactory.getNewObject(event.actorType, [event.actorId, option, this.texture]);
 		this.actorMgr.addGameObject(newActor);
 
 		Logger.debug('Spawned', event.actorType, event.ctorOption, newActor);

@@ -23,8 +23,8 @@ export class ActorController extends ServerSideController {
 
 	@EmitLocalEvent('actorMgr', 'NewPosEvent')
 	@EmitLocalEvent('actorMgr', 'NewWalkStateEvent')
-	@EmitLocalEvent('actorMgr', 'ActorSetAttachmentEvent')
-	@EmitLocalEvent('actorMgr', 'ActorRemoveAttachmentEvent')
+	@EmitLocalEvent('actorMgr', 'ActorSetRightHandEvent')
+	@EmitLocalEvent('actorMgr', 'ActorRemoveRightHandEvent')
 	@EmitLocalEvent('actorMgr', 'ActorSetRotationEvent')
 	@EmitLocalEvent('actorMgr', 'ActorDamagedEvent')
 	private emitByActorId(ev: any) {

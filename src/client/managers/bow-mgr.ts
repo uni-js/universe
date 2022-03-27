@@ -6,7 +6,7 @@ import { PlayerMgr, PlayerMgrEvents } from './player-mgr';
 import { ContainerMgrEvents, ShortcutMgr } from './inventory-mgr';
 import { HandleEvent } from '@uni.js/event';
 import { BowUsingState } from '../ui-states/bow';
-import { ActorType, AttachType } from '../../server/types/actor';
+import { ActorType } from '../../server/types/actor';
 import { ItemType } from '../../server/types/item';
 import { BOW_DRAGGING_MAX_TICKS, BOW_RELEASING_MIN_TICKS } from '../../server/types/tools';
 
@@ -27,9 +27,7 @@ export class BowMgr extends ClientSideManager {
 
 	@HandleEvent('playerMgr', 'ToggleUsingEvent')
 	private onToggleUsing(event: PlayerMgrEvents['ToggleUsingEvent']) {
-		const player = this.playerMgr.getCurrentPlayer();
-		const actor = this.actorMgr.getObjectById(player.getAttachment(AttachType.RIGHT_HAND).actorId);
-		if (actor.actorType !== ActorType.BOW) return;
+		if (event.actorType !== ActorType.BOW) return;
 
 		if (event.startOrEnd) {
 			this.bowUsingState.isUsing = true;

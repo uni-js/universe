@@ -25,19 +25,10 @@ export enum RunningState {
 	RUNNING,
 }
 
-export enum AttachType {
-	RIGHT_HAND,
-}
-
-export interface AttachMappingUnit {
+export interface AttachMapping {
 	[Direction.BACK]: [number, number];
 	[Direction.FORWARD]: [number, number];
 	[Direction.LEFT]: [number, number];
 	[Direction.RIGHT]: [number, number];
 	[key: number]: [number, number];
-}
-
-export interface AttachMapping {
-	[AttachType.RIGHT_HAND]: AttachMappingUnit;
-	[key: number]: AttachMappingUnit;
 }

@@ -1,6 +1,4 @@
 import { RecordMap, RecordSet } from './tools';
-import { AttachType } from '../types/actor';
-
 export const MOVEMENT_TICK_MIN_DISTANCE = 0.0001;
 export const CTOR_OPTION_PROPERTY_SYMBOL = Symbol('ctor-option');
 
@@ -30,10 +28,4 @@ export function GetConstructOptions(target: any) {
 		}
 	}
 	return options;
-}
-
-export interface Attachment {
-	key: AttachType;
-	relPos?: [number, number];
-	actorId: number;
 }

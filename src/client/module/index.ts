@@ -11,8 +11,7 @@ import { ShortcutMgr, BackpackMgr } from '../managers/inventory-mgr';
 import { BackpackContainerState, InventoryBlockState, ShortcutContainerState } from '../ui-states/inventory';
 import { ActorController } from '../controllers/actor-controller';
 import { ActorMgr } from '../managers/actor-mgr';
-import { ActorFactory } from '../objects/actor-object';
-import { actorFactory } from '../factory/actor';
+import { ActorFactory, actorFactory } from '../factory/actor';
 import { LandController } from '../controllers/land-controller';
 import { LandMgr } from '../managers/land-mgr';
 
