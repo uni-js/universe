@@ -1,6 +1,6 @@
 import { createClientSideModule } from '@uni.js/client';
-import { BowMgr } from '../managers/bow-mgr';
-import { BowUsingState } from '../ui-states/bow';
+import { AttachUsingManager } from '../managers/attach-using-mgr';
+import { AttachUsingState } from '../ui-states/using';
 import { PlayerController } from '../controllers/player-controller';
 import { PlayerMgr } from '../managers/player-mgr';
 import { PlayerState } from '../ui-states/player';
@@ -17,7 +17,7 @@ import { LandMgr } from '../managers/land-mgr';
 
 export const GameClientModule = createClientSideModule({
 	controllers: [PlayerController, PickDropController, InvetoryController, ActorController, LandController],
-	managers: [BowMgr, PlayerMgr, PickDropMgr, ShortcutMgr, BackpackMgr, ActorMgr, LandMgr],
-	uiStates: [BowUsingState, PlayerState, BackpackContainerState, InventoryBlockState, ShortcutContainerState],
+	managers: [AttachUsingManager, PlayerMgr, PickDropMgr, ShortcutMgr, BackpackMgr, ActorMgr, LandMgr],
+	uiStates: [AttachUsingState, PlayerState, BackpackContainerState, InventoryBlockState, ShortcutContainerState],
 	providers: [{ key: ActorFactory, value: actorFactory }],
 });

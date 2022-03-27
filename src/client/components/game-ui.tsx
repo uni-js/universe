@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Shortcut } from './shortcut';
 import { useEventBus, useUIState } from '@uni.js/ui';
 import { PlayerState } from '../ui-states/player';
-import { BowUI } from './bow';
+import { AttachUsingUI } from './attach-using';
 import { Backpack } from './backpack';
 
 import './game-ui.css';
@@ -37,7 +37,7 @@ export function GameUI(props: any) {
 			</div>
 			<Backpack visible={backpackVisible}></Backpack>
 			<div id="bottom-area">
-				<BowUI></BowUI>
+				<AttachUsingUI></AttachUsingUI>
 				<Shortcut></Shortcut>
 			</div>
 		</div>

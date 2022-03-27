@@ -38,12 +38,14 @@ export class ActorController extends ClientSideController {
 
 		targetActor.setRightHand(event.attachActorId);
 		actor.attaching = event.actorId;
+		this.playerMgr.settingAimTarget = true;
 	}
 
 	@HandleRemoteEvent(ServerEvents.ActorRemoveRightHandEvent)
 	private handleRemoveAttachment(event: ServerEvents.ActorRemoveRightHandEvent) {
 		const actor = this.actorMgr.getObjectById(event.actorId);
 		actor.setRightHand(undefined);
+		this.playerMgr.settingAimTarget = false;
 	}
 
 	@HandleRemoteEvent(ServerEvents.SpawnActorEvent)
@@ -76,7 +78,7 @@ export class ActorController extends ClientSideController {
 	@HandleRemoteEvent(ServerEvents.NewPosEvent)
 	private handleActorNewPos(event: ServerEvents.NewPosEvent) {
 		const object = this.actorMgr.getObjectById(event.actorId) as ActorObject;
-		const isCurrentPlayer = this.playerMgr.isCurrentPlayer(object as Player);
+		const isCurrentPlayer = this.playerMgr.isCurrPlayer(object as Player);
 		const pos = new Vector2(event.posX, event.posY);
 
 		if (isCurrentPlayer) {

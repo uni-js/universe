@@ -1,7 +1,7 @@
 import { UIState } from '@uni.js/ui';
 
 @UIState()
-export class BowUsingState {
+export class AttachUsingState {
 	isUsing = false;
 	/**
 	 * from 0 to 1
@@ -9,7 +9,7 @@ export class BowUsingState {
 	power = 0;
 
 	/**
-	 * if a bow can be released
+	 * if approach limit
 	 */
-	canRelease = false;
+	approachLimit = false;
 }

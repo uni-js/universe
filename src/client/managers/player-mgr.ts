@@ -33,8 +33,10 @@ export interface PlayerMgrEvents {
 export class PlayerMgr extends ClientSideManager<PlayerMgrEvents> {
 	public settingAimTarget = false;
 
-	private currentPlayer: Player;
-
+	/**
+	 * @readonly
+	 */
+	public currPlayer: Player;
 	private lastAimTarget: number;
 
 	constructor(
@@ -57,32 +59,29 @@ export class PlayerMgr extends ClientSideManager<PlayerMgrEvents> {
 		player.on('ToggleUsingEvent', this.onToggleUsing);
 		player.setTakeControl();
 
-		this.currentPlayer = player;
+		this.currPlayer = player;
 	}
 
 	private onToggleUsing = (event: PlayerMgrEvents['ToggleUsingEvent']) => {
-		this.emit('ToggleUsingEvent', { ...event, actorType: this.getRightHand().actorType });
+		const rightHand = this.getRightHand();
+		this.emit('ToggleUsingEvent', { ...event, actorType: rightHand.actorType });
 	};
 
 	private onPlayerControlMoved = (event: PlayerMgrEvents['ControlMovedEvent']) => {
 		this.emit('ControlMovedEvent', event);
 	};
 
-	getCurrentPlayer() {
-		return this.currentPlayer;
-	}
-
-	isCurrentPlayer(player: Player) {
-		return this.currentPlayer === player;
+	isCurrPlayer(player: Player) {
+		return this.currPlayer === player;
 	}
 
 	getRightHand() {
-		if (!this.currentPlayer) return;
-		return this.actorMgr.getObjectById(this.currentPlayer.getRightHand());
+		if (!this.currPlayer) return;
+		return this.actorMgr.getObjectById(this.currPlayer.getRightHand());
 	}
 
 	private setControlMoved(deltaMove: Vector2 | false) {
-		const player = this.currentPlayer;
+		const player = this.currPlayer;
 
 		if (deltaMove === false) {
 			player.controlMove(false);
@@ -121,7 +120,7 @@ export class PlayerMgr extends ClientSideManager<PlayerMgrEvents> {
 	}
 
 	private doControlMoveTick() {
-		const player = this.currentPlayer;
+		const player = this.currPlayer;
 		if (!player) return;
 
 		const moveSpeed = 0.06;
@@ -170,7 +169,7 @@ export class PlayerMgr extends ClientSideManager<PlayerMgrEvents> {
 	}
 
 	private doUsingRightHand() {
-		const player = this.currentPlayer;
+		const player = this.currPlayer;
 		if (this.getRightHand()) {
 			if (this.inputProvider.cursorPress() || this.inputProvider.keyPress(InputKey.J)) {
 				!player.isUsing && player.startUsing();
@@ -181,7 +180,7 @@ export class PlayerMgr extends ClientSideManager<PlayerMgrEvents> {
 	}
 
 	private doSetAimTargetTick(tick: number) {
-		if (!this.currentPlayer) return;
+		if (!this.currPlayer) return;
 		if (!this.settingAimTarget) return;
 
 		const screenPoint = this.inputProvider.getCursorAt();
@@ -201,12 +200,12 @@ export class PlayerMgr extends ClientSideManager<PlayerMgrEvents> {
 	}
 
 	private doUpdateDebugInfo() {
-		this.playerState.position = this.currentPlayer?.vPos;
+		this.playerState.position = this.currPlayer?.vPos;
 	}
 
 	private doUpdateViewportCenter() {
-		if (!this.currentPlayer) return;
-		this.stage.moveCenter(this.currentPlayer.position.x, this.currentPlayer.position.y);
+		if (!this.currPlayer) return;
+		this.stage.moveCenter(this.currPlayer.position.x, this.currPlayer.position.y);
 	}
 
 	doFixedUpdateTick(tick: number) {
