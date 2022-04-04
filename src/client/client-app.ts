@@ -1,0 +1,117 @@
+import { ClientApp, EventBusClient } from "@uni.js/client";
+import { TextureModule, TexturePlugin, TextureProvider } from "@uni.js/texture";
+import { UIEventBus, UIPlugin, UIStateContainer } from "@uni.js/ui";
+import { HTMLInputPlugin, HTMLInputProvider } from "@uni.js/html-input"
+import { Viewport, ViewportPlugin } from "@uni.js/viewport"
+import { ActorManager } from "./actor/actor-manager";
+import { GameUI } from "./components/game-ui";
+import { BackpackContainerState, ShortcutContainerState } from "./ui-states/inventory";
+import { PlayerState } from "./ui-states/player";
+import { AttachUsingState } from "./ui-states/using";
+import { PlayerManager } from "./player/player-manager";
+
+export class GameClientApp {
+    private uni : ClientApp
+    private uiStates: UIStateContainer;
+    private uiEventBus: UIEventBus;
+    private textureProvider: TextureProvider;
+    private inputProvider: HTMLInputProvider;
+    private eventBus: EventBusClient;
+    private actorManager: ActorManager;
+    private playerManager: PlayerManager;
+    private viewport: Viewport;
+    private tick = 0;
+    private worldWidth = 4 * 7;
+    private worldHeight = 3 * 7;
+    private resolution = 32;
+
+    constructor(serverUrl: string, private textureModules: TextureModule[], playground: HTMLElement) {
+
+        this.uni = new ClientApp({
+            width: this.worldWidth,
+            height: this.worldHeight,
+            resolution: this.resolution,
+            serverUrl,
+            playground,
+            msgPacked: false
+        });
+    }
+
+    getUni() {
+        return this.uni;
+    }
+
+    getActorManager() {
+        return this.actorManager;
+    }
+
+    getTextureProvider() {
+        return this.textureProvider;
+    }
+
+    getInputProvider() {
+        return this.inputProvider;
+    }
+
+    getEventBus() {
+        return this.eventBus;
+    }
+
+    getViewport() {
+        return this.viewport;
+    }
+
+    async start() {
+        console.log("texture module", this.textureModules);
+        const textureProvider = await this.uni.use(TexturePlugin({ imports: this.textureModules }))
+        const uiStateDefs = [
+            BackpackContainerState,
+            ShortcutContainerState,
+            PlayerState,
+            AttachUsingState
+        ]
+        const { uiStates, uiEventBus } = await this.uni.use(UIPlugin(GameUI, uiStateDefs, textureProvider));
+        const inputProvider = await this.uni.use(HTMLInputPlugin());
+        const { viewport } = await this.uni.use(ViewportPlugin({ 
+            screenWidth: this.resolution * this.worldWidth,
+            screenHeight: this.resolution * this.worldHeight,
+            worldWidth: this.worldWidth,
+            worldHeight: this.worldHeight
+        }))
+
+        this.uiStates = uiStates;
+        this.uiEventBus = uiEventBus;
+        this.textureProvider = textureProvider;
+        this.inputProvider = inputProvider;
+        this.viewport = viewport;
+        
+        this.eventBus = this.uni.getBusClient();
+
+        this.actorManager = new ActorManager(this);
+        this.playerManager = new PlayerManager(this);
+
+        this.uni.start();
+        this.uni.addTicker(() => this.doTick())
+        this.playerManager.login();
+    }
+
+
+    doTick() {
+        this.actorManager.doFixedUpdateTick(this.tick);
+        this.actorManager.doUpdateTick(this.tick);
+        this.playerManager.doFixedUpdateTick(this.tick);
+        this.tick++;
+    }
+
+    emitEvent(event: any) {
+        this.getEventBus().emitBusEvent(event);
+    }
+
+    getUIStates() {
+        return this.uiStates;
+    }
+
+    getUIEventBus() {
+        return this.uiEventBus;
+    }
+}

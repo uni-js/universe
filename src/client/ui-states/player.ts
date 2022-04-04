@@ -1,5 +1,5 @@
 import { UIState } from '@uni.js/ui';
-import { Vector2 } from '../../server/utils/math';
+import { Vector2 } from '../../server/utils/vector2';
 
 @UIState()
 export class PlayerState {

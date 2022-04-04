@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { Vector2 } from '../../server/utils/math';
 import { GameObject } from '@uni.js/client';
-import { TextureProvider } from '@uni.js/texture';
+import { Vector2 } from '../../server/utils/vector2';
 
 export class HealthBar extends GameObject {
 	/**

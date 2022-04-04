@@ -1,6 +1,5 @@
 import { UIState } from '@uni.js/ui';
-import { ContainerType } from '../../server/types/container';
-import { ItemType } from '../../server/types/item';
+import { ItemType } from '../../server/item/item-type';
 
 export class ContainerState {
 	/**
@@ -21,8 +20,6 @@ export class ShortcutContainerState extends ContainerState {
 }
 
 export class InventoryBlockState {
-	containerType: ContainerType;
-
 	index: number;
 
 	itemType: ItemType;

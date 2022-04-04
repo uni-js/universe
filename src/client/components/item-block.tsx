@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import React, { useState } from 'react';
 import { useTexturePath, useTextureProvider } from '@uni.js/ui';
-import { ItemType, ItemTypeName } from '../../server/types/item';
 
 import './item-block.css';
+import { ItemType } from '../../server/item/item-type';
 
 export interface DropInfo {
 	sourceContainerId: number;
@@ -101,7 +101,7 @@ export const ItemBlock = React.memo((props: ItemBlockProps) => {
 		props.onMouseMove && props.onMouseMove();
 	}
 
-	const texturePath = useTexturePath(provider, `item.${ItemTypeName[props.itemType]}`);
+	const texturePath = useTexturePath(provider, `item.${props.itemType}`);
 
 	const clsName = classNames(
 		{
