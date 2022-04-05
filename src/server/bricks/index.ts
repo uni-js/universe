@@ -5,5 +5,6 @@ export enum BrickType {
     SAND,
     WATER,
     ROCK,
-    GRASS
+    GRASS,
+    WET_DIRT
 }

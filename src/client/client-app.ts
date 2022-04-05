@@ -5,21 +5,26 @@ import { HTMLInputPlugin, HTMLInputProvider } from "@uni.js/html-input"
 import { Viewport, ViewportPlugin } from "@uni.js/viewport"
 import { ActorManager } from "./actor/actor-manager";
 import { GameUI } from "./components/game-ui";
-import { BackpackContainerState, ShortcutContainerState } from "./ui-states/inventory";
+import { BackpackContainerState, ShortcutContainerState } from "./ui-states/container";
 import { PlayerState } from "./ui-states/player";
 import { AttachUsingState } from "./ui-states/using";
 import { PlayerManager } from "./player/player-manager";
+import { World } from "./world/world";
+import { ContainerManager } from "./container";
 
 export class GameClientApp {
-    private uni : ClientApp
-    private uiStates: UIStateContainer;
-    private uiEventBus: UIEventBus;
-    private textureProvider: TextureProvider;
-    private inputProvider: HTMLInputProvider;
-    private eventBus: EventBusClient;
-    private actorManager: ActorManager;
-    private playerManager: PlayerManager;
-    private viewport: Viewport;
+    public uni : ClientApp
+    public uiStates: UIStateContainer;
+    public uiEventBus: UIEventBus;
+    public textureProvider: TextureProvider;
+    public inputProvider: HTMLInputProvider;
+    public eventBus: EventBusClient;
+    public actorManager: ActorManager;
+    public playerManager: PlayerManager;
+    public world: World;
+    public viewport: Viewport;
+    public containerManager: ContainerManager;
+
     private tick = 0;
     private worldWidth = 4 * 7;
     private worldHeight = 3 * 7;
@@ -35,30 +40,6 @@ export class GameClientApp {
             playground,
             msgPacked: false
         });
-    }
-
-    getUni() {
-        return this.uni;
-    }
-
-    getActorManager() {
-        return this.actorManager;
-    }
-
-    getTextureProvider() {
-        return this.textureProvider;
-    }
-
-    getInputProvider() {
-        return this.inputProvider;
-    }
-
-    getEventBus() {
-        return this.eventBus;
-    }
-
-    getViewport() {
-        return this.viewport;
     }
 
     async start() {
@@ -87,31 +68,29 @@ export class GameClientApp {
         
         this.eventBus = this.uni.getBusClient();
 
+        this.world = new World(this);
         this.actorManager = new ActorManager(this);
         this.playerManager = new PlayerManager(this);
+        this.containerManager = new ContainerManager(this);
 
         this.uni.start();
         this.uni.addTicker(() => this.doTick())
         this.playerManager.login();
     }
 
+    getPlayer() {
+        return this.playerManager.getPlayer();
+    }
 
     doTick() {
         this.actorManager.doFixedUpdateTick(this.tick);
         this.actorManager.doUpdateTick(this.tick);
         this.playerManager.doFixedUpdateTick(this.tick);
+        this.containerManager.doTick();
         this.tick++;
     }
 
     emitEvent(event: any) {
-        this.getEventBus().emitBusEvent(event);
-    }
-
-    getUIStates() {
-        return this.uiStates;
-    }
-
-    getUIEventBus() {
-        return this.uiEventBus;
+        this.eventBus.emitBusEvent(event);
     }
 }

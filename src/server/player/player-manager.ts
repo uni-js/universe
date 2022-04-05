@@ -4,9 +4,10 @@ import { Player } from "./player";
 import { Vector2 } from "../utils/vector2";
 import type { Actor } from "../actor/actor";
 import type { Server } from "../server"
-import { ControlMoveEvent, ControlWalkEvent, LoginEvent } from "../event/client";
+import { ControlMoveEvent, ControlWalkEvent, LoginEvent, SetShortcutIndexEvent } from "../event/client";
 import { LoginedEvent } from "../event/server";
 import type { World } from "../land/world";
+import { ItemType } from "../item/item-type";
 
 export class PlayerManager{
     private playerList = new Map<string, Player>();
@@ -22,7 +23,13 @@ export class PlayerManager{
         this.eventBus.on(LoginEvent, this.onPlayerLogined.bind(this));
         this.eventBus.on(ControlMoveEvent, this.onControlMoveEvent.bind(this));
         this.eventBus.on(ControlWalkEvent, this.onControlWalkEvent.bind(this));
+        this.eventBus.on(SetShortcutIndexEvent, this.onSetShortcutIndexEvent.bind(this));
         this.eventBus.on(BusEvent.ClientDisconnectEvent, this.onPlayerLogout.bind(this));
+    }
+
+    private onSetShortcutIndexEvent(event: SetShortcutIndexEvent) {
+        const player = this.getPlayerByActorId(event.actorId);
+        player.getShortcut().setCurrentIndex(event.index);
     }
 
     private onControlWalkEvent(event: ControlWalkEvent) {
@@ -43,14 +50,19 @@ export class PlayerManager{
             const {x, y} = storedPos;
             pos = new Vector2(x, y);
         }
-        const player = new Player(pos, connId, this.server);
+        const player = new Player(pos, connId, this.server);        
         this.playerList.set(connId, player);
+
+        this.server.getContainerManager().add(player.getBackpack());
+        this.server.getContainerManager().add(player.getShortcut());
 
         this.world.addActor(player);
 
         const loginedEvent = new LoginedEvent();
         loginedEvent.playerActorId = player.getId();
         this.eventBus.emitTo(connId, loginedEvent);
+
+        player.addShortcutItem(ItemType.BOW, 1);
 
         console.log(`player: ${event.username} is logined with connId=${connId}`)
     }
@@ -61,6 +73,9 @@ export class PlayerManager{
             return;
         }
         this.playerList.delete(connId);
+
+        this.server.getContainerManager().remove(player.getBackpack());
+        this.server.getContainerManager().remove(player.getShortcut());
 
         this.world.removeActor(player);
     }
@@ -81,7 +96,7 @@ export class PlayerManager{
 
     getPlayerByActorId(actorId: number): Player {
         const actor = this.world.getActor(actorId);
-        if (!actor.isPlayer()) {
+        if (!actor || !actor.isPlayer()) {
             return;
         }
         return actor as Player;
@@ -89,5 +104,9 @@ export class PlayerManager{
 
     getPlayerList() {
         return this.playerList;
+    }
+
+    getPlayers() {
+        return Array.from(this.playerList.values());
     }
 }

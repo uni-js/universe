@@ -1,31 +1,38 @@
 import { Vector2 } from "../utils/vector2";
-import { Land } from "./land";
+import { Land, LandData } from "./land";
 import type { Server } from "../server";
 import type { Actor } from "../actor/actor";
 import { QueuedWorker } from "../utils/queued-worker";
 import { spawn, Worker } from "threads"
 import { IPersistDatabase } from "../database/database";
+import { AddLandEvent } from "../event/server";
+import { IEventBus } from "@uni.js/server";
 
 export class World {
     private lands = new Map<string, Land>();
     private actors = new Map<number, Actor>();
     private database: IPersistDatabase;
+    private eventBus: IEventBus;
     private queuedLandLoader : QueuedWorker;
 	private generatorWorker = spawn(new Worker('./generator'));
 
     constructor(private server: Server) {
         this.database = this.server.getDatabase();
-        this.queuedLandLoader = new QueuedWorker(this.onLoadLand.bind(this));
+        this.eventBus = this.server.getEventBus();
+        this.queuedLandLoader = new QueuedWorker(this.onLoadLandData.bind(this));
     }
 
-    private async onLoadLand(landPos: Vector2) {
-        let landData = this.database.get(landPos.toHash('land'));
+    private async onLoadLandData(landPos: Vector2) {
+        let landData = await this.database.get(landPos.toHash('land'));
         if (!landData) {
             landData = await this.generateLand(landPos);
         }
 
         const land = this.getLand(landPos);
         land.setLoaded();
+
+        this.sendLandData(landPos, landData)
+        console.log(`land data loaded: ${landPos.x}:${landPos.y}`)
     }
 
     getActor(actorId: number) {
@@ -38,7 +45,7 @@ export class World {
         }
 
         const landPos = actor.getLandPos();
-        const land = this.loadLand(landPos);
+        const land = this.ensureLand(landPos);
 
         land.addActor(actor);
 
@@ -50,6 +57,9 @@ export class World {
         if(!this.actors.has(actor.getId())) {
             return;
         }
+
+        actor.unattach();
+
         const landPos = actor.getLandPos();
         const land = this.getLand(landPos);
         if (land) {
@@ -66,7 +76,7 @@ export class World {
         return this.lands.get(pos.toHash());
     }
 
-    loadLand(landPos: Vector2) : Land {
+    ensureLand(landPos: Vector2) : Land {
         let land = this.getLand(landPos);
         if (land) {
             return land;
@@ -74,8 +84,15 @@ export class World {
         
         land = new Land(landPos, this.server);
         this.lands.set(landPos.toHash(),land);
-        this.queuedLandLoader.addTask(landPos);
         return land;
+    }
+
+    requestLandData(landPos: Vector2) {
+        if(this.queuedLandLoader.hasTask(landPos)) {
+            return;
+        }
+        
+        this.queuedLandLoader.addTask(landPos);
     }
 
     private async generateLand(landPos: Vector2) {
@@ -85,10 +102,28 @@ export class World {
         return landData;
     }
 
+    private sendLandData(landPos: Vector2, landData: LandData) {
+        const land = this.getLand(landPos);
+        if (!land) {
+            return;
+        }
+
+        const event = new AddLandEvent();
+        event.landData = landData;
+        event.landX = landPos.x;
+        event.landY = landPos.y;
+
+        for(const player of this.server.getPlayers()) {
+            if(player.isWatchLand(land)) {
+                player.emitEvent(event);
+            }
+        }
+    }
+
     doTick() {
         for(const actor of this.actors.values()) {
             actor.doTick();
         }
-
+        this.queuedLandLoader.doTick();
     }
 }

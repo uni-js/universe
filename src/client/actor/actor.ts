@@ -10,7 +10,7 @@ import { Interpolate2d } from '../../server/utils/interpolate';
 import { ActorType } from '../../server/actor/actor-type';
 import { AttachPos, DirectionType, RunningType } from '../../server/actor/actor';
 import type { GameClientApp } from '../client-app';
-import { ControlWalkEvent } from '../../server/event/client';
+import type { World } from '../world/world';
 
 function GetEmptyTexture() {
 	return PIXI.Texture.fromBuffer(new Uint8Array(1), 1, 1);
@@ -90,7 +90,7 @@ export abstract class ActorObject extends GameObject {
 
 	private _attachingActorId: number;
 
-	private attachActorId: number;
+	private attachment: number;
 	private attachPos: AttachPos;
 
 	private _tagname = '';
@@ -99,6 +99,7 @@ export abstract class ActorObject extends GameObject {
 	protected textureProvider: TextureProvider;
 	protected app: GameClientApp;
 	protected eventBus: EventBusClient;
+	protected world: World;
 
 	constructor(
 		serverId: number,
@@ -108,8 +109,8 @@ export abstract class ActorObject extends GameObject {
 	) {
 		super(serverId);
 		this.app = app;
-		this.eventBus = this.app.getEventBus();
-		this.textureProvider = this.app.getTextureProvider();
+		this.eventBus = this.app.eventBus;
+		this.textureProvider = this.app.textureProvider;
 		this.size = new Vector2(attrs.sizeX, attrs.sizeY);
 
 		this.nametag = new NameTag();
@@ -321,19 +322,15 @@ export abstract class ActorObject extends GameObject {
 		this.moveInterpolator.addMovePoint(point);
 	}
 
-	getRightHandRelPos() {
+	getAttachPos() {
 		const keyMapped = this.attachPos;
 		const mappedRelPos = keyMapped && keyMapped[this._direction];
 		const relPos = mappedRelPos ? new Vector2(mappedRelPos[0], mappedRelPos[1]) : new Vector2(0, 0);
 		return relPos;
 	}
 
-	getRightHand() {
-		return this.attachActorId;
-	}
-
-	setRightHand(actorId: number) {
-		this.attachActorId = actorId;
+	getAttachment() {
+		return this.attachment;
 	}
 
 	damage(val: number) {
@@ -382,7 +379,7 @@ export abstract class ActorObject extends GameObject {
 	updateAttachingMovement(attachingActor: ActorObject) {
 		if (!attachingActor) return;
 
-		const relPos = attachingActor.getRightHandRelPos();
+		const relPos = attachingActor.getAttachPos();
 		const direction = attachingActor.direction;
 
 		if (direction == DirectionType.BACK) {
@@ -398,6 +395,16 @@ export abstract class ActorObject extends GameObject {
 		this.vPos = attachingActor.vPos.add(relPos);
 	}
 
+	private doUpdateAttachmentTick() {
+		const actor = this.app.actorManager.getActor(this.attachment);
+		if(!actor) {
+			return;
+		}
+
+//		const relPos = this.getAttachPos();
+//		actor.vPos = this.vPos.add(relPos);
+	}
+
 
 	updateAttrs(attrs: any) {
 		for(const attr in attrs) {
@@ -410,6 +417,7 @@ export abstract class ActorObject extends GameObject {
 		this.nametag && this.nametag.doFixedUpdateTick();
 		this.healthBar && this.healthBar.doFixedUpdateTick();
 
+		this.doUpdateAttachmentTick();
 	}
 }
 

@@ -12,6 +12,10 @@ export class QueuedWorker<T = any> {
 		this.isWorking = false;
 	}
 
+	hasTask(data: T) {
+		return this.queue.includes(data);
+	}
+
 	addTask(data: T) {
 		this.queue.push(data);
 	}

@@ -1,10 +1,10 @@
-import type { Container } from "./container"
 import type { Server } from "../server"
 import { IEventBus } from "@uni.js/server";
 import { MoveItemEvent } from "../event/client";
+import type { ActiveContainer } from "./active-container";
 
 export class ContainerManager {
-    private containers = new Map<number, Container>();
+    private containers = new Map<number, ActiveContainer>();
     private eventBus: IEventBus;
     constructor(private server: Server) {
         this.eventBus = this.server.getEventBus();
@@ -21,8 +21,12 @@ export class ContainerManager {
         from.moveTo(event.fromIndex, to, event.toIndex);
     }
 
-    add(container: Container) {
+    add(container: ActiveContainer) {
         this.containers.set(container.getId(), container);
+    }
+
+    remove(container: ActiveContainer) {
+        this.containers.delete(container.getId());
     }
 
     get(id: number) {

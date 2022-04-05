@@ -2,20 +2,26 @@ import { Actor, AttachPos } from "../actor/actor";
 import { Vector2 } from "../utils/vector2";
 import { Backpack } from "../container/backpack";
 import { Shortcut } from "../container/shortcut";
-import { Item } from "../item/item";
 import { RemoveLandEvent } from "../event/server";
 import { ActorType } from "../actor/actor-type";
-import { Land, posToLandPos } from "../land/land";
+import { Land } from "../land/land";
 import type { Server } from "../server";
 import { Input } from "@uni.js/prediction";
+import { ItemType } from "../item/item-type";
 
-const PLAYER_CANSEE_LAND_RADIUS = 2;
+const PLAYER_CANSEE_LAND_RADIUS = 1;
 
 export class Player extends Actor{
     private connId: string;
     private backpack: Backpack;
     private shortcut: Shortcut;
     private watchLands = new Set<Land>();
+    private attachPos: AttachPos = [
+        [-0.4, -0.5],
+        [0.4, -0.5],
+        [0, -0.5],
+        [0, -0.4]
+    ]
 
     constructor(pos: Vector2, connId: string, server: Server) {
         super(pos, server);
@@ -28,12 +34,7 @@ export class Player extends Actor{
     }
 
     getAttachPos(): AttachPos {
-        return [
-            [-0.4, -0.5],
-            [0.4, -0.5],
-            [0, -0.5],
-            [0, -0.4]
-        ]
+        return this.attachPos;
     }
 
     getSize(): Vector2 {
@@ -77,15 +78,13 @@ export class Player extends Actor{
         this.manager.emitEvent(this, event);
     }
 
-    moveToPosition(pos: Vector2): void {
-        super.moveToPosition(pos);
-        const nowLandPos = this.getLandPos();
-        const toLandPos = posToLandPos(pos);
-        const isCrossing = !nowLandPos.equal(toLandPos)
+    moveToPosition(pos: Vector2): boolean {
+        const isCrossing = super.moveToPosition(pos);
         if (isCrossing) {
             this.watchLandsAllCansee();
             this.unwatchUnvisibleLands();
         }
+        return isCrossing;
     }
 
     unwatchUnvisibleLands() {
@@ -99,9 +98,13 @@ export class Player extends Actor{
     watchLandsAllCansee() {
         const landPosArray = this.getCanSeeLandsPos();
         for(const landPos of landPosArray) {
-            const land = this.world.loadLand(landPos);
+            const land = this.world.ensureLand(landPos);
             this.watchLand(land);
         }
+    }
+
+    isWatchLand(land: Land) {
+        return this.watchLands.has(land);
     }
 
     watchLand(land: Land) {
@@ -113,6 +116,8 @@ export class Player extends Actor{
         for(const actor of land.getActors()) {
             actor.showTo(this);
         }
+
+        this.world.requestLandData(land.getLandPos());
     }
 
     unwatchLand(land: Land) {
@@ -136,22 +141,38 @@ export class Player extends Actor{
         }
     }
 
-    addItem(item: Item, count: number) {
-        if(this.backpack.isFull()) {
-            console.error(`player connId=${this.connId} backpack is full`)
-            return;
+    addItem(itemType: ItemType, count: number) {
+        if(!this.backpack.addItem(itemType, count)) {
+            console.error(`player = ${this.getId()} ${this.getConnId()} 's backpack is full`);
         }
+    }
 
-        for(let i=0;i<this.backpack.getSize();i++) {
-            const block = this.backpack.getBlock(i);
-            if(block.getSpareSize() > count) {                    
-                this.backpack.setItem(i, item, block.getCount() + count)
-            }
+    addShortcutItem(itemType: ItemType, count: number) {
+        if(!this.shortcut.addItem(itemType, count)) {
+            console.error(`player = ${this.getId()} ${this.getConnId()} 's shortcut is full`);
         }
+    }
+
+    getShortcut() {
+        return this.shortcut;
+    }
+
+    getBackpack() {
+        return this.backpack;
     }
 
     getConnId() {
         return this.connId;
+    }
+
+    private doSyncContainer() { 
+        this.shortcut.syncDirtyToPlayer();
+        this.backpack.syncDirtyToPlayer();
+    }
+
+    doTick(): void {
+        super.doTick();
+        this.doSyncContainer();
     }
     
 }

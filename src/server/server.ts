@@ -49,6 +49,10 @@ export class Server extends EventEmitter2{
         return this.playerManager.getPlayerList();
     }
 
+    getPlayers() {
+        return this.playerManager.getPlayers();
+    }
+
     getWorld() {
         return this.world;
     }
@@ -63,6 +67,10 @@ export class Server extends EventEmitter2{
 
     getEventBus() {
         return this.eventBusServer;
+    }
+
+    getContainerManager() {
+        return this.containerManager;
     }
 
 }

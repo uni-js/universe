@@ -16,6 +16,9 @@ export class Vector2{
     }
 
     equal(vec2: Vector2) {
+        if (!vec2) {
+            return false;
+        }
         return this.x === vec2.x && this.y === vec2.y;
     }
 
@@ -56,6 +59,10 @@ export class Vector2{
     
     toJSON() {
         return {x: this.x, y: this.y};
+    }
+
+    toArray() {
+        return [this.x, this.y];
     }
 
     static fromArray(array: number[]) {

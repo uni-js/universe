@@ -1,4 +1,4 @@
-import { ActorAttachEvent, AddActorEvent, MoveActorEvent, RemoveActorEvent, UpdateAttrsEvent } from "../event/server";
+import { AddActorEvent, MoveActorEvent, RemoveActorEvent, UpdateAttrsEvent } from "../event/server";
 import { Vector2 } from "../utils/vector2";
 import type { PlayerManager } from "../player/player-manager"
 import type { Server } from "../server";
@@ -34,8 +34,8 @@ export abstract class Actor {
     static actorIdSum = 0;
     private id: number;
     private pos: Vector2;
-    private attaching: Actor | undefined;
-    private attachment: Actor | undefined;
+    private attaching: number;
+    private attachment: number;
     protected attrs = new AttributeMap();
     protected manager: PlayerManager;
     protected useTicks: number = 0;
@@ -60,7 +60,7 @@ export abstract class Actor {
     abstract getType(): number;
 
     getAttachPos() : AttachPos {
-        return [[0,0],[0,0],[0,0],[0,0]];
+        return [[0, 0],[0, 0],[0, 0],[0, 0]];
     }
 
     isPlayer() {
@@ -96,19 +96,24 @@ export abstract class Actor {
     }
 
     attach(actor: Actor) {
-        if (actor.attachment) {
+        if (actor.attachment !== undefined) {
             console.error(`error when actor:${this.id} attach to actor:${actor.getId()}`);
             return;
         }
 
-        this.attaching = actor;
-        actor.attachment = this;
+        this.attaching = actor.getId();
+        actor.attachment = this.getId();
+    }
+    
+    unattach() {
+        const attaching = this.world.getActor(this.attaching);
+        if (this.attaching === undefined || !attaching) {
+            console.error(`error when actor:${this.id} unattach: ${this.attaching}`);
+            return;
+        }
 
-        const event = new ActorAttachEvent();
-        event.actorId = this.id;
-        event.attachTo = actor.getId();
-
-        this.manager.emitToViewers(actor, event);
+        attaching.attachment = undefined;
+        this.attaching = undefined;
     }
 
     showTo(player: Player) {
@@ -184,7 +189,7 @@ export abstract class Actor {
         const isCrossing = !nowLandPos.equal(toLandPos);
 
         if (isCrossing) {
-            const land = this.world.loadLand(toLandPos);
+            const land = this.world.ensureLand(toLandPos);
             land.addActor(this);
             
             const prevLand = this.world.getLand(nowLandPos);
@@ -193,12 +198,14 @@ export abstract class Actor {
 
         this.pos = pos.clone();
         this.isPosDirty = true;
+
+        return isCrossing;
     }
 
     protected updateAttrs() {
         this.attrs.set("direction", this.direction);
         this.attrs.set("running", this.running);
-        this.attrs.set("attachment", this.attachment?.getId());
+        this.attrs.set("attachment", this.attachment);
 
         const {x, y} = this.getSize();
         this.attrs.set("sizeX", x);
@@ -230,9 +237,18 @@ export abstract class Actor {
             this.manager.emitToViewers(this, event);
         }
     }
+    
+    private doUpdateAttachmentTick() {
+        const actor = this.world.getActor(this.attachment);
+        if (actor) {
+            const relPos = this.getAttachPos()[this.direction];
+            actor.moveToPosition(this.pos.add(Vector2.fromArray(relPos)));
+        }
+    }
 
     doTick() {
         this.doUpdateAttrsTick();
         this.doPosDirtyTick()
+        this.doUpdateAttachmentTick();
     }
 }

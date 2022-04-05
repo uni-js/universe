@@ -1,21 +1,20 @@
 import type { LandData } from "../land/land";
 import type { ContainerData } from "../container/container"
+import { ContainerType } from "../container/container-type";
 
 export class LoginedEvent {
     playerActorId: number;
 }
 
-export class ActorAttachEvent {
-    actorId: number;
-    attachTo: number;
-}
 export class SetItemEvent {
     contId: number;
+    contType: ContainerType;
     itemType: number;
     count: number;
 }
 export class SetContainerDataEvent {
     contId: number;
+    contType: ContainerType;
     data: ContainerData;
 }
 export class MoveActorEvent {

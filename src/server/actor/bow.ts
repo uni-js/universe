@@ -9,7 +9,7 @@ export class Bow extends Actor{
     }
 
     getSize() {
-        return new Vector2(0.5, 0.5);
+        return new Vector2(0.65, 0.65);
     }
     
     endUsing(): void {

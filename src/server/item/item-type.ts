@@ -1,3 +1,4 @@
 export enum ItemType {
-    EMPTY
+    EMPTY,
+    BOW
 }

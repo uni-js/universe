@@ -1,17 +1,24 @@
 import { HTMLInputProvider, InputKey } from "@uni.js/html-input";
+import { Viewport } from "@uni.js/viewport";
 import { DirectionType } from "../../server/actor/actor";
 import { LoginEvent } from "../../server/event/client";
 import { LoginedEvent } from "../../server/event/server";
 import { Vector2 } from "../../server/utils/vector2";
 import { GameClientApp } from "../client-app";
+import { PlayerState } from "../ui-states/player";
 import { Player } from "./player";
 
 export class PlayerManager{
     private player: Player;
     private input: HTMLInputProvider
+	private viewport: Viewport;
+	private playerState: PlayerState = this.app.uiStates.getState(PlayerState);
+	
     constructor(private app: GameClientApp) {
-        this.input = this.app.getInputProvider();
-        this.app.getEventBus().on(LoginedEvent, this.onLoginedEvent.bind(this));
+        this.input = this.app.inputProvider;
+		this.viewport = this.app.viewport;
+
+        this.app.eventBus.on(LoginedEvent, this.onLoginedEvent.bind(this));
     }
 
     emitEvent(event: any) {
@@ -24,6 +31,10 @@ export class PlayerManager{
         this.emitEvent(event);
     }
 
+	getPlayer() {
+		return this.player;
+	}
+
     private setMainPlayer(player: Player) {
         if (this.player) {
             return;
@@ -35,7 +46,7 @@ export class PlayerManager{
     private onLoginedEvent(event: LoginedEvent) {
         console.log("player is logined:", event);
 
-        const player = <Player>this.app.getActorManager().getActor(event.playerActorId);
+        const player = <Player>this.app.actorManager.getActor(event.playerActorId);
         if (player) {
             this.setMainPlayer(player);
             console.log("set main player: ", event.playerActorId);
@@ -43,10 +54,6 @@ export class PlayerManager{
     }
     
     private doControlMoveTick() {
-		if(!this.player) {
-			return;
-		}
-
         const moveSpeed = 0.06;
 
 		const upPress = this.input.keyPress(InputKey.W);
@@ -92,8 +99,21 @@ export class PlayerManager{
         }
     }
 
-    doFixedUpdateTick(tick: number) {
-        this.doControlMoveTick();
+	private doSyncViewportCenter() {
+		this.viewport.moveCenter(this.player.position.x, this.player.position.y);
+	}
 
+	private doUpdatePlayerState() {
+		if (!this.player.vPos.equal(this.playerState.position)) {
+			this.playerState.position = this.player.vPos;
+		}
+	}
+
+    doFixedUpdateTick(tick: number) {
+		if (this.player) {
+			this.doControlMoveTick();
+			this.doSyncViewportCenter();
+			this.doUpdatePlayerState();
+		}
     }
 }

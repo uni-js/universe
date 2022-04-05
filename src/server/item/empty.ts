@@ -5,4 +5,12 @@ export class EmptyItem extends Item{
     getType(): ItemType {
         return ItemType.EMPTY;
     }
+
+    hold(): void {
+        
+    }
+
+    unhold(): void {
+        
+    }
 }

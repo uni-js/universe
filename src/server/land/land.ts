@@ -52,6 +52,10 @@ export class Land{
         return Array.from(this.actors.values());
     }
 
+    getPlayers() : Player[] {
+        return this.getActors().filter((actor) => actor.isPlayer()) as Player[];
+    }
+
     addActor(actor: Actor) {
         this.actors.add(actor);
     }
@@ -59,4 +63,5 @@ export class Land{
     removeActor(actor: Actor) {
         this.actors.delete(actor);
     }
+
 }

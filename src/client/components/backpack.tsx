@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEventBus, useUIState } from '@uni.js/ui';
 import { DropInfo, ItemBlock } from './item-block';
-import { BackpackContainerState } from '../ui-states/inventory';
+import { BackpackContainerState } from '../ui-states/container';
 
 import './backpack.css';
 

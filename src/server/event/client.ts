@@ -19,3 +19,7 @@ export class ControlWalkEvent{
     running: RunningType;
     direction: DirectionType;
 }
+export class SetShortcutIndexEvent {
+    actorId: number;
+    index: number;
+}
