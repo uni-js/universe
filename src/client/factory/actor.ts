@@ -3,7 +3,7 @@ import { DroppedItemActor } from '../actor/dropped-item';
 import { Player } from '../player/player';
 import { ActorType } from '../../server/actor/actor-type';
 
-export class Factory<T>{
+export class Factory<T> {
 	private impls: Map<T, any> = new Map();
 	constructor() {}
 

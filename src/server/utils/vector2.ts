@@ -1,44 +1,42 @@
-export class Vector2{
-    constructor(public x: number, public y: number) {
+export class Vector2 {
+	constructor(public x: number, public y: number) {}
 
-    }
+	add(vec2: Vector2) {
+		return new Vector2(this.x + vec2.x, this.y + vec2.y);
+	}
 
-    add(vec2: Vector2) {
-        return new Vector2(this.x + vec2.x, this.y + vec2.y);
-    }
+	sub(vec2: Vector2, abs = false) {
+		if (abs) {
+			return new Vector2(Math.abs(this.x - vec2.x), Math.abs(this.y - vec2.y));
+		} else {
+			return new Vector2(this.x - vec2.x, this.y - vec2.y);
+		}
+	}
 
-    sub(vec2: Vector2, abs = false) {
-        if (abs) {
-            return new Vector2(Math.abs(this.x - vec2.x), Math.abs(this.y - vec2.y));
-        } else {
-            return new Vector2(this.x - vec2.x, this.y - vec2.y);
-        }
-    }
+	equal(vec2: Vector2) {
+		if (!vec2) {
+			return false;
+		}
+		return this.x === vec2.x && this.y === vec2.y;
+	}
 
-    equal(vec2: Vector2) {
-        if (!vec2) {
-            return false;
-        }
-        return this.x === vec2.x && this.y === vec2.y;
-    }
+	distance(vec2: Vector2) {
+		return Math.hypot(vec2.x - this.x, vec2.y - this.y);
+	}
 
-    distance(vec2: Vector2) {
-        return Math.hypot(vec2.x - this.x, vec2.y - this.y); 
-    }
+	mul(times: number) {
+		return new Vector2(this.x * times, this.y * times);
+	}
 
-    mul(times: number) {
-        return new Vector2(this.x * times, this.y * times);
-    }
+	div(times: number) {
+		return new Vector2(this.x / times, this.y / times);
+	}
 
-    div(times: number) {
-        return new Vector2(this.x / times, this.y / times);
-    }
+	floor() {
+		return new Vector2(Math.floor(this.x), Math.floor(this.y));
+	}
 
-    floor() {
-        return new Vector2(Math.floor(this.x), Math.floor(this.y));
-    }
-
-    getRad() {
+	getRad() {
 		const acos = Math.acos(this.getCosine());
 		const rad = this.y > 0 ? acos : 2 * Math.PI - acos;
 		return rad;
@@ -49,24 +47,23 @@ export class Vector2{
 		return this.x / r;
 	}
 
-    clone() {
-        return new Vector2(this.x, this.y);
-    }
+	clone() {
+		return new Vector2(this.x, this.y);
+	}
 
-    toHash(prefix = '') {
-        return `${prefix}:${this.x}:${this.y}`;
-    }
-    
-    toJSON() {
-        return {x: this.x, y: this.y};
-    }
+	toHash(prefix = '') {
+		return `${prefix}:${this.x}:${this.y}`;
+	}
 
-    toArray() {
-        return [this.x, this.y];
-    }
+	toJSON() {
+		return { x: this.x, y: this.y };
+	}
 
-    static fromArray(array: number[]) {
-        return new Vector2(array[0], array[1]);
-    }
-    
+	toArray() {
+		return [this.x, this.y];
+	}
+
+	static fromArray(array: number[]) {
+		return new Vector2(array[0], array[1]);
+	}
 }

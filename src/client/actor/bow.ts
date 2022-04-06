@@ -1,27 +1,18 @@
 import { ActorObject } from './actor';
-import { TextureProvider } from '@uni.js/texture';
 import { ActorType } from '../../server/actor/actor-type';
 import { Vector2 } from '../../server/utils/vector2';
 import type { GameClientApp } from '../client-app';
+import { DirectionType } from '../../server/actor/actor';
 
 export class Arrow extends ActorObject {
-	private shootingDirection: number;
-
 	constructor(serverId: number, pos: Vector2, attrs: any, app: GameClientApp) {
 		super(serverId, pos, attrs, app);
 
-		this.shootingDirection = attrs.rotation;
 		this.anchor = new Vector2(0, 0.5);
-
-		this.updateRotation();
 	}
 
 	getType(): ActorType {
 		return ActorType.ARROW;
-	}
-
-	private updateRotation() {
-		this.sprite.rotation = this.shootingDirection;
 	}
 }
 
@@ -36,6 +27,7 @@ export class Bow extends ActorObject {
 
 		this.sprite.animationSpeed = 0.1;
 		this.sprite.loop = false;
+		this.anchor = new Vector2(0.5, 0.5);
 
 		this.textures = this.getDefaultTextureGroup();
 	}
@@ -55,5 +47,12 @@ export class Bow extends ActorObject {
 
 	doFixedUpdateTick(tick: number) {
 		super.doFixedUpdateTick.call(this, tick);
+
+		this.app.actorManager.getActor(this.attaching);
+
+		const attaching = this.getAttachingActor();
+		if (attaching) {
+			this.zIndex = attaching.zIndex + (attaching.direction === DirectionType.BACK ? -0.1 : 0.1);
+		}
 	}
 }

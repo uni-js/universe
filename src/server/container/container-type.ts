@@ -1,5 +1,5 @@
-export enum ContainerType{
-    SIMPLE,
-    SHORTCUT,
-    BACKPACK
+export enum ContainerType {
+	SIMPLE,
+	SHORTCUT,
+	BACKPACK,
 }

@@ -41,8 +41,8 @@ expose({
 					brickType = BrickType.DIRT;
 				}
 				landData.bricks.push({
-                    x,
-                    y,
+					x,
+					y,
 					layers: [brickType],
 				});
 			}

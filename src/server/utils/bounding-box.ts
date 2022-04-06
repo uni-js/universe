@@ -1,5 +1,5 @@
-import SAT from "sat";
-import { Vector2 } from "./vector2";
+import SAT from 'sat';
+import { Vector2 } from './vector2';
 
 export function calcBoundingBox(pos: Vector2, boundings: number[]): [number, number, number, number] {
 	const fromX = pos.x + boundings[0];

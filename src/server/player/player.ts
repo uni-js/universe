@@ -1,178 +1,194 @@
-import { Actor, AttachPos } from "../actor/actor";
-import { Vector2 } from "../utils/vector2";
-import { Backpack } from "../container/backpack";
-import { Shortcut } from "../container/shortcut";
-import { RemoveLandEvent } from "../event/server";
-import { ActorType } from "../actor/actor-type";
-import { Land } from "../land/land";
-import type { Server } from "../server";
-import { Input } from "@uni.js/prediction";
-import { ItemType } from "../item/item-type";
+import { Actor, AttachPos, DirectionType } from '../actor/actor';
+import { Vector2 } from '../utils/vector2';
+import { Backpack } from '../container/backpack';
+import { Shortcut } from '../container/shortcut';
+import { RemoveLandEvent } from '../event/server';
+import { ActorType } from '../actor/actor-type';
+import { Land } from '../land/land';
+import type { Server } from '../server';
+import { Input } from '@uni.js/prediction';
+import { ItemType } from '../item/item-type';
 
 const PLAYER_CANSEE_LAND_RADIUS = 1;
 
-export class Player extends Actor{
-    private connId: string;
-    private backpack: Backpack;
-    private shortcut: Shortcut;
-    private watchLands = new Set<Land>();
-    private attachPos: AttachPos = [
-        [-0.4, -0.5],
-        [0.4, -0.5],
-        [0, -0.5],
-        [0, -0.4]
-    ]
+export class Player extends Actor {
+	private connId: string;
+	private backpack: Backpack;
+	private shortcut: Shortcut;
+	private watchLands = new Set<Land>();
 
-    constructor(pos: Vector2, connId: string, server: Server) {
-        super(pos, server);
-        this.connId = connId;
+	constructor(pos: Vector2, connId: string, server: Server) {
+		super(pos, server);
+		this.connId = connId;
 
-        this.backpack = new Backpack(this, server);
-        this.shortcut = new Shortcut(this, server);
+		this.backpack = new Backpack(this, server);
+		this.shortcut = new Shortcut(this, server);
 
-        this.watchLandsAllCansee();
-    }
+		this.watchLandsAllCansee();
+	}
 
-    getAttachPos(): AttachPos {
-        return this.attachPos;
-    }
+	setDirection(direction: DirectionType): void {
+		super.setDirection(direction);
 
-    getSize(): Vector2 {
-        return new Vector2(1, 1.5);
-    }
+		switch (direction) {
+			case DirectionType.BACK:
+				this.attachPos = new Vector2(0, -0.4);
+				return;
+			case DirectionType.FORWARD:
+				this.attachPos = new Vector2(0, -0.5);
+				return;
+			case DirectionType.LEFT:
+				this.attachPos = new Vector2(-0.35, -0.5);
+				return;
+			case DirectionType.RIGHT:
+				this.attachPos = new Vector2(0.35, -0.5);
+				return;
+			default:
+				this.attachPos = new Vector2(0, 0);
+				return;
+		}
+	}
 
-    isPlayer(): boolean {
-        return true;
-    }
+	getAttachPos(): Vector2 {
+		return this.attachPos;
+	}
 
-    canSeeLand(landPos: Vector2): boolean {
-        const radius = PLAYER_CANSEE_LAND_RADIUS;
-        const myLandPos = this.getLandPos();
-        const dis = landPos.sub(myLandPos, true);
-        return dis.x <= radius && dis.y <= radius;
-    }
+	getSize(): Vector2 {
+		return new Vector2(1, 1.5);
+	}
 
-    getCanSeeLandsPos(): Vector2[] {
-        const rad = PLAYER_CANSEE_LAND_RADIUS;
-        const myLandPos = this.getLandPos();
-        const landPoses: Vector2[] = [];
-        for (let x=myLandPos.x - rad; x<= myLandPos.x + rad; x++)
-            for (let y=myLandPos.y - rad; y<= myLandPos.y + rad; y++)
-            {
-                landPoses.push(new Vector2(x, y));
-            }
+	isPlayer(): boolean {
+		return true;
+	}
 
-        return landPoses
-    }
+	canSeeLand(landPos: Vector2): boolean {
+		const radius = PLAYER_CANSEE_LAND_RADIUS;
+		const myLandPos = this.getLandPos();
+		const dis = landPos.sub(myLandPos, true);
+		return dis.x <= radius && dis.y <= radius;
+	}
 
-    getType(): number {
-        return ActorType.PLAYER;
-    }
+	getCanSeeLandsPos(): Vector2[] {
+		const rad = PLAYER_CANSEE_LAND_RADIUS;
+		const myLandPos = this.getLandPos();
+		const landPoses: Vector2[] = [];
+		for (let x = myLandPos.x - rad; x <= myLandPos.x + rad; x++)
+			for (let y = myLandPos.y - rad; y <= myLandPos.y + rad; y++) {
+				landPoses.push(new Vector2(x, y));
+			}
 
-    processInput(input: Input) {
-        this.lastInputSeqId = input.seqId;
-        this.moveToPosition(this.getPos().add(new Vector2(input.moveX, input.moveY)));
-    }
+		return landPoses;
+	}
 
-    emitEvent(event: any) {
-        this.manager.emitEvent(this, event);
-    }
+	getType(): number {
+		return ActorType.PLAYER;
+	}
 
-    moveToPosition(pos: Vector2): boolean {
-        const isCrossing = super.moveToPosition(pos);
-        if (isCrossing) {
-            this.watchLandsAllCansee();
-            this.unwatchUnvisibleLands();
-        }
-        return isCrossing;
-    }
+	processInput(input: Input) {
+		this.lastInputSeqId = input.seqId;
+		this.setPosition(this.getPos().add(new Vector2(input.moveX, input.moveY)));
+	}
 
-    unwatchUnvisibleLands() {
-        for(const watchLand of this.watchLands) {
-            if(!this.canSeeLand(watchLand.getLandPos())) {
-                this.unwatchLand(watchLand)
-            }
-        }
-    }
+	emitEvent(event: any) {
+		this.manager.emitEvent(this, event);
+	}
 
-    watchLandsAllCansee() {
-        const landPosArray = this.getCanSeeLandsPos();
-        for(const landPos of landPosArray) {
-            const land = this.world.ensureLand(landPos);
-            this.watchLand(land);
-        }
-    }
+	unwatchUnvisibleLands() {
+		for (const watchLand of this.watchLands) {
+			if (!this.canSeeLand(watchLand.getLandPos())) {
+				this.unwatchLand(watchLand);
+			}
+		}
+	}
 
-    isWatchLand(land: Land) {
-        return this.watchLands.has(land);
-    }
+	watchLandsAllCansee() {
+		const landPosArray = this.getCanSeeLandsPos();
+		for (const landPos of landPosArray) {
+			const land = this.world.ensureLand(landPos);
+			this.watchLand(land);
+		}
+	}
 
-    watchLand(land: Land) {
-        if(this.watchLands.has(land)) {
-            return;
-        }
+	isWatchLand(land: Land) {
+		return this.watchLands.has(land);
+	}
 
-        this.watchLands.add(land);
-        for(const actor of land.getActors()) {
-            actor.showTo(this);
-        }
+	watchLand(land: Land) {
+		if (this.watchLands.has(land)) {
+			return;
+		}
 
-        this.world.requestLandData(land.getLandPos());
-    }
+		this.watchLands.add(land);
+		for (const actor of land.getActors()) {
+			actor.showTo(this);
+		}
 
-    unwatchLand(land: Land) {
-        if(!this.watchLands.has(land)) {
-            return;
-        }
+		this.world.requestLandData(land.getLandPos());
+	}
 
-        if(land.isLoaded()) {
-            const landPos = land.getLandPos();
+	unwatchLand(land: Land) {
+		if (!this.watchLands.has(land)) {
+			return;
+		}
 
-            const event = new RemoveLandEvent();
-            event.landX = landPos.x;
-            event.landY = landPos.y;
-    
-            this.emitEvent(event);    
-        }
+		if (land.isLoaded()) {
+			const landPos = land.getLandPos();
 
-        this.watchLands.delete(land);
-        for(const actor of land.getActors()) {
-            actor.unshowTo(this);
-        }
-    }
+			const event = new RemoveLandEvent();
+			event.landX = landPos.x;
+			event.landY = landPos.y;
 
-    addItem(itemType: ItemType, count: number) {
-        if(!this.backpack.addItem(itemType, count)) {
-            console.error(`player = ${this.getId()} ${this.getConnId()} 's backpack is full`);
-        }
-    }
+			this.emitEvent(event);
+		}
 
-    addShortcutItem(itemType: ItemType, count: number) {
-        if(!this.shortcut.addItem(itemType, count)) {
-            console.error(`player = ${this.getId()} ${this.getConnId()} 's shortcut is full`);
-        }
-    }
+		this.watchLands.delete(land);
+		for (const actor of land.getActors()) {
+			actor.unshowTo(this);
+		}
+	}
 
-    getShortcut() {
-        return this.shortcut;
-    }
+	addItem(itemType: ItemType, count: number) {
+		if (!this.backpack.addItem(itemType, count)) {
+			console.error(`player = ${this.getId()} ${this.getConnId()} 's backpack is full`);
+		}
+	}
 
-    getBackpack() {
-        return this.backpack;
-    }
+	addShortcutItem(itemType: ItemType, count: number) {
+		if (!this.shortcut.addItem(itemType, count)) {
+			console.error(`player = ${this.getId()} ${this.getConnId()} 's shortcut is full`);
+		}
+	}
 
-    getConnId() {
-        return this.connId;
-    }
+	getShortcut() {
+		return this.shortcut;
+	}
 
-    private doSyncContainer() { 
-        this.shortcut.syncDirtyToPlayer();
-        this.backpack.syncDirtyToPlayer();
-    }
+	getBackpack() {
+		return this.backpack;
+	}
 
-    doTick(): void {
-        super.doTick();
-        this.doSyncContainer();
-    }
-    
+	getConnId() {
+		return this.connId;
+	}
+
+	private doSyncContainer() {
+		this.shortcut.syncDirtyToPlayer();
+		this.backpack.syncDirtyToPlayer();
+	}
+
+	protected doUpdateMovementTick() {
+		const isCrossing = super.doUpdateMovementTick();
+
+		if (isCrossing) {
+			this.watchLandsAllCansee();
+			this.unwatchUnvisibleLands();
+		}
+
+		return isCrossing;
+	}
+
+	doTick(): void {
+		super.doTick();
+		this.doSyncContainer();
+	}
 }

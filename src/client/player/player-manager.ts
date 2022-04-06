@@ -1,60 +1,60 @@
-import { HTMLInputProvider, InputKey } from "@uni.js/html-input";
-import { Viewport } from "@uni.js/viewport";
-import { DirectionType } from "../../server/actor/actor";
-import { LoginEvent } from "../../server/event/client";
-import { LoginedEvent } from "../../server/event/server";
-import { Vector2 } from "../../server/utils/vector2";
-import { GameClientApp } from "../client-app";
-import { PlayerState } from "../ui-states/player";
-import { Player } from "./player";
+import { HTMLInputProvider, InputKey } from '@uni.js/html-input';
+import { Viewport } from '@uni.js/viewport';
+import { DirectionType } from '../../server/actor/actor';
+import { LoginEvent } from '../../server/event/client';
+import { LoginedEvent } from '../../server/event/server';
+import { Vector2 } from '../../server/utils/vector2';
+import { GameClientApp } from '../client-app';
+import { PlayerState } from '../ui-states/player';
+import { Player } from './player';
 
-export class PlayerManager{
-    private player: Player;
-    private input: HTMLInputProvider
+export class PlayerManager {
+	private player: Player;
+	private input: HTMLInputProvider;
 	private viewport: Viewport;
 	private playerState: PlayerState = this.app.uiStates.getState(PlayerState);
-	
-    constructor(private app: GameClientApp) {
-        this.input = this.app.inputProvider;
+
+	constructor(private app: GameClientApp) {
+		this.input = this.app.inputProvider;
 		this.viewport = this.app.viewport;
 
-        this.app.eventBus.on(LoginedEvent, this.onLoginedEvent.bind(this));
-    }
+		this.app.eventBus.on(LoginedEvent, this.onLoginedEvent.bind(this));
+	}
 
-    emitEvent(event: any) {
-        return this.app.emitEvent(event);
-    }
+	emitEvent(event: any) {
+		return this.app.emitEvent(event);
+	}
 
-    login() {
-        const event = new LoginEvent();
-        event.username = 'TestPlayer';
-        this.emitEvent(event);
-    }
+	login() {
+		const event = new LoginEvent();
+		event.username = 'TestPlayer';
+		this.emitEvent(event);
+	}
 
 	getPlayer() {
 		return this.player;
 	}
 
-    private setMainPlayer(player: Player) {
-        if (this.player) {
-            return;
-        }
-        this.player = player;
-        this.player.setIsMaster();
-    }
+	private setMainPlayer(player: Player) {
+		if (this.player) {
+			return;
+		}
+		this.player = player;
+		this.player.setIsMaster();
+	}
 
-    private onLoginedEvent(event: LoginedEvent) {
-        console.log("player is logined:", event);
+	private onLoginedEvent(event: LoginedEvent) {
+		console.log('player is logined:', event);
 
-        const player = <Player>this.app.actorManager.getActor(event.playerActorId);
-        if (player) {
-            this.setMainPlayer(player);
-            console.log("set main player: ", event.playerActorId);
-        }
-    }
-    
-    private doControlMoveTick() {
-        const moveSpeed = 0.06;
+		const player = <Player>this.app.actorManager.getActor(event.playerActorId);
+		if (player) {
+			this.setMainPlayer(player);
+			console.log('set main player: ', event.playerActorId);
+		}
+	}
+
+	private doControlMoveTick() {
+		const moveSpeed = 0.06;
 
 		const upPress = this.input.keyPress(InputKey.W);
 		const downPress = this.input.keyPress(InputKey.S);
@@ -94,10 +94,10 @@ export class PlayerManager{
 
 		if (!upPress && !leftPress && !rightPress && !downPress) {
 			this.player.controlMove(false);
-		} else {			
+		} else {
 			this.player.controlMove(deltaMove);
-        }
-    }
+		}
+	}
 
 	private doSyncViewportCenter() {
 		this.viewport.moveCenter(this.player.position.x, this.player.position.y);
@@ -109,11 +109,11 @@ export class PlayerManager{
 		}
 	}
 
-    doFixedUpdateTick(tick: number) {
+	doFixedUpdateTick(tick: number) {
 		if (this.player) {
 			this.doControlMoveTick();
 			this.doSyncViewportCenter();
 			this.doUpdatePlayerState();
 		}
-    }
+	}
 }

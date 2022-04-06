@@ -1,7 +1,7 @@
-import { itemFactory } from "../item/item-factory";
-import { ItemType } from "../item/item-type";
-import type { Server } from "../server";
-import { ContainerType } from "./container-type";
+import { itemFactory } from '../item/item-factory';
+import { ItemType } from '../item/item-type';
+import type { Server } from '../server';
+import { ContainerType } from './container-type';
 
 const BLOCK_MAX_SIZE = 64;
 
@@ -12,137 +12,136 @@ export interface ContainerDataUnit {
 }
 
 export interface ContainerData {
-    units: ContainerDataUnit[]
+	units: ContainerDataUnit[];
 }
-
 
 export class ContainerBlock {
-    private store: ItemType = ItemType.EMPTY;
-    private count: number = 0;
-    private maxSize = BLOCK_MAX_SIZE;
+	private store: ItemType = ItemType.EMPTY;
+	private count: number = 0;
+	private maxSize = BLOCK_MAX_SIZE;
 
-    constructor(private container: Container) {}
+	constructor(private container: Container) {}
 
-    setItem(item: ItemType, count: number) {
-        if (count <= 0 || count > this.maxSize) {
-            return;
-        }
-        this.store = item;
-        this.count = count;
-    }
+	setItem(item: ItemType, count: number) {
+		if (count <= 0 || count > this.maxSize) {
+			return;
+		}
+		this.store = item;
+		this.count = count;
+	}
 
-    getSpareSize() {
-        return this.maxSize - this.count;
-    }
+	getSpareSize() {
+		return this.maxSize - this.count;
+	}
 
-    getItem() {
-        return itemFactory.getNewItem(this.getItemType(), this.container);
-    }
+	getItem() {
+		return itemFactory.getNewItem(this.getItemType(), this.container);
+	}
 
-    getItemType() {
-        return this.store;
-    }
+	getItemType() {
+		return this.store;
+	}
 
-    getCount() {
-        return this.count;
-    }
+	getCount() {
+		return this.count;
+	}
 
-    clear() {
-        this.store = ItemType.EMPTY;
-        this.count = 0;
-    }
+	clear() {
+		this.store = ItemType.EMPTY;
+		this.count = 0;
+	}
 
-    isEmpty() {
-        return this.store === ItemType.EMPTY;
-    }
+	isEmpty() {
+		return this.store === ItemType.EMPTY;
+	}
 }
 
-export abstract class Container{
-    protected usedSize: number = 0;
-    protected blocks: ContainerBlock[] = [];
+export abstract class Container {
+	protected usedSize: number = 0;
+	protected blocks: ContainerBlock[] = [];
 
-    constructor(private server: Server) {
-        for(let i=0;i<this.getSize();i++){
-            this.blocks.push(new ContainerBlock(this));
-        }
-    }
+	constructor(private server: Server) {
+		for (let i = 0; i < this.getSize(); i++) {
+			this.blocks.push(new ContainerBlock(this));
+		}
+	}
 
-    abstract getSize(): number;
+	abstract getSize(): number;
 
-    getType() {
-        return ContainerType.SIMPLE;
-    }
+	getType() {
+		return ContainerType.SIMPLE;
+	}
 
-    getServer() {
-        return this.server;
-    }
+	getServer() {
+		return this.server;
+	}
 
-    isEmpty() {
-        return this.usedSize === 0;
-    }
+	isEmpty() {
+		return this.usedSize === 0;
+	}
 
-    isFull() {
-        return this.getSpareSize() === 0;
-    }
+	isFull() {
+		return this.getSpareSize() === 0;
+	}
 
-    getSpareSize() {
-        return this.getSize() - this.usedSize;
-    }
+	getSpareSize() {
+		return this.getSize() - this.usedSize;
+	}
 
-    isBlockEmpty(index: number) {
-        return this.blocks[index].isEmpty();
-    }
+	isBlockEmpty(index: number) {
+		return this.blocks[index].isEmpty();
+	}
 
-    getItemType(index: number): ItemType {
-        return this.blocks[index].getItemType();
-    }
+	getItemType(index: number): ItemType {
+		return this.blocks[index].getItemType();
+	}
 
-    getBlock(index: number) {
-        return this.blocks[index];
-    }
+	getBlock(index: number) {
+		return this.blocks[index];
+	}
 
-    setItem(index: number, item: ItemType, count: number): void {
-        if (this.isBlockEmpty(index) && item !== undefined) {
-            this.usedSize += 1;
-        }
-        const block = this.blocks[index];
-        block.setItem(item, count);
-    }
+	setItem(index: number, item: ItemType, count: number): void {
+		if (this.isBlockEmpty(index) && item !== undefined) {
+			this.usedSize += 1;
+		}
+		const block = this.blocks[index];
+		block.setItem(item, count);
+	}
 
-    addItem(item: ItemType, count: number) {
-        if(this.isFull()) {
-            return false;
-        }
+	addItem(item: ItemType, count: number) {
+		if (this.isFull()) {
+			return false;
+		}
 
-        for(let i=0;i<this.getSize();i++) {
-            const block = this.getBlock(i);
-            if(block.getSpareSize() > count) {                            
-                this.setItem(i, item, block.getCount() + count)
-                break;
-            }
-        }
+		for (let i = 0; i < this.getSize(); i++) {
+			const block = this.getBlock(i);
+			if (block.getSpareSize() > count) {
+				this.setItem(i, item, block.getCount() + count);
+				break;
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    clearItem(index: number): void{
-        if (!this.isBlockEmpty(index)) {
-            this.usedSize -= 1;
-        }
-        this.blocks[index].clear();
-    }
+	clearItem(index: number): void {
+		if (!this.isBlockEmpty(index)) {
+			this.usedSize -= 1;
+		}
+		this.blocks[index].clear();
+	}
 
-    moveTo(index: number, to: Container, toIndex: number) {
-        if (this.isBlockEmpty(index)) {
-            return;
-        }
+	moveTo(index: number, to: Container, toIndex: number) {
+		if (this.isBlockEmpty(index)) {
+			return;
+		}
 
-        if (!to.isBlockEmpty(toIndex)) {
-            return;
-        }
+		if (!to.isBlockEmpty(toIndex)) {
+			return;
+		}
 
-        const item = this.getItemType(index);
-        to.setItem(toIndex, item, this.blocks[index].getCount());
-        this.clearItem(index);
-    }
+		const item = this.getItemType(index);
+		to.setItem(toIndex, item, this.blocks[index].getCount());
+		this.clearItem(index);
+	}
 }

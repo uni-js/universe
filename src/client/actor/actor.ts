@@ -8,7 +8,7 @@ import { NameTag } from '../objects/nametag';
 import { Vector2 } from '../../server/utils/vector2';
 import { Interpolate2d } from '../../server/utils/interpolate';
 import { ActorType } from '../../server/actor/actor-type';
-import { AttachPos, DirectionType, RunningType } from '../../server/actor/actor';
+import { DirectionType, RunningType } from '../../server/actor/actor';
 import type { GameClientApp } from '../client-app';
 import type { World } from '../world/world';
 
@@ -91,7 +91,7 @@ export abstract class ActorObject extends GameObject {
 	private _attachingActorId: number;
 
 	private attachment: number;
-	private attachPos: AttachPos;
+	private attachPos: Vector2;
 
 	private _tagname = '';
 
@@ -101,12 +101,7 @@ export abstract class ActorObject extends GameObject {
 	protected eventBus: EventBusClient;
 	protected world: World;
 
-	constructor(
-		serverId: number,
-		pos: Vector2,
-		attrs: ActorAttrs,
-		app: GameClientApp,
-	) {
+	constructor(serverId: number, pos: Vector2, attrs: ActorAttrs, app: GameClientApp) {
 		super(serverId);
 		this.app = app;
 		this.eventBus = this.app.eventBus;
@@ -140,7 +135,7 @@ export abstract class ActorObject extends GameObject {
 	}
 
 	protected getDefaultTexture() {
-		return this.textureProvider.get(`actor.${this.getType()}`)
+		return this.textureProvider.get(`actor.${this.getType()}`);
 	}
 
 	protected getDefaultTextureGroup() {
@@ -322,15 +317,12 @@ export abstract class ActorObject extends GameObject {
 		this.moveInterpolator.addMovePoint(point);
 	}
 
-	getAttachPos() {
-		const keyMapped = this.attachPos;
-		const mappedRelPos = keyMapped && keyMapped[this._direction];
-		const relPos = mappedRelPos ? new Vector2(mappedRelPos[0], mappedRelPos[1]) : new Vector2(0, 0);
-		return relPos;
+	getAttachmentActor() {
+		return this.app.actorManager.getActor(this.attachment);
 	}
 
-	getAttachment() {
-		return this.attachment;
+	getAttachingActor() {
+		return this.app.actorManager.getActor(this.attaching);
 	}
 
 	damage(val: number) {
@@ -376,39 +368,18 @@ export abstract class ActorObject extends GameObject {
 		}
 	}
 
-	updateAttachingMovement(attachingActor: ActorObject) {
-		if (!attachingActor) return;
-
-		const relPos = attachingActor.getAttachPos();
-		const direction = attachingActor.direction;
-
-		if (direction == DirectionType.BACK) {
-			this.zIndex = 1;
-		} else if (direction == DirectionType.LEFT) {
-			this.zIndex = 3;
-		} else if (direction == DirectionType.RIGHT) {
-			this.zIndex = 3;
-		} else {
-			this.zIndex = 3;
-		}
-
-		this.vPos = attachingActor.vPos.add(relPos);
-	}
-
 	private doUpdateAttachmentTick() {
 		const actor = this.app.actorManager.getActor(this.attachment);
-		if(!actor) {
+		if (!actor) {
 			return;
 		}
 
-//		const relPos = this.getAttachPos();
-//		actor.vPos = this.vPos.add(relPos);
+		actor.vPos = this.vPos.add(this.attachPos);
 	}
 
-
 	updateAttrs(attrs: any) {
-		for(const attr in attrs) {
-			(<any>this)[attr] = attrs[attr];			
+		for (const attr in attrs) {
+			(<any>this)[attr] = attrs[attr];
 		}
 	}
 

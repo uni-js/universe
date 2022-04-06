@@ -1,55 +1,54 @@
-import { Container, ContainerBlock, ContainerData } from "./container";
-import type { Server } from "../server";
-import { SetContainerDataEvent, SetItemEvent } from "../event/server";
-import { Player } from "../player/player";
+import { Container, ContainerBlock, ContainerData } from './container';
+import type { Server } from '../server';
+import { SetContainerDataEvent, SetItemEvent } from '../event/server';
+import { Player } from '../player/player';
 
-export abstract class ActiveContainer extends Container{
-    static idSum = 0;
-    private id: number;
-    constructor(server: Server) {
-        super(server);
-        this.id = ActiveContainer.idSum++;
-    }
+export abstract class ActiveContainer extends Container {
+	static idSum = 0;
+	private id: number;
+	constructor(server: Server) {
+		super(server);
+		this.id = ActiveContainer.idSum++;
+	}
 
-    abstract getSize(): number;
+	abstract getSize(): number;
 
-    syncContainerTo(player: Player) {
-        const data: ContainerData =  {
-            units: []
-        }
-        this.blocks.forEach((block, index) => {
-            data.units.push({
-                itemType: block.getItemType(),
-                count: block.getCount(),
-                index
-            })
-        })
+	syncContainerTo(player: Player) {
+		const data: ContainerData = {
+			units: [],
+		};
+		this.blocks.forEach((block, index) => {
+			data.units.push({
+				itemType: block.getItemType(),
+				count: block.getCount(),
+				index,
+			});
+		});
 
-        const event = new SetContainerDataEvent();
-        event.contId = this.getId();
-        event.contType = this.getType();
-        event.data = data;
+		const event = new SetContainerDataEvent();
+		event.contId = this.getId();
+		event.contType = this.getType();
+		event.data = data;
 
-        player.emitEvent(event);
-    }
+		player.emitEvent(event);
+	}
 
-    syncBlockTo(player: Player, block: ContainerBlock | number) {
-        const event = new SetItemEvent();
-        event.contId = this.getId();
-        event.contType = this.getType();
-        
-        if(typeof(block) === "number") {
-            block = this.getBlock(block);
-        }
+	syncBlockTo(player: Player, block: ContainerBlock | number) {
+		const event = new SetItemEvent();
+		event.contId = this.getId();
+		event.contType = this.getType();
 
-        event.count = block.getCount();
-        event.itemType = block.getItemType();
+		if (typeof block === 'number') {
+			block = this.getBlock(block);
+		}
 
-        player.emitEvent(event);
-    }
+		event.count = block.getCount();
+		event.itemType = block.getItemType();
 
-    getId() {
-        return this.id;
-    }
-    
+		player.emitEvent(event);
+	}
+
+	getId() {
+		return this.id;
+	}
 }

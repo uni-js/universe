@@ -1,55 +1,55 @@
-import { ItemType } from "../item/item-type";
-import type { Player } from "../player/player";
-import type { Server } from "../server";
-import { ActiveContainer } from "./active-container";
-import { Container } from "./container";
+import { ItemType } from '../item/item-type';
+import type { Player } from '../player/player';
+import type { Server } from '../server';
+import { ActiveContainer } from './active-container';
+import { Container } from './container';
 
-export abstract class PlayerContainer extends ActiveContainer{
-    private player: Player;
-    protected allDirty = true;
-    protected dirtyBlocks = new Set<number>();
+export abstract class PlayerContainer extends ActiveContainer {
+	private player: Player;
+	protected allDirty = true;
+	protected dirtyBlocks = new Set<number>();
 
-    constructor(player: Player, server: Server) {
-        super(server);
-        
-        this.player = player;
-    }
+	constructor(player: Player, server: Server) {
+		super(server);
 
-    abstract getSize(): number;
+		this.player = player;
+	}
 
-    getPlayer() {
-        return this.player;
-    }
+	abstract getSize(): number;
 
-    setItem(index: number, itemType: ItemType, count: number): void {
-        super.setItem(index, itemType, count);
+	getPlayer() {
+		return this.player;
+	}
 
-        this.dirtyBlocks.add(index);
-    }
+	setItem(index: number, itemType: ItemType, count: number): void {
+		super.setItem(index, itemType, count);
 
-    moveTo(index: number, to: Container, toIndex: number): void {
-        super.moveTo(index, to, toIndex);
+		this.dirtyBlocks.add(index);
+	}
 
-        if(to instanceof PlayerContainer) {
-            to.allDirty = true;
-        }
+	moveTo(index: number, to: Container, toIndex: number): void {
+		super.moveTo(index, to, toIndex);
 
-        this.allDirty = true;
-    }
+		if (to instanceof PlayerContainer) {
+			to.allDirty = true;
+		}
 
-    private cleanDirty() {
-        this.allDirty = false;
-        this.dirtyBlocks.clear();
-    }
+		this.allDirty = true;
+	}
 
-    syncDirtyToPlayer() {
-        if(this.allDirty) {
-            this.syncContainerTo(this.player);
-        } else {
-            for(const index of this.dirtyBlocks.values()) {
-                this.syncBlockTo(this.player, index);
-            }
-        }
-        this.cleanDirty();
-    }
+	private cleanDirty() {
+		this.allDirty = false;
+		this.dirtyBlocks.clear();
+	}
+
+	syncDirtyToPlayer() {
+		if (this.allDirty) {
+			this.syncContainerTo(this.player);
+		} else {
+			for (const index of this.dirtyBlocks.values()) {
+				this.syncBlockTo(this.player, index);
+			}
+		}
+		this.cleanDirty();
+	}
 }

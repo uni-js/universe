@@ -1,25 +1,24 @@
-import { AddActorEvent, MoveActorEvent, RemoveActorEvent, UpdateAttrsEvent } from "../event/server";
-import { Vector2 } from "../utils/vector2";
-import type { PlayerManager } from "../player/player-manager"
-import type { Server } from "../server";
-import type { World } from "../land/world";
-import { Player } from "../player/player";
-import { posToLandPos } from "../land/land";
-import { IEventBus } from "@uni.js/server";
-import { AttributeMap } from "./attribute";
-
+import { AddActorEvent, MoveActorEvent, RemoveActorEvent, UpdateAttrsEvent } from '../event/server';
+import { Vector2 } from '../utils/vector2';
+import type { PlayerManager } from '../player/player-manager';
+import type { Server } from '../server';
+import type { World } from '../land/world';
+import { Player } from '../player/player';
+import { posToLandPos } from '../land/land';
+import { IEventBus } from '@uni.js/server';
+import { AttributeMap } from './attribute';
 
 export enum RunningType {
-    SILENT,
-    WALKING,
-    RUNNING
+	SILENT,
+	WALKING,
+	RUNNING,
 }
 
-export enum DirectionType{
-    FORWARD,
-    BACK,
-    LEFT,
-    RIGHT
+export enum DirectionType {
+	FORWARD,
+	BACK,
+	LEFT,
+	RIGHT,
 }
 
 export interface AttachPos {
@@ -31,224 +30,244 @@ export interface AttachPos {
 }
 
 export abstract class Actor {
-    static actorIdSum = 0;
-    private id: number;
-    private pos: Vector2;
-    private attaching: number;
-    private attachment: number;
-    protected attrs = new AttributeMap();
-    protected manager: PlayerManager;
-    protected useTicks: number = 0;
-    protected world: World;
-    protected eventBus: IEventBus;
-    protected lastInputSeqId = 0;
-    private direction = DirectionType.FORWARD;
-    private running = RunningType.SILENT;
-    private viewingPlayers = new Set<Player>();
-    private isPosDirty = false;
-    private isUsing: boolean = false;
+	static actorIdSum = 0;
+	protected id: number;
+	protected pos: Vector2;
+	protected rotation: number;
+	protected attaching: number;
+	protected attachment: number;
+	protected attrs = new AttributeMap();
+	protected manager: PlayerManager;
+	protected useTicks: number = 0;
+	protected motion: Vector2 = new Vector2(0, 0);
+	protected world: World;
+	protected eventBus: IEventBus;
+	protected lastInputSeqId = 0;
+	protected direction = DirectionType.FORWARD;
+	protected running = RunningType.SILENT;
+	protected attachPos: Vector2 = new Vector2(0, 0);
 
-    constructor(pos: Vector2, protected server: Server) {
-        this.id = Actor.actorIdSum++;
-        this.pos = pos;
-        this.manager = this.server.getPlayerManager();
-        this.world = this.server.getWorld();
-        this.eventBus = this.server.getEventBus();
-    }
+	private lastTickPos: Vector2;
+	private viewingPlayers = new Set<Player>();
+	private isUsing: boolean = false;
 
-    abstract getSize(): Vector2;
-    abstract getType(): number;
+	constructor(pos: Vector2, protected server: Server) {
+		this.id = Actor.actorIdSum++;
+		this.pos = pos;
+		this.manager = this.server.getPlayerManager();
+		this.world = this.server.getWorld();
+		this.eventBus = this.server.getEventBus();
+	}
 
-    getAttachPos() : AttachPos {
-        return [[0, 0],[0, 0],[0, 0],[0, 0]];
-    }
+	abstract getSize(): Vector2;
+	abstract getType(): number;
 
-    isPlayer() {
-        return false;
-    }
+	isPlayer() {
+		return false;
+	}
 
-    getId() {
-        return this.id;
-    }
+	getId() {
+		return this.id;
+	}
 
-    getPos() {
-        return this.pos;
-    }
+	getPos() {
+		return this.pos;
+	}
 
-    getLandPos() {
-        return posToLandPos(this.pos);
-    }
+	getLandPos() {
+		return posToLandPos(this.pos);
+	}
 
-    getX() {
-        return this.pos.x;
-    }
+	getX() {
+		return this.pos.x;
+	}
 
-    getY() {
-        return this.pos.y;
-    }
+	getY() {
+		return this.pos.y;
+	}
 
-    setDirection(direction: DirectionType) {
-        this.direction = direction;
-    }
+	setDirection(direction: DirectionType) {
+		this.direction = direction;
+	}
 
-    setRunning(running: RunningType) {
-        this.running = running;
-    }
+	getDirection() {
+		return this.direction;
+	}
 
-    attach(actor: Actor) {
-        if (actor.attachment !== undefined) {
-            console.error(`error when actor:${this.id} attach to actor:${actor.getId()}`);
-            return;
-        }
+	setRunning(running: RunningType) {
+		this.running = running;
+	}
 
-        this.attaching = actor.getId();
-        actor.attachment = this.getId();
-    }
-    
-    unattach() {
-        const attaching = this.world.getActor(this.attaching);
-        if (this.attaching === undefined || !attaching) {
-            console.error(`error when actor:${this.id} unattach: ${this.attaching}`);
-            return;
-        }
+	attach(actor: Actor) {
+		if (actor.attachment !== undefined) {
+			console.error(`error when actor:${this.id} attach to actor:${actor.getId()}`);
+			return;
+		}
 
-        attaching.attachment = undefined;
-        this.attaching = undefined;
-    }
+		this.attaching = actor.getId();
+		actor.attachment = this.getId();
+	}
 
-    showTo(player: Player) {
-        if(this.viewingPlayers.has(player)) {
-            return;
-        }
-        this.viewingPlayers.add(player);
-        
-        this.updateAttrs();
-        const event = new AddActorEvent();
-        event.actorId = this.getId();
-        event.actorType = this.getType();
-        event.x = this.getX();
-        event.y = this.getY();
-        event.attrs = this.attrs.getAll();
+	unattach() {
+		const attaching = this.world.getActor(this.attaching);
+		if (this.attaching === undefined || !attaching) {
+			console.error(`error when actor:${this.id} unattach: ${this.attaching}`);
+			return;
+		}
 
-        player.emitEvent(event);
-    }
+		attaching.attachment = undefined;
+		this.attaching = undefined;
+	}
 
-    unshowTo(player: Player) {
-        if(!this.viewingPlayers.has(player)) {
-            return;
-        }
-        this.viewingPlayers.delete(player);
+	showTo(player: Player) {
+		if (this.viewingPlayers.has(player)) {
+			return;
+		}
+		this.viewingPlayers.add(player);
 
-        const event = new RemoveActorEvent();
-        event.actorId = this.getId();
+		this.updateAttrs();
+		const event = new AddActorEvent();
+		event.actorId = this.getId();
+		event.actorType = this.getType();
+		event.x = this.getX();
+		event.y = this.getY();
+		event.attrs = this.attrs.getAll();
 
-        player.emitEvent(event);
-    }
+		player.emitEvent(event);
+	}
 
-    showToAllCansee() {
-        for(const player of this.server.getPlayerList().values()) {
-            if(player.canSeeLand(this.getLandPos())) {
-                this.showTo(player);
-            }
-        }
-    }
+	unshowTo(player: Player) {
+		if (!this.viewingPlayers.has(player)) {
+			return;
+		}
+		this.viewingPlayers.delete(player);
 
-    unshowToAll() {
-        for(const viewer of this.getViewers()){
-            this.unshowTo(viewer);
-        }
-    }
+		const event = new RemoveActorEvent();
+		event.actorId = this.getId();
 
-    getViewers() {
-        return Array.from(this.viewingPlayers.values());
-    }
+		player.emitEvent(event);
+	}
 
-    getLand() {
-        return this.server.getWorld().getLand(this.getLandPos());
-    }
+	showToAllCansee() {
+		for (const player of this.server.getPlayerList().values()) {
+			if (player.canSeeLand(this.getLandPos())) {
+				this.showTo(player);
+			}
+		}
+	}
 
-    kill() {
-        this.getLand().removeActor(this);
-    }
+	unshowToAll() {
+		for (const viewer of this.getViewers()) {
+			this.unshowTo(viewer);
+		}
+	}
 
-    startUsing() {
-        this.isUsing = true;
-    }
+	getViewers() {
+		return Array.from(this.viewingPlayers.values());
+	}
 
-    endUsing() {
-        this.isUsing = false;
-    }
+	getLand() {
+		return this.server.getWorld().getLand(this.getLandPos());
+	}
 
-    update() {
-        this.useTicks ++;
-    }
+	kill() {
+		this.getLand().removeActor(this);
+	}
 
-    moveToPosition(pos: Vector2) {
-        const nowLandPos = this.getLandPos();
-        const toLandPos = posToLandPos(pos);
-        const isCrossing = !nowLandPos.equal(toLandPos);
+	startUsing() {
+		this.isUsing = true;
+	}
 
-        if (isCrossing) {
-            const land = this.world.ensureLand(toLandPos);
-            land.addActor(this);
-            
-            const prevLand = this.world.getLand(nowLandPos);
-            prevLand.removeActor(this);
-        }
+	endUsing() {
+		this.isUsing = false;
+	}
 
-        this.pos = pos.clone();
-        this.isPosDirty = true;
+	update() {
+		this.useTicks++;
+	}
 
-        return isCrossing;
-    }
+	setPosition(pos: Vector2) {
+		this.pos = pos;
+	}
 
-    protected updateAttrs() {
-        this.attrs.set("direction", this.direction);
-        this.attrs.set("running", this.running);
-        this.attrs.set("attachment", this.attachment);
+	protected updateAttrs() {
+		this.attrs.set('direction', this.direction);
+		this.attrs.set('running', this.running);
+		this.attrs.set('attachment', this.attachment);
+		this.attrs.set('attaching', this.attaching);
+		this.attrs.set('attachPos', this.attachPos);
+		this.attrs.set('rotation', this.rotation);
 
-        const {x, y} = this.getSize();
-        this.attrs.set("sizeX", x);
-        this.attrs.set("sizeY", y);
-        
-    }
+		const { x, y } = this.getSize();
+		this.attrs.set('sizeX', x);
+		this.attrs.set('sizeY', y);
+	}
 
-    private doPosDirtyTick() {
-        if(this.isPosDirty) {
-            const event = new MoveActorEvent();
-            event.actorId = this.getId();
-            event.x = this.pos.x;
-            event.y = this.pos.y;
-            event.inputSeq = this.lastInputSeqId;
-    
-            this.manager.emitToViewers(this, event);
-            this.isPosDirty = false;
-        }
-    }
+	private doUpdateAttrsTick() {
+		this.updateAttrs();
+		if (this.attrs.hasDirty()) {
+			const event = new UpdateAttrsEvent();
+			event.actorId = this.getId();
+			event.updated = this.attrs.getDirtyAll();
+			this.attrs.cleanAllDirty();
 
-    private doUpdateAttrsTick() {
-        this.updateAttrs();
-        if(this.attrs.hasDirty()) {
-            const event = new UpdateAttrsEvent();
-            event.actorId = this.getId();
-            event.updated = this.attrs.getDirtyAll();
-            this.attrs.cleanAllDirty();
+			this.manager.emitToViewers(this, event);
+		}
+	}
 
-            this.manager.emitToViewers(this, event);
-        }
-    }
-    
-    private doUpdateAttachmentTick() {
-        const actor = this.world.getActor(this.attachment);
-        if (actor) {
-            const relPos = this.getAttachPos()[this.direction];
-            actor.moveToPosition(this.pos.add(Vector2.fromArray(relPos)));
-        }
-    }
+	getAttachingActor() {
+		return this.world.getActor(this.attaching);
+	}
 
-    doTick() {
-        this.doUpdateAttrsTick();
-        this.doPosDirtyTick()
-        this.doUpdateAttachmentTick();
-    }
+	getAttachmentActor() {
+		return this.world.getActor(this.attachment);
+	}
+
+	protected doUpdateMovementTick() {
+		if (this.lastTickPos && this.lastTickPos.equal(this.pos)) {
+			return false;
+		}
+
+		const lastLandPos = this.lastTickPos && posToLandPos(this.lastTickPos);
+		const nowLandPos = this.getLandPos();
+		const isCrossing = lastLandPos && !lastLandPos.equal(nowLandPos);
+		if (isCrossing) {
+			const land = this.world.ensureLand(nowLandPos);
+			land.addActor(this);
+
+			if (lastLandPos) {
+				const prevLand = this.world.getLand(lastLandPos);
+				prevLand.removeActor(this);
+			}
+		}
+
+		const event = new MoveActorEvent();
+		event.actorId = this.getId();
+		event.x = this.pos.x;
+		event.y = this.pos.y;
+		event.inputSeq = this.lastInputSeqId;
+
+		this.manager.emitToViewers(this, event);
+
+		this.lastTickPos = this.pos;
+		return isCrossing;
+	}
+
+	private doUpdateAttachmentTick() {
+		const actor = this.getAttachmentActor();
+		if (actor) {
+			actor.setPosition(this.pos.add(this.attachPos));
+		}
+	}
+
+	private doMotionTick() {
+		this.setPosition(this.pos.add(this.motion));
+	}
+
+	doTick() {
+		this.doUpdateAttrsTick();
+		this.doUpdateAttachmentTick();
+		this.doUpdateMovementTick();
+		this.doMotionTick();
+	}
 }

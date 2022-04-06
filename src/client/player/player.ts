@@ -52,7 +52,7 @@ export class Player extends ActorObject {
 		}
 
 		if (this.direction === undefined) {
-			this.controlDirection(DirectionType.FORWARD);	
+			this.controlDirection(DirectionType.FORWARD);
 		}
 
 		this.predictedInputMgr = new PredictedInputManager({ ...this.vPos, motionX: attrs.motionX, motionY: attrs.motionY });
@@ -97,7 +97,7 @@ export class Player extends ActorObject {
 	}
 
 	setIsMaster() {
-		if(this._isMaster) {
+		if (this._isMaster) {
 			return;
 		}
 
@@ -158,7 +158,6 @@ export class Player extends ActorObject {
 	doFixedUpdateTick(tick: number) {
 		super.doFixedUpdateTick(tick);
 
-
 		if (this.isMaster()) {
 			this.predictedInputMgr.doGameTick();
 		}
@@ -177,7 +176,7 @@ export class Player extends ActorObject {
 			this.eventBus.emitBusEvent(event);
 			this.isWalkDirty = false;
 		}
-		
+
 		this.doControlMoveTick(tick);
 		this.doOrderTick();
 	}
