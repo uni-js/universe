@@ -26,8 +26,8 @@ export class GameClientApp {
 	public containerManager: ContainerManager;
 
 	private tick = 0;
-	private worldWidth = 4 * 7;
-	private worldHeight = 3 * 7;
+	private worldWidth = 12 * 7;
+	private worldHeight = 6 * 7;
 	private resolution = 32;
 
 	constructor(serverUrl: string, private textureModules: TextureModule[], playground: HTMLElement) {
