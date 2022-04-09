@@ -42,6 +42,7 @@ export abstract class ActiveContainer extends Container {
 			block = this.getBlock(block);
 		}
 
+		event.index = block.getIndex();
 		event.count = block.getCount();
 		event.itemType = block.getItemType();
 

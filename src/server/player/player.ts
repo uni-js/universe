@@ -8,6 +8,7 @@ import { Land } from '../land/land';
 import type { Server } from '../server';
 import { Input } from '@uni.js/prediction';
 import { ItemType } from '../item/item-type';
+import { DroppedItemActor } from '../actor/dropped-item';
 
 const PLAYER_CANSEE_LAND_RADIUS = 1;
 
@@ -17,8 +18,8 @@ export class Player extends Actor {
 	private shortcut: Shortcut;
 	private watchLands = new Set<Land>();
 
-	constructor(pos: Vector2, connId: string, server: Server) {
-		super(pos, server);
+	constructor(connId: string, pos: Vector2, server: Server) {
+		super({}, pos, server);
 		this.connId = connId;
 
 		this.backpack = new Backpack(this, server);
@@ -157,6 +158,36 @@ export class Player extends Actor {
 		if (!this.shortcut.addItem(itemType, count)) {
 			console.error(`player = ${this.getId()} ${this.getConnId()} 's shortcut is full`);
 		}
+	}
+
+	pickItem() {
+		const actors = this.world.getRadiusActors(this.getPos(), 1);
+		const droppedItems = actors.filter((actor) => {
+			return actor.getType() === ActorType.DROPPED_ITEM;
+		}) as DroppedItemActor[];
+
+		for(const itemActor of droppedItems) {
+			this.world.removeActor(itemActor);
+			this.addShortcutItem(itemActor.getItemType(), itemActor.getItemCount());
+		}
+	}
+
+	dropItem() {
+		const block = this.shortcut.getCurrentBlock();
+		if(!block) {
+			return;
+		}
+		const droppedItem = new DroppedItemActor({
+			itemType: block.getItemType(),
+			itemCount: block.getCount()
+		}, new Vector2(this.getX(), this.getY()), this.server);
+
+		this.shortcut.clearItem(this.shortcut.getCurrentIndex());
+		this.world.addActor(droppedItem);
+	}
+
+	unattach(): void {
+		this.shortcut.unholdBlock();
 	}
 
 	getShortcut() {

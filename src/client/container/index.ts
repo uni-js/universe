@@ -4,7 +4,7 @@ import { BACKPACK_SIZE } from '../../server/container/backpack';
 import { ContainerType } from '../../server/container/container-type';
 import { SHORTCUT_SIZE } from '../../server/container/shortcut';
 import { MoveItemEvent, SetShortcutIndexEvent } from '../../server/event/client';
-import { SetContainerDataEvent } from '../../server/event/server';
+import { SetContainerDataEvent, SetItemEvent } from '../../server/event/server';
 import { ItemType } from '../../server/item/item-type';
 import type { GameClientApp } from '../client-app';
 import { DropInfo } from '../components/item-block';
@@ -32,8 +32,24 @@ export class ContainerManager {
 
 		this.input = this.app.inputProvider;
 
+		this.app.eventBus.on(SetItemEvent, this.onSetItemEvent.bind(this));
 		this.app.eventBus.on(SetContainerDataEvent, this.onSetContainerDataEvent.bind(this));
 		this.app.uiEventBus.on('ContainerMoveBlock', this.onContainerMoveBlock.bind(this));
+	}
+
+	private onSetItemEvent(event: SetItemEvent) {
+		if(event.contType === ContainerType.SHORTCUT) {
+			const blocks = this.shortcutState.blocks;
+			blocks[event.index].itemType = event.itemType;
+			blocks[event.index].itemCount = event.count;
+			this.shortcutState.blocks = blocks;
+		} else if (event.contType === ContainerType.BACKPACK) {
+			const blocks = this.backpackState.blocks;
+			blocks[event.index].itemType = event.itemType;
+			blocks[event.index].itemCount = event.count;
+			this.backpackState.blocks = blocks;
+		}
+
 	}
 
 	private onContainerMoveBlock(dropInfo: DropInfo) {

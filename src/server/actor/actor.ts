@@ -52,7 +52,7 @@ export abstract class Actor {
 	private viewingPlayers = new Set<Player>();
 	private isUsing: boolean = false;
 
-	constructor(pos: Vector2, protected server: Server) {
+	constructor(protected buildData: any, pos: Vector2, protected server: Server) {
 		this.id = Actor.actorIdSum++;
 		this.pos = pos;
 		this.manager = this.server.getPlayerManager();
@@ -101,7 +101,6 @@ export abstract class Actor {
 
 	attach(actor: Actor) {
 		if (actor.attachment !== undefined) {
-			console.error(`error when actor:${this.id} attach to actor:${actor.getId()}`);
 			return;
 		}
 
@@ -112,7 +111,6 @@ export abstract class Actor {
 	unattach() {
 		const attaching = this.world.getActor(this.attaching);
 		if (this.attaching === undefined || !attaching) {
-			console.error(`error when actor:${this.id} unattach: ${this.attaching}`);
 			return;
 		}
 

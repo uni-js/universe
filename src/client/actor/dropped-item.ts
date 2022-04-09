@@ -1,5 +1,4 @@
 import { ActorObject } from './actor';
-import { TextureProvider } from '@uni.js/texture';
 import { ItemType } from '../../server/item/item-type';
 import { Vector2 } from '../../server/utils/vector2';
 import { ActorType } from '../../server/actor/actor-type';
@@ -14,8 +13,7 @@ export class DroppedItemActor extends ActorObject {
 
 		this.itemType = attrs.itemType;
 		this.sprite.anchor.set(0.5, 1.3);
-		this.hasShadow = true;
-
+		this.setHasShadow(true);
 		this.setTextures(this.textureProvider.get(`item.${this.itemType}`));
 	}
 

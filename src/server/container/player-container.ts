@@ -27,6 +27,12 @@ export abstract class PlayerContainer extends ActiveContainer {
 		this.dirtyBlocks.add(index);
 	}
 
+	clearItem(index: number): void {
+		super.clearItem(index);
+
+		this.dirtyBlocks.add(index);
+	}
+
 	moveTo(index: number, to: Container, toIndex: number): void {
 		super.moveTo(index, to, toIndex);
 

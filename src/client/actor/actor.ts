@@ -118,7 +118,7 @@ export abstract class ActorObject extends GameObject {
 
 	private updateTexturePool() {
 		this.texturesPool = this.textureProvider.getGroup(`actor.${this.getType()}`);
-		if (this.texturesPool.length <= 0) {
+		if (!this.texturesPool || this.texturesPool.length <= 0) {
 			this.texturesPool = [this.textureProvider.get(`actor.${this.getType()}`)];
 		}
 	}

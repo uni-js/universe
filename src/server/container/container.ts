@@ -20,7 +20,7 @@ export class ContainerBlock {
 	private count: number = 0;
 	private maxSize = BLOCK_MAX_SIZE;
 
-	constructor(private container: Container) {}
+	constructor(private index: number, private container: Container) {}
 
 	setItem(item: ItemType, count: number) {
 		if (count <= 0 || count > this.maxSize) {
@@ -46,6 +46,10 @@ export class ContainerBlock {
 		return this.count;
 	}
 
+	getIndex() {
+		return this.index;
+	}
+
 	clear() {
 		this.store = ItemType.EMPTY;
 		this.count = 0;
@@ -62,7 +66,7 @@ export abstract class Container {
 
 	constructor(private server: Server) {
 		for (let i = 0; i < this.getSize(); i++) {
-			this.blocks.push(new ContainerBlock(this));
+			this.blocks.push(new ContainerBlock(i, this));
 		}
 	}
 

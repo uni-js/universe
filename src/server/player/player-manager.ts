@@ -4,7 +4,7 @@ import { Player } from './player';
 import { Vector2 } from '../utils/vector2';
 import type { Actor } from '../actor/actor';
 import type { Server } from '../server';
-import { ControlMoveEvent, ControlWalkEvent, LoginEvent, SetShortcutIndexEvent } from '../event/client';
+import { ControlMoveEvent, ControlWalkEvent, LoginEvent, PlayerDropItem, PlayerPickItem, SetShortcutIndexEvent } from '../event/client';
 import { LoginedEvent } from '../event/server';
 import type { World } from '../land/world';
 import { ItemType } from '../item/item-type';
@@ -24,7 +24,19 @@ export class PlayerManager {
 		this.eventBus.on(ControlMoveEvent, this.onControlMoveEvent.bind(this));
 		this.eventBus.on(ControlWalkEvent, this.onControlWalkEvent.bind(this));
 		this.eventBus.on(SetShortcutIndexEvent, this.onSetShortcutIndexEvent.bind(this));
+		this.eventBus.on(PlayerPickItem, this.onPlayerPickItem.bind(this));
+		this.eventBus.on(PlayerDropItem, this.onPlayerDropItem.bind(this));
 		this.eventBus.on(BusEvent.ClientDisconnectEvent, this.onPlayerLogout.bind(this));
+	}
+
+	private onPlayerPickItem(event: PlayerPickItem) {
+		const player = this.getPlayerByActorId(event.actorId)
+		player.pickItem();
+	}
+
+	private onPlayerDropItem(event: PlayerDropItem) {
+		const player = this.getPlayerByActorId(event.actorId)
+		player.dropItem();
 	}
 
 	private onSetShortcutIndexEvent(event: SetShortcutIndexEvent) {
@@ -50,7 +62,7 @@ export class PlayerManager {
 			const { x, y } = storedPos;
 			pos = new Vector2(x, y);
 		}
-		const player = new Player(pos, connId, this.server);
+		const player = new Player(connId, pos, this.server);
 		this.playerList.set(connId, player);
 
 		this.server.getContainerManager().add(player.getBackpack());

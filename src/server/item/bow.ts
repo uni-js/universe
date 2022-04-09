@@ -12,7 +12,7 @@ export class Bow extends Item {
 
 	hold(): void {
 		const player = this.shortcut.getPlayer();
-		const actor = new BowActor(player.getPos(), this.server);
+		const actor = new BowActor({}, player.getPos(), this.server);
 		this.actor = actor;
 		this.world.addActor(actor);
 

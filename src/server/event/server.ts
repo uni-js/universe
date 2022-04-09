@@ -11,6 +11,7 @@ export class SetItemEvent {
 	contType: ContainerType;
 	itemType: number;
 	count: number;
+	index: number;
 }
 export class SetContainerDataEvent {
 	contId: number;

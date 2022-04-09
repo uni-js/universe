@@ -6,8 +6,8 @@ import { ActorType } from './actor-type';
 export class Arrow extends Actor {
 	private aliveTicks: number = 0;
 
-	constructor(pos: Vector2, server: Server) {
-		super(pos, server);
+	constructor(buildData: any, pos: Vector2, server: Server) {
+		super(buildData, pos, server);
 		this.anchor = new Vector2(0, 0.5);
 	}
 

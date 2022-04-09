@@ -4,6 +4,7 @@ import type { Server } from '../server';
 import { ContainerBlock } from './container';
 import type { Item } from '../item/item';
 import { ContainerType } from './container-type';
+import { ItemType } from '../item/item-type';
 
 export const SHORTCUT_SIZE = 5;
 
@@ -20,6 +21,20 @@ export class Shortcut extends PlayerContainer {
 		return ContainerType.SHORTCUT;
 	}
 
+	setItem(index: number, itemType: ItemType, count: number): void {
+		super.setItem(index, itemType, count);
+		if(index === this.currIndex) {
+			this.holdBlock(this.getBlock(index));
+		}
+	}
+
+	clearItem(index: number): void {
+		super.clearItem(index);
+		if (this.holdingBlock) {
+			this.unholdBlock();
+		}
+	}
+
 	setCurrentIndex(index: number) {
 		if (this.currIndex === index) {
 			return;
@@ -28,6 +43,14 @@ export class Shortcut extends PlayerContainer {
 		this.holdBlock(this.getBlock(index));
 
 		this.currIndex = index;
+	}
+
+	getCurrentIndex() {
+		return this.currIndex;
+	}
+
+	getCurrentBlock() {
+		return this.holdingBlock;
 	}
 
 	private holdBlock(block: ContainerBlock) {
@@ -40,7 +63,7 @@ export class Shortcut extends PlayerContainer {
 		this.holdingItem.hold();
 	}
 
-	private unholdBlock() {
+	unholdBlock() {
 		if (!this.holdingBlock) {
 			return;
 		}

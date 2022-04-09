@@ -1,7 +1,7 @@
 import { HTMLInputProvider, InputKey } from '@uni.js/html-input';
 import { Viewport } from '@uni.js/viewport';
 import { DirectionType } from '../../server/actor/actor';
-import { LoginEvent } from '../../server/event/client';
+import { LoginEvent, PlayerDropItem, PlayerPickItem } from '../../server/event/client';
 import { LoginedEvent } from '../../server/event/server';
 import { Vector2 } from '../../server/utils/vector2';
 import { GameClientApp } from '../client-app';
@@ -109,11 +109,25 @@ export class PlayerManager {
 		}
 	}
 
+	private doPickOrDropTick() {
+		if(this.input.keyDown(InputKey.R)) {
+			const event = new PlayerPickItem();
+			event.actorId = this.player.getServerId();
+			this.emitEvent(event);
+		} else if (this.input.keyDown(InputKey.Q)) {
+			const event = new PlayerDropItem();
+			event.actorId = this.player.getServerId();
+			this.emitEvent(event);
+		}
+
+	}
+
 	doFixedUpdateTick(tick: number) {
 		if (this.player) {
 			this.doControlMoveTick();
 			this.doSyncViewportCenter();
 			this.doUpdatePlayerState();
+			this.doPickOrDropTick();
 		}
 	}
 }

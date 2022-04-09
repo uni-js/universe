@@ -23,3 +23,9 @@ export class SetShortcutIndexEvent {
 	actorId: number;
 	index: number;
 }
+export class PlayerPickItem {
+	actorId: number;
+}
+export class PlayerDropItem {
+	actorId: number;
+}

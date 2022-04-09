@@ -6,6 +6,7 @@ import { GameClientApp } from '../client-app';
 import { Player } from '../player/player';
 import { ActorObject } from './actor';
 import { Bow } from './bow';
+import { DroppedItemActor } from './dropped-item';
 
 export class ActorManager {
 	private actorStore: ObjectStore<ActorObject>;
@@ -49,11 +50,19 @@ export class ActorManager {
 
 	private onAddActorEvent(event: AddActorEvent) {
 		let newActor;
-		if (event.actorType === ActorType.PLAYER) {
-			newActor = new Player(event.actorId, new Vector2(event.x, event.y), event.attrs, this.app);
-		} else if (event.actorType === ActorType.BOW) {
-			newActor = new Bow(event.actorId, new Vector2(event.x, event.y), event.attrs, this.app);
+
+		const actorFactoryMap: any = {
+			[ActorType.PLAYER]: Player,
+			[ActorType.BOW]: Bow,
+			[ActorType.DROPPED_ITEM]: DroppedItemActor,
 		}
+
+		if (actorFactoryMap[event.actorType]) {
+			newActor = new (actorFactoryMap[event.actorType])(event.actorId, new Vector2(event.x, event.y), event.attrs, this.app);
+		} else {
+			console.error(`can't create a new actor of type: ${event.actorType}`)
+		}
+
 		this.actorStore.add(newActor);
 		console.log('a new actor has been added:', event);
 	}

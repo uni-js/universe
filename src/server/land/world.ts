@@ -72,6 +72,16 @@ export class World {
 		actor.unshowToAll();
 	}
 
+	getRadiusActors(center: Vector2, radius: number) {
+		const actors: Actor[] = [];
+		for(const actor of this.actors.values()) {
+			if(actor.getPos().distance(center) <= radius) {
+				actors.push(actor);
+			}
+		}
+		return actors;
+	}
+
 	getLand(pos: Vector2) {
 		return this.lands.get(pos.toHash());
 	}
