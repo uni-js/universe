@@ -1,9 +1,15 @@
+import type { Server } from '../server';
 import { Vector2 } from '../utils/vector2';
 import { Actor } from './actor';
 import { ActorType } from './actor-type';
 
 export class Arrow extends Actor {
 	private aliveTicks: number = 0;
+
+	constructor(pos: Vector2, server: Server) {
+		super(pos, server);
+		this.anchor = new Vector2(0, 0.5);
+	}
 
 	getType(): number {
 		return ActorType.ARROW;

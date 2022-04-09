@@ -59,47 +59,31 @@ export class MoveInterpolator extends EventEmitter2 {
 }
 
 export abstract class ActorObject extends GameObject {
-	/**
-	 * @readonly
-	 */
-	public isUsing = false;
-
-	/**
-	 * @readonly
-	 */
-	public boundings: number[];
-
-	protected _walkTextures: PIXI.Texture<PIXI.Resource>[] = [];
-
 	protected shadow: PIXI.Sprite;
 	protected sprite: PIXI.AnimatedSprite;
 	protected spriteContainer: PIXI.Container = new PIXI.Container();
 	protected nametag: NameTag;
 	protected healthBar: HealthBar;
 
-	protected _direction = DirectionType.BACK;
-	protected _running = RunningType.SILENT;
-
-	private size: Vector2;
-	private health = 100;
+	public direction = DirectionType.FORWARD;
+	public running = RunningType.SILENT;
+	public size: Vector2;
+	public health = 100;
+	public showHealth = false;
+	public hasShadow = false;
+	public attachPos: Vector2;
+	public tagname = '';
 
 	private playing = false;
-	private _showHealth = false;
-	private _canWalk = false;
-	private _hasShadow = false;
-
-	private _attachingActorId: number;
-
+	private attachingActorId: number;
 	private attachment: number;
-	private attachPos: Vector2;
+	private moveHandler;
 
-	private _tagname = '';
-
-	private moveInterpolator;
 	protected textureProvider: TextureProvider;
 	protected app: GameClientApp;
 	protected eventBus: EventBusClient;
 	protected world: World;
+	protected texturesPool : PIXI.Texture[] = [];
 
 	constructor(serverId: number, pos: Vector2, attrs: ActorAttrs, app: GameClientApp) {
 		super(serverId);
@@ -115,99 +99,181 @@ export abstract class ActorObject extends GameObject {
 		this.addChild(this.nametag);
 		this.addChild(this.spriteContainer);
 
-		this.moveInterpolator = new MoveInterpolator(6);
-		this.moveInterpolator.on('position', this.handleInterpolated.bind(this));
+		this.moveHandler = new MoveInterpolator(6);
+		this.moveHandler.on('position', this.handleHandledPosition.bind(this));
 
-		this.singleTexture = this.getDefaultTexture();
-
-		this.tagname = attrs.tagname || '';
-		this.direction = attrs.direction;
-		this.boundings = attrs.boundings;
+		this.setAnchor(new Vector2(attrs.anchorX, attrs.anchorY));
+		this.setTagname(attrs.tagname || '');
+		this.setDirection(attrs.direction);
 
 		this.position.set(pos.x, pos.y);
+
+		this.updateTexturePool();
+		this.setTextures(this.getDefaultTexture());
+
 		this.updateSize();
 	}
 
 	abstract getType(): ActorType;
 
-	isPlayer() {
-		return this.getType() === ActorType.PLAYER;
+	private updateTexturePool() {
+		this.texturesPool = this.textureProvider.getGroup(`actor.${this.getType()}`);
+		if (this.texturesPool.length <= 0) {
+			this.texturesPool = [this.textureProvider.get(`actor.${this.getType()}`)];
+		}
 	}
 
 	protected getDefaultTexture() {
-		return this.textureProvider.get(`actor.${this.getType()}`);
+		return this.texturesPool[0];
 	}
 
-	protected getDefaultTextureGroup() {
-		return this.textureProvider.getGroup(`actor.${this.getType()}`);
-	}
-
-	private handleInterpolated(pos: Vector2) {
+	private handleHandledPosition(pos: Vector2) {
 		this.position.set(pos.x, pos.y);
-	}
-
-	private updateDirectionTextures() {
-		if (this._canWalk) {
-			let textures: PIXI.Texture[] = [];
-			if (this._direction == DirectionType.FORWARD) {
-				textures = this._walkTextures.slice(0, 3);
-			} else if (this._direction == DirectionType.LEFT) {
-				textures = this._walkTextures.slice(3, 6);
-			} else if (this._direction == DirectionType.RIGHT) {
-				textures = this._walkTextures.slice(6, 9);
-			} else if (this._direction == DirectionType.BACK) {
-				textures = this._walkTextures.slice(9, 12);
-			}
-			textures.push(textures.shift());
-			this.textures = textures;
-		}
 	}
 
 	protected stopAnimate() {
 		if (!this.playing) return;
 
 		this.sprite.stop();
-		this.resetAnimate();
+		this.sprite.gotoAndStop(0);
+		this.setTextures(this.getDefaultTexture());
 		this.playing = false;
 	}
 
-	protected playAnimate() {
+	protected playAnimate(frames: PIXI.Texture[]) {
 		if (this.playing) return;
+
+		this.setTextures(frames);
 
 		this.sprite.play();
 		this.playing = true;
 	}
 
-	protected resetAnimate() {
-		this.sprite.gotoAndStop(0);
+	isPlayer() {
+		return this.getType() === ActorType.PLAYER;
 	}
 
-	get vPos() {
+	getPos() {
 		return new Vector2(this.position.x, this.position.y);
 	}
 
-	set vPos(vec2: Vector2) {
+	setPos(vec2: Vector2) {
 		this.position.set(vec2.x, vec2.y);
 	}
 
-	get tagname() {
-		return this._tagname;
-	}
-
-	set tagname(tagname: string) {
-		this._tagname = tagname;
-		this.nametag.text = this._tagname;
+	setTagname(tagname: string) {
+		this.tagname = tagname;
+		this.nametag.text = this.tagname;
 
 		this.updateSize();
 	}
 
-	get walkTextures() {
-		return this._walkTextures;
+	setAnchor(vec2: Vector2) {
+		this.sprite.anchor.set(vec2.x, vec2.y);
+
+		this.shadow && this.shadow.anchor.set(0.5, 0.5);
+		this.nametag && this.nametag.anchor.set(0.5, 0.5);
 	}
 
-	set walkTextures(textures: PIXI.Texture<PIXI.Resource>[]) {
-		this._walkTextures = textures;
-		this.updateDirectionTextures();
+	setTextures(textures: PIXI.Texture<PIXI.Resource>[] | PIXI.Texture) {
+		if (textures === undefined) {
+			return;
+		}
+		if (!Array.isArray(textures)) {
+			textures = [textures];
+		}
+		if (textures.length <= 0) return;
+
+		this.sprite.texture = textures[0];
+		this.sprite.textures = textures;
+		this.sprite.stop();
+		if (this.playing) {
+			this.sprite.play();
+		}
+
+		this.updateSize();
+	}
+
+	getTextures() {
+		return this.sprite.textures;
+	}
+
+	setAttaching(attachingActor: number) {
+		this.attachingActorId = attachingActor;
+		this.zIndex = 3;
+		this.setAnchor(new Vector2(0.5, 0.5));
+	}
+
+	setShowHealth(val: boolean) {
+		this.showHealth = val;
+		this.updateShowHealth();
+	}
+
+	private updateShowHealth() {
+		if (this.showHealth && !this.healthBar) {
+			this.healthBar = new HealthBar();
+			this.addChild(this.healthBar);
+		} else if (!this.showHealth && this.healthBar) {
+			this.removeChild(this.healthBar);
+		}
+	}
+
+	setHasShadow(val: boolean) {
+		if (val && !this.hasShadow) {
+			this.shadow = new PIXI.Sprite(this.textureProvider.get('system.shadow'));
+			this.shadow.anchor.set(0.5, 0.5);
+			this.addChild(this.shadow);
+		}
+		this.hasShadow = val;
+		this.updateSize();
+	}
+
+	addMovePoint(point: Vector2) {
+		this.moveHandler.addMovePoint(point);
+	}
+
+	getAttachmentActor() {
+		return this.app.actorManager.getActor(this.attachment);
+	}
+
+	getAttachingActor() {
+		return this.app.actorManager.getActor(this.attachingActorId);
+	}
+
+	damage(val: number) {
+		if (this.nametag) {
+			this.nametag.hiddenTicks = 100;
+		}
+
+		if (this.healthBar) {
+			this.healthBar.showTicks = 100;
+			this.healthBar.healthValue = val;
+		}
+		this.health = val;
+	}
+
+	setRunning(running: RunningType) {
+		if (this.running === running) {
+			return false;
+		}
+		this.running = running;
+		return true;
+	}
+
+	setDirection(direction: DirectionType) {
+		if (this.direction === direction) {
+			return false;
+		}
+		this.direction = direction;
+		return true;
+	}
+
+	private doUpdateAttachmentTick() {
+		const actor = this.app.actorManager.getActor(this.attachment);
+		if (!actor) {
+			return;
+		}
+		actor.setPos(this.getPos().add(this.attachPos));
 	}
 
 	private updateSize() {
@@ -232,159 +298,20 @@ export abstract class ActorObject extends GameObject {
 		}
 	}
 
-	set anchor(vec2: Vector2) {
-		this.sprite.anchor.set(vec2.x, vec2.y);
 
-		this.shadow && this.shadow.anchor.set(0.5, 0.5);
-		this.nametag && this.nametag.anchor.set(0.5, 0.5);
-	}
-
-	set singleTexture(texture: PIXI.Texture<PIXI.Resource>) {
-		this.sprite.texture = texture;
-	}
-
-	get singleTexture() {
-		return this.sprite.texture;
-	}
-
-	get spriteRotation() {
-		return this.sprite.rotation;
-	}
-
-	set spriteRotation(rotation: number) {
-		this.sprite.rotation = rotation;
-	}
-
-	set textures(textures: PIXI.Texture<PIXI.Resource>[] | PIXI.FrameObject[]) {
-		if (textures.length <= 0) return;
-
-		this.sprite.textures = textures;
-		this.sprite.stop();
-		if (this.playing) {
-			this.sprite.play();
-		}
-
-		this.updateSize();
-	}
-
-	get textures() {
-		return this.sprite.textures;
-	}
-
-	set attaching(attachingActor: number) {
-		this._attachingActorId = attachingActor;
-		this.zIndex = 3;
-		this.anchor = new Vector2(0.5, 0.5);
-	}
-
-	get attaching() {
-		return this._attachingActorId;
-	}
-
-	get showHealth() {
-		return this._showHealth;
-	}
-
-	set showHealth(val: boolean) {
-		this._showHealth = val;
-		this.updateShowHealth();
-	}
-
-	private updateShowHealth() {
-		if (this._showHealth && !this.healthBar) {
-			this.healthBar = new HealthBar();
-			this.addChild(this.healthBar);
-		} else if (!this._showHealth && this.healthBar) {
-			this.removeChild(this.healthBar);
-		}
-	}
-
-	set hasShadow(val: boolean) {
-		if (val && !this._hasShadow) {
-			this.shadow = new PIXI.Sprite(this.textureProvider.get('system.shadow'));
-			this.shadow.anchor.set(0.5, 0.5);
-			this.addChild(this.shadow);
-		}
-		this._hasShadow = val;
-		this.updateSize();
-	}
-
-	set canWalk(val: boolean) {
-		this._canWalk = val;
-	}
-
-	addMovePoint(point: Vector2) {
-		this.moveInterpolator.addMovePoint(point);
-	}
-
-	getAttachmentActor() {
-		return this.app.actorManager.getActor(this.attachment);
-	}
-
-	getAttachingActor() {
-		return this.app.actorManager.getActor(this.attaching);
-	}
-
-	damage(val: number) {
-		if (this.nametag) {
-			this.nametag.hiddenTicks = 100;
-		}
-
-		if (this.healthBar) {
-			this.healthBar.showTicks = 100;
-			this.healthBar.healthValue = val;
-		}
-		this.health = val;
-	}
-
-	get direction() {
-		return this._direction;
-	}
-
-	set direction(direction: DirectionType) {
-		if (this._direction == direction) return;
-
-		this._direction = direction;
-		this.updateDirectionTextures();
-	}
-
-	get running() {
-		return this._running;
-	}
-
-	set running(running: RunningType) {
-		if (this._running == running) return;
-
-		this._running = running;
-
-		if (this._canWalk) {
-			if (running == RunningType.SILENT) {
-				this.stopAnimate();
-			} else if (running == RunningType.RUNNING) {
-				this.playAnimate();
-			} else if (running == RunningType.WALKING) {
-				this.playAnimate();
+	updateAttrs(attrs: any) {
+		for (const attr in attrs) {
+			const setter = (<any>this)[`set${attr[0].toUpperCase()}${attr.slice(1)}`];
+			if(setter) {
+				setter.call(this, attrs[attr])
+			} else {
+				(<any>this)[attr] = attrs[attr];
 			}
 		}
 	}
 
-	private doUpdateAttachmentTick() {
-		const actor = this.app.actorManager.getActor(this.attachment);
-		if (!actor) {
-			return;
-		}
-
-		actor.vPos = this.vPos.add(this.attachPos);
-	}
-
-	updateAttrs(attrs: any) {
-		for (const attr in attrs) {
-			(<any>this)[attr] = attrs[attr];
-		}
-	}
-
 	doFixedUpdateTick(tick: number) {
-		this.moveInterpolator.doFixedUpdateTick();
+		this.moveHandler.doFixedUpdateTick();
 		this.nametag && this.nametag.doFixedUpdateTick();
 		this.healthBar && this.healthBar.doFixedUpdateTick();
 

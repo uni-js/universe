@@ -46,6 +46,7 @@ export abstract class Actor {
 	protected direction = DirectionType.FORWARD;
 	protected running = RunningType.SILENT;
 	protected attachPos: Vector2 = new Vector2(0, 0);
+	protected anchor: Vector2 = new Vector2(0.5, 1);
 
 	private lastTickPos: Vector2;
 	private viewingPlayers = new Set<Player>();
@@ -197,6 +198,8 @@ export abstract class Actor {
 		this.attrs.set('attaching', this.attaching);
 		this.attrs.set('attachPos', this.attachPos);
 		this.attrs.set('rotation', this.rotation);
+		this.attrs.set('anchorX', this.anchor.x);
+		this.attrs.set('anchorY', this.anchor.y);
 
 		const { x, y } = this.getSize();
 		this.attrs.set('sizeX', x);

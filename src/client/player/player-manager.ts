@@ -104,8 +104,8 @@ export class PlayerManager {
 	}
 
 	private doUpdatePlayerState() {
-		if (!this.player.vPos.equal(this.playerState.position)) {
-			this.playerState.position = this.player.vPos;
+		if (!this.player.getPos().equal(this.playerState.position)) {
+			this.playerState.position = this.player.getPos();
 		}
 	}
 

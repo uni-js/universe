@@ -5,6 +5,7 @@ import { ActorType } from '../../server/actor/actor-type';
 import { ControlMoveEvent, ControlWalkEvent } from '../../server/event/client';
 import type { GameClientApp } from '../client-app';
 import { DirectionType, RunningType } from '../../server/actor/actor';
+import { Texture, Resource } from 'pixi.js';
 
 const BILLION_VALUE = 10000000;
 
@@ -21,7 +22,6 @@ export class Player extends ActorObject {
 	 */
 	public playerName: string;
 
-	private isUsingDirty = false;
 	private controlMoved: Vector2 | false = false;
 	private predictedInputMgr: PredictedInputManager;
 	private isWalkDirty = false;
@@ -29,23 +29,15 @@ export class Player extends ActorObject {
 	constructor(serverId: number, pos: Vector2, attrs: any, app: GameClientApp) {
 		super(serverId, pos, attrs, app);
 
-		this.canWalk = true;
 		this.showHealth = true;
 		this.hasShadow = true;
 
 		this.playerName = attrs.playerName;
 
 		this.tagname = this.playerName;
-		this.anchor = new Vector2(0.5, 1);
 		this.sprite.animationSpeed = 0.12;
 
-		this.walkTextures = this.getDefaultTextureGroup();
-
-		if (attrs.isUsing) {
-			this.startUsing();
-		} else if (this.isUsing) {
-			this.endUsing();
-		}
+		this.setTextures(this.texturesPool);
 
 		if (this.running === undefined) {
 			this.controlRunning(RunningType.SILENT);
@@ -55,7 +47,57 @@ export class Player extends ActorObject {
 			this.controlDirection(DirectionType.FORWARD);
 		}
 
-		this.predictedInputMgr = new PredictedInputManager({ ...this.vPos, motionX: attrs.motionX, motionY: attrs.motionY });
+		this.predictedInputMgr = new PredictedInputManager({ ...this.getPos(), motionX: attrs.motionX, motionY: attrs.motionY });
+	}
+
+	private playWalkingAnim() {
+		let textures = [];
+		if (this.direction === DirectionType.FORWARD) {
+			textures = this.texturesPool.slice(0, 3);
+		} else if (this.direction === DirectionType.BACK) {
+			textures = this.texturesPool.slice(9, 12);
+		} else if (this.direction === DirectionType.LEFT) {
+			textures = this.texturesPool.slice(3, 6);
+		} else {
+			textures = this.texturesPool.slice(6, 9);
+		}
+		this.playAnimate(textures);
+	}
+
+	protected getDefaultTexture(): Texture<Resource> {
+		if (this.direction === DirectionType.FORWARD) {
+			return this.texturesPool[1];
+		} else if (this.direction === DirectionType.BACK) {
+			return this.texturesPool[10];
+		} else if (this.direction === DirectionType.LEFT) {
+			return this.texturesPool[4];
+		} else {
+			return this.texturesPool[7];
+		}
+	}
+
+	setDirection(direction: DirectionType): boolean {
+		const hasChanged = super.setDirection(direction);
+
+		if (hasChanged) {
+			this.stopAnimate();
+			this.playWalkingAnim();
+		}
+
+		return hasChanged;
+	}
+
+	setRunning(running: RunningType): boolean {
+		const hasChanged = super.setRunning(running);
+		if (hasChanged) {
+			if (running === RunningType.WALKING) {
+				this.stopAnimate();
+				this.playWalkingAnim();	
+			} else if (running === RunningType.SILENT) {
+				this.stopAnimate();
+			}
+		}
+		return hasChanged;
 	}
 
 	getType(): ActorType {
@@ -104,7 +146,7 @@ export class Player extends ActorObject {
 		this._isMaster = true;
 
 		this.predictedInputMgr.on('applyState', (state: EntityState) => {
-			this.vPos = new Vector2(state.x, state.y);
+			this.setPos(new Vector2(state.x, state.y));
 		});
 
 		this.predictedInputMgr.on('applyInput', (input: Input) => {
@@ -119,40 +161,20 @@ export class Player extends ActorObject {
 		this.eventBus.emitBusEvent(event);
 	}
 
-	startUsing(dirty = true) {
-		if (this.isUsing == true) return;
-
-		this.isUsing = true;
-		if (dirty) {
-			this.isUsingDirty = true;
-		}
-	}
-
-	endUsing(dirty = true) {
-		if (this.isUsing == false) return;
-
-		this.isUsing = false;
-		if (dirty) {
-			this.isUsingDirty = true;
-		}
-	}
-
 	private doOrderTick() {
 		this.zIndex = 2 + (this.y / BILLION_VALUE + 1) / 2;
 	}
 
 	controlRunning(running: RunningType) {
-		if (this.running === running) return;
-
-		this.running = running;
-		this.isWalkDirty = true;
+		if(this.setRunning(running)) {
+			this.isWalkDirty = true;
+		}			
 	}
 
 	controlDirection(direction: DirectionType) {
-		if (this.direction == direction) return;
-
-		this.direction = direction;
-		this.isWalkDirty = true;
+		if(this.setDirection(direction)) {
+			this.isWalkDirty = true;
+		}
 	}
 
 	doFixedUpdateTick(tick: number) {
@@ -160,11 +182,6 @@ export class Player extends ActorObject {
 
 		if (this.isMaster()) {
 			this.predictedInputMgr.doGameTick();
-		}
-
-		if (this.isUsingDirty) {
-			this.emit('ToggleUsingEvent', { playerId: this.serverId, startOrEnd: this.isUsing ? true : false });
-			this.isUsingDirty = false;
 		}
 
 		if (this.isWalkDirty && this.isMaster()) {

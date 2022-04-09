@@ -16,7 +16,7 @@ export class DroppedItemActor extends ActorObject {
 		this.sprite.anchor.set(0.5, 1.3);
 		this.hasShadow = true;
 
-		this.singleTexture = this.textureProvider.get(`item.${this.itemType}`);
+		this.setTextures(this.textureProvider.get(`item.${this.itemType}`));
 	}
 
 	getType(): ActorType {
