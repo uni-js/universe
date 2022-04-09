@@ -39,6 +39,7 @@ export class Server extends EventEmitter2 {
 
 	private doTick() {
 		this.world.doTick();
+		this.containerManager.doTick();
 	}
 
 	listen(port: number) {

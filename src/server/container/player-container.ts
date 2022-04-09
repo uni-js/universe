@@ -58,4 +58,5 @@ export abstract class PlayerContainer extends ActiveContainer {
 		}
 		this.cleanDirty();
 	}
+
 }

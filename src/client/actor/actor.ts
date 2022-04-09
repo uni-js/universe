@@ -91,6 +91,9 @@ export abstract class ActorObject extends GameObject {
 		this.eventBus = this.app.eventBus;
 		this.textureProvider = this.app.textureProvider;
 		this.size = new Vector2(attrs.sizeX, attrs.sizeY);
+		if (attrs.rotation !== undefined) {
+			this.rotation = attrs.rotation;
+		}
 
 		this.nametag = new NameTag();
 		this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);

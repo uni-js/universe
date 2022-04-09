@@ -18,12 +18,6 @@ export class Bow extends Actor {
 		return new Vector2(0.65, 0.65);
 	}
 
-	endUsing(): void {
-		super.endUsing();
-		if (this.useTicks > 20) {
-		}
-	}
-
 	doTick(): void {
 		super.doTick();
 		if (this.attaching !== undefined) {

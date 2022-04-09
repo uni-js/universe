@@ -38,7 +38,6 @@ export abstract class Actor {
 	protected attachment: number;
 	protected attrs = new AttributeMap();
 	protected manager: PlayerManager;
-	protected useTicks: number = 0;
 	protected motion: Vector2 = new Vector2(0, 0);
 	protected world: World;
 	protected eventBus: IEventBus;
@@ -48,13 +47,19 @@ export abstract class Actor {
 	protected attachPos: Vector2 = new Vector2(0, 0);
 	protected anchor: Vector2 = new Vector2(0.5, 1);
 
+	/**
+	 * @type {number}
+	 * 0.0~1.0
+	 */
+	protected friction = 0.01;
+
 	private lastTickPos: Vector2;
 	private viewingPlayers = new Set<Player>();
 	private isUsing: boolean = false;
 
 	constructor(protected buildData: any, pos: Vector2, protected server: Server) {
 		this.id = Actor.actorIdSum++;
-		this.pos = pos;
+		this.pos = pos.clone();
 		this.manager = this.server.getPlayerManager();
 		this.world = this.server.getWorld();
 		this.eventBus = this.server.getEventBus();
@@ -170,23 +175,15 @@ export abstract class Actor {
 	}
 
 	kill() {
-		this.getLand().removeActor(this);
-	}
-
-	startUsing() {
-		this.isUsing = true;
-	}
-
-	endUsing() {
-		this.isUsing = false;
-	}
-
-	update() {
-		this.useTicks++;
+		this.world.removeActor(this);
 	}
 
 	setPosition(pos: Vector2) {
 		this.pos = pos;
+	}
+
+	setMotion(motion: Vector2) {
+		this.motion = motion;
 	}
 
 	protected updateAttrs() {
@@ -262,6 +259,13 @@ export abstract class Actor {
 	}
 
 	private doMotionTick() {
+		const newMotion = this.motion.mul(1 - this.friction);
+		if(newMotion.length() > 0.001) {
+			this.setMotion(newMotion);
+		} else if(newMotion.length() > 0){
+			this.setMotion(new Vector2(0, 0));
+		}
+
 		this.setPosition(this.pos.add(this.motion));
 	}
 

@@ -120,6 +120,12 @@ export class PlayerManager {
 			this.emitEvent(event);
 		}
 
+		if (this.input.cursorPress()) {
+			this.player.controlUsing(true)
+		} else {
+			this.player.controlUsing(false)
+		}
+
 	}
 
 	doFixedUpdateTick(tick: number) {

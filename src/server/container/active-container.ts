@@ -52,4 +52,8 @@ export abstract class ActiveContainer extends Container {
 	getId() {
 		return this.id;
 	}
+
+	doTick() {
+		
+	}
 }

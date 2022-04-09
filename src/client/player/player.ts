@@ -2,7 +2,7 @@ import { ActorObject } from '../actor/actor';
 import { AckData, EntityState, Input, PredictedInputManager } from '@uni.js/prediction';
 import { Vector2 } from '../../server/utils/vector2';
 import { ActorType } from '../../server/actor/actor-type';
-import { ControlMoveEvent, ControlWalkEvent } from '../../server/event/client';
+import { ControlMoveEvent, ControlWalkEvent, PlayerStartUsing, PlayerStopUsing } from '../../server/event/client';
 import type { GameClientApp } from '../client-app';
 import { DirectionType, RunningType } from '../../server/actor/actor';
 import { Texture, Resource } from 'pixi.js';
@@ -25,6 +25,7 @@ export class Player extends ActorObject {
 	private controlMoved: Vector2 | false = false;
 	private predictedInputMgr: PredictedInputManager;
 	private isWalkDirty = false;
+	private isUsingItem = false;
 
 	constructor(serverId: number, pos: Vector2, attrs: any, app: GameClientApp) {
 		super(serverId, pos, attrs, app);
@@ -34,7 +35,7 @@ export class Player extends ActorObject {
 
 		this.playerName = attrs.playerName;
 		this.setTagname(this.playerName);
-		
+
 		this.sprite.animationSpeed = 0.12;
 
 		this.setTextures(this.texturesPool);
@@ -111,6 +112,26 @@ export class Player extends ActorObject {
 		}
 
 		this.controlMoved = delta;
+	}
+
+	controlUsing(startOrStop: boolean) {
+		if(startOrStop) {
+			if (this.isUsingItem) {
+				return;
+			}
+			this.isUsingItem = true;
+			const event = new PlayerStartUsing();
+			event.actorId = this.getServerId();
+			this.emitEvent(event);
+		} else {
+			if (!this.isUsingItem) {
+				return;
+			}
+			this.isUsingItem = false;
+			const event = new PlayerStopUsing();
+			event.actorId = this.getServerId();
+			this.emitEvent(event);
+		}
 	}
 
 	ackInput(ackData: AckData) {

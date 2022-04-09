@@ -4,7 +4,7 @@ import { Player } from './player';
 import { Vector2 } from '../utils/vector2';
 import type { Actor } from '../actor/actor';
 import type { Server } from '../server';
-import { ControlMoveEvent, ControlWalkEvent, LoginEvent, PlayerDropItem, PlayerPickItem, SetShortcutIndexEvent } from '../event/client';
+import { ControlMoveEvent, ControlWalkEvent, LoginEvent, PlayerDropItem, PlayerPickItem, PlayerStartUsing, PlayerStopUsing, SetShortcutIndexEvent } from '../event/client';
 import { LoginedEvent } from '../event/server';
 import type { World } from '../land/world';
 import { ItemType } from '../item/item-type';
@@ -26,7 +26,19 @@ export class PlayerManager {
 		this.eventBus.on(SetShortcutIndexEvent, this.onSetShortcutIndexEvent.bind(this));
 		this.eventBus.on(PlayerPickItem, this.onPlayerPickItem.bind(this));
 		this.eventBus.on(PlayerDropItem, this.onPlayerDropItem.bind(this));
+		this.eventBus.on(PlayerStartUsing, this.onPlayerStartUsing.bind(this));
+		this.eventBus.on(PlayerStopUsing, this.onPlayerStopUsing.bind(this));
 		this.eventBus.on(BusEvent.ClientDisconnectEvent, this.onPlayerLogout.bind(this));
+	}
+
+	private onPlayerStartUsing(event: PlayerStartUsing) {
+		const player = this.getPlayerByActorId(event.actorId)
+		player.startUsing();
+	}
+
+	private onPlayerStopUsing(event: PlayerStopUsing) {
+		const player = this.getPlayerByActorId(event.actorId)
+		player.stopUsing();
 	}
 
 	private onPlayerPickItem(event: PlayerPickItem) {

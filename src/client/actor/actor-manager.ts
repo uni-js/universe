@@ -5,7 +5,7 @@ import { Vector2 } from '../../server/utils/vector2';
 import { GameClientApp } from '../client-app';
 import { Player } from '../player/player';
 import { ActorObject } from './actor';
-import { Bow } from './bow';
+import { Arrow, Bow } from './bow';
 import { DroppedItemActor } from './dropped-item';
 
 export class ActorManager {
@@ -55,6 +55,7 @@ export class ActorManager {
 			[ActorType.PLAYER]: Player,
 			[ActorType.BOW]: Bow,
 			[ActorType.DROPPED_ITEM]: DroppedItemActor,
+			[ActorType.ARROW]: Arrow
 		}
 
 		if (actorFactoryMap[event.actorType]) {

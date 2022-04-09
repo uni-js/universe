@@ -29,3 +29,9 @@ export class PlayerPickItem {
 export class PlayerDropItem {
 	actorId: number;
 }
+export class PlayerStartUsing{
+	actorId: number;
+}
+export class PlayerStopUsing{
+	actorId: number;
+}

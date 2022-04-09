@@ -186,6 +186,16 @@ export class Player extends Actor {
 		this.world.addActor(droppedItem);
 	}
 
+	startUsing() {
+		const item = this.shortcut.getCurrentItem();
+		item && item.startUsing();
+	}
+
+	stopUsing() {
+		const item = this.shortcut.getCurrentItem();
+		item && item.stopUsing();
+	}
+
 	unattach(): void {
 		this.shortcut.unholdBlock();
 	}

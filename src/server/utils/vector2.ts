@@ -1,6 +1,10 @@
 export class Vector2 {
 	constructor(public x: number, public y: number) {}
 
+	length() {
+		return Math.hypot(this.x, this.y);
+	}
+
 	add(vec2: Vector2) {
 		return new Vector2(this.x + vec2.x, this.y + vec2.y);
 	}

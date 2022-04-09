@@ -32,4 +32,10 @@ export class ContainerManager {
 	get(id: number) {
 		return this.containers.get(id);
 	}
+
+	doTick() {
+		for(const container of this.containers.values()) {
+			container.doTick();
+		}
+	}
 }

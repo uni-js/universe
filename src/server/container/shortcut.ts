@@ -53,6 +53,10 @@ export class Shortcut extends PlayerContainer {
 		return this.holdingBlock;
 	}
 
+	getCurrentItem() {
+		return this.holdingItem;
+	}
+
 	private holdBlock(block: ContainerBlock) {
 		if (this.holdingBlock) {
 			return;
@@ -74,5 +78,9 @@ export class Shortcut extends PlayerContainer {
 
 	getSize(): number {
 		return SHORTCUT_SIZE;
+	}
+
+	doTick(): void {
+		this.holdingItem && this.holdingItem.doTick();
 	}
 }
