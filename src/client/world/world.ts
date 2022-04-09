@@ -15,6 +15,10 @@ export class World {
 		this.app.viewport.addChild(this.landStore.container);
 	}
 
+	getApp() {
+		return this.app;
+	}
+
 	private onAddLandEvent(event: AddLandEvent) {
 		console.log('add a new land:', `${event.landX}:${event.landY}`, event);
 
