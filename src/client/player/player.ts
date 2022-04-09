@@ -29,12 +29,12 @@ export class Player extends ActorObject {
 	constructor(serverId: number, pos: Vector2, attrs: any, app: GameClientApp) {
 		super(serverId, pos, attrs, app);
 
-		this.showHealth = true;
-		this.hasShadow = true;
+		this.setShowHealth(true);
+		this.setHasShadow(true);
 
 		this.playerName = attrs.playerName;
-
-		this.tagname = this.playerName;
+		this.setTagname(this.playerName);
+		
 		this.sprite.animationSpeed = 0.12;
 
 		this.setTextures(this.texturesPool);
