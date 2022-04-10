@@ -29,16 +29,8 @@ export class Bow extends Item {
 	stopUsing(): void {
 		const player = this.shortcut.getPlayer();
 		const arrow = new Arrow({}, player.getPos().add(player.getAttachPos()), this.server);
-		const dir = player.getDirection();
-		if(dir === DirectionType.BACK) {
-			arrow.setMotion(new Vector2(0, -5));
-		} else if (dir === DirectionType.FORWARD) {
-			arrow.setMotion(new Vector2(0, 5));
-		} else if (dir === DirectionType.LEFT) {
-			arrow.setMotion(new Vector2(-5, 0));
-		} else {
-			arrow.setMotion(new Vector2(5, 0));
-		}
+		const vec = player.getDirectionVector();
+		arrow.setMotion(vec.mul(5));
 
 		this.world.addActor(arrow);
 	}

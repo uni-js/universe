@@ -28,26 +28,30 @@ export class Player extends Actor {
 		this.watchLandsAllCansee();
 	}
 
-	setDirection(direction: DirectionType): void {
-		super.setDirection(direction);
+	setDirection(direction: DirectionType) {
+		const hasChanged = super.setDirection(direction);
 
-		switch (direction) {
-			case DirectionType.BACK:
-				this.attachPos = new Vector2(0, -0.4);
-				return;
-			case DirectionType.FORWARD:
-				this.attachPos = new Vector2(0, -0.5);
-				return;
-			case DirectionType.LEFT:
-				this.attachPos = new Vector2(-0.35, -0.5);
-				return;
-			case DirectionType.RIGHT:
-				this.attachPos = new Vector2(0.35, -0.5);
-				return;
-			default:
-				this.attachPos = new Vector2(0, 0);
-				return;
+		if(hasChanged) {
+			switch (direction) {
+				case DirectionType.BACK:
+					this.attachPos = new Vector2(0, -0.4);
+					return;
+				case DirectionType.FORWARD:
+					this.attachPos = new Vector2(0, -0.5);
+					return;
+				case DirectionType.LEFT:
+					this.attachPos = new Vector2(-0.35, -0.5);
+					return;
+				case DirectionType.RIGHT:
+					this.attachPos = new Vector2(0.35, -0.5);
+					return;
+				default:
+					this.attachPos = new Vector2(0, 0);
+					return;
+			}
 		}
+
+		return hasChanged;
 	}
 
 	getAttachPos(): Vector2 {
@@ -181,6 +185,7 @@ export class Player extends Actor {
 			itemType: block.getItemType(),
 			itemCount: block.getCount()
 		}, new Vector2(this.getX(), this.getY()), this.server);
+		droppedItem.setMotion(this.getDirectionVector());
 
 		this.shortcut.clearItem(this.shortcut.getCurrentIndex());
 		this.world.addActor(droppedItem);

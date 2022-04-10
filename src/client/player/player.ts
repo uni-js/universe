@@ -33,12 +33,7 @@ export class Player extends ActorObject {
 		this.setShowHealth(true);
 		this.setHasShadow(true);
 
-		this.playerName = attrs.playerName;
-		this.setTagname(this.playerName);
-
 		this.sprite.animationSpeed = 0.12;
-
-		this.setTextures(this.texturesPool);
 
 		if (this.running === undefined) {
 			this.controlRunning(RunningType.SILENT);
@@ -81,8 +76,11 @@ export class Player extends ActorObject {
 		const hasChanged = super.setDirection(direction);
 
 		if (hasChanged) {
+			this.setTextures(this.getDefaultTexture())
 			this.stopAnimate();
-			this.playWalkingAnim();
+			if (this.running === RunningType.WALKING){
+				this.playWalkingAnim();
+			}
 		}
 
 		return hasChanged;

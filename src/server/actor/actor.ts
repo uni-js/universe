@@ -51,7 +51,7 @@ export abstract class Actor {
 	 * @type {number}
 	 * 0.0~1.0
 	 */
-	protected friction = 0.01;
+	protected friction = 0.2;
 
 	private lastTickPos: Vector2;
 	private viewingPlayers = new Set<Player>();
@@ -93,15 +93,36 @@ export abstract class Actor {
 	}
 
 	setDirection(direction: DirectionType) {
+		if (this.direction === direction) {
+			return false;
+		}
 		this.direction = direction;
+		return true;
 	}
 
 	getDirection() {
 		return this.direction;
 	}
 
+	getDirectionVector() {
+		const dir = this.getDirection();
+		if(dir === DirectionType.BACK) {
+			return new Vector2(0, -1);
+		} else if (dir === DirectionType.FORWARD) {
+			return new Vector2(0, 1);
+		} else if (dir === DirectionType.LEFT) {
+			return new Vector2(-1, 0);
+		} else {
+			return new Vector2(1, 0);
+		}
+	}
+
 	setRunning(running: RunningType) {
+		if (running === this.running) {
+			return false;
+		}
 		this.running = running;
+		return true;
 	}
 
 	attach(actor: Actor) {

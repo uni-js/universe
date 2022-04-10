@@ -21,7 +21,9 @@ export class DroppedItemActor extends ActorObject {
 		return ActorType.DROPPED_ITEM;
 	}
 
-	doFixedUpdateTick() {
+	doFixedUpdateTick(serverTick: number) {
+		super.doFixedUpdateTick(serverTick);
+		
 		const maxTicks = 180;
 		const halfTicks = maxTicks / 2;
 		const tick = this.scaleTick;

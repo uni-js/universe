@@ -3,6 +3,7 @@ import { Actor } from "./actor";
 import { ActorType } from "./actor-type";
 
 export class DroppedItemActor extends Actor {
+    protected friction: number = 0.35;
     getSize(): Vector2 {
         return new Vector2(0.5, 0.5);
     }

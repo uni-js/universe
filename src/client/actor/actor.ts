@@ -65,8 +65,8 @@ export abstract class ActorObject extends GameObject {
 	protected nametag: NameTag;
 	protected healthBar: HealthBar;
 
-	public direction = DirectionType.FORWARD;
-	public running = RunningType.SILENT;
+	public direction : DirectionType = undefined;
+	public running : RunningType = undefined;
 	public size: Vector2;
 	public health = 100;
 	public showHealth = false;
@@ -91,9 +91,6 @@ export abstract class ActorObject extends GameObject {
 		this.eventBus = this.app.eventBus;
 		this.textureProvider = this.app.textureProvider;
 		this.size = new Vector2(attrs.sizeX, attrs.sizeY);
-		if (attrs.rotation !== undefined) {
-			this.rotation = attrs.rotation;
-		}
 
 		this.nametag = new NameTag();
 		this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);
@@ -107,13 +104,13 @@ export abstract class ActorObject extends GameObject {
 
 		this.setAnchor(new Vector2(attrs.anchorX, attrs.anchorY));
 		this.setTagname(attrs.tagname || '');
-		this.setDirection(attrs.direction);
 
 		this.position.set(pos.x, pos.y);
 
 		this.updateTexturePool();
 		this.setTextures(this.getDefaultTexture());
 
+		this.updateAttrs(attrs);
 		this.updateSize();
 	}
 
