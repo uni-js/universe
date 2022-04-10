@@ -17,6 +17,8 @@ export class Player extends Actor {
 	private backpack: Backpack;
 	private shortcut: Shortcut;
 	private watchLands = new Set<Land>();
+	protected maxHealth: number = 100;
+	protected health: number = 100;
 
 	constructor(connId: string, pos: Vector2, server: Server) {
 		super({}, pos, server);
@@ -26,6 +28,10 @@ export class Player extends Actor {
 		this.shortcut = new Shortcut(this, server);
 
 		this.watchLandsAllCansee();
+	}
+
+	canCheckBeOverlap(): boolean {
+		return true;
 	}
 
 	setDirection(direction: DirectionType) {

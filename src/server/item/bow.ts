@@ -28,7 +28,7 @@ export class Bow extends Item {
 
 	stopUsing(): void {
 		const player = this.shortcut.getPlayer();
-		const arrow = new Arrow({}, player.getPos().add(player.getAttachPos()), this.server);
+		const arrow = new Arrow({shooter: player.getId()}, player.getPos().add(player.getAttachPos()), this.server);
 		const vec = player.getDirectionVector();
 		arrow.setMotion(vec.mul(5));
 

@@ -1,5 +1,5 @@
-import { Vector2 } from '../utils/vector2';
-import { Land, LandData } from './land';
+import { Square2, Vector2 } from '../utils/vector2';
+import { Land, LandData, posToLandPos } from './land';
 import type { Server } from '../server';
 import type { Actor } from '../actor/actor';
 import { QueuedWorker } from '../utils/queued-worker';
@@ -128,6 +128,28 @@ export class World {
 				player.emitEvent(event);
 			}
 		}
+	}
+
+	getAreaNearbyActors(square: Square2) {
+		const expand = 3;
+		const landFrom = posToLandPos(square.getFrom().addOffset(-expand));
+		const landTo = posToLandPos(square.getTo().addOffset(expand));
+		const actors: Actor[] = [];
+
+		for(let x = landFrom.x; x <= landTo.x ; x++)
+			for(let y = landFrom.y; y <= landTo.y; y++) {
+				const land = this.getLand(new Vector2(x, y));
+				if(!land) {
+					continue;
+				}
+				for(const actor of land.getActors()) {
+					if(actor.getSquare().isOverlapWith(square)) {
+						actors.push(actor);
+					}
+				}
+			}
+
+		return actors;
 	}
 
 	doTick() {

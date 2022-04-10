@@ -1,3 +1,5 @@
+import SAT from "sat";
+
 export class Vector2 {
 	constructor(public x: number, public y: number) {}
 
@@ -7,6 +9,15 @@ export class Vector2 {
 
 	add(vec2: Vector2) {
 		return new Vector2(this.x + vec2.x, this.y + vec2.y);
+	}
+
+	addOffset(val: number) {
+		return new Vector2(this.x + val, this.y + val);
+	}
+
+	normalize() {
+		const len = this.length();
+		return new Vector2(this.x / len, this.y / len);
 	}
 
 	sub(vec2: Vector2, abs = false) {
@@ -67,7 +78,50 @@ export class Vector2 {
 		return [this.x, this.y];
 	}
 
+	toSATVector() {
+		return new SAT.Vector(this.x, this.y);
+	}
+
 	static fromArray(array: number[]) {
 		return new Vector2(array[0], array[1]);
+	}
+}
+
+
+export class Square2{
+	private fromX: number;
+	private fromY: number;
+	private toX: number;
+	private toY: number;
+	private satBox: SAT.Box;
+
+	constructor(from: Vector2, to: Vector2) {
+		this.fromX = Math.min(from.x, to.x); 
+		this.fromY = Math.min(from.y, to.y);
+		this.toX = Math.max(from.x, to.x)
+		this.toY = Math.max(from.y, to.y);
+
+		const leftTopPoint = new Vector2(this.fromX, this.fromY).toSATVector();
+		this.satBox = new SAT.Box(leftTopPoint, this.toX - this.fromX, this.toY - this.fromY);
+	}
+
+	getFrom() {
+		return new Vector2(this.fromX, this.fromY)
+	}
+	
+	getTo() {
+		return new Vector2(this.toX, this.toY)
+	}
+
+	getSATBox() {
+		return this.satBox;	
+	}
+
+	toPolygon() {
+		return this.satBox.toPolygon();
+	}
+	
+	isOverlapWith(square: Square2) {
+		return SAT.testPolygonPolygon(square.toPolygon(), this.toPolygon());
 	}
 }

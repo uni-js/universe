@@ -92,12 +92,16 @@ export abstract class ActorObject extends GameObject {
 		this.textureProvider = this.app.textureProvider;
 		this.size = new Vector2(attrs.sizeX, attrs.sizeY);
 
+		if (attrs.maxHealth) {
+			this.healthBar = new HealthBar();
+			this.addChild(this.healthBar);
+		}
 		this.nametag = new NameTag();
 		this.sprite = new PIXI.AnimatedSprite([GetEmptyTexture()]);
 		this.spriteContainer.addChild(this.sprite);
 
-		this.addChild(this.nametag);
 		this.addChild(this.spriteContainer);
+		this.addChild(this.nametag);
 
 		this.moveHandler = new MoveInterpolator(6);
 		this.moveHandler.on('position', this.handleHandledPosition.bind(this));
@@ -228,6 +232,24 @@ export abstract class ActorObject extends GameObject {
 		this.updateSize();
 	}
 
+	setMaxHealth(maxHealth: number) {
+		if(!this.healthBar) {
+			return;
+		}
+		this.healthBar.maxHealth = maxHealth;
+	}
+
+	setHealth(health: number) {
+		if (this.nametag) {
+			this.nametag.hiddenTicks = 100;
+		}
+
+		if (this.healthBar) {
+			this.healthBar.showTicks = 100;
+			this.healthBar.healthValue = health;
+		}
+	}
+
 	addMovePoint(point: Vector2) {
 		this.moveHandler.addMovePoint(point);
 	}
@@ -238,18 +260,6 @@ export abstract class ActorObject extends GameObject {
 
 	getAttachingActor() {
 		return this.app.actorManager.getActor(this.attachingActorId);
-	}
-
-	damage(val: number) {
-		if (this.nametag) {
-			this.nametag.hiddenTicks = 100;
-		}
-
-		if (this.healthBar) {
-			this.healthBar.showTicks = 100;
-			this.healthBar.healthValue = val;
-		}
-		this.health = val;
 	}
 
 	setRunning(running: RunningType) {

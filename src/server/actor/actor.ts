@@ -1,5 +1,5 @@
 import { AddActorEvent, MoveActorEvent, RemoveActorEvent, UpdateAttrsEvent } from '../event/server';
-import { Vector2 } from '../utils/vector2';
+import { Square2, Vector2 } from '../utils/vector2';
 import type { PlayerManager } from '../player/player-manager';
 import type { Server } from '../server';
 import type { World } from '../land/world';
@@ -44,6 +44,8 @@ export abstract class Actor {
 	protected lastInputSeqId = 0;
 	protected direction = DirectionType.FORWARD;
 	protected running = RunningType.SILENT;
+	protected health = 0;
+	protected maxHealth = 0;
 	protected attachPos: Vector2 = new Vector2(0, 0);
 	protected anchor: Vector2 = new Vector2(0.5, 1);
 
@@ -53,12 +55,12 @@ export abstract class Actor {
 	 */
 	protected friction = 0.2;
 
-	private lastTickPos: Vector2;
+	protected lastTickPos: Vector2;
 	private viewingPlayers = new Set<Player>();
-	private isUsing: boolean = false;
 
 	constructor(protected buildData: any, pos: Vector2, protected server: Server) {
 		this.id = Actor.actorIdSum++;
+		this.lastTickPos = pos.clone();
 		this.pos = pos.clone();
 		this.manager = this.server.getPlayerManager();
 		this.world = this.server.getWorld();
@@ -195,6 +197,27 @@ export abstract class Actor {
 		return this.server.getWorld().getLand(this.getLandPos());
 	}
 
+	canCheckBeOverlap() {
+		return false;
+	}
+
+	canCheckOverlap() {
+		return false;
+	}
+
+	getOverlapActors(square?: Square2) {
+		if (!this.canCheckOverlap()) {
+			return [];
+		}
+
+		const actors = this.world.getAreaNearbyActors(square || this.getSquare());
+		return actors.filter((actor)=>actor.canCheckBeOverlap());
+	}
+
+	knockBack(powerVec: Vector2) {
+		this.setMotion(this.motion.add(powerVec));
+	}
+
 	kill() {
 		this.world.removeActor(this);
 	}
@@ -207,6 +230,22 @@ export abstract class Actor {
 		this.motion = motion;
 	}
 
+	setHealth(health: number) {
+		this.health = health;
+	}
+
+	onDeath() {
+		
+	}
+
+	damage(costHealth: number) {
+		const targetHealth = Math.max(this.health - costHealth, 0);
+		this.setHealth(targetHealth);
+		if (targetHealth === 0) {
+			this.onDeath();
+		}
+	}
+
 	protected updateAttrs() {
 		this.attrs.set('direction', this.direction);
 		this.attrs.set('running', this.running);
@@ -216,6 +255,8 @@ export abstract class Actor {
 		this.attrs.set('rotation', this.rotation);
 		this.attrs.set('anchorX', this.anchor.x);
 		this.attrs.set('anchorY', this.anchor.y);
+		this.attrs.set('health', this.health);
+		this.attrs.set('maxHealth', this.maxHealth);
 
 		const { x, y } = this.getSize();
 		this.attrs.set('sizeX', x);
@@ -242,6 +283,17 @@ export abstract class Actor {
 		return this.world.getActor(this.attachment);
 	}
 
+	protected onOverlapActors(actors: Actor[]) {
+
+	}
+
+	doCheckOverlapTick() {
+		const actors = this.getOverlapActors()
+		if (actors.length > 0) {
+			this.onOverlapActors(actors);
+		}
+	}
+
 	protected doUpdateMovementTick() {
 		if (this.lastTickPos && this.lastTickPos.equal(this.pos)) {
 			return false;
@@ -260,6 +312,8 @@ export abstract class Actor {
 			}
 		}
 
+		this.doCheckOverlapTick();
+
 		const event = new MoveActorEvent();
 		event.actorId = this.getId();
 		event.x = this.pos.x;
@@ -270,6 +324,12 @@ export abstract class Actor {
 
 		this.lastTickPos = this.pos;
 		return isCrossing;
+	}
+
+	getSquare() {
+		const size = this.getSize();
+		const leftTopPoint = new Vector2(this.pos.x - size.x * this.anchor.x, this.pos.y - size.y * this.anchor.y);
+		return new Square2(leftTopPoint, leftTopPoint.add(size));
 	}
 
 	private doUpdateAttachmentTick() {
