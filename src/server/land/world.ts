@@ -7,10 +7,12 @@ import { spawn, Worker } from 'threads';
 import { IPersistDatabase } from '../database/database';
 import { AddLandEvent } from '../event/server';
 import { IEventBus } from '@uni.js/server';
+import type { Building } from '../building/building';
 
 export class World {
 	private lands = new Map<string, Land>();
 	private actors = new Map<number, Actor>();
+	private buildings = new Map<number, Building>();
 	private database: IPersistDatabase;
 	private eventBus: IEventBus;
 	private queuedLandLoader: QueuedWorker;
@@ -70,6 +72,31 @@ export class World {
 
 		this.actors.delete(actor.getId());
 		actor.unshowToAll();
+	}
+
+	addBuilding(building: Building) {
+		if (this.buildings.has(building.getId())) {
+			return;
+		}
+		
+		const landPos = building.getLandPos();
+		const land = this.ensureLand(landPos);
+		land.addBuilding(building);
+		this.buildings.set(building.getId(), building);
+		building.showToAllCansee();
+	}
+
+	removeBuilding(building: Building) {
+		const landPos = building.getLandPos();
+		const land = this.getLand(building.getLandPos());
+		if (land) {
+			land.removeBuilding(building)
+		} else {
+			console.error(`no building when remove: ${building.getId()} landPos=${landPos.x}:${landPos.y}`);
+		}
+
+		this.buildings.delete(building.getId())
+		building.unshowToAll();
 	}
 
 	getRadiusActors(center: Vector2, radius: number) {
@@ -143,13 +170,41 @@ export class World {
 					continue;
 				}
 				for(const actor of land.getActors()) {
-					if(actor.getSquare().isOverlapWith(square)) {
+					if(actor.getBoundings().isOverlapWith(square)) {
 						actors.push(actor);
 					}
 				}
 			}
 
 		return actors;
+	}
+
+	getAreaNearbyBuildings(square: Square2) {
+		const expand = 3;
+		const landFrom = posToLandPos(square.getFrom().addOffset(-expand));
+		const landTo = posToLandPos(square.getTo().addOffset(expand));
+		const buildings: Building[] = [];
+
+		for(let x = landFrom.x; x <= landTo.x ; x++)
+			for(let y = landFrom.y; y <= landTo.y; y++) {
+				const land = this.getLand(new Vector2(x, y));
+				if(!land) {
+					continue;
+				}
+				for(const building of land.getBuildings()) {
+					if(building.getBoundings().isOverlapWith(square)) {
+						buildings.push(building);
+					}
+				}
+			}
+
+		return buildings;
+	}
+
+	emitToViewers(building: Building, event: any) {
+		building.getViewers().forEach((viewer) => {
+			this.eventBus.emitTo(viewer.getConnId(), event);
+		});
 	}
 
 	doTick() {

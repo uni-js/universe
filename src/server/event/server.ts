@@ -1,6 +1,7 @@
 import type { LandData } from '../land/land';
 import type { ContainerData } from '../container/container';
 import { ContainerType } from '../container/container-type';
+import { BuildingType } from '../building/building-type';
 
 export class LoginedEvent {
 	playerActorId: number;
@@ -43,7 +44,21 @@ export class RemoveLandEvent {
 	landX: number;
 	landY: number;
 }
-export class UpdateAttrsEvent {
+export class ActorUpdateAttrsEvent {
 	actorId: number;
 	updated: any;
+}
+export class BuildingUpdateAttrsEvent {
+	bId: number;
+	updated: any;
+}
+export class AddBuildingEvent {
+	bId: number;
+	x: number;
+	y: number;
+	bType: BuildingType;
+	attrs: any;
+}
+export class RemoveBuildingEvent {
+	bId: number;
 }

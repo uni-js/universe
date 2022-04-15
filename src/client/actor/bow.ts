@@ -27,12 +27,7 @@ export class Bow extends ActorObject {
 		return ActorType.BOW;
 	}
 
-	doFixedUpdateTick(tick: number) {
-		super.doFixedUpdateTick.call(this, tick);
-
-		const attaching = this.getAttachingActor();
-		if (attaching) {
-			this.zIndex = attaching.zIndex + (attaching.direction === DirectionType.BACK ? -0.1 : 0.1);
-		}
+	doTick(tick: number) {
+		super.doTick.call(this, tick);
 	}
 }

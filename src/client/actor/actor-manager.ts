@@ -1,6 +1,6 @@
 import { EventBusClient, ObjectStore } from '@uni.js/client';
 import { ActorType } from '../../server/actor/actor-type';
-import { AddActorEvent, MoveActorEvent, RemoveActorEvent, UpdateAttrsEvent } from '../../server/event/server';
+import { AddActorEvent, MoveActorEvent, RemoveActorEvent, ActorUpdateAttrsEvent } from '../../server/event/server';
 import { Vector2 } from '../../server/utils/vector2';
 import { GameClientApp } from '../client-app';
 import { Player } from '../player/player';
@@ -12,18 +12,18 @@ export class ActorManager {
 	private actorStore: ObjectStore<ActorObject>;
 	private eventBus: EventBusClient;
 	constructor(private app: GameClientApp) {
-		this.actorStore = new ObjectStore((actor: ActorObject) => [actor.getServerId()]);
 		this.eventBus = this.app.eventBus;
 
 		this.eventBus.on(AddActorEvent, this.onAddActorEvent.bind(this));
 		this.eventBus.on(RemoveActorEvent, this.onRemoveActorEvent.bind(this));
 		this.eventBus.on(MoveActorEvent, this.onMoveActorEvent.bind(this));
-		this.eventBus.on(UpdateAttrsEvent, this.onUpdateAttrsEvent.bind(this));
+		this.eventBus.on(ActorUpdateAttrsEvent, this.onUpdateAttrsEvent.bind(this));
 
+		this.actorStore = new ObjectStore((actor: ActorObject) => [actor.getServerId()], app.secondLayer);
 		this.app.viewport.addChild(this.actorStore.container);
 	}
 
-	private onUpdateAttrsEvent(event: UpdateAttrsEvent) {
+	private onUpdateAttrsEvent(event: ActorUpdateAttrsEvent) {
 		const actor = this.actorStore.get(event.actorId);
 		actor.updateAttrs(event.updated);
 	}
@@ -77,15 +77,10 @@ export class ActorManager {
 		return this.actorStore.get(...hashes);
 	}
 
-	doFixedUpdateTick(tick: number) {
+	doTick(tick: number) {
 		for (const actor of this.actorStore.getAll()) {
-			actor.doFixedUpdateTick(tick);
+			actor.doTick(tick);
 		}
 	}
 
-	doUpdateTick(tick: number) {
-		for (const actor of this.actorStore.getAll()) {
-			actor.doUpdateTick(tick);
-		}
-	}
 }

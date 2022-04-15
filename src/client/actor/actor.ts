@@ -11,6 +11,8 @@ import { ActorType } from '../../server/actor/actor-type';
 import { DirectionType, RunningType } from '../../server/actor/actor';
 import type { GameClientApp } from '../client-app';
 import type { World } from '../world/world';
+import { orderObject } from './order';
+import { ShadowObject } from '../objects/shadow';
 
 function GetEmptyTexture() {
 	return PIXI.Texture.fromBuffer(new Uint8Array(1), 1, 1);
@@ -41,7 +43,7 @@ export class MoveInterpolator extends EventEmitter2 {
 		}
 	}
 
-	doFixedUpdateTick() {
+	doTick() {
 		if (this.movePoints.length >= 2) {
 			const curr = this.movePoints[0];
 			const target = this.movePoints[1];
@@ -59,7 +61,7 @@ export class MoveInterpolator extends EventEmitter2 {
 }
 
 export abstract class ActorObject extends GameObject {
-	protected shadow: PIXI.Sprite;
+	protected shadow: ShadowObject;
 	protected sprite: PIXI.AnimatedSprite;
 	protected spriteContainer: PIXI.Container = new PIXI.Container();
 	protected nametag: NameTag;
@@ -88,6 +90,7 @@ export abstract class ActorObject extends GameObject {
 	constructor(serverId: number, pos: Vector2, attrs: ActorAttrs, app: GameClientApp) {
 		super(serverId);
 		this.app = app;
+		this.zIndex = 2;
 		this.eventBus = this.app.eventBus;
 		this.textureProvider = this.app.textureProvider;
 		this.size = new Vector2(attrs.sizeX, attrs.sizeY);
@@ -174,9 +177,6 @@ export abstract class ActorObject extends GameObject {
 
 	setAnchor(vec2: Vector2) {
 		this.sprite.anchor.set(vec2.x, vec2.y);
-
-		this.shadow && this.shadow.anchor.set(0.5, 0.5);
-		this.nametag && this.nametag.anchor.set(0.5, 0.5);
 	}
 
 	setTextures(textures: PIXI.Texture<PIXI.Resource>[] | PIXI.Texture) {
@@ -204,7 +204,6 @@ export abstract class ActorObject extends GameObject {
 
 	setAttaching(attachingActor: number) {
 		this.attachingActorId = attachingActor;
-		this.zIndex = 3;
 		this.setAnchor(new Vector2(0.5, 0.5));
 	}
 
@@ -224,8 +223,7 @@ export abstract class ActorObject extends GameObject {
 
 	setHasShadow(val: boolean) {
 		if (val && !this.hasShadow) {
-			this.shadow = new PIXI.Sprite(this.textureProvider.get('system.shadow'));
-			this.shadow.anchor.set(0.5, 0.5);
+			this.shadow = new ShadowObject(this.textureProvider);
 			this.addChild(this.shadow);
 		}
 		this.hasShadow = val;
@@ -291,12 +289,7 @@ export abstract class ActorObject extends GameObject {
 		this.sprite.height = this.size.y;
 
 		if (this.shadow) {
-			const shadowBounds = this.shadow.getLocalBounds();
-			const shadowRatio = shadowBounds.height / shadowBounds.width;
-
-			this.shadow.width = this.size.x;
-			this.shadow.height = this.size.x * shadowRatio;
-			this.shadow.position.set(0, -0.15);
+			this.shadow.setSize(this.size.x);
 		}
 
 		this.nametag.style.fontSize = 1;
@@ -320,12 +313,24 @@ export abstract class ActorObject extends GameObject {
 		}
 	}
 
-	doFixedUpdateTick(tick: number) {
-		this.moveHandler.doFixedUpdateTick();
-		this.nametag && this.nametag.doFixedUpdateTick();
-		this.healthBar && this.healthBar.doFixedUpdateTick();
+	private doOrderTick() {
+		if (this.attachingActorId !== undefined) {
+			const actor = this.getAttachingActor();
+			const offset = (actor.direction === DirectionType.BACK ? -1 : 1) * 0.000000001;
+			this.zIndex = actor.zIndex + offset;
+			return;
+		}
+
+		orderObject(this);
+	}
+
+	doTick(tick: number) {
+		this.moveHandler.doTick();
+		this.nametag && this.nametag.doTick();
+		this.healthBar && this.healthBar.doTick();
 
 		this.doUpdateAttachmentTick();
+		this.doOrderTick();
 	}
 }
 

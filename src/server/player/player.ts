@@ -130,8 +130,8 @@ export class Player extends Actor {
 		}
 
 		this.watchLands.add(land);
-		for (const actor of land.getActors()) {
-			actor.showTo(this);
+		for (const viewable of land.getViewables()) {
+			viewable.showTo(this);
 		}
 
 		this.world.requestLandData(land.getLandPos());
@@ -153,8 +153,8 @@ export class Player extends Actor {
 		}
 
 		this.watchLands.delete(land);
-		for (const actor of land.getActors()) {
-			actor.unshowTo(this);
+		for (const viewable of land.getViewables()) {
+			viewable.unshowTo(this);
 		}
 	}
 

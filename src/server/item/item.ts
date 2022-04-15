@@ -14,8 +14,13 @@ export abstract class Item {
 	}
 
 	abstract getType(): ItemType;
-	abstract hold(): void;
-	abstract unhold(): void;
+	
+	hold(): void {
+		
+	}
+	unhold(): void {
+
+	}
 
 	startUsing() {
 		this.useTicks = 0;

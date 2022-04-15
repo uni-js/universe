@@ -128,7 +128,7 @@ export class PlayerManager {
 
 	}
 
-	doFixedUpdateTick(tick: number) {
+	doTick(tick: number) {
 		if (this.player) {
 			this.doControlMoveTick();
 			this.doSyncViewportCenter();

@@ -11,6 +11,8 @@ import { AttachUsingState } from './ui-states/using';
 import { PlayerManager } from './player/player-manager';
 import { World } from './world/world';
 import { ContainerManager } from './container';
+import { BuildingManager } from './building/building-manager';
+import { Container } from 'pixi.js';
 
 export class GameClientApp {
 	public uni: ClientApp;
@@ -24,6 +26,9 @@ export class GameClientApp {
 	public world: World;
 	public viewport: Viewport;
 	public containerManager: ContainerManager;
+	public buildingManager: BuildingManager;
+
+	public secondLayer = new Container();
 
 	private tick = 0;
 	private worldWidth = 8 * 7;
@@ -68,6 +73,7 @@ export class GameClientApp {
 		this.actorManager = new ActorManager(this);
 		this.playerManager = new PlayerManager(this);
 		this.containerManager = new ContainerManager(this);
+		this.buildingManager = new BuildingManager(this);
 
 		this.uni.start();
 		this.uni.addTicker(() => this.doTick());
@@ -79,9 +85,9 @@ export class GameClientApp {
 	}
 
 	doTick() {
-		this.actorManager.doFixedUpdateTick(this.tick);
-		this.actorManager.doUpdateTick(this.tick);
-		this.playerManager.doFixedUpdateTick(this.tick);
+		this.actorManager.doTick(this.tick);
+		this.playerManager.doTick(this.tick);
+		this.buildingManager.doTick(this.tick);
 		this.containerManager.doTick();
 		this.tick++;
 	}

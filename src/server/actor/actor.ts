@@ -1,4 +1,4 @@
-import { AddActorEvent, MoveActorEvent, RemoveActorEvent, UpdateAttrsEvent } from '../event/server';
+import { AddActorEvent, MoveActorEvent, RemoveActorEvent, ActorUpdateAttrsEvent } from '../event/server';
 import { Square2, Vector2 } from '../utils/vector2';
 import type { PlayerManager } from '../player/player-manager';
 import type { Server } from '../server';
@@ -7,6 +7,8 @@ import { Player } from '../player/player';
 import { posToLandPos } from '../land/land';
 import { IEventBus } from '@uni.js/server';
 import { AttributeMap } from './attribute';
+import type { Building } from '../building/building';
+import { Viewable } from './viewable';
 
 export enum RunningType {
 	SILENT,
@@ -29,7 +31,7 @@ export interface AttachPos {
 	[key: number]: [number, number];
 }
 
-export abstract class Actor {
+export abstract class Actor extends Viewable {
 	static actorIdSum = 0;
 	protected id: number;
 	protected pos: Vector2;
@@ -56,9 +58,9 @@ export abstract class Actor {
 	protected friction = 0.2;
 
 	protected lastTickPos: Vector2;
-	private viewingPlayers = new Set<Player>();
 
 	constructor(protected buildData: any, pos: Vector2, protected server: Server) {
+		super(server);
 		this.id = Actor.actorIdSum++;
 		this.lastTickPos = pos.clone();
 		this.pos = pos.clone();
@@ -146,12 +148,7 @@ export abstract class Actor {
 		this.attaching = undefined;
 	}
 
-	showTo(player: Player) {
-		if (this.viewingPlayers.has(player)) {
-			return;
-		}
-		this.viewingPlayers.add(player);
-
+	onBeshownToPlayer(player: Player): void {
 		this.updateAttrs();
 		const event = new AddActorEvent();
 		event.actorId = this.getId();
@@ -163,36 +160,13 @@ export abstract class Actor {
 		player.emitEvent(event);
 	}
 
-	unshowTo(player: Player) {
-		if (!this.viewingPlayers.has(player)) {
-			return;
-		}
-		this.viewingPlayers.delete(player);
-
+	onBeunshownToPlayer(player: Player): void {
 		const event = new RemoveActorEvent();
 		event.actorId = this.getId();
 
 		player.emitEvent(event);
 	}
-
-	showToAllCansee() {
-		for (const player of this.server.getPlayerList().values()) {
-			if (player.canSeeLand(this.getLandPos())) {
-				this.showTo(player);
-			}
-		}
-	}
-
-	unshowToAll() {
-		for (const viewer of this.getViewers()) {
-			this.unshowTo(viewer);
-		}
-	}
-
-	getViewers() {
-		return Array.from(this.viewingPlayers.values());
-	}
-
+	
 	getLand() {
 		return this.server.getWorld().getLand(this.getLandPos());
 	}
@@ -205,13 +179,22 @@ export abstract class Actor {
 		return false;
 	}
 
-	getOverlapActors(square?: Square2) {
+	getOverlapActors(boundings?: Square2) {
 		if (!this.canCheckOverlap()) {
 			return [];
 		}
 
-		const actors = this.world.getAreaNearbyActors(square || this.getSquare());
+		const actors = this.world.getAreaNearbyActors(boundings || this.getBoundings());
 		return actors.filter((actor)=>actor.canCheckBeOverlap());
+	}
+
+	getOverlapBuildings(boundings?: Square2) {
+		if (!this.canCheckOverlap()) {
+			return [];
+		}
+
+		const buildings = this.world.getAreaNearbyBuildings(boundings || this.getBoundings());
+		return buildings.filter((building)=>(building.canCheckBeOverlap()));
 	}
 
 	knockBack(powerVec: Vector2) {
@@ -266,7 +249,7 @@ export abstract class Actor {
 	private doUpdateAttrsTick() {
 		this.updateAttrs();
 		if (this.attrs.hasDirty()) {
-			const event = new UpdateAttrsEvent();
+			const event = new ActorUpdateAttrsEvent();
 			event.actorId = this.getId();
 			event.updated = this.attrs.getDirtyAll();
 			this.attrs.cleanAllDirty();
@@ -287,10 +270,18 @@ export abstract class Actor {
 
 	}
 
+	protected onOverlapBuildings(buildings: Building[]) {
+
+	}
+
 	doCheckOverlapTick() {
 		const actors = this.getOverlapActors()
 		if (actors.length > 0) {
 			this.onOverlapActors(actors);
+		}
+		const buildings = this.getOverlapBuildings();
+		if (buildings.length > 0) {
+			this.onOverlapBuildings(buildings);
 		}
 	}
 
@@ -326,7 +317,7 @@ export abstract class Actor {
 		return isCrossing;
 	}
 
-	getSquare() {
+	getBoundings() {
 		const size = this.getSize();
 		const leftTopPoint = new Vector2(this.pos.x - size.x * this.anchor.x, this.pos.y - size.y * this.anchor.y);
 		return new Square2(leftTopPoint, leftTopPoint.add(size));

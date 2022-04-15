@@ -11,9 +11,10 @@ export class NameTag extends PIXI.Text {
 		this.style = new PIXI.TextStyle({
 			fill: 'white',
 		});
+		this.anchor.set(0.5, 0.5);
 	}
 
-	doFixedUpdateTick() {
+	doTick() {
 		if (this.hiddenTicks > 0) {
 			this.visible = false;
 			this.hiddenTicks--;

@@ -16,16 +16,8 @@ export abstract class Brick extends PIXI.Sprite{
         this.layer = layer;
         this.type = this.getType();
         this.textureProvider = this.world.getApp().textureProvider;
+        this.texture = this.textureProvider.get(`brick.${this.type}`);
     }
     
     abstract getType() : BrickType;
-}
-
-export abstract class LargeBrick extends Brick{
-    constructor(x: number, y: number, layer: number, world: World) {
-        super(x, y, layer, world);
-        
-        this.texture = this.textureProvider.get(`brick.${this.type}`);
-    }
-
 }

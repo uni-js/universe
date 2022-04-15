@@ -7,7 +7,6 @@ import type { GameClientApp } from '../client-app';
 import { DirectionType, RunningType } from '../../server/actor/actor';
 import { Texture, Resource } from 'pixi.js';
 
-const BILLION_VALUE = 10000000;
 
 export interface ControlMoved {
 	moved: Vector2;
@@ -180,10 +179,6 @@ export class Player extends ActorObject {
 		this.eventBus.emitBusEvent(event);
 	}
 
-	private doOrderTick() {
-		this.zIndex = 2 + (this.y / BILLION_VALUE + 1) / 2;
-	}
-
 	controlRunning(running: RunningType) {
 		if(this.setRunning(running)) {
 			this.isWalkDirty = true;
@@ -196,8 +191,8 @@ export class Player extends ActorObject {
 		}
 	}
 
-	doFixedUpdateTick(tick: number) {
-		super.doFixedUpdateTick(tick);
+	doTick(tick: number) {
+		super.doTick(tick);
 
 		if (this.isMaster()) {
 			this.predictedInputMgr.doGameTick();
@@ -214,6 +209,5 @@ export class Player extends ActorObject {
 		}
 
 		this.doControlMoveTick(tick);
-		this.doOrderTick();
 	}
 }

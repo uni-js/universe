@@ -87,6 +87,7 @@ export class PlayerManager {
 		this.eventBus.emitTo(connId, loginedEvent);
 
 		player.addShortcutItem(ItemType.BOW, 1);
+		player.addShortcutItem(ItemType.DEBUG_BUILDING_PLANTER, 1);
 
 		console.log(`player: ${event.username} is logined with connId=${connId}`);
 	}

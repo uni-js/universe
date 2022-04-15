@@ -1,3 +1,4 @@
+import { Building } from '../building/building';
 import type { Server } from '../server';
 import { Square2, Vector2 } from '../utils/vector2';
 import { Actor } from './actor';
@@ -29,6 +30,10 @@ export class Arrow extends Actor {
 			this.kill();
 			break;
 		}
+	}
+
+	protected onOverlapBuildings(buildings: Building[]): void {
+		this.kill();
 	}
 
 	doCheckOverlapTick() {

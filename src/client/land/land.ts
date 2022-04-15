@@ -27,7 +27,7 @@ export class LandObject extends StaticObject {
 			const layers = brick.layers;
 			const surface = layers[layers.length - 1];
 			const texture = this.textureProvider.get(`brick.${surface}`);
-			this.tileLayer.addFrame(texture, brick.x * BRICK_WIDTH, brick.y * BRICK_WIDTH);
+			this.tileLayer.tile(texture, brick.x * BRICK_WIDTH, brick.y * BRICK_WIDTH,);
 			this.layersMap.set(new Vector2(brick.x, brick.y).toHash(), layers);
 		}
 	}

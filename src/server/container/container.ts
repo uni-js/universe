@@ -119,7 +119,7 @@ export abstract class Container {
 
 		for (let i = 0; i < this.getSize(); i++) {
 			const block = this.getBlock(i);
-			if (block.getSpareSize() > count) {
+			if ((block.getItemType() === item && block.getSpareSize() > count) || block.isEmpty()) {
 				this.setItem(i, item, block.getCount() + count);
 				break;
 			}
