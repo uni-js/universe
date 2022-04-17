@@ -14,6 +14,12 @@ import type { World } from '../world/world';
 import { orderObject } from './order';
 import { ShadowObject } from '../objects/shadow';
 
+export enum JumpState {
+	SILENT,
+	JUMP_UP,
+	JUMP_DOWN
+}
+
 function GetEmptyTexture() {
 	return PIXI.Texture.fromBuffer(new Uint8Array(1), 1, 1);
 }
@@ -76,6 +82,9 @@ export abstract class ActorObject extends GameObject {
 	public attachPos: Vector2;
 	public tagname = '';
 
+	public jumpState : JumpState = 0;
+	private jumpTicks = -1;
+
 	private playing = false;
 	private attachingActorId: number;
 	private attachment: number;
@@ -90,6 +99,7 @@ export abstract class ActorObject extends GameObject {
 	constructor(serverId: number, pos: Vector2, attrs: ActorAttrs, app: GameClientApp) {
 		super(serverId);
 		this.app = app;
+		this.world = app.world;
 		this.zIndex = 2;
 		this.eventBus = this.app.eventBus;
 		this.textureProvider = this.app.textureProvider;
@@ -276,6 +286,15 @@ export abstract class ActorObject extends GameObject {
 		return true;
 	}
 
+	setJumpState(state: JumpState) {
+		this.jumpState = state;
+		this.jumpTicks = 0;
+
+		if (state !== JumpState.SILENT) {
+			this.sprite.position.y = 0;
+		}
+	}
+
 	private doUpdateAttachmentTick() {
 		const actor = this.app.actorManager.getActor(this.attachment);
 		if (!actor) {
@@ -289,7 +308,7 @@ export abstract class ActorObject extends GameObject {
 		this.sprite.height = this.size.y;
 
 		if (this.shadow) {
-			this.shadow.setSize(this.size.x);
+			this.shadow.setSize(this.size.x * 0.75);
 		}
 
 		this.nametag.style.fontSize = 1;
@@ -324,12 +343,26 @@ export abstract class ActorObject extends GameObject {
 		orderObject(this);
 	}
 
+	private doJumpingTick() {
+		if (this.jumpState !== JumpState.SILENT && this.jumpTicks <= 20) {
+
+			const ratio = this.jumpState === JumpState.JUMP_UP ? -1.2 : -1;
+			if (this.jumpTicks > 10) {
+				this.sprite.position.y = ratio * (20 - this.jumpTicks) * 0.015;
+			} else {
+				this.sprite.position.y = ratio * this.jumpTicks * 0.015;
+			}
+			this.jumpTicks++;
+		}
+	}
+
 	doTick(tick: number) {
 		this.moveHandler.doTick();
 		this.nametag && this.nametag.doTick();
 		this.healthBar && this.healthBar.doTick();
 
 		this.doUpdateAttachmentTick();
+		this.doJumpingTick();
 		this.doOrderTick();
 	}
 }

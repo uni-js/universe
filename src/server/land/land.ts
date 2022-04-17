@@ -12,6 +12,7 @@ export interface BrickData {
 	x: number;
 	y: number;
 	layers: number[];
+	metas: number[];
 }
 
 export interface LandData {
@@ -81,7 +82,10 @@ export class Land {
 		const layers = brick.getLayers().slice();
 		layers.push(brickType);
 
-		const newBrick = new Brick({ layers });
+		const metas = brick.getMetas().slice();
+		metas.push(0);
+
+		const newBrick = new Brick({ layers, metas, x: vec2.x, y: vec2.y });
 		this.bricks.set(hash, newBrick);
 	}
 
@@ -95,7 +99,10 @@ export class Land {
 		const layers = brick.getLayers().slice();
 		layers.pop();
 		
-		const newBrick = new Brick({ layers });
+		const metas = brick.getMetas().slice();
+		metas.pop();
+
+		const newBrick = new Brick({ layers, metas, x: vec2.x, y: vec2.y });
 		this.bricks.set(hash, newBrick);
 	}
 

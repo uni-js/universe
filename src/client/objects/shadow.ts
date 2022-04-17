@@ -17,6 +17,6 @@ export class ShadowObject extends Sprite{
 
         this.width = this.shadowWidth;
         this.height = this.shadowWidth * shadowRatio;
-        this.position.set(0, -0.15);
+        this.position.set(0, 0);
     }
 }

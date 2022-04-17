@@ -1,8 +1,8 @@
-import { ActorObject } from '../actor/actor';
+import { ActorObject, JumpState } from '../actor/actor';
 import { AckData, EntityState, Input, PredictedInputManager } from '@uni.js/prediction';
 import { Vector2 } from '../../server/utils/vector2';
 import { ActorType } from '../../server/actor/actor-type';
-import { ControlMoveEvent, ControlWalkEvent, PlayerStartUsing, PlayerStopUsing } from '../../server/event/client';
+import { ControlMoveEvent, ControlWalkEvent, PlayerJumpEvent, PlayerStartUsing, PlayerStopUsing } from '../../server/event/client';
 import type { GameClientApp } from '../client-app';
 import { DirectionType, RunningType } from '../../server/actor/actor';
 import { Texture, Resource } from 'pixi.js';
@@ -131,6 +131,17 @@ export class Player extends ActorObject {
 		}
 	}
 
+	controlJump(direction: DirectionType, jumpUp: boolean) {
+		if (this.jumpState !== JumpState.SILENT) {
+			return;
+		}
+		const event = new PlayerJumpEvent();
+		event.jumpUp = jumpUp;
+		event.actorId = this.getServerId();
+		event.direction = direction;
+		this.emitEvent(event);
+	}
+
 	ackInput(ackData: AckData) {
 		this.predictedInputMgr.ackInput(ackData);
 	}
@@ -138,11 +149,19 @@ export class Player extends ActorObject {
 	private doControlMoveTick(tick: number) {
 		if (this.controlMoved) {
 			const moved = this.controlMoved;
+			const curPos = this.getPos();
+			const nextPos = curPos.add(moved);
 
-			this.predictedInputMgr.pendInput({
-				moveX: moved.x,
-				moveY: moved.y,
-			});
+			const curBrick = this.world.getBrickXY(curPos.x, curPos.y);
+			const nextBrick = this.world.getBrickXY(nextPos.x, nextPos.y);
+			if (curBrick && nextBrick && nextBrick.layers.length !== curBrick.layers.length) {
+				this.controlJump(this.direction, nextBrick.layers.length > curBrick.layers.length);
+			} else {
+				this.predictedInputMgr.pendInput({
+					moveX: moved.x,
+					moveY: moved.y,
+				});	
+			}
 
 			this.controlRunning(RunningType.WALKING);
 		}

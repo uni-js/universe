@@ -13,7 +13,7 @@ export enum BiomeType {
 }
 
 export class BiomePicker {
-	static SCALE_RATIO = 50;
+	static SCALE_RATIO = 100;
 
 	private temperNoise: SimplexNoise;
 	private wetNoise: SimplexNoise;
@@ -50,7 +50,7 @@ export class BiomePicker {
 			if (temper > 0.5) return BiomeType.FOREST;
 			else if (temper > 0.3) return BiomeType.LAKE;
 			else return BiomeType.ICELAND;
-		} else if (temper > 0.2) {
+		} else if (wet > 0.2) {
 			if (temper > 0.7) return BiomeType.MOUNTAIN;
 			else if (temper > 0.2) return BiomeType.PLAIN;
 			else return BiomeType.COLD;

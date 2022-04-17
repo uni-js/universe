@@ -7,6 +7,10 @@ export class Vector2 {
 		return Math.hypot(this.x, this.y);
 	}
 
+	swap() {
+		return new Vector2(this.y, this.x);
+	}
+
 	add(vec2: Vector2) {
 		return new Vector2(this.x + vec2.x, this.y + vec2.y);
 	}
@@ -49,6 +53,10 @@ export class Vector2 {
 
 	floor() {
 		return new Vector2(Math.floor(this.x), Math.floor(this.y));
+	}
+
+	floorMid() {
+		return new Vector2(Math.floor(this.x) + 0.5, Math.floor(this.y) + 0.5);
 	}
 
 	getRad() {

@@ -12,7 +12,7 @@ import type { Building } from '../building/building';
 export class World {
 	private lands = new Map<string, Land>();
 	private actors = new Map<number, Actor>();
-	private buildings = new Map<number, Building>();
+	private buildings = new Map<string, Building>();
 	private database: IPersistDatabase;
 	private eventBus: IEventBus;
 	private queuedLandLoader: QueuedWorker;
@@ -75,14 +75,13 @@ export class World {
 	}
 
 	addBuilding(building: Building) {
-		if (this.buildings.has(building.getId())) {
+		if (this.buildings.has(building.getPosHash())) {
 			return;
 		}
-		
 		const landPos = building.getLandPos();
 		const land = this.ensureLand(landPos);
 		land.addBuilding(building);
-		this.buildings.set(building.getId(), building);
+		this.buildings.set(building.getPosHash(), building);
 		building.showToAllCansee();
 	}
 
@@ -95,7 +94,7 @@ export class World {
 			console.error(`no building when remove: ${building.getId()} landPos=${landPos.x}:${landPos.y}`);
 		}
 
-		this.buildings.delete(building.getId())
+		this.buildings.delete(building.getPosHash())
 		building.unshowToAll();
 	}
 
@@ -135,7 +134,8 @@ export class World {
 	private async generateLand(landPos: Vector2) {
 		const worker = await this.generatorWorker;
 		const landData = await worker.GenerateLandData(landPos.x, landPos.y, 'LAND_SEED');
-		this.server.getDatabase().set(landPos.toHash('land'), landData);
+		// this.server.getDatabase().set(landPos.toHash('land'), landData);
+
 		return landData;
 	}
 

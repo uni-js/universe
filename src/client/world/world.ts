@@ -1,4 +1,5 @@
 import { EventBusClient, ObjectStore } from '@uni.js/client';
+import { Texture } from 'pixi.js';
 import { AddLandEvent, RemoveLandEvent } from '../../server/event/server';
 import { Vector2 } from '../../server/utils/vector2';
 import type { GameClientApp } from '../client-app';
@@ -19,11 +20,28 @@ export class World {
 		return this.app;
 	}
 
+	getBrickXY(x: number, y: number) {
+		const vec2 = new Vector2(x, y);
+		const landPos = vec2.div(32).floor();
+		const offset = vec2.sub(landPos.mul(32));
+
+		return this.landStore.get(...landPos.toArray())?.getBrickByOffset(offset);
+	}
+
+	decorate(x: number, y: number, texture: Texture) {
+		const vec2 = new Vector2(x, y);
+		const landPos = vec2.div(32).floor();
+		const offset = vec2.sub(landPos.mul(32));
+
+		return this.landStore.get(...landPos.toArray())?.decorate(offset.x, offset.y, texture);
+	}
+
 	private onAddLandEvent(event: AddLandEvent) {
 		console.log('add a new land:', `${event.landX}:${event.landY}`, event);
 
-		const land = new LandObject(this.app.textureProvider, event.landData, 0, new Vector2(event.landX, event.landY));
+		const land = new LandObject(this, this.app.textureProvider, event.landData, 0, new Vector2(event.landX, event.landY));
 		this.landStore.add(land);
+		land.initLand();
 	}
 
 	private onRemoveLandEvent(event: RemoveLandEvent) {
@@ -36,4 +54,5 @@ export class World {
 
 		console.log('remove land:', `${event.landX}:${event.landY}`, event);
 	}
+
 }

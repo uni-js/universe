@@ -35,3 +35,8 @@ export class PlayerStartUsing{
 export class PlayerStopUsing{
 	actorId: number;
 }
+export class PlayerJumpEvent {
+	actorId: number;
+	direction: DirectionType;
+	jumpUp: boolean;
+}

@@ -10,6 +10,21 @@ import { AttributeMap } from './attribute';
 import type { Building } from '../building/building';
 import { Viewable } from './viewable';
 
+function directionToVector(dir: DirectionType, reverse: boolean = false) {
+	let vec2: Vector2;
+	if(dir === DirectionType.BACK) {
+		vec2 = new Vector2(0, -1);
+	} else if (dir === DirectionType.FORWARD) {
+		vec2 = new Vector2(0, 1);
+	} else if (dir === DirectionType.LEFT) {
+		vec2 = new Vector2(-1, 0);
+	} else {
+		vec2 = new Vector2(1, 0);
+	}
+
+	return reverse ? vec2.swap() : vec2;
+}
+
 export enum RunningType {
 	SILENT,
 	WALKING,
@@ -21,6 +36,12 @@ export enum DirectionType {
 	BACK,
 	LEFT,
 	RIGHT,
+}
+
+export interface JumpInfo {
+	direction: DirectionType;
+	jumpUp: boolean;
+	tick: number;
 }
 
 export interface AttachPos {
@@ -50,6 +71,8 @@ export abstract class Actor extends Viewable {
 	protected maxHealth = 0;
 	protected attachPos: Vector2 = new Vector2(0, 0);
 	protected anchor: Vector2 = new Vector2(0.5, 1);
+
+	protected isJump: JumpInfo | undefined;
 
 	/**
 	 * @type {number}
@@ -110,15 +133,7 @@ export abstract class Actor extends Viewable {
 
 	getDirectionVector() {
 		const dir = this.getDirection();
-		if(dir === DirectionType.BACK) {
-			return new Vector2(0, -1);
-		} else if (dir === DirectionType.FORWARD) {
-			return new Vector2(0, 1);
-		} else if (dir === DirectionType.LEFT) {
-			return new Vector2(-1, 0);
-		} else {
-			return new Vector2(1, 0);
-		}
+		return directionToVector(dir);
 	}
 
 	setRunning(running: RunningType) {
@@ -244,6 +259,12 @@ export abstract class Actor extends Viewable {
 		const { x, y } = this.getSize();
 		this.attrs.set('sizeX', x);
 		this.attrs.set('sizeY', y);
+
+		if (this.isJump) {
+			this.attrs.set('jumpState', this.isJump.jumpUp ? 1 : 2);
+		} else {
+			this.attrs.set('jumpState', 0);
+		}
 	}
 
 	private doUpdateAttrsTick() {
@@ -323,6 +344,14 @@ export abstract class Actor extends Viewable {
 		return new Square2(leftTopPoint, leftTopPoint.add(size));
 	}
 
+	jump(direction: DirectionType, jumpUp: boolean) {
+		if (this.isJump) {
+			return;
+		}
+		this.isJump = { direction, jumpUp, tick: 0 };
+		this.setMotion(directionToVector(this.isJump.direction).mul(0.1));
+	}
+
 	private doUpdateAttachmentTick() {
 		const actor = this.getAttachmentActor();
 		if (actor) {
@@ -341,10 +370,23 @@ export abstract class Actor extends Viewable {
 		this.setPosition(this.pos.add(this.motion));
 	}
 
+	private doJumpingTick() {
+		if (!this.isJump) {
+			return;
+		}
+		if(this.isJump.tick >= 7) {
+			this.isJump = undefined;
+		} else {
+			this.isJump.tick++;
+		}
+
+	}
+
 	doTick() {
 		this.doUpdateAttrsTick();
 		this.doUpdateAttachmentTick();
 		this.doUpdateMovementTick();
 		this.doMotionTick();
+		this.doJumpingTick();
 	}
 }

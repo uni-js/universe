@@ -10,7 +10,7 @@ import { Input } from '@uni.js/prediction';
 import { ItemType } from '../item/item-type';
 import { DroppedItemActor } from '../actor/dropped-item';
 
-const PLAYER_CANSEE_LAND_RADIUS = 1;
+const PLAYER_CANSEE_LAND_RADIUS = 2;
 
 export class Player extends Actor {
 	private connId: string;
@@ -65,7 +65,7 @@ export class Player extends Actor {
 	}
 
 	getSize(): Vector2 {
-		return new Vector2(1, 1.5);
+		return new Vector2(1, 1.2);
 	}
 
 	isPlayer(): boolean {

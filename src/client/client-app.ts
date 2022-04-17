@@ -31,8 +31,8 @@ export class GameClientApp {
 	public secondLayer = new Container();
 
 	private tick = 0;
-	private worldWidth = 8 * 7;
-	private worldHeight = 30;
+	private worldWidth = 84;
+	private worldHeight = 45;
 	private resolution = 32;
 
 	constructor(serverUrl: string, private textureModules: TextureModule[], playground: HTMLElement) {

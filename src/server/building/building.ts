@@ -23,7 +23,7 @@ export abstract class Building extends Viewable {
     constructor(private server: Server, pos: Vector2) {
         super(server)
 
-        this.pos = pos;
+        this.pos = pos.floorMid();
         this.world = this.server.getWorld();
         this.id = Building.idSum++;
     }
@@ -46,6 +46,10 @@ export abstract class Building extends Viewable {
 
     getPos() {
         return this.pos;
+    }
+
+    getPosHash() {
+        return this.pos.toHash(`building`);
     }
 
     getLandPos() {
