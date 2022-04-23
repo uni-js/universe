@@ -8,7 +8,7 @@ import { NameTag } from '../objects/nametag';
 import { Vector2 } from '../../server/utils/vector2';
 import { Interpolate2d } from '../../server/utils/interpolate';
 import { ActorType } from '../../server/actor/actor-type';
-import { DirectionType, RunningType } from '../../server/actor/actor';
+import { directionToVector, DirectionType, RunningType } from '../../server/actor/actor';
 import type { GameClientApp } from '../client-app';
 import type { World } from '../world/world';
 import { orderObject } from './order';
@@ -127,8 +127,11 @@ export abstract class ActorObject extends GameObject {
 		this.updateTexturePool();
 		this.setTextures(this.getDefaultTexture());
 
-		this.updateAttrs(attrs);
 		this.updateSize();
+
+		setTimeout(() => {
+			this.updateAttrs(attrs);
+		}, 0);
 	}
 
 	abstract getType(): ActorType;
@@ -164,6 +167,10 @@ export abstract class ActorObject extends GameObject {
 
 		this.sprite.play();
 		this.playing = true;
+	}
+
+	getDirectionVector() {
+		return directionToVector(this.direction)
 	}
 
 	isPlayer() {

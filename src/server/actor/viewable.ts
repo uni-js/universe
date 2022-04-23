@@ -9,7 +9,7 @@ export abstract class Viewable{
 
     abstract onBeshownToPlayer(player: Player): void;
     abstract getLandPos(): Vector2;
-	abstract getId(): number;
+	abstract getHash(): string;
 
 	showTo(player: Player) {
 		if (this.viewingPlayers.has(player)) {

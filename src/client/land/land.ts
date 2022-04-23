@@ -2,9 +2,9 @@ import { TextureProvider } from '@uni.js/texture';
 import { BRICK_WIDTH } from './brick';
 import { CompositeRectTileLayer } from '@pixi/tilemap';
 import { StaticObject } from '../objects/static-object';
-import { BrickData, LandData } from '../../server/land/land';
+import { BricksData } from '../../server/land/land';
 import { Vector2 } from '../../server/utils/vector2';
-import { BrickType } from '../../server/bricks';
+import { BrickData, BrickType } from '../../server/bricks';
 import { Texture } from 'pixi.js';
 import type { World } from '../world/world';
 
@@ -19,7 +19,7 @@ export class LandObject extends StaticObject {
 	private decorateMap = new Map<string, boolean>();
 	private bricks: BrickData[];
 
-	constructor(private world: World, textureProvider: TextureProvider, private initLandData: LandData, objectId: number, private landPos: Vector2) {
+	constructor(private world: World, textureProvider: TextureProvider, private initLandData: BricksData, objectId: number, private landPos: Vector2) {
 		super(textureProvider, objectId, new Vector2(1, 1), landPos.mul(32));
 		this.zIndex = 0;
 

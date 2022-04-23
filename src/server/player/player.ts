@@ -17,6 +17,8 @@ export class Player extends Actor {
 	private backpack: Backpack;
 	private shortcut: Shortcut;
 	private watchLands = new Set<Land>();
+	private handPos: Vector2;
+	
 	protected maxHealth: number = 100;
 	protected health: number = 100;
 
@@ -40,16 +42,16 @@ export class Player extends Actor {
 		if(hasChanged) {
 			switch (direction) {
 				case DirectionType.BACK:
-					this.attachPos = new Vector2(0, -0.4);
+					this.handPos = new Vector2(0, -0.35);
 					return;
 				case DirectionType.FORWARD:
-					this.attachPos = new Vector2(0, -0.5);
+					this.handPos = new Vector2(0, -0.35);
 					return;
 				case DirectionType.LEFT:
-					this.attachPos = new Vector2(-0.35, -0.5);
+					this.handPos = new Vector2(-0.4, -0.35);
 					return;
 				case DirectionType.RIGHT:
-					this.attachPos = new Vector2(0.35, -0.5);
+					this.handPos = new Vector2(0.4, -0.35);
 					return;
 				default:
 					this.attachPos = new Vector2(0, 0);
@@ -58,6 +60,10 @@ export class Player extends Actor {
 		}
 
 		return hasChanged;
+	}
+
+	getHandPos() {
+		return this.handPos;
 	}
 
 	getAttachPos(): Vector2 {
@@ -237,6 +243,12 @@ export class Player extends Actor {
 		}
 
 		return isCrossing;
+	}
+
+	protected updateAttrs(): void {
+		super.updateAttrs();
+
+		this.attrs.set('handholdItem', this.shortcut.getCurrentItem()?.getType() || ItemType.EMPTY);
 	}
 
 	doTick(): void {

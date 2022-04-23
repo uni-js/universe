@@ -8,13 +8,16 @@ import { BuildingType } from "./building-type";
 import { Viewable } from "../actor/viewable";
 import type { Server } from "../server";
 
-export abstract class Building extends Viewable {
-    static idSum = 0;
+export interface BuildingData {
+    x: number;
+    y: number;
+    attrs: any;
+}
 
+export abstract class Building extends Viewable {
     protected meta: number = 0;
 
     private pos: Vector2;
-    private id: number;
     private attrs = new AttributeMap();
     private defaultAnchor = new Vector2(0.5, 1);
     private defaultSize = new Vector2(1, 1);
@@ -25,11 +28,6 @@ export abstract class Building extends Viewable {
 
         this.pos = pos.floorMid();
         this.world = this.server.getWorld();
-        this.id = Building.idSum++;
-    }
-
-    getId() {
-        return this.id;
     }
 
     getAnchor() {
@@ -48,7 +46,7 @@ export abstract class Building extends Viewable {
         return this.pos;
     }
 
-    getPosHash() {
+    getHash() {
         return this.pos.toHash(`building`);
     }
 
@@ -66,7 +64,6 @@ export abstract class Building extends Viewable {
         const event = new AddBuildingEvent();
         event.x = this.pos.x;
         event.y = this.pos.y;
-        event.bId = this.id;
         event.bType = this.getType();
         event.attrs = this.attrs.getAll();
 
@@ -75,7 +72,8 @@ export abstract class Building extends Viewable {
 
     onBeunshownToPlayer(player: Player): void {
         const event = new RemoveBuildingEvent();
-        event.bId = this.id;
+        event.x = this.pos.x;
+        event.y = this.pos.y;
 
         player.emitEvent(event);
     }
@@ -104,13 +102,22 @@ export abstract class Building extends Viewable {
 		this.updateAttrs();
 		if (this.attrs.hasDirty()) {
 			const event = new BuildingUpdateAttrsEvent();
-			event.bId = this.getId();
+			event.x = this.pos.x;
+            event.y = this.pos.y;
 			event.updated = this.attrs.getDirtyAll();
 			this.attrs.cleanAllDirty();
 
 			this.world.emitToViewers(this, event);
 		}
 	}
+
+    getBuildingData(): BuildingData {
+        return {
+            x: this.pos.x,
+            y: this.pos.y,
+            attrs: this.attrs.getAll(),
+        }
+    }
 
     doTick() {
         this.doUpdateAttrsTick();

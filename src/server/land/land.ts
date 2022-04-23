@@ -1,23 +1,15 @@
 import type { Actor } from '../actor/actor';
-import type { Vector2 } from '../utils/vector2';
+import { Vector2 } from '../utils/vector2';
 import { Server } from '../server';
 import type { Player } from '../player/player';
-import { Brick, BrickType } from '../bricks';
+import { Brick, BrickData, BrickType } from '../bricks';
 import type { World } from './world';
-import type { Building } from '../building/building';
+import { Building, BuildingData } from '../building/building';
 import type { EventBusServer } from '@uni.js/server';
 import type { Viewable } from '../actor/viewable';
-
-export interface BrickData {
-	x: number;
-	y: number;
-	layers: number[];
-	metas: number[];
-}
-
-export interface LandData {
-	bricks: BrickData[];
-}
+import { AddLandEvent } from '../event/server';
+import { RawLandData } from './generator';
+import { buildingFactory } from '../../factory/server-factory';
 
 export const BRICK_WIDTH = 32;
 
@@ -29,11 +21,20 @@ export function landPosToPos(landPos: Vector2) {
 	return landPos.mul(BRICK_WIDTH).floor();
 }
 
+export interface LandData{
+	bricks: BrickData[],
+	buildings: BuildingData[]
+}
+
+export interface BricksData {
+	bricks: BrickData[]
+}
+
 export class Land {
 	private loaded = false;
 	private actors = new Set<Actor>();
 	private bricks = new Map<string, Brick>();
-	private buildings = new Map<number, Building>();
+	private buildings = new Map<string, Building>();
 	private pos: Vector2;
 	private world: World;
 	private eventBus: EventBusServer;
@@ -48,8 +49,21 @@ export class Land {
 		return this.loaded;
 	}
 
-	setLoaded() {
+	setLoaded(landData: RawLandData) {
+		if (this.loaded) {
+			return;
+		}
 		this.loaded = true;
+
+		for(const brick of landData.bricks) {
+			const pos = new Vector2(brick.x, brick.y);
+			this.bricks.set(pos.toHash(), new Brick(pos, brick.layers, brick.metas));
+		}
+
+		for(const building of landData.buildings) {
+			const pos = new Vector2(building.x, building.y);
+			this.buildings.set(pos.toHash(), buildingFactory.getNewObject(building.type, this.server, pos));
+		}		
 	}
 
 	getLandPos() {
@@ -58,6 +72,21 @@ export class Land {
 
 	getLandPlayers() {
 		return this.getActors().filter((item) => item.isPlayer());
+	}
+
+	getLandData() {
+		const landData: LandData = {
+			bricks: [],
+			buildings: []
+		};
+		for(const brick of this.bricks.values()) {
+			landData.bricks.push(brick.getBrickData());
+		}
+
+		for(const building of this.buildings.values()) {
+			landData.buildings.push(building.getBuildingData());
+		}
+		return landData;
 	}
 
 	getActors() {
@@ -72,40 +101,6 @@ export class Land {
 		return this.bricks.get(vec2.toHash());
 	}
 
-	addBrickLayer(vec2: Vector2, brickType: BrickType) {
-		const hash = vec2.toHash();
-		const brick = this.bricks.get(hash);
-		if(!brick) {
-			console.error(`no brick here: ${hash}`)
-			return;
-		}
-		const layers = brick.getLayers().slice();
-		layers.push(brickType);
-
-		const metas = brick.getMetas().slice();
-		metas.push(0);
-
-		const newBrick = new Brick({ layers, metas, x: vec2.x, y: vec2.y });
-		this.bricks.set(hash, newBrick);
-	}
-
-	removeBrickLayer(vec2: Vector2) {
-		const hash = vec2.toHash();
-		const brick = this.bricks.get(hash);
-		if(!brick) {
-			console.error(`no brick here: ${hash}`)
-			return;
-		}
-		const layers = brick.getLayers().slice();
-		layers.pop();
-		
-		const metas = brick.getMetas().slice();
-		metas.pop();
-
-		const newBrick = new Brick({ layers, metas, x: vec2.x, y: vec2.y });
-		this.bricks.set(hash, newBrick);
-	}
-
 	addActor(actor: Actor) {
 		this.actors.add(actor);
 	}
@@ -115,19 +110,32 @@ export class Land {
 	}
 
     addBuilding(building: Building) {
-        this.buildings.set(building.getId(), building);
+        this.buildings.set(building.getHash(), building);
     }
 
     removeBuilding(building: Building) {
-        this.buildings.delete(building.getId());
+        this.buildings.delete(building.getHash());
     }
-
-	getBuildingById(bId: number) {
-		return this.buildings.get(bId);
-	}
 
 	getBuildings() {
 		return Array.from(this.buildings.values());
+	}
+
+	sendLandData() {
+		const bricksData: BricksData = {
+			bricks: this.getLandData().bricks
+		}
+
+		const event = new AddLandEvent();
+		event.bricksData = bricksData;
+		event.landX = this.pos.x;
+		event.landY = this.pos.y;
+
+		for (const player of this.server.getPlayers()) {
+			if (player.isWatchLand(this)) {
+				player.emitEvent(event);
+			}
+		}
 	}
 
 	getViewables() {

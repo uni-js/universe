@@ -13,22 +13,22 @@ export class BuildingManager{
         this.eventBus.on(RemoveBuildingEvent, this.onRemoveBuildingEvent.bind(this));
         this.eventBus.on(BuildingUpdateAttrsEvent, this.onUpdateAttrsEvent.bind(this));
 
-        this.buildingStore = new ObjectStore((building: Building) => [building.getServerId()], this.app.secondLayer);
+        this.buildingStore = new ObjectStore((building: Building) => [building.getX(), building.getY()], this.app.secondLayer);
         this.app.viewport.addChild(this.buildingStore.container);
     }
     
     private onAddBuildingEvent(event: AddBuildingEvent) {
-        const newBuilding = new Building(event.bId, new Vector2(event.x, event.y), event.bType, event.attrs, this.app);
+        const newBuilding = new Building(new Vector2(event.x, event.y), event.bType, event.attrs, this.app);
         this.buildingStore.add(newBuilding);
     }
 
     private onRemoveBuildingEvent(event: RemoveBuildingEvent) {
-        const building = this.buildingStore.get(event.bId);
+        const building = this.buildingStore.get(event.x, event.y);
         this.buildingStore.remove(building);
     }
 
     private onUpdateAttrsEvent(event: BuildingUpdateAttrsEvent) {
-        const building = this.buildingStore.get(event.bId);
+        const building = this.buildingStore.get(event.x, event.y);
         building.updateAttrs(event.updated);        
     }
 

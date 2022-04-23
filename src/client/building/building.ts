@@ -13,7 +13,7 @@ export class Building extends PIXI.Container{
     private sprite: PIXI.Sprite;
     private shadow: ShadowObject;
 
-    constructor(private serverId: number, pos: Vector2, type: BuildingType, attrs: any, app: GameClientApp) {
+    constructor(pos: Vector2, type: BuildingType, attrs: any, app: GameClientApp) {
         super();
         this.zIndex = 2;
         this.sprite = new PIXI.Sprite();
@@ -32,11 +32,19 @@ export class Building extends PIXI.Container{
         this.addChild(this.shadow);
         this.setMeta(attrs.meta);
     }
-    
-    getServerId() {
-        return this.serverId;
+
+    getPos() {
+        return new Vector2(this.position.x, this.position.y);
     }
 
+    getX() {
+        return this.position.x;
+    }
+
+    getY() {
+        return this.position.y;
+    }
+ 
     getType() {
         return this.type;
     }

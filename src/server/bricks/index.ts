@@ -1,3 +1,5 @@
+import { Vector2 } from "../utils/vector2";
+
 export enum BrickType {
 	DIRT,
 	DRY_DIRT,
@@ -9,19 +11,21 @@ export enum BrickType {
 	WET_DIRT,
 }
 
-export interface BrickData {
+export interface BrickData{
 	x: number;
 	y: number;
 	layers: BrickType[];
-	metas: number[];
+	metas: BrickType[];
 }
 
 export class Brick{
 	private layers: BrickType[];
 	private metas: BrickType[];
-	constructor(private brickData: BrickData) {
-		this.layers = brickData.layers;
-		this.metas = brickData.metas;
+	private pos: Vector2;
+	constructor(pos: Vector2, layers: BrickType[], metas: number[]) {
+		this.layers = layers;
+		this.metas = metas;
+		this.pos = pos;
 	}
 
 	getLayers() {
@@ -30,5 +34,14 @@ export class Brick{
 
 	getMetas() {
 		return this.metas;
+	}
+
+	getBrickData() {
+		return {
+			x: this.pos.x,
+			y: this.pos.y,
+			layers: this.layers,
+			metas: this.metas
+		}
 	}
 }

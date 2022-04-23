@@ -39,7 +39,7 @@ export class World {
 	private onAddLandEvent(event: AddLandEvent) {
 		console.log('add a new land:', `${event.landX}:${event.landY}`, event);
 
-		const land = new LandObject(this, this.app.textureProvider, event.landData, 0, new Vector2(event.landX, event.landY));
+		const land = new LandObject(this, this.app.textureProvider, event.bricksData, 0, new Vector2(event.landX, event.landY));
 		this.landStore.add(land);
 		land.initLand();
 	}

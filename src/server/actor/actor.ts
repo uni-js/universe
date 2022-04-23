@@ -10,7 +10,7 @@ import { AttributeMap } from './attribute';
 import type { Building } from '../building/building';
 import { Viewable } from './viewable';
 
-function directionToVector(dir: DirectionType, reverse: boolean = false) {
+export function directionToVector(dir: DirectionType, reverse: boolean = false) {
 	let vec2: Vector2;
 	if(dir === DirectionType.BACK) {
 		vec2 = new Vector2(0, -1);
@@ -101,6 +101,10 @@ export abstract class Actor extends Viewable {
 
 	getId() {
 		return this.id;
+	}
+
+	getHash() {
+		return this.id.toString();
 	}
 
 	getPos() {

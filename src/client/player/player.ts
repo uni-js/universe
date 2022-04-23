@@ -5,7 +5,8 @@ import { ActorType } from '../../server/actor/actor-type';
 import { ControlMoveEvent, ControlWalkEvent, PlayerJumpEvent, PlayerStartUsing, PlayerStopUsing } from '../../server/event/client';
 import type { GameClientApp } from '../client-app';
 import { DirectionType, RunningType } from '../../server/actor/actor';
-import { Texture, Resource } from 'pixi.js';
+import { Texture, Resource, Sprite } from 'pixi.js';
+import { ItemType } from '../../server/item/item-type';
 
 
 export interface ControlMoved {
@@ -25,9 +26,18 @@ export class Player extends ActorObject {
 	private predictedInputMgr: PredictedInputManager;
 	private isWalkDirty = false;
 	private isUsingItem = false;
+	private handHolding: Sprite;
 
 	constructor(serverId: number, pos: Vector2, attrs: any, app: GameClientApp) {
 		super(serverId, pos, attrs, app);
+
+
+		this.handHolding = new Sprite();
+		this.handHolding.width = 0.5;
+		this.handHolding.height = 0.5;
+		this.handHolding.anchor.set(0.5, 0.5);
+		
+		this.addChild(this.handHolding);
 
 		this.setShowHealth(true);
 		this.setHasShadow(true);
@@ -41,6 +51,7 @@ export class Player extends ActorObject {
 		if (this.direction === undefined) {
 			this.controlDirection(DirectionType.FORWARD);
 		}
+
 
 		this.predictedInputMgr = new PredictedInputManager({ ...this.getPos(), motionX: attrs.motionX, motionY: attrs.motionY });
 	}
@@ -80,9 +91,34 @@ export class Player extends ActorObject {
 			if (this.running === RunningType.WALKING){
 				this.playWalkingAnim();
 			}
+
+			this.updateHandHoldingDirection();
 		}
 
 		return hasChanged;
+	}
+
+	private updateHandHoldingDirection() {
+		if (this.direction !== DirectionType.BACK) {
+			this.handHolding.visible = true;
+
+			this.handHolding.y = -0.35;
+			this.handHolding.rotation = 0;
+			this.handHolding.scale.x = 1;
+
+			if (this.direction === DirectionType.FORWARD) {
+				this.handHolding.x = 0;
+				this.handHolding.rotation = Math.PI / 2;
+			} else if (this.direction === DirectionType.LEFT) {
+				this.handHolding.x = -0.4
+				this.handHolding.scale.x = -1;
+			} else {
+				this.handHolding.x = 0.4
+			}
+			this.handHolding.width = 0.5;
+		} else {
+			this.handHolding.visible = false;
+		}
 	}
 
 	setRunning(running: RunningType): boolean {
@@ -192,6 +228,11 @@ export class Player extends ActorObject {
 			event.input = input;
 			this.emitEvent(event);
 		});
+	}
+
+	setHandholdItem(holdItem: ItemType) {
+		const texture = this.textureProvider.get(`handhold.${holdItem}`) || this.textureProvider.get(`item.${holdItem}`);
+		this.handHolding.texture = texture;
 	}
 
 	emitEvent(event: any) {

@@ -1,4 +1,4 @@
-import type { LandData } from '../land/land';
+import type { BricksData } from '../land/land';
 import type { ContainerData } from '../container/container';
 import { ContainerType } from '../container/container-type';
 import { BuildingType } from '../building/building-type';
@@ -38,7 +38,7 @@ export class RemoveActorEvent {
 export class AddLandEvent {
 	landX: number;
 	landY: number;
-	landData: LandData;
+	bricksData: BricksData;
 }
 export class RemoveLandEvent {
 	landX: number;
@@ -49,16 +49,17 @@ export class ActorUpdateAttrsEvent {
 	updated: any;
 }
 export class BuildingUpdateAttrsEvent {
-	bId: number;
+	x: number;
+	y: number;
 	updated: any;
 }
 export class AddBuildingEvent {
-	bId: number;
 	x: number;
 	y: number;
 	bType: BuildingType;
 	attrs: any;
 }
 export class RemoveBuildingEvent {
-	bId: number;
+	x: number;
+	y: number;
 }

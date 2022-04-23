@@ -1,11 +1,10 @@
 import { Square2, Vector2 } from '../utils/vector2';
-import { Land, LandData, posToLandPos } from './land';
+import { Land, posToLandPos } from './land';
 import type { Server } from '../server';
 import type { Actor } from '../actor/actor';
 import { QueuedWorker } from '../utils/queued-worker';
 import { spawn, Worker } from 'threads';
 import { IPersistDatabase } from '../database/database';
-import { AddLandEvent } from '../event/server';
 import { IEventBus } from '@uni.js/server';
 import type { Building } from '../building/building';
 
@@ -31,9 +30,9 @@ export class World {
 		}
 
 		const land = this.getLand(landPos);
-		land.setLoaded();
+		land.setLoaded(landData);
+		land.sendLandData();
 
-		this.sendLandData(landPos, landData);
 		console.log(`land data loaded: ${landPos.x}:${landPos.y}`);
 	}
 
@@ -75,13 +74,13 @@ export class World {
 	}
 
 	addBuilding(building: Building) {
-		if (this.buildings.has(building.getPosHash())) {
+		if (this.buildings.has(building.getHash())) {
 			return;
 		}
 		const landPos = building.getLandPos();
 		const land = this.ensureLand(landPos);
 		land.addBuilding(building);
-		this.buildings.set(building.getPosHash(), building);
+		this.buildings.set(building.getHash(), building);
 		building.showToAllCansee();
 	}
 
@@ -91,10 +90,10 @@ export class World {
 		if (land) {
 			land.removeBuilding(building)
 		} else {
-			console.error(`no building when remove: ${building.getId()} landPos=${landPos.x}:${landPos.y}`);
+			console.error(`no building when remove: ${building.getHash()} landPos=${landPos.x}:${landPos.y}`);
 		}
 
-		this.buildings.delete(building.getPosHash())
+		this.buildings.delete(building.getHash())
 		building.unshowToAll();
 	}
 
@@ -137,24 +136,6 @@ export class World {
 		// this.server.getDatabase().set(landPos.toHash('land'), landData);
 
 		return landData;
-	}
-
-	private sendLandData(landPos: Vector2, landData: LandData) {
-		const land = this.getLand(landPos);
-		if (!land) {
-			return;
-		}
-
-		const event = new AddLandEvent();
-		event.landData = landData;
-		event.landX = landPos.x;
-		event.landY = landPos.y;
-
-		for (const player of this.server.getPlayers()) {
-			if (player.isWatchLand(land)) {
-				player.emitEvent(event);
-			}
-		}
 	}
 
 	getAreaNearbyActors(square: Square2) {
