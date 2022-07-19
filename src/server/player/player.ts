@@ -32,7 +32,7 @@ export class Player extends Actor {
 		this.watchLandsAllCansee();
 	}
 
-	canCheckBeOverlap(): boolean {
+	canCheckBeCollusion(): boolean {
 		return true;
 	}
 

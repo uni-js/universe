@@ -22,12 +22,18 @@ export abstract class Building extends Viewable {
     private defaultAnchor = new Vector2(0.5, 1);
     private defaultSize = new Vector2(1, 1);
     private world: World;
+    private boundingBox: Square2;
 
-    constructor(private server: Server, pos: Vector2) {
+    constructor(private server: Server, pos: Vector2, meta: number) {
         super(server)
 
         this.pos = pos.floorMid();
         this.world = this.server.getWorld();
+        this.meta = meta;
+        this.boundingBox = new Square2(
+            this.pos.add(new Vector2(-this.defaultSize.x / 2, 0)), 
+            this.pos.add(new Vector2(this.defaultSize.x / 2, -this.defaultSize.y))
+        );
     }
 
     getAnchor() {
@@ -38,8 +44,8 @@ export abstract class Building extends Viewable {
         return this.defaultSize;
     }
 
-    getBoundings() {
-        return new Square2(this.pos, this.pos.add(this.defaultSize))
+    getBoundingBox() {
+        return this.boundingBox;
     }
 
     getPos() {
@@ -54,7 +60,7 @@ export abstract class Building extends Viewable {
         return posToLandPos(this.pos);
     }
 
-    canCheckBeOverlap() {
+    canCheckBeCollusion() {
         return true;
     }
 

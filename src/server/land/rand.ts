@@ -1,13 +1,10 @@
-import SimplexNoise from "simplex-noise";
+import Random from "seedrandom";
 
 export class RandPicker {
-    private noise: SimplexNoise
-    private x = 0;
-    constructor(seed: string) {
-        this.noise = new SimplexNoise(seed);
-    }
+    private x = 1;
+    constructor(private seed: string) { }
 
     nextRand() {
-        return (this.noise.noise2D(this.x += 5,0) + 1) / 2;
+        return Random.xorshift7(`${this.seed}:${this.x++}`)();
     }
 }

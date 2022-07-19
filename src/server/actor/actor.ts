@@ -25,6 +25,94 @@ export function directionToVector(dir: DirectionType, reverse: boolean = false) 
 	return reverse ? vec2.swap() : vec2;
 }
 
+export interface Collision{
+	isActor: boolean;
+    hasCollision: true;
+    backwards: Vector2;
+	actor: Actor;
+	building: Building;
+}
+
+export function getPointsSegmentInRect(segA: Vector2, segB: Vector2, minX: number, maxX: number, minY: number, maxY: number): Vector2[] {
+    const points: Vector2[] = [];
+
+	if (segB.x === segA.x) {
+		const mnY = Math.min(segA.y, segB.y);
+		const mxY = Math.max(segA.y, segB.y);
+		if (!(segA.x >= minX && segA.x < maxX)) {
+			return [];
+		}
+		if (minY >= mnY && minY < mxY) {
+			points.push(new Vector2(segA.x, minY))
+		}
+		if (maxY >= mnY && maxY < mxY) {
+			points.push(new Vector2(segA.x, maxY))
+		}
+		return points;
+	}
+
+	if (segB.y === segA.y) {
+		const mnX = Math.min(segA.x, segB.x);
+		const mxX = Math.max(segA.x, segB.x);
+		if (!(segA.y >= minY && segA.y < maxY)) {
+			return [];
+		}
+		if (minX >= mnX && minX < mxX) {
+			points.push(new Vector2(minX, segA.y))
+		}
+		if (maxX >= mnX && maxX < mxX) {
+			points.push(new Vector2(maxX, segA.y))
+		}
+		return points;
+	}
+
+
+    const k = (segB.y - segA.y) / (segB.x - segA.x); // k = tan(x)
+    const b = segA.y - k * segA.x; // b = y1 - k * x1
+
+    const y1 = k * minX + b;
+    if (minY <= y1 && y1 < maxY) {
+        points.push(new Vector2(minX, y1));
+    }
+
+    const y2 = k * maxX + b;
+    if (minY <= y2 && y2 < maxY) {
+        points.push(new Vector2(maxX, y2));
+    }
+
+    // x = (y - b) / k
+    const x1 = (minY - b) / k;
+    if (minX <= x1 && x1 < maxX) {
+        points.push(new Vector2(x1, minY));
+    }
+
+    const x2 = (maxY - b) / k;
+    if (minX <= x2 && x2 < maxX) {
+        points.push(new Vector2(x2, maxY));
+    }
+
+    return points;
+}
+
+export function getFirstPointInSegment(segA: Vector2, segB: Vector2, points: Vector2[]) {
+	if (points.length <= 0) {
+		return;
+	}
+	if (segA.x === segB.x) {
+		return points.sort((a, b) => (Math.abs(a.y - segA.y) - Math.abs(b.y - segA.y)))[0];
+	}
+	return points.sort((a, b) => (Math.abs(a.x - segA.x) - Math.abs(b.x - segA.x)))[0];
+}
+
+export function expandSegment(segA: Vector2, segB: Vector2, length: number): Vector2 {
+    const dx = segB.x - segA.x;
+    const dy = segB.y - segA.y;
+    const dl = Math.sqrt(dx * dx + dy * dy);
+    const cos = dx / dl;
+    const sin = dy / dl;
+    return segB.add(new Vector2(length * cos, length * sin));
+}
+
 export enum RunningType {
 	SILENT,
 	WALKING,
@@ -190,30 +278,55 @@ export abstract class Actor extends Viewable {
 		return this.server.getWorld().getLand(this.getLandPos());
 	}
 
-	canCheckBeOverlap() {
+	isSlimActor() {
 		return false;
 	}
 
-	canCheckOverlap() {
+	canCheckBeCollusion() {
 		return false;
 	}
 
-	getOverlapActors(boundings?: Square2) {
-		if (!this.canCheckOverlap()) {
-			return [];
-		}
-
-		const actors = this.world.getAreaNearbyActors(boundings || this.getBoundings());
-		return actors.filter((actor)=>actor.canCheckBeOverlap());
+	canCheckCollusion() {
+		return false;
 	}
 
-	getOverlapBuildings(boundings?: Square2) {
-		if (!this.canCheckOverlap()) {
+	checkCollusion(): Collision[] {
+		if (!this.canCheckCollusion()) {
 			return [];
 		}
+		const thisBounding = this.getBoundingBox()
 
-		const buildings = this.world.getAreaNearbyBuildings(boundings || this.getBoundings());
-		return buildings.filter((building)=>(building.canCheckBeOverlap()));
+		const collisions: Collision[] = [];
+		const nearbys = this.world.getAreaNearbys(this.getBoundingBox());
+		for(const nearby of nearbys) { 
+			const isActor = nearby instanceof Actor;
+			const asActor = nearby as Actor;
+			if(this.isSlimActor() && isActor && asActor.isSlimActor()) {
+				continue;
+			}
+			if(this.isSlimActor()) {
+				const bbx = nearby.getBoundingBox();
+				const width = thisBounding.lengthSquared();
+				
+				const from = this.lastTickPos;
+				const to = expandSegment(from, this.pos, width);
+				
+				const points = getPointsSegmentInRect(from, to, bbx.fromX, bbx.toX, bbx.fromY, bbx.toY);
+				if (points.length > 0) {
+					const firstPoint = getFirstPointInSegment(from, to, points);
+					const dx = to.x - firstPoint.x;
+					const dy = to.y - firstPoint.y;
+					collisions.push({
+						hasCollision: true,
+						backwards: new Vector2(-dx, -dy),
+						isActor,
+						actor: nearby as Actor,
+						building: nearby as Building
+					})
+				}
+			}
+		}
+		return collisions;
 	}
 
 	knockBack(powerVec: Vector2) {
@@ -291,22 +404,14 @@ export abstract class Actor extends Viewable {
 		return this.world.getActor(this.attachment);
 	}
 
-	protected onOverlapActors(actors: Actor[]) {
+	protected onCollisions(collisions: Collision[]) {
 
 	}
 
-	protected onOverlapBuildings(buildings: Building[]) {
-
-	}
-
-	doCheckOverlapTick() {
-		const actors = this.getOverlapActors()
-		if (actors.length > 0) {
-			this.onOverlapActors(actors);
-		}
-		const buildings = this.getOverlapBuildings();
-		if (buildings.length > 0) {
-			this.onOverlapBuildings(buildings);
+	doCheckCollusionTick() {
+		const collisions = this.checkCollusion();
+		if (collisions.length > 0) {
+			this.onCollisions(collisions);
 		}
 	}
 
@@ -328,7 +433,7 @@ export abstract class Actor extends Viewable {
 			}
 		}
 
-		this.doCheckOverlapTick();
+		this.doCheckCollusionTick();
 
 		const event = new MoveActorEvent();
 		event.actorId = this.getId();
@@ -342,7 +447,7 @@ export abstract class Actor extends Viewable {
 		return isCrossing;
 	}
 
-	getBoundings() {
+	getBoundingBox() {
 		const size = this.getSize();
 		const leftTopPoint = new Vector2(this.pos.x - size.x * this.anchor.x, this.pos.y - size.y * this.anchor.y);
 		return new Square2(leftTopPoint, leftTopPoint.add(size));

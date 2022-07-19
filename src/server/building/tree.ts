@@ -9,4 +9,7 @@ export class Tree extends Building{
     getType() {
         return BuildingType.TREE
     }
+    canCheckBeCollusion(): boolean {
+        return true;
+    }
 }

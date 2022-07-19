@@ -97,10 +97,10 @@ export class Vector2 {
 
 
 export class Square2{
-	private fromX: number;
-	private fromY: number;
-	private toX: number;
-	private toY: number;
+	fromX: number;
+	fromY: number;
+	toX: number;
+	toY: number;
 	private satBox: SAT.Box;
 
 	constructor(from: Vector2, to: Vector2) {
@@ -111,6 +111,10 @@ export class Square2{
 
 		const leftTopPoint = new Vector2(this.fromX, this.fromY).toSATVector();
 		this.satBox = new SAT.Box(leftTopPoint, this.toX - this.fromX, this.toY - this.fromY);
+	}
+
+	lengthSquared() {
+		return Math.hypot(this.toX - this.fromX, this.toY - this.fromY)
 	}
 
 	getFrom() {

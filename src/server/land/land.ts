@@ -35,12 +35,15 @@ export class Land {
 	private actors = new Set<Actor>();
 	private bricks = new Map<string, Brick>();
 	private buildings = new Map<string, Building>();
-	private pos: Vector2;
+	private landpos: Vector2;
 	private world: World;
+	private pos: Vector2;
 	private eventBus: EventBusServer;
 
-	constructor(pos: Vector2, private server: Server) {
-		this.pos = pos;
+	constructor(landpos: Vector2, private server: Server) {
+		this.landpos = landpos;
+		this.pos = landPosToPos(landpos);
+		
 		this.world = this.server.getWorld();
 		this.eventBus = this.server.getEventBus();
 	}
@@ -61,13 +64,17 @@ export class Land {
 		}
 
 		for(const building of landData.buildings) {
-			const pos = new Vector2(building.x, building.y);
-			this.buildings.set(pos.toHash(), buildingFactory.getNewObject(building.type, this.server, pos));
+			const pos = this.pos.add(new Vector2(building.x, building.y));
+			this.buildings.set(pos.toHash(), buildingFactory.getNewObject(building.type, this.server, pos, building.meta));
 		}		
 	}
 
-	getLandPos() {
+	getPos() {
 		return this.pos;
+	}
+
+	getLandPos() {
+		return this.landpos;
 	}
 
 	getLandPlayers() {
@@ -121,21 +128,30 @@ export class Land {
 		return Array.from(this.buildings.values());
 	}
 
-	sendLandData() {
+	syncLandData() {
 		const bricksData: BricksData = {
 			bricks: this.getLandData().bricks
 		}
 
 		const event = new AddLandEvent();
 		event.bricksData = bricksData;
-		event.landX = this.pos.x;
-		event.landY = this.pos.y;
+		event.landX = this.landpos.x;
+		event.landY = this.landpos.y;
 
 		for (const player of this.server.getPlayers()) {
 			if (player.isWatchLand(this)) {
 				player.emitEvent(event);
 			}
 		}
+
+		for(const building of this.buildings.values()) {
+			building.showToAllCansee();
+		}
+
+		for(const actor of this.actors.values()) {
+			actor.showToAllCansee();
+		}
+
 	}
 
 	getViewables() {

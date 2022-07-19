@@ -16,6 +16,7 @@ export interface RawBrickData {
 export interface RawBuildingData {
 	x: number;
 	y: number;
+	meta: number;
 	type: BuildingType;
 }
 
@@ -135,21 +136,30 @@ function decorateWorldSurface(bricks: BrickData[], landPos: Vector2, picker: Bio
 		}
 }
 
-function plantTrees(biomePicker: BiomePicker, seed: string) {
+function plantTrees(biomePicker: BiomePicker, landPos: Vector2, seed: string) {
+	const startAt = landPos.mul(32);
 	const treePicker = new RandPicker(`meta:${seed}`);
 	const trees: RawBuildingData[] = [];
 
 	for (let y = 0; y < 32; y++)
 		for (let x = 0; x < 32; x++) {
-			const type = biomePicker.getBiomeType(x, y);
+			const type = biomePicker.getBiomeType(startAt.x + x, startAt.y + y);
+			const rand = treePicker.nextRand();
+			const metaRand = treePicker.nextRand();
 			if (type === BiomeType.FOREST) {
-				if(treePicker.nextRand() < 0.1) {
+				if(rand < 0.01) {
 					trees.push({
-						x, y, type: BuildingType.TREE
+						x, y, type: BuildingType.TREE, meta: pickMetaProb([0.1, 0.4, 0.4],metaRand)
+					})
+				}
+			} else if (type === BiomeType.PLAIN) {
+				if(rand < 0.005) {
+					trees.push({
+						x, y, type: BuildingType.TREE, meta: pickMetaProb([0.9, 0.05, 0.05],metaRand)
 					})
 				}
 			}
-		}
+ 		}
 
 	return trees;
 }
@@ -162,7 +172,7 @@ expose({
 		const buildings: RawBuildingData[] = [];
 
 		decorateWorldSurface(bricks, landPos, picker, seed);
-		buildings.push(...plantTrees(picker, seed));
+		buildings.push(...plantTrees(picker, landPos, seed));
 
 		return {
 			bricks,

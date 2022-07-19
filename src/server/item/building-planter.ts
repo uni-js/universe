@@ -8,7 +8,7 @@ export class BuildingPlanter extends Item {
     }
     stopUsing(): void {
         const player = this.shortcut.getPlayer();
-        const building = new Tree(this.server, player.getPos());
+        const building = new Tree(this.server, player.getPos(), 0);
         this.world.addBuilding(building);
     }
 

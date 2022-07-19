@@ -31,7 +31,7 @@ export class World {
 
 		const land = this.getLand(landPos);
 		land.setLoaded(landData);
-		land.sendLandData();
+		land.syncLandData();
 
 		console.log(`land data loaded: ${landPos.x}:${landPos.y}`);
 	}
@@ -138,11 +138,11 @@ export class World {
 		return landData;
 	}
 
-	getAreaNearbyActors(square: Square2) {
+	getAreaNearbys(square: Square2): (Actor | Building)[] {
 		const expand = 3;
 		const landFrom = posToLandPos(square.getFrom().addOffset(-expand));
 		const landTo = posToLandPos(square.getTo().addOffset(expand));
-		const actors: Actor[] = [];
+		const results: (Actor | Building)[] = [];
 
 		for(let x = landFrom.x; x <= landTo.x ; x++)
 			for(let y = landFrom.y; y <= landTo.y; y++) {
@@ -150,36 +150,10 @@ export class World {
 				if(!land) {
 					continue;
 				}
-				for(const actor of land.getActors()) {
-					if(actor.getBoundings().isOverlapWith(square)) {
-						actors.push(actor);
-					}
-				}
+				results.push(...land.getActors(), ...land.getBuildings());
 			}
 
-		return actors;
-	}
-
-	getAreaNearbyBuildings(square: Square2) {
-		const expand = 3;
-		const landFrom = posToLandPos(square.getFrom().addOffset(-expand));
-		const landTo = posToLandPos(square.getTo().addOffset(expand));
-		const buildings: Building[] = [];
-
-		for(let x = landFrom.x; x <= landTo.x ; x++)
-			for(let y = landFrom.y; y <= landTo.y; y++) {
-				const land = this.getLand(new Vector2(x, y));
-				if(!land) {
-					continue;
-				}
-				for(const building of land.getBuildings()) {
-					if(building.getBoundings().isOverlapWith(square)) {
-						buildings.push(building);
-					}
-				}
-			}
-
-		return buildings;
+		return results;
 	}
 
 	emitToViewers(building: Building, event: any) {

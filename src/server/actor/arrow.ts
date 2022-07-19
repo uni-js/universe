@@ -1,7 +1,6 @@
-import { Building } from '../building/building';
 import type { Server } from '../server';
-import { Square2, Vector2 } from '../utils/vector2';
-import { Actor } from './actor';
+import { Vector2 } from '../utils/vector2';
+import { Actor, Collision } from './actor';
 import { ActorType } from './actor-type';
 
 export class Arrow extends Actor {	
@@ -15,38 +14,38 @@ export class Arrow extends Actor {
 		this.anchor = new Vector2(0, 0.5);
 	}
 
-	canCheckOverlap(): boolean {
+	canCheckCollusion(): boolean {
 		return true;
 	}
 
-	protected onOverlapActors(actors: Actor[]): void {
-		for(const actor of actors) {
-			if (actor === this.shooter) {
+	protected onCollisions(collisions: Collision[]) {
+		for(const collision of collisions) {
+			if (collision.actor === this.shooter) {
 				continue;
 			}
-			const powerVec = this.motion.normalize();
-			actor.knockBack(powerVec);
-			actor.damage(10);
-			this.kill();
-			break;
+			if (collision.isActor) {
+				const powerVec = this.motion.normalize();
+				const actor = collision.actor;
+				actor.knockBack(powerVec);
+				actor.damage(10);
+				this.kill();
+				break;	
+			} else {
+				this.setPosition(this.pos.add(collision.backwards));
+				break;
+			}
 		}
 	}
 
-	protected onOverlapBuildings(buildings: Building[]): void {
-		this.kill();
-	}
-
-	doCheckOverlapTick() {
-		const square = this.lastTickPos ? new Square2(this.lastTickPos, this.pos) : undefined;
-		const actors = this.getOverlapActors(square)
-		if (actors.length > 0) {
-			this.onOverlapActors(actors);
-		}
+	isSlimActor(): boolean {
+		return true;
 	}
 
 	setMotion(motion: Vector2): void {
 		super.setMotion(motion);
-		this.rotation = motion.getRad();
+		if (motion.length() > 0) {
+			this.rotation = motion.getRad();
+		}
 	}
 
 	getType(): number {
